@@ -46,15 +46,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\..\FennecFox.cs">
+    <Compile Include="FennecFox.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="..\..\FennecFox.Designer.cs">
+    <Compile Include="FennecFox.Designer.cs">
       <DependentUpon>FennecFox.cs</DependentUpon>
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <EmbeddedResource Include="..\..\FennecFox.resx">
+    <EmbeddedResource Include="FennecFox.resx">
       <DependentUpon>FennecFox.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
