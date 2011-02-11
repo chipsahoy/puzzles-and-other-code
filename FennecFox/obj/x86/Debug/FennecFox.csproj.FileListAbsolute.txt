@@ -16,3 +16,5 @@ C:\Users\Helen\Documents\Visual Studio 2010\Projects\FennecFox\FennecFox\obj\x86
 C:\Users\Helen\Documents\Visual Studio 2010\Projects\FennecFox\FennecFox\obj\x86\Debug\FennecFox.Properties.Resources.resources
 C:\Users\Helen\Documents\Visual Studio 2010\Projects\FennecFox\FennecFox\obj\x86\Debug\GenerateResource.read.1.tlog
 C:\Users\Helen\Documents\Visual Studio 2010\Projects\FennecFox\FennecFox\obj\x86\Debug\GenerateResource.write.1.tlog
+C:\Users\Helen\Documents\Visual Studio 2010\Projects\FennecFox\trunk\FennecFox\obj\x86\Debug\FennecFox.exe
+C:\Users\Helen\Documents\Visual Studio 2010\Projects\FennecFox\trunk\FennecFox\obj\x86\Debug\FennecFox.pdb
