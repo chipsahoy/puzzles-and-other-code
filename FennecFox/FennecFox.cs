@@ -79,8 +79,16 @@ namespace FennecFox
 
         private void SecondButton_Click(object sender, EventArgs e)
         {
-            HtmlElementCollection elements = WebBrowserPage.Document.GetElementsByTagName("1");
-            int i = 0;
+            HtmlElementCollection elements = WebBrowserPage.Document.GetElementsByTagName("A");
+            foreach (HtmlElement element in elements)
+            {
+                string name = element.GetAttribute("name");
+                if (name == "1")
+                {
+                    AnswerTextBox.Text = element.Id;
+                    return;
+                }
+            }
            
         }
     }
