@@ -72,24 +72,62 @@ namespace FennecFox
             System.Console.WriteLine("destination is: " + destination);
         }
 
+        int m_startPost = 1;
+        int m_endPost = 50;
         private void WebBrowserPage_DocumentCompleted(object sender, WebBrowserDocumentCompletedEventArgs e)
         {
-
+            string answer = "";
+            for (int i = m_startPost; i <= m_endPost; i++)
+            {
+                string postId = PostIdFromPostNumber(WebBrowserPage.Document, i);
+                if (postId.Length == 0)
+                {
+                    break;
+                }
+                answer += i.ToString() + ": " + postId + "\r\n";
+            }
+            AnswerTextBox.Text = answer;
         }
 
-        private void SecondButton_Click(object sender, EventArgs e)
+        private string PostIdFromPostNumber(HtmlDocument doc, int postNumber)
         {
-            HtmlElementCollection elements = WebBrowserPage.Document.GetElementsByTagName("A");
-            foreach (HtmlElement element in elements)
+            string rc = "";
+            HtmlElement element = GetElementFromName(doc, postNumber.ToString(), "a");
+            if (element != null)
             {
-                string name = element.GetAttribute("name");
-                if (name == "1")
+                // id="postcount24750004"
+                string id = element.GetAttribute("id");
+                if (id.Length >= 9)
                 {
-                    AnswerTextBox.Text = element.Id;
-                    return;
+                    rc = id.Substring(9);
                 }
             }
-           
+            return rc;
         }
+
+        private HtmlElement GetElementFromName(HtmlDocument doc, string name, string tag = "")
+        {
+            HtmlElement rc= null;
+            HtmlElementCollection elements;
+            if(tag == "")
+            {
+                elements = doc.All;
+            }
+            else
+            {
+                elements = doc.GetElementsByTagName(tag);
+            }
+            foreach (HtmlElement element in elements)
+            {
+                string nameElement = element.GetAttribute("name");
+                if (nameElement == name)
+                {
+                    rc= element;
+                    break;
+                }
+            }
+            return rc;
+        }
+
     }
 }

@@ -43,10 +43,9 @@
             this.PostNumberTextBox = new System.Windows.Forms.TextBox();
             this.tabPage4 = new System.Windows.Forms.TabPage();
             this.WebBrowserPage = new System.Windows.Forms.WebBrowser();
-            this.URLTextBox = new System.Windows.Forms.TextBox();
-            this.AnswerTextBox = new System.Windows.Forms.TextBox();
             this.GoButtonAgain = new System.Windows.Forms.Button();
-            this.SecondButton = new System.Windows.Forms.Button();
+            this.AnswerTextBox = new System.Windows.Forms.TextBox();
+            this.URLTextBox = new System.Windows.Forms.TextBox();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.tabPage2.SuspendLayout();
@@ -187,7 +186,7 @@
             // 
             // tabPage4
             // 
-            this.tabPage4.Controls.Add(this.SecondButton);
+            this.tabPage4.BackColor = System.Drawing.Color.Gainsboro;
             this.tabPage4.Controls.Add(this.WebBrowserPage);
             this.tabPage4.Controls.Add(this.GoButtonAgain);
             this.tabPage4.Controls.Add(this.AnswerTextBox);
@@ -198,7 +197,6 @@
             this.tabPage4.Size = new System.Drawing.Size(748, 388);
             this.tabPage4.TabIndex = 3;
             this.tabPage4.Text = "tabPage4";
-            this.tabPage4.UseVisualStyleBackColor = true;
             // 
             // WebBrowserPage
             // 
@@ -208,22 +206,6 @@
             this.WebBrowserPage.Size = new System.Drawing.Size(473, 305);
             this.WebBrowserPage.TabIndex = 0;
             this.WebBrowserPage.DocumentCompleted += new System.Windows.Forms.WebBrowserDocumentCompletedEventHandler(this.WebBrowserPage_DocumentCompleted);
-            // 
-            // URLTextBox
-            // 
-            this.URLTextBox.Location = new System.Drawing.Point(16, 17);
-            this.URLTextBox.Name = "URLTextBox";
-            this.URLTextBox.Size = new System.Drawing.Size(207, 20);
-            this.URLTextBox.TabIndex = 1;
-            this.URLTextBox.TextChanged += new System.EventHandler(this.textBox1_TextChanged_2);
-            // 
-            // AnswerTextBox
-            // 
-            this.AnswerTextBox.Location = new System.Drawing.Point(16, 47);
-            this.AnswerTextBox.Multiline = true;
-            this.AnswerTextBox.Name = "AnswerTextBox";
-            this.AnswerTextBox.Size = new System.Drawing.Size(233, 305);
-            this.AnswerTextBox.TabIndex = 2;
             // 
             // GoButtonAgain
             // 
@@ -235,15 +217,22 @@
             this.GoButtonAgain.UseVisualStyleBackColor = true;
             this.GoButtonAgain.Click += new System.EventHandler(this.GoButtonAgain_Click);
             // 
-            // SecondButton
+            // AnswerTextBox
             // 
-            this.SecondButton.Location = new System.Drawing.Point(296, 11);
-            this.SecondButton.Name = "SecondButton";
-            this.SecondButton.Size = new System.Drawing.Size(64, 29);
-            this.SecondButton.TabIndex = 4;
-            this.SecondButton.Text = "Click me!";
-            this.SecondButton.UseVisualStyleBackColor = true;
-            this.SecondButton.Click += new System.EventHandler(this.SecondButton_Click);
+            this.AnswerTextBox.Location = new System.Drawing.Point(16, 47);
+            this.AnswerTextBox.Multiline = true;
+            this.AnswerTextBox.Name = "AnswerTextBox";
+            this.AnswerTextBox.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+            this.AnswerTextBox.Size = new System.Drawing.Size(233, 305);
+            this.AnswerTextBox.TabIndex = 2;
+            // 
+            // URLTextBox
+            // 
+            this.URLTextBox.Location = new System.Drawing.Point(16, 17);
+            this.URLTextBox.Name = "URLTextBox";
+            this.URLTextBox.Size = new System.Drawing.Size(207, 20);
+            this.URLTextBox.TabIndex = 1;
+            this.URLTextBox.TextChanged += new System.EventHandler(this.textBox1_TextChanged_2);
             // 
             // Form1
             // 
@@ -286,7 +275,6 @@
         private System.Windows.Forms.WebBrowser WebBrowserPage;
         private System.Windows.Forms.Button GoButtonAgain;
         private System.Windows.Forms.TextBox AnswerTextBox;
-        private System.Windows.Forms.Button SecondButton;
     }
 }
 
