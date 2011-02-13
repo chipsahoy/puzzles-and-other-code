@@ -11,6 +11,10 @@ namespace FennecFox
 {
     public partial class Form1 : Form
     {
+        Dictionary<int, int> m_PostNumberToPostId = new Dictionary<int, int>();
+        Dictionary<int, string> m_PostIdToString = new Dictionary<int, string>();
+        int m_idPostFetching = 0;
+
         public Form1()
         {
             InitializeComponent();
@@ -43,31 +47,55 @@ namespace FennecFox
 
         private void postGobutton_Click(object sender, EventArgs e)
         {
-            string url = "http://forumserver.twoplustwo.com/newreply.php?do=newreply&p=" + PostNumberTextBox.Text;
+            int postNumber= Convert.ToInt32(udPostNumber.Value);
+            int postId = m_PostNumberToPostId[postNumber];
+            if (postId <= 0)
+            {
+                return;
+            }
+            string url = "http://forumserver.twoplustwo.com/newreply.php?do=newreply&p=" + postId.ToString();
+            m_idPostFetching = postId;
             WebBrowserPost.Navigate(url);
 
         }
-
-        private void button1_Click(object sender, EventArgs e)
-        {
-            string post = WebBrowserPost.Document.GetElementById("vB_Editor_001_textarea").InnerText;
-            postArea.Text = post;
-        }
-
-        private void textBox1_TextChanged_2(object sender, EventArgs e)
-        {
-
-        }
-
         private void WebBrowserPost_DocumentCompleted(object sender, WebBrowserDocumentCompletedEventArgs e)
         {
-           
+            HtmlElement element= WebBrowserPost.Document.GetElementById("vB_Editor_001_textarea");
+            if(element != null)
+            {
+                string post= element.InnerText;
+                postArea.Text = post;
+                m_PostIdToString[m_idPostFetching] = post;
+                m_idPostFetching = 0;
+            }
         }
 
         private void GoButtonAgain_Click(object sender, EventArgs e)
         {
+            int ppp = Convert.ToInt32(textPostsPerPage.Text);
+            if(ppp <= 0)
+            {
+                ppp= 50;
+            }
+            int firstPost = Convert.ToInt32(txtFirstPost.Text);
+            if(firstPost <= 0)
+            {
+                firstPost= 1;
+            }
+            m_startPost = firstPost;
+
+            m_endPost = Convert.ToInt32(txtLastPost.Text);
+            if (m_endPost < m_startPost)
+            {
+                m_endPost = m_startPost;
+            }
             string destination = URLTextBox.Text;
-            string foo = "wat";
+            int page = (firstPost / ppp) + 1;
+            if (page > 1)
+            {
+                destination += "index" + page.ToString() + ".html";
+            }
+
             WebBrowserPage.Navigate(destination);
             System.Console.WriteLine("destination is: " + destination);
         }
@@ -79,19 +107,20 @@ namespace FennecFox
             string answer = "";
             for (int i = m_startPost; i <= m_endPost; i++)
             {
-                string postId = PostIdFromPostNumber(WebBrowserPage.Document, i);
-                if (postId.Length == 0)
+                int postId = PostIdFromPostNumber(WebBrowserPage.Document, i);
+                if (postId == 0)
                 {
                     break;
                 }
+                m_PostNumberToPostId[i] = postId;
                 answer += i.ToString() + ": " + postId + "\r\n";
             }
             AnswerTextBox.Text = answer;
         }
 
-        private string PostIdFromPostNumber(HtmlDocument doc, int postNumber)
+        private int PostIdFromPostNumber(HtmlDocument doc, int postNumber)
         {
-            string rc = "";
+            int rc = 0;
             HtmlElement element = GetElementFromName(doc, postNumber.ToString(), "a");
             if (element != null)
             {
@@ -99,7 +128,7 @@ namespace FennecFox
                 string id = element.GetAttribute("id");
                 if (id.Length >= 9)
                 {
-                    rc = id.Substring(9);
+                    rc = Convert.ToInt32(id.Substring(9));
                 }
             }
             return rc;
@@ -127,6 +156,12 @@ namespace FennecFox
                 }
             }
             return rc;
+        }
+
+        private void btnClear_Click(object sender, EventArgs e)
+        {
+            m_PostIdToString.Clear();
+            m_PostNumberToPostId.Clear();
         }
 
     }
