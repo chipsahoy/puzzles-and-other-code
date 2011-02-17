@@ -11,111 +11,118 @@ namespace FennecFox
 {
     public partial class Form1 : Form
     {
-        Dictionary<int, int> m_PostNumberToPostId = new Dictionary<int, int>();
-        Dictionary<int, string> m_PostIdToString = new Dictionary<int, string>();
-        int m_idPostFetching = 0;
+        Posts m_posts = new Posts();
+        Queue<Post> m_IdsToFetch = new Queue<Post>();
+        Timer m_timer = new Timer();
+
+        int m_startPost = 1;
+        int m_currentPage = 1;
+        int m_postsPerPage = 50;
 
         public Form1()
         {
             InitializeComponent();
+            m_timer.Enabled = false;
+            m_timer.Interval = 100;
+            m_timer.Tick += new EventHandler(m_timer_Tick);
         }
 
-        private void textBox1_TextChanged(object sender, EventArgs e)
+        void m_timer_Tick(object sender, EventArgs e)
         {
-
+            m_timer.Enabled = false;
+            GetNextPostInternal();
         }
+        
 
-        private void label1_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void goButton_Click(object sender, EventArgs e)
-        {
-            webBrowser1.Navigate(addressBar.Text);
-        }
-
-        private void webBrowser1_DocumentCompleted(object sender, WebBrowserDocumentCompletedEventArgs e)
-        {
-            htmlSource.Text = webBrowser1.Document.Body.InnerHtml;
-        }
-
-        private void textBox1_TextChanged_1(object sender, EventArgs e)
-        {
-
-        }
-
-        private void postGobutton_Click(object sender, EventArgs e)
-        {
-            int postNumber= Convert.ToInt32(udPostNumber.Value);
-            int postId = m_PostNumberToPostId[postNumber];
-            if (postId <= 0)
-            {
-                return;
-            }
-            string url = "http://forumserver.twoplustwo.com/newreply.php?do=newreply&p=" + postId.ToString();
-            m_idPostFetching = postId;
-            WebBrowserPost.Navigate(url);
-
-        }
-        private void WebBrowserPost_DocumentCompleted(object sender, WebBrowserDocumentCompletedEventArgs e)
-        {
-            HtmlElement element= WebBrowserPost.Document.GetElementById("vB_Editor_001_textarea");
-            if(element != null)
-            {
-                string post= element.InnerText;
-                postArea.Text = post;
-                m_PostIdToString[m_idPostFetching] = post;
-                m_idPostFetching = 0;
-            }
-        }
-
-        private void GoButtonAgain_Click(object sender, EventArgs e)
+        private int PageFromNumber(int number)
         {
             int ppp = Convert.ToInt32(textPostsPerPage.Text);
-            if(ppp <= 0)
+            if (ppp <= 0)
             {
-                ppp= 50;
+                ppp = 50;
             }
-            int firstPost = Convert.ToInt32(txtFirstPost.Text);
+            int page = (number / ppp) + 1;
+            m_postsPerPage = ppp;
+            return page;
+        }
+        private void GoButtonAgain_Click(object sender, EventArgs e)
+        {
+            // find the min post # to search.
+            // Grab that page.
+            int firstPost = m_posts.MaxNumber;
+            int userFirst= Convert.ToInt32(txtFirstPost.Text);
+            if (userFirst > firstPost)
+            {
+                firstPost = userFirst;
+            }
             if(firstPost <= 0)
             {
                 firstPost= 1;
             }
             m_startPost = firstPost;
 
-            m_endPost = Convert.ToInt32(txtLastPost.Text);
-            if (m_endPost < m_startPost)
-            {
-                m_endPost = m_startPost;
-            }
             string destination = URLTextBox.Text;
-            int page = (firstPost / ppp) + 1;
+            int page = PageFromNumber(firstPost);
+            m_currentPage = page;
             if (page > 1)
             {
                 destination += "index" + page.ToString() + ".html";
             }
 
             WebBrowserPage.Navigate(destination);
-            System.Console.WriteLine("destination is: " + destination);
+            statusText.Text = "Fetching page " + m_currentPage.ToString();
         }
 
-        int m_startPost = 1;
-        int m_endPost = 50;
+        private void GetNextPost()
+        {
+            m_timer.Enabled = true;
+        }
+
+        private void GetNextPostInternal()
+        {
+            if (0 == m_IdsToFetch.Count)
+            {
+                return;
+            }
+            Post post= m_IdsToFetch.Peek();
+            if (post != null)
+            {
+                string url = "http://forumserver.twoplustwo.com/newreply.php?do=newreply&p=" + post.Id.ToString();
+                BrowserPost.Navigate(url);
+                statusText.Text = "Fetching post " + post.Number.ToString();
+            }
+        }
+
         private void WebBrowserPage_DocumentCompleted(object sender, WebBrowserDocumentCompletedEventArgs e)
         {
-            string answer = "";
-            for (int i = m_startPost; i <= m_endPost; i++)
+            if (e.Url.AbsolutePath != WebBrowserPage.Url.AbsolutePath)
+            {
+                return;
+            }
+            // enumerate post #s, queueing ids as we go
+            int lastPostThisPage = m_postsPerPage * m_currentPage;
+            for (int i = m_startPost; i <= lastPostThisPage; i++)
             {
                 int postId = PostIdFromPostNumber(WebBrowserPage.Document, i);
                 if (postId == 0)
                 {
-                    break;
+                    m_startPost = i;
+                    // Now go get all those posts...
+                    GetNextPost();
+                    return;
                 }
-                m_PostNumberToPostId[i] = postId;
-                answer += i.ToString() + ": " + postId + "\r\n";
+                Post post = new Post(i, postId);
+                m_posts.AddPost(post);
+                m_IdsToFetch.Enqueue(post);
             }
-            AnswerTextBox.Text = answer;
+            m_startPost = lastPostThisPage + 1;
+            m_currentPage++;
+            string destination = URLTextBox.Text;
+            destination += "index" + m_currentPage.ToString() + ".html";
+
+            // if we make it to the end, start on next page
+            WebBrowserPage.Navigate(destination);
+            statusText.Text = "Fetching page " + m_currentPage.ToString();
         }
 
         private int PostIdFromPostNumber(HtmlDocument doc, int postNumber)
@@ -160,9 +167,205 @@ namespace FennecFox
 
         private void btnClear_Click(object sender, EventArgs e)
         {
-            m_PostIdToString.Clear();
-            m_PostNumberToPostId.Clear();
+            m_IdsToFetch.Clear();
+            m_posts.Clear();
         }
 
+        private void BrowserPost_DocumentCompleted(object sender, WebBrowserDocumentCompletedEventArgs e)
+        {
+            if (e.Url.AbsolutePath != BrowserPost.Url.AbsolutePath)
+            {
+                return;
+            }
+            // got the post.
+            if (0 == m_IdsToFetch.Count)
+            {
+                return;
+            }
+            Post post = m_IdsToFetch.Dequeue();
+            if (post == null)
+            {
+                return;
+            }
+            HtmlElement element = BrowserPost.Document.GetElementById("vB_Editor_001_textarea");
+            if (element != null)
+            {
+                post.Content = element.InnerText;
+                txtLastPost.Text = post.Number.ToString();
+                statusText.Text = "Got post " + post.Number.ToString();
+            }
+            else
+            {
+                statusText.Text = "Failure getting post " + post.Number.ToString();
+            }
+            GetNextPost();
+        }
+
+        private void udPostNumber_ValueChanged(object sender, EventArgs e)
+        {
+            int postNumber = Convert.ToInt32(udPostNumber.Value);
+            Post post = m_posts.GetPostByNumber(postNumber);
+            if (post != null)
+            {
+                postArea.Text = post.Content;
+            }
+            else
+            {
+                postArea.Text = "No Data";
+            }
+        }
+    }
+    // This class holds the interesting info about a post.
+    class Post
+    {
+        int m_postNumber;
+        int m_Id;
+        string m_poster;
+        string m_content;
+        public Post(int Number, int Id, string poster = "", string content = "")
+        {
+            m_postNumber = Number;
+            m_Id = Id;
+            m_poster = poster;
+            m_content = content;
+        }
+
+
+        public int Id
+        {
+            get
+            {
+                return m_Id;
+            }
+        }
+        public int Number
+        {
+            get
+            {
+                return m_postNumber;
+            }
+        }
+        public string Poster
+        {
+            get
+            {
+                return m_poster;
+            }
+            set
+            {
+                m_poster = value;
+            }
+        }
+        public string Content
+        {
+            get
+            {
+                return m_content;
+            }
+            set
+            {
+                m_content = value;
+            }
+        }
+        public bool Search(string find)
+        {
+            bool rc = false;
+            int ix = m_content.IndexOf(find, StringComparison.OrdinalIgnoreCase);
+            if (ix > 0)
+            {
+                rc = true;
+            }
+            return rc;
+        }
+    }
+
+    // This class holds all the posts
+    class Posts
+    {
+        Dictionary<int, Post> m_Posts = new Dictionary<int, Post>();
+        int m_minPost = 1;
+        int m_maxPost = 0;
+        public void AddPost(Post newPost)
+        {
+            m_Posts[newPost.Id] = newPost;
+            if (newPost.Number < m_minPost)
+            {
+                m_minPost = newPost.Number;
+            }
+            if (newPost.Number > m_maxPost)
+            {
+                m_maxPost = newPost.Number;
+            }
+        }
+        public Post GetPostByNumber(int number)
+        {
+            foreach (Post post in m_Posts.Values)
+            {
+                if (post.Number == number)
+                {
+                    return post;
+                }
+            }
+            return null;
+        }
+        public Post GetPostById(int id)
+        {
+            Post post = m_Posts[id];
+            return post;
+        }
+        public void Clear()
+        {
+            m_Posts.Clear();
+        }
+        public int MinNumber
+        {
+            get
+            {
+                return m_minPost;
+            }
+        }
+        public int MaxNumber
+        {
+            get
+            {
+                return m_maxPost;
+            }
+        }
+        public List<Post> GetPostsByPoster(string poster)
+        {
+            List<Post> rc = new List<Post>();
+            foreach (Post post in m_Posts.Values)
+            {
+                if (post.Poster == poster)
+                {
+                    rc.Add(post);
+                }
+            }
+            return rc;
+        }
+        public List<Post> GetPostsContaining(string search)
+        {
+            List<Post> rc = new List<Post>();
+            foreach (Post post in m_Posts.Values)
+            {
+                if (post.Search(search))
+                {
+                    rc.Add(post);
+                }
+            }
+            return rc;
+        }
+        public List<Post> GetPostsContaining(string search, string poster)
+        {
+            List<Post> rc = GetPostsByPoster(poster);
+            foreach (Post post in rc)
+            {
+                if (post.Search(search))
+                {
+                    rc.Add(post);
+                }
+            }
+            return rc;
+        }
     }
 }
