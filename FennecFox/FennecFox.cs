@@ -82,6 +82,9 @@ namespace FennecFox
         {
             if (0 == m_IdsToFetch.Count)
             {
+                // nothing more to fetch. Update stuff.
+                m_posts.ApplyFilters();
+                OnPostSetChanged();
                 return;
             }
             Post post= m_IdsToFetch.Peek();
@@ -203,8 +206,12 @@ namespace FennecFox
 
         private void udPostNumber_ValueChanged(object sender, EventArgs e)
         {
+            ShowSelectedPost();
+        }
+        private void ShowSelectedPost()
+        {
             int postNumber = Convert.ToInt32(udPostNumber.Value);
-            Post post = m_posts.GetPostByNumber(postNumber);
+            Post post = m_posts.FilteredPost(postNumber);
             if (post != null)
             {
                 postArea.Text = post.Content;
@@ -213,6 +220,21 @@ namespace FennecFox
             {
                 postArea.Text = "No Data";
             }
+        }
+
+        private void btnSearch_Click(object sender, EventArgs e)
+        {
+            string search = txtSearch.Text;
+            m_posts.FilterByString(search);
+            udPostNumber.Value = 1;
+            OnPostSetChanged();
+        }
+        private void OnPostSetChanged()
+        {
+            udPostNumber.Minimum = 1;
+            udPostNumber.Maximum = m_posts.Count;
+            txtCountPosts.Text = m_posts.Count.ToString();
+            ShowSelectedPost();
         }
     }
     // This class holds the interesting info about a post.
@@ -283,6 +305,9 @@ namespace FennecFox
     class Posts
     {
         Dictionary<int, Post> m_Posts = new Dictionary<int, Post>();
+        List<Post> m_FilteredPosts= new List<Post>();
+        string m_FilterPoster = "";
+        string m_FilterString = "";
         int m_minPost = 1;
         int m_maxPost = 0;
         public void AddPost(Post newPost)
@@ -313,6 +338,16 @@ namespace FennecFox
             Post post = m_Posts[id];
             return post;
         }
+        public Post FilteredPost(int ix)
+        {
+            ix--;
+            if (ix > m_FilteredPosts.Count)
+            {
+                return null;
+            }
+            Post rc = m_FilteredPosts[ix];
+            return rc;
+        }
         public void Clear()
         {
             m_Posts.Clear();
@@ -331,41 +366,74 @@ namespace FennecFox
                 return m_maxPost;
             }
         }
-        public List<Post> GetPostsByPoster(string poster)
+        public int Count
         {
-            List<Post> rc = new List<Post>();
-            foreach (Post post in m_Posts.Values)
+            get
             {
-                if (post.Poster == poster)
-                {
-                    rc.Add(post);
-                }
+                int rc = m_FilteredPosts.Count;
+                return rc;
             }
-            return rc;
         }
-        public List<Post> GetPostsContaining(string search)
+        public void ClearFilters()
         {
-            List<Post> rc = new List<Post>();
-            foreach (Post post in m_Posts.Values)
-            {
-                if (post.Search(search))
-                {
-                    rc.Add(post);
-                }
-            }
-            return rc;
+            m_FilteredPosts = new List<Post>(m_Posts.Values);
         }
-        public List<Post> GetPostsContaining(string search, string poster)
+        public void ApplyFilters()
         {
-            List<Post> rc = GetPostsByPoster(poster);
-            foreach (Post post in rc)
+            m_FilteredPosts.Clear();
+            if (m_FilterString == "")
             {
-                if (post.Search(search))
+                if (m_FilterPoster == "") // no filters
                 {
-                    rc.Add(post);
+                    ClearFilters();
+                }
+                else // just filter by poster
+                {
+                    foreach (Post post in m_Posts.Values)
+                    {
+                        if (post.Poster == m_FilterPoster)
+                        {
+                            m_FilteredPosts.Add(post);
+                        }
+                    }
                 }
             }
-            return rc;
+            else
+            {
+                if (m_FilterPoster == "") // filter by search string
+                {
+                    foreach (Post post in m_Posts.Values)
+                    {
+                        if (post.Search(m_FilterString))
+                        {
+                            m_FilteredPosts.Add(post);
+                        }
+                    }
+                }
+                else // have both filters
+                {
+                    foreach (Post post in m_Posts.Values)
+                    {
+                        if (post.Poster == m_FilterPoster)
+                        {
+                            if (post.Search(m_FilterString))
+                            {
+                                m_FilteredPosts.Add(post);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        public void FilterByPoster(string poster)
+        {
+            m_FilterPoster = poster;
+            ApplyFilters();
+        }
+        public void FilterByString(string search)
+        {
+            m_FilterString = search;
+            ApplyFilters();
         }
     }
 }

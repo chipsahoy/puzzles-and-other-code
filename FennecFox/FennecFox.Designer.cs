@@ -43,6 +43,9 @@
             this.label1 = new System.Windows.Forms.Label();
             this.GoButtonAgain = new System.Windows.Forms.Button();
             this.tabPage3 = new System.Windows.Forms.TabPage();
+            this.btnSearch = new System.Windows.Forms.Button();
+            this.txtSearch = new System.Windows.Forms.TextBox();
+            this.txtCountPosts = new System.Windows.Forms.TextBox();
             this.udPostNumber = new System.Windows.Forms.NumericUpDown();
             this.postArea = new System.Windows.Forms.TextBox();
             this.tabControl1 = new System.Windows.Forms.TabControl();
@@ -190,6 +193,9 @@
             // 
             // tabPage3
             // 
+            this.tabPage3.Controls.Add(this.btnSearch);
+            this.tabPage3.Controls.Add(this.txtSearch);
+            this.tabPage3.Controls.Add(this.txtCountPosts);
             this.tabPage3.Controls.Add(this.udPostNumber);
             this.tabPage3.Controls.Add(this.postArea);
             this.tabPage3.Location = new System.Drawing.Point(4, 22);
@@ -200,12 +206,42 @@
             this.tabPage3.Text = "Get Post";
             this.tabPage3.UseVisualStyleBackColor = true;
             // 
+            // btnSearch
+            // 
+            this.btnSearch.Location = new System.Drawing.Point(422, 4);
+            this.btnSearch.Name = "btnSearch";
+            this.btnSearch.Size = new System.Drawing.Size(75, 23);
+            this.btnSearch.TabIndex = 7;
+            this.btnSearch.Text = "Search";
+            this.btnSearch.UseVisualStyleBackColor = true;
+            this.btnSearch.Click += new System.EventHandler(this.btnSearch_Click);
+            // 
+            // txtSearch
+            // 
+            this.txtSearch.Location = new System.Drawing.Point(158, 5);
+            this.txtSearch.Name = "txtSearch";
+            this.txtSearch.Size = new System.Drawing.Size(258, 20);
+            this.txtSearch.TabIndex = 6;
+            // 
+            // txtCountPosts
+            // 
+            this.txtCountPosts.Location = new System.Drawing.Point(82, 6);
+            this.txtCountPosts.Name = "txtCountPosts";
+            this.txtCountPosts.ReadOnly = true;
+            this.txtCountPosts.Size = new System.Drawing.Size(70, 20);
+            this.txtCountPosts.TabIndex = 5;
+            // 
             // udPostNumber
             // 
             this.udPostNumber.Location = new System.Drawing.Point(6, 6);
             this.udPostNumber.Name = "udPostNumber";
-            this.udPostNumber.Size = new System.Drawing.Size(120, 20);
+            this.udPostNumber.Size = new System.Drawing.Size(70, 20);
             this.udPostNumber.TabIndex = 4;
+            this.udPostNumber.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
             this.udPostNumber.ValueChanged += new System.EventHandler(this.udPostNumber_ValueChanged);
             // 
             // postArea
@@ -266,6 +302,9 @@
         private System.Windows.Forms.TabControl tabControl1;
         private System.Windows.Forms.StatusStrip statusBrowser;
         private System.Windows.Forms.ToolStripStatusLabel statusText;
+        private System.Windows.Forms.Button btnSearch;
+        private System.Windows.Forms.TextBox txtSearch;
+        private System.Windows.Forms.TextBox txtCountPosts;
 
     }
 }
