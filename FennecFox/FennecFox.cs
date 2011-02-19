@@ -68,8 +68,15 @@ namespace FennecFox
             {
                 destination += "index" + page.ToString() + ".html";
             }
-
-            WebBrowserPage.Navigate(destination);
+            if ((WebBrowserPage.Url != null) && (destination == WebBrowserPage.Url.AbsolutePath))
+            {
+                WebBrowserRefreshOption opt = WebBrowserRefreshOption.Completely;
+                WebBrowserPage.Refresh(opt);
+            }
+            else
+            {
+                WebBrowserPage.Navigate(destination);
+            }
             statusText.Text = "Fetching page " + m_currentPage.ToString();
         }
 
@@ -106,6 +113,10 @@ namespace FennecFox
             int lastPostThisPage = m_postsPerPage * m_currentPage;
             for (int i = m_startPost; i <= lastPostThisPage; i++)
             {
+                if (m_posts.GetPostByNumber(i) != null)
+                {
+                    continue;
+                }
                 int postId = PostIdFromPostNumber(WebBrowserPage.Document, i);
                 if (postId == 0)
                 {
@@ -126,6 +137,7 @@ namespace FennecFox
             // if we make it to the end, start on next page
             WebBrowserPage.Navigate(destination);
             statusText.Text = "Fetching page " + m_currentPage.ToString();
+            OnPostSetChanged();
         }
 
         private int PostIdFromPostNumber(HtmlDocument doc, int postNumber)
@@ -211,13 +223,15 @@ namespace FennecFox
         private void ShowSelectedPost()
         {
             int postNumber = Convert.ToInt32(udPostNumber.Value);
-            Post post = m_posts.FilteredPost(postNumber);
+            Post post = m_posts.FilteredPost(postNumber - 1);
             if (post != null)
             {
                 postArea.Text = post.Content;
+                txtPostNumber.Text = post.Number.ToString();
             }
             else
             {
+                txtPostNumber.Text = "-";
                 postArea.Text = "No Data";
             }
         }
@@ -340,8 +354,11 @@ namespace FennecFox
         }
         public Post FilteredPost(int ix)
         {
-            ix--;
-            if (ix > m_FilteredPosts.Count)
+            if (0 == m_FilteredPosts.Count)
+            {
+                return null;
+            }
+            if ((ix > m_FilteredPosts.Count) || (ix < 0))
             {
                 return null;
             }

@@ -49,6 +49,7 @@
             this.udPostNumber = new System.Windows.Forms.NumericUpDown();
             this.postArea = new System.Windows.Forms.TextBox();
             this.tabControl1 = new System.Windows.Forms.TabControl();
+            this.txtPostNumber = new System.Windows.Forms.TextBox();
             this.tabPage4.SuspendLayout();
             this.statusBrowser.SuspendLayout();
             this.tabPage3.SuspendLayout();
@@ -193,6 +194,7 @@
             // 
             // tabPage3
             // 
+            this.tabPage3.Controls.Add(this.txtPostNumber);
             this.tabPage3.Controls.Add(this.btnSearch);
             this.tabPage3.Controls.Add(this.txtSearch);
             this.tabPage3.Controls.Add(this.txtCountPosts);
@@ -218,9 +220,9 @@
             // 
             // txtSearch
             // 
-            this.txtSearch.Location = new System.Drawing.Point(158, 5);
+            this.txtSearch.Location = new System.Drawing.Point(234, 5);
             this.txtSearch.Name = "txtSearch";
-            this.txtSearch.Size = new System.Drawing.Size(258, 20);
+            this.txtSearch.Size = new System.Drawing.Size(182, 20);
             this.txtSearch.TabIndex = 6;
             // 
             // txtCountPosts
@@ -246,10 +248,10 @@
             // 
             // postArea
             // 
-            this.postArea.Location = new System.Drawing.Point(3, 32);
+            this.postArea.Location = new System.Drawing.Point(3, 31);
             this.postArea.Multiline = true;
             this.postArea.Name = "postArea";
-            this.postArea.Size = new System.Drawing.Size(524, 341);
+            this.postArea.Size = new System.Drawing.Size(524, 342);
             this.postArea.TabIndex = 2;
             // 
             // tabControl1
@@ -261,6 +263,15 @@
             this.tabControl1.SelectedIndex = 0;
             this.tabControl1.Size = new System.Drawing.Size(756, 414);
             this.tabControl1.TabIndex = 4;
+            // 
+            // txtPostNumber
+            // 
+            this.txtPostNumber.Location = new System.Drawing.Point(158, 5);
+            this.txtPostNumber.Name = "txtPostNumber";
+            this.txtPostNumber.ReadOnly = true;
+            this.txtPostNumber.Size = new System.Drawing.Size(70, 20);
+            this.txtPostNumber.TabIndex = 8;
+            this.txtPostNumber.Text = "1";
             // 
             // Form1
             // 
@@ -305,6 +316,7 @@
         private System.Windows.Forms.Button btnSearch;
         private System.Windows.Forms.TextBox txtSearch;
         private System.Windows.Forms.TextBox txtCountPosts;
+        private System.Windows.Forms.TextBox txtPostNumber;
 
     }
 }
