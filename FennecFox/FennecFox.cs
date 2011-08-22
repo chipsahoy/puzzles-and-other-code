@@ -6,20 +6,18 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
-
+using System.Text.RegularExpressions;
 namespace FennecFox
 {
-    public partial class Form1 : Form
+    public partial class FormVoteCounter : Form
     {
-        Posts m_posts = new Posts();
-        Queue<Post> m_IdsToFetch = new Queue<Post>();
         Timer m_timer = new Timer();
 
         int m_startPost = 1;
         int m_currentPage = 1;
         int m_postsPerPage = 50;
 
-        public Form1()
+        public FormVoteCounter()
         {
             InitializeComponent();
             m_timer.Enabled = false;
@@ -30,9 +28,8 @@ namespace FennecFox
         void m_timer_Tick(object sender, EventArgs e)
         {
             m_timer.Enabled = false;
-            GetNextPostInternal();
         }
-        
+
 
         private int PageFromNumber(int number)
         {
@@ -49,15 +46,15 @@ namespace FennecFox
         {
             // find the min post # to search.
             // Grab that page.
-            int firstPost = m_posts.MaxNumber;
-            int userFirst= Convert.ToInt32(txtFirstPost.Text);
+            int firstPost = m_startPost;
+            int userFirst = Convert.ToInt32(txtFirstPost.Text);
             if (userFirst > firstPost)
             {
                 firstPost = userFirst;
             }
-            if(firstPost <= 0)
+            if (firstPost <= 0)
             {
-                firstPost= 1;
+                firstPost = 1;
             }
             m_startPost = firstPost;
 
@@ -80,377 +77,278 @@ namespace FennecFox
             statusText.Text = "Fetching page " + m_currentPage.ToString();
         }
 
-        private void GetNextPost()
-        {
-            m_timer.Enabled = true;
-        }
 
-        private void GetNextPostInternal()
+        void RemoveComments(HtmlAgilityPack.HtmlNode node)
         {
-            if (0 == m_IdsToFetch.Count)
+            foreach (var n in node.SelectNodes("//comment()") ?? new HtmlAgilityPack.HtmlNodeCollection(node))
             {
-                // nothing more to fetch. Update stuff.
-                m_posts.ApplyFilters();
-                OnPostSetChanged();
-                return;
-            }
-            Post post= m_IdsToFetch.Peek();
-            if (post != null)
-            {
-                string url = "http://forumserver.twoplustwo.com/newreply.php?do=newreply&p=" + post.Id.ToString();
-                BrowserPost.Navigate(url);
-                statusText.Text = "Fetching post " + post.Number.ToString();
+                n.Remove();
             }
         }
+        void RemoveQuotes(HtmlAgilityPack.HtmlNode node)
+        {
+            foreach (var n in node.SelectNodes("div/table/tbody/tr/td[@class='alt2']") ?? new HtmlAgilityPack.HtmlNodeCollection(node))
+            {
+                HtmlAgilityPack.HtmlNode div = n.ParentNode.ParentNode.ParentNode.ParentNode;
+                div.Remove();
+            }
+        }
+        void RemoveColors(HtmlAgilityPack.HtmlNode node)
+        {
+            foreach (var n in node.SelectNodes("//font") ?? new HtmlAgilityPack.HtmlNodeCollection(node))
+            {
+                n.Remove();
+            }
+        }
 
+        private int ParseVotePage(string doc, int firstPost, ref int totalPages)
+        {
+            int lastPost = 0;
+            HtmlAgilityPack.HtmlDocument html = new HtmlAgilityPack.HtmlDocument();
+            html.LoadHtml(doc);
+            HtmlAgilityPack.HtmlNode root = html.DocumentNode;
+            RemoveComments(root);
+            // find total posts: /table/tr[1]/td[2]/div[@class="pagenav"]/table[1]/tr[1]/td[1] -- Page 106 of 106
+            HtmlAgilityPack.HtmlNode pageNode = root.SelectSingleNode("//div[@class='pagenav']/table/tbody/tr/td");
+            if (pageNode != null)
+            {
+                string pages = pageNode.InnerText;
+                Match m = Regex.Match(pages, @"Page (\d+) of (\d+)");
+                if (m.Success)
+                {
+                    //Console.WriteLine("{0}/{1}", m.Groups[1].Value, m.Groups[2].Value);
+                    int currentPage = Convert.ToInt32(m.Groups[1].Value);
+                    totalPages = Convert.ToInt32(m.Groups[2].Value);
+                }
+            }
+            // //div[@id='posts']/div/div/div/div/table/tbody/tr[2]
+            // td[1]/div[1] has (id with post #, <a> with user id, user name.)
+            // td[2]/div[1] has title
+            // td[2]/div[2] has post
+            HtmlAgilityPack.HtmlNodeCollection posts = root.SelectNodes("//div[@id='posts']/div/div/div/div/table/tbody/tr[2]/td[2]/div[@class='postbitlinks']");
+            if (posts == null)
+            {
+                return lastPost;
+            }
+            foreach (HtmlAgilityPack.HtmlNode post in posts)
+            {
+                // strip out quotes
+                RemoveQuotes(post);
+                // strip out colors
+                RemoveColors(post);
+                string poster = "";
+                string postNumber = "";
+
+                HtmlAgilityPack.HtmlNode postNumberNode = post.SelectSingleNode("../../../tr[1]/td[2]/a");
+                if (postNumberNode != null)
+                {
+                    postNumber = postNumberNode.InnerText;
+                    lastPost = Convert.ToInt32(postNumber);
+                    if (lastPost < firstPost)
+                    {
+                        continue;
+                    }
+                }
+                HtmlAgilityPack.HtmlNode userNode = post.SelectSingleNode("../../td[1]/div/a[@class='bigusername']");
+                if (userNode != null)
+                {
+                    poster = userNode.InnerText;
+                }
+                if (lastPost == 17828)
+                {
+                    Console.WriteLine(post.InnerHtml);
+                }
+                HtmlAgilityPack.HtmlNodeCollection bolds = post.SelectNodes("child::b");
+                if (bolds != null)
+                {
+                    foreach (HtmlAgilityPack.HtmlNode c in bolds)
+                    {
+                        if (c.InnerText.Trim().Length > 0)
+                        {
+                            //                            Console.WriteLine(String.Format("{0,8}\t{1,25}\t{2}", postNumber, poster, c.InnerHtml));
+                            Console.WriteLine("{0}\t{1}\t{2}", postNumber, poster, c.InnerHtml);
+                            AddVote(poster, new Vote(postNumber, c.InnerHtml));
+                        }
+                    }
+                }
+            }
+            return lastPost;
+        }
         private void WebBrowserPage_DocumentCompleted(object sender, WebBrowserDocumentCompletedEventArgs e)
         {
             if (e.Url.AbsolutePath != WebBrowserPage.Url.AbsolutePath)
             {
                 return;
             }
-            // enumerate post #s, queueing ids as we go
+            string doc = WebBrowserPage.Document.Body.InnerHtml;
+            int totalPages = 0;
+            int lastRead = ParseVotePage(doc, m_startPost, ref totalPages);
+            if (lastRead == 0)
+            {
+                return;
+            }
+            txtLastPost.Text = lastRead.ToString();
+            statusText.Text = "Got post " + lastRead.ToString();
+            m_startPost = lastRead + 1;
             int lastPostThisPage = m_postsPerPage * m_currentPage;
-            for (int i = m_startPost; i <= lastPostThisPage; i++)
+            if (totalPages > m_currentPage)
             {
-                if (m_posts.GetPostByNumber(i) != null)
-                {
-                    continue;
-                }
-                int postId = PostIdFromPostNumber(WebBrowserPage.Document, i);
-                if (postId == 0)
-                {
-                    m_startPost = i;
-                    // Now go get all those posts...
-                    GetNextPost();
-                    return;
-                }
-                Post post = new Post(i, postId);
-                m_posts.AddPost(post);
-                m_IdsToFetch.Enqueue(post);
-            }
-            m_startPost = lastPostThisPage + 1;
-            m_currentPage++;
-            string destination = URLTextBox.Text;
-            destination += "index" + m_currentPage.ToString() + ".html";
+                m_currentPage++;
+                string destination = URLTextBox.Text;
+                destination += "index" + m_currentPage.ToString() + ".html";
 
-            // if we make it to the end, start on next page
-            WebBrowserPage.Navigate(destination);
-            statusText.Text = "Fetching page " + m_currentPage.ToString();
-            OnPostSetChanged();
+                // if we make it to the end, start on next page
+                WebBrowserPage.Navigate(destination);
+                statusText.Text = "Fetching page " + m_currentPage.ToString();
+            }
         }
 
-        private int PostIdFromPostNumber(HtmlDocument doc, int postNumber)
+        class Vote
         {
-            int rc = 0;
-            HtmlElement element = GetElementFromName(doc, postNumber.ToString(), "a");
-            if (element != null)
+            public Vote(string postNumber, string content)
             {
-                // id="postcount24750004"
-                string id = element.GetAttribute("id");
-                if (id.Length >= 9)
+                Ignore = false;
+                Content = content;
+                PostNumber = postNumber;
+            }
+            public string PostNumber
+            {
+                get;
+                private set;
+            }
+            public string Content
+            {
+                get;
+                private set;
+            }
+            public bool Ignore
+            {
+                get;
+                set;
+            }
+        }
+        Dictionary<string, Tuple<LinkedList<Vote>, ListViewItem>> m_PlayerVotes = new Dictionary<string,Tuple<LinkedList<Vote>,ListViewItem>>();
+        void AddVote(string player, Vote vote)
+        {
+            if(!m_PlayerVotes.ContainsKey(player))
+            {
+                LinkedList<Vote> list = new LinkedList<Vote>();
+                ListViewItem item = new ListViewItem(player);
+                item.SubItems.Add(player);
+                item.SubItems.Add("");
+                item.SubItems.Add("");
+                ListViewItem itemInList = listVotes.Items.Add(item);
+                Tuple<LinkedList<Vote>, ListViewItem> t = new Tuple<LinkedList<Vote>,ListViewItem>(list, itemInList);
+                m_PlayerVotes.Add(player, t);
+            }
+            Tuple<LinkedList<Vote>, ListViewItem> tPlayer = m_PlayerVotes[player];
+            if (tPlayer != null)
+            {
+                tPlayer.Item1.AddLast(vote);
+                // visual update
+                tPlayer.Item2.SubItems[1].Text = vote.PostNumber;
+                tPlayer.Item2.SubItems[2].Text = vote.Content;
+            }
+        }
+        public void HideVote(string player)
+        {
+            Tuple<LinkedList<Vote>, ListViewItem> tPlayer = m_PlayerVotes[player];
+            if (tPlayer != null)
+            {
+                LinkedList<Vote> list = tPlayer.Item1;
+                LinkedListNode<Vote> node = list.Last;
+                // find first shown node...
+                while (node != null)
                 {
-                    rc = Convert.ToInt32(id.Substring(9));
+                    if (node.Value.Ignore == false)
+                    {
+                        node.Value.Ignore = true;
+                        break;
+                    }
+                    node = node.Previous;
                 }
-            }
-            return rc;
-        }
-
-        private HtmlElement GetElementFromName(HtmlDocument doc, string name, string tag = "")
-        {
-            HtmlElement rc= null;
-            HtmlElementCollection elements;
-            if(tag == "")
-            {
-                elements = doc.All;
-            }
-            else
-            {
-                elements = doc.GetElementsByTagName(tag);
-            }
-            foreach (HtmlElement element in elements)
-            {
-                string nameElement = element.GetAttribute("name");
-                if (nameElement == name)
+                // now find a node to show
+                while (node != null)
                 {
-                    rc= element;
-                    break;
+                    if (node.Value.Ignore == false)
+                    {
+                        // winner, show this
+                        Vote vote = node.Value;
+                        tPlayer.Item2.SubItems[1].Text = vote.PostNumber;
+                        tPlayer.Item2.SubItems[2].Text = vote.Content;
+                        return;
+                    }
+                    node = node.Previous;
                 }
+                tPlayer.Item2.SubItems[1].Text = "";
+                tPlayer.Item2.SubItems[2].Text = "";
             }
-            return rc;
+        }
+        public void UnhideVote(string player)
+        {
+            Tuple<LinkedList<Vote>, ListViewItem> tPlayer = m_PlayerVotes[player];
+            if (tPlayer != null)
+            {
+                LinkedList<Vote> list = tPlayer.Item1;
+                LinkedListNode<Vote> node = list.Last;
+                // find first shown node...
+                while (node != null)
+                {
+                    if (node.Value.Ignore == false)
+                    {
+                        break;
+                    }
+                    node = node.Previous;
+                }
+                if (node == null)
+                {
+                    node = list.First;
+                }
+                else
+                {
+                    // now back up one.
+                    node = node.Next;
+                }
+                if (node != null)
+                {
+                    // show this guy
+                    node.Value.Ignore = false;
+                    Vote vote = node.Value;
+                    tPlayer.Item2.SubItems[1].Text = vote.PostNumber;
+                    tPlayer.Item2.SubItems[2].Text = vote.Content;
+                }
+                return;
+            }
         }
 
-        private void btnClear_Click(object sender, EventArgs e)
+        private void btnIgnore_Click(object sender, EventArgs e)
         {
-            m_IdsToFetch.Clear();
-            m_posts.Clear();
-        }
-
-        private void BrowserPost_DocumentCompleted(object sender, WebBrowserDocumentCompletedEventArgs e)
-        {
-            if (e.Url.AbsolutePath != BrowserPost.Url.AbsolutePath)
+            if(listVotes.SelectedItems.Count < 1)
             {
                 return;
             }
-            // got the post.
-            if (0 == m_IdsToFetch.Count)
+            ListViewItem item = listVotes.SelectedItems[0];
+            if (item != null)
+            {
+                string player = item.SubItems[0].Text;
+                HideVote(player);
+            }
+        }
+
+        private void btnUnignore_Click(object sender, EventArgs e)
+        {
+            if (listVotes.SelectedItems.Count < 1)
             {
                 return;
             }
-            Post post = m_IdsToFetch.Dequeue();
-            if (post == null)
+            ListViewItem item = listVotes.SelectedItems[0];
+            if (item != null)
             {
-                return;
+                string player = item.SubItems[0].Text;
+                UnhideVote(player);
             }
-            HtmlElement element = BrowserPost.Document.GetElementById("vB_Editor_001_textarea");
-            if (element != null)
-            {
-                post.Content = element.InnerText;
-                txtLastPost.Text = post.Number.ToString();
-                statusText.Text = "Got post " + post.Number.ToString();
-            }
-            else
-            {
-                statusText.Text = "Failure getting post " + post.Number.ToString();
-            }
-            GetNextPost();
+
         }
 
-        private void udPostNumber_ValueChanged(object sender, EventArgs e)
-        {
-            ShowSelectedPost();
-        }
-        private void ShowSelectedPost()
-        {
-            int postNumber = Convert.ToInt32(udPostNumber.Value);
-            Post post = m_posts.FilteredPost(postNumber - 1);
-            if (post != null)
-            {
-                postArea.Text = post.Content;
-                txtPostNumber.Text = post.Number.ToString();
-            }
-            else
-            {
-                txtPostNumber.Text = "-";
-                postArea.Text = "No Data";
-            }
-        }
-
-        private void btnSearch_Click(object sender, EventArgs e)
-        {
-            string search = txtSearch.Text;
-            m_posts.FilterByString(search);
-            udPostNumber.Value = 1;
-            OnPostSetChanged();
-        }
-        private void OnPostSetChanged()
-        {
-            udPostNumber.Minimum = 1;
-            udPostNumber.Maximum = m_posts.Count;
-            txtCountPosts.Text = m_posts.Count.ToString();
-            ShowSelectedPost();
-        }
-    }
-    // This class holds the interesting info about a post.
-    class Post
-    {
-        int m_postNumber;
-        int m_Id;
-        string m_poster;
-        string m_content;
-        public Post(int Number, int Id, string poster = "", string content = "")
-        {
-            m_postNumber = Number;
-            m_Id = Id;
-            m_poster = poster;
-            m_content = content;
-        }
-
-
-        public int Id
-        {
-            get
-            {
-                return m_Id;
-            }
-        }
-        public int Number
-        {
-            get
-            {
-                return m_postNumber;
-            }
-        }
-        public string Poster
-        {
-            get
-            {
-                return m_poster;
-            }
-            set
-            {
-                m_poster = value;
-            }
-        }
-        public string Content
-        {
-            get
-            {
-                return m_content;
-            }
-            set
-            {
-                m_content = value;
-            }
-        }
-        public bool Search(string find)
-        {
-            bool rc = false;
-            int ix = m_content.IndexOf(find, StringComparison.OrdinalIgnoreCase);
-            if (ix > 0)
-            {
-                rc = true;
-            }
-            return rc;
-        }
-    }
-
-    // This class holds all the posts
-    class Posts
-    {
-        Dictionary<int, Post> m_Posts = new Dictionary<int, Post>();
-        List<Post> m_FilteredPosts= new List<Post>();
-        string m_FilterPoster = "";
-        string m_FilterString = "";
-        int m_minPost = 1;
-        int m_maxPost = 0;
-        public void AddPost(Post newPost)
-        {
-            m_Posts[newPost.Id] = newPost;
-            if (newPost.Number < m_minPost)
-            {
-                m_minPost = newPost.Number;
-            }
-            if (newPost.Number > m_maxPost)
-            {
-                m_maxPost = newPost.Number;
-            }
-        }
-        public Post GetPostByNumber(int number)
-        {
-            foreach (Post post in m_Posts.Values)
-            {
-                if (post.Number == number)
-                {
-                    return post;
-                }
-            }
-            return null;
-        }
-        public Post GetPostById(int id)
-        {
-            Post post = m_Posts[id];
-            return post;
-        }
-        public Post FilteredPost(int ix)
-        {
-            if (0 == m_FilteredPosts.Count)
-            {
-                return null;
-            }
-            if ((ix > m_FilteredPosts.Count) || (ix < 0))
-            {
-                return null;
-            }
-            Post rc = m_FilteredPosts[ix];
-            return rc;
-        }
-        public void Clear()
-        {
-            m_Posts.Clear();
-        }
-        public int MinNumber
-        {
-            get
-            {
-                return m_minPost;
-            }
-        }
-        public int MaxNumber
-        {
-            get
-            {
-                return m_maxPost;
-            }
-        }
-        public int Count
-        {
-            get
-            {
-                int rc = m_FilteredPosts.Count;
-                return rc;
-            }
-        }
-        public void ClearFilters()
-        {
-            m_FilteredPosts = new List<Post>(m_Posts.Values);
-        }
-        public void ApplyFilters()
-        {
-            m_FilteredPosts.Clear();
-            if (m_FilterString == "")
-            {
-                if (m_FilterPoster == "") // no filters
-                {
-                    ClearFilters();
-                }
-                else // just filter by poster
-                {
-                    foreach (Post post in m_Posts.Values)
-                    {
-                        if (post.Poster == m_FilterPoster)
-                        {
-                            m_FilteredPosts.Add(post);
-                        }
-                    }
-                }
-            }
-            else
-            {
-                if (m_FilterPoster == "") // filter by search string
-                {
-                    foreach (Post post in m_Posts.Values)
-                    {
-                        if (post.Search(m_FilterString))
-                        {
-                            m_FilteredPosts.Add(post);
-                        }
-                    }
-                }
-                else // have both filters
-                {
-                    foreach (Post post in m_Posts.Values)
-                    {
-                        if (post.Poster == m_FilterPoster)
-                        {
-                            if (post.Search(m_FilterString))
-                            {
-                                m_FilteredPosts.Add(post);
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        public void FilterByPoster(string poster)
-        {
-            m_FilterPoster = poster;
-            ApplyFilters();
-        }
-        public void FilterByString(string search)
-        {
-            m_FilterString = search;
-            ApplyFilters();
-        }
     }
 }
