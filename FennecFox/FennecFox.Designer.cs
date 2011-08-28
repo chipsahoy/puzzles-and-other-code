@@ -100,19 +100,23 @@
             this.listVotes.TabIndex = 14;
             this.listVotes.UseCompatibleStateImageBehavior = false;
             this.listVotes.View = System.Windows.Forms.View.Details;
+            this.listVotes.ColumnClick += new System.Windows.Forms.ColumnClickEventHandler(this.listVotes_ColumnClick);
             // 
             // columnHeader1
             // 
+            this.columnHeader1.Tag = "String";
             this.columnHeader1.Text = "Poster";
             this.columnHeader1.Width = 140;
             // 
             // columnHeader2
             // 
+            this.columnHeader2.Tag = "Numeric";
             this.columnHeader2.Text = "#";
             this.columnHeader2.Width = 50;
             // 
             // columnHeader3
             // 
+            this.columnHeader3.Tag = "String";
             this.columnHeader3.Text = "Bolded";
             this.columnHeader3.Width = 236;
             // 
@@ -173,8 +177,7 @@
             this.URLTextBox.Name = "URLTextBox";
             this.URLTextBox.Size = new System.Drawing.Size(548, 20);
             this.URLTextBox.TabIndex = 1;
-            this.URLTextBox.Text = "http://forumserver.twoplustwo.com/59/puzzles-other-games/newb-free-turbo-1086996/" +
-    "";
+            this.URLTextBox.Text = "\r\n";
             // 
             // btnIgnore
             // 
