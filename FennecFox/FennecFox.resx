@@ -120,6 +120,23 @@
   <metadata name="statusBrowser.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>71, 3</value>
   </metadata>
+  <data name="textBox1.Text" xml:space="preserve">
+    <value>Main Thread URL: The first page of the game thread
+
+Get Em: Retrieves the votes beginning from First Post.
+
+Hide: If someone's vote text is not actually a vote, use this to go back to what they bolded previously.  Highlight the person's name, then click Hide.
+
+Unhide: Opposite of Hide.
+
+Clear: clears current votes.
+
+First Post: Set the 1st post to begin retrieving votes from.  To retrieve from day 2, first Clear votes, then set this to the first post of day 2.
+
+Last Post: This shows what the last retrieved post # was.
+
+Posts/Page: Set this to the # of posts/page used by the gimmick account.  Must match the account's setting.</value>
+  </data>
   <metadata name="$this.TrayHeight" type="System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>25</value>
   </metadata>

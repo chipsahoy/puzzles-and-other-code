@@ -179,6 +179,7 @@ namespace FennecFox
             }
             return lastPost;
         }
+
         private void WebBrowserPage_DocumentCompleted(object sender, WebBrowserDocumentCompletedEventArgs e)
         {
             if (e.Url.AbsolutePath != WebBrowserPage.Url.AbsolutePath)
@@ -381,7 +382,15 @@ namespace FennecFox
             this.listVotes.Sort();
         }
 
+        private void button1_Click(object sender, EventArgs e)
+        {
+            listVotes.Items.Clear();
+            m_PlayerVotes.Clear();
+            m_startPost = 1; // can/will be overridden by user first later
+            txtLastPost.Text = "0";
 
+            statusText.Text = "Cleared votes";
+        }
     }
 
     /// <summary>
