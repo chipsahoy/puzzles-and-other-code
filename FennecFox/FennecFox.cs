@@ -1,87 +1,221 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
+using System.Net;
+using System.Threading;
 using System.Windows.Forms;
 using System.Text.RegularExpressions;
+using Timer = System.Windows.Forms.Timer;
+
 namespace FennecFox
 {
     public partial class FormVoteCounter : Form
     {
-        Timer m_timer = new Timer();
-
         int m_startPost = 1;
         int m_currentPage = 1;
         int m_postsPerPage = 50;
         ListViewColumnSorter lvwColumnSorter;
+        private Thread workerThread;
+
+        private String m_username; // if this changes from what user entered previously, need to logout then re-login with new info.
+
+        ConnectionSettings connectionSettings = new ConnectionSettings();
+
+        private static String BASE_URL = "http://forumserver.twoplustwo.com/";
 
         public FormVoteCounter()
         {
             InitializeComponent();
-            m_timer.Enabled = false;
-            m_timer.Interval = 100;
-            m_timer.Tick += new EventHandler(m_timer_Tick);
 
             lvwColumnSorter = new ListViewColumnSorter();
             this.listVotes.ListViewItemSorter = lvwColumnSorter;
         }
 
-        void m_timer_Tick(object sender, EventArgs e)
-        {
-            m_timer.Enabled = false;
-        }
-
-
         private int PageFromNumber(int number)
         {
-            int ppp = Convert.ToInt32(textPostsPerPage.Text);
-            if (ppp <= 0)
-            {
-                ppp = 50;
-            }
-            int page = (number / ppp) + 1;
-            m_postsPerPage = ppp;
+            int page = (number / m_postsPerPage) + 1;
             return page;
         }
-        private void GoButtonAgain_Click(object sender, EventArgs e)
-        {
-            // find the min post # to search.
-            // Grab that page.
-            int firstPost = m_startPost;
-            int userFirst = Convert.ToInt32(txtFirstPost.Text);
-            if (userFirst > firstPost)
-            {
-                firstPost = userFirst;
-            }
-            if (firstPost <= 0)
-            {
-                firstPost = 1;
-            }
-            m_startPost = firstPost;
 
-            string destination = URLTextBox.Text;
-            int page = PageFromNumber(firstPost);
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="username">username of gimmick account</param>
+        /// <param name="password">password of gimmick account</param>
+        /// <returns></returns>
+        private String DoLogin(String username, String password)
+        {
+            if (m_username != null && username != m_username)
+            {
+                // user switched accounts.  logout first
+                DoLogout();
+            }
+
+            if (username == m_username)
+            {
+                // don't need to do anything, we're already logged in
+                return null;
+            }
+
+            m_username = null;
+            String passToken = SecurityUtils.md5(password);
+
+            connectionSettings.Url = String.Format("{0}login.php?do=login", BASE_URL);
+            connectionSettings.Data =
+                String.Format("vb_login_username={0}&cookieuser=1&vb_login_password=&s=&securitytoken=guest&do=login&vb_login_md5password={1}&vb_login_md5password_utf={1}", username, passToken);
+            String resp = HtmlHelper.PostToUrl(connectionSettings);
+
+            if (resp == null || !resp.Contains("exec_refresh()"))
+            {
+                // login failure
+                return "Error logging in.  Please verify login information.";
+            }
+
+
+            // set posts/page
+            connectionSettings.Url = String.Format("{0}profile.php?do=editoptions", BASE_URL);
+            m_username = username;
+            resp = HtmlHelper.GetUrlResponseString(connectionSettings);
+            if (resp != null)
+            {
+                Match m = Regex.Match(resp, "umaxposts.*?value=\"(-?\\d+)\"[ ](class=\"[A-z0-9]*\")?[ ]*selected=\"selected\"", RegexOptions.Singleline);
+                if (m.Success)
+                {
+                    m_postsPerPage = Int32.Parse(m.Groups[1].Value);
+                    if (m_postsPerPage == -1)
+                    {
+                        m_postsPerPage = 15;
+                    }
+                }
+                else
+                {
+
+                    m_postsPerPage = 100;
+                    return
+                        "Login success, but there was an error setting the posts/page.  Please set your settings to 100 posts/page.";
+                }
+
+            }
+            else
+            {
+                m_postsPerPage = 100;
+                return
+                    "Login success, but there was an error setting the posts/page.  Please set your settings to 100 posts/page.";
+            }
+
+            // logging in sets the cookies in connectionSettings so we don't have to do anything else.
+            return null;
+        }
+
+        private void DoLogout()
+        {
+            // get the page once to find the logout url
+            connectionSettings.Url = BASE_URL;
+            String resp = HtmlHelper.GetUrlResponseString(connectionSettings);
+            Match m = Regex.Match(resp, "logouthash=([A-z0-9-])");
+            if (m.Success)
+            {
+                String hash = m.Groups[1].Value;
+                connectionSettings.Url = String.Format("http://forumserver.twoplustwo.com/login.php?do=logout&amp;logouthash={0}", hash);
+                HtmlHelper.GetUrlResponseString(connectionSettings);
+                connectionSettings.CC = new CookieContainer(); // just in case
+            }
+        }
+
+        private void DoWork()
+        {
+            if (!_shouldStop)
+            {
+                statusText.Text = "Fetching page " + m_currentPage.ToString();
+
+                string doc = HtmlHelper.GetUrlResponseString(connectionSettings);
+                int totalPages = 0;
+                int lastRead = ParseVotePage(doc, m_startPost, ref totalPages);
+                if (lastRead == 0)
+                {
+                    return;
+                }
+
+                m_startPost = lastRead + 1;
+                int lastPostThisPage = m_postsPerPage * m_currentPage;
+                if (totalPages > m_currentPage)
+                {
+                    connectionSettings.Url = GetNextUrl(connectionSettings.Url, m_currentPage + 1);
+                    // if we make it to the end, start on next page
+                    DoWork();
+                    return;
+                }
+            }
+
+            // when we get here, we're all done or aborted.
+            halt();
+        }
+
+        private String GetNextUrl(String destination, Int32 page)
+        {
+            if (destination.EndsWith(".html") || destination.EndsWith(".htm"))
+            {
+                destination = destination.Substring(0, destination.LastIndexOf("index"));
+            }
+
+            if (!destination.EndsWith("/"))
+            {
+                destination += "/";
+            }
+
             m_currentPage = page;
             if (page > 1)
             {
                 destination += "index" + page.ToString() + ".html";
             }
-            if ((WebBrowserPage.Url != null) && (destination == WebBrowserPage.Url.AbsolutePath))
+
+            return destination;
+        }
+
+        private void GoButtonAgain_Click(object sender, EventArgs e)
+        {
+            if (String.IsNullOrWhiteSpace(URLTextBox.Text))
             {
-                WebBrowserRefreshOption opt = WebBrowserRefreshOption.Completely;
-                WebBrowserPage.Refresh(opt);
+                MessageBox.Show(this, "URL cannot be empty.", "Error");
             }
             else
             {
-                WebBrowserPage.Navigate(destination);
-            }
-            statusText.Text = "Fetching page " + m_currentPage.ToString();
-        }
+                StopButton.Enabled = true;
+                GoButton.Enabled = false;
+                _shouldStop = false;
 
+                workerThread = new Thread(DoWork);
+
+                // find the min post # to search.
+                // Grab that page.
+                int firstPost = m_startPost;
+                int userFirst = Convert.ToInt32(txtFirstPost.Text);
+                if (userFirst > firstPost)
+                {
+                    firstPost = userFirst;
+                }
+                if (firstPost <= 0)
+                {
+                    firstPost = 1;
+                }
+                m_startPost = firstPost;
+
+                int page = PageFromNumber(firstPost);
+                string destination = GetNextUrl(URLTextBox.Text.Trim(), page);
+
+                String resp = DoLogin(txtUsername.Text, txtPassword.Text);
+
+                if (resp != null)
+                {
+                    halt();
+                    MessageBox.Show(this, resp, "Failure");
+                    return;
+                }
+
+                connectionSettings.Url = destination;
+
+                workerThread.Start();
+            }
+        }
 
         void RemoveComments(HtmlAgilityPack.HtmlNode node)
         {
@@ -90,6 +224,7 @@ namespace FennecFox
                 n.Remove();
             }
         }
+
         void RemoveQuotes(HtmlAgilityPack.HtmlNode node)
         {
             foreach (var n in node.SelectNodes("div/table/tbody/tr/td[@class='alt2']") ?? new HtmlAgilityPack.HtmlNodeCollection(node))
@@ -98,6 +233,7 @@ namespace FennecFox
                 div.Remove();
             }
         }
+
         void RemoveColors(HtmlAgilityPack.HtmlNode node)
         {
             foreach (var n in node.SelectNodes("//font") ?? new HtmlAgilityPack.HtmlNodeCollection(node))
@@ -114,7 +250,7 @@ namespace FennecFox
             HtmlAgilityPack.HtmlNode root = html.DocumentNode;
             RemoveComments(root);
             // find total posts: /table/tr[1]/td[2]/div[@class="pagenav"]/table[1]/tr[1]/td[1] -- Page 106 of 106
-            HtmlAgilityPack.HtmlNode pageNode = root.SelectSingleNode("//div[@class='pagenav']/table/tbody/tr/td");
+            HtmlAgilityPack.HtmlNode pageNode = root.SelectSingleNode("//div[@class='pagenav']/table/tr/td");
             if (pageNode != null)
             {
                 string pages = pageNode.InnerText;
@@ -126,117 +262,94 @@ namespace FennecFox
                     totalPages = Convert.ToInt32(m.Groups[2].Value);
                 }
             }
+
             // //div[@id='posts']/div/div/div/div/table/tbody/tr[2]
             // td[1]/div[1] has (id with post #, <a> with user id, user name.)
             // td[2]/div[1] has title
             // td[2]/div[2] has post
-            HtmlAgilityPack.HtmlNodeCollection posts = root.SelectNodes("//div[@id='posts']/div/div/div/div/table/tbody/tr[2]/td[2]/div[@class='postbitlinks']");
+            HtmlAgilityPack.HtmlNodeCollection posts = root.SelectNodes("//div[@id='posts']/div/div/div/div/table/tr[2]/td[2]/div[@class='postbitlinks']");
             if (posts == null)
             {
                 return lastPost;
             }
+
             foreach (HtmlAgilityPack.HtmlNode post in posts)
             {
-                // strip out quotes
-                RemoveQuotes(post);
-                // strip out colors
-                RemoveColors(post);
-                string poster = "";
-                string postNumber = "";
+                if (!_shouldStop)
+                {
+                    // strip out quotes
+                    RemoveQuotes(post);
+                    // strip out colors
+                    RemoveColors(post);
+                    string poster = "";
+                    string postNumber = "";
 
-                HtmlAgilityPack.HtmlNode postNumberNode = post.SelectSingleNode("../../../tr[1]/td[2]/a");
-                if (postNumberNode != null)
-                {
-                    postNumber = postNumberNode.InnerText;
-                    lastPost = Convert.ToInt32(postNumber);
-                    if (lastPost < firstPost)
+                    HtmlAgilityPack.HtmlNode postNumberNode = post.SelectSingleNode("../../../tr[1]/td[2]/a");
+                    if (postNumberNode != null)
                     {
-                        continue;
-                    }
-                }
-                HtmlAgilityPack.HtmlNode userNode = post.SelectSingleNode("../../td[1]/div/a[@class='bigusername']");
-                if (userNode != null)
-                {
-                    poster = userNode.InnerText;
-                }
-                if (lastPost == 17828)
-                {
-                    Console.WriteLine(post.InnerHtml);
-                }
-                HtmlAgilityPack.HtmlNodeCollection bolds = post.SelectNodes("child::b");
-                if (bolds != null)
-                {
-                    foreach (HtmlAgilityPack.HtmlNode c in bolds)
-                    {
-                        if (c.InnerText.Trim().Length > 0)
+                        postNumber = postNumberNode.InnerText;
+                        lastPost = Convert.ToInt32(postNumber);
+                        if (lastPost < firstPost)
                         {
-                            //                            Console.WriteLine(String.Format("{0,8}\t{1,25}\t{2}", postNumber, poster, c.InnerHtml));
-                            Console.WriteLine("{0}\t{1}\t{2}", postNumber, poster, c.InnerHtml);
-                            AddVote(poster, new Vote(postNumber, c.InnerHtml));
+                            continue;
                         }
                     }
+
+                    HtmlAgilityPack.HtmlNode userNode = post.SelectSingleNode("../../td[1]/div/a[@class='bigusername']");
+                    if (userNode != null)
+                    {
+                        poster = userNode.InnerText;
+                    }
+                    if (lastPost == 17828)
+                    {
+                        Console.WriteLine(post.InnerHtml);
+                    }
+
+                    HtmlAgilityPack.HtmlNodeCollection bolds = post.SelectNodes("child::b");
+                    if (bolds != null)
+                    {
+                        foreach (HtmlAgilityPack.HtmlNode c in bolds)
+                        {
+                            if (c.InnerText.Trim().Length > 0)
+                            {
+                                //                            Console.WriteLine(String.Format("{0,8}\t{1,25}\t{2}", postNumber, poster, c.InnerHtml));
+                                Console.WriteLine("{0}\t{1}\t{2}", postNumber, poster, c.InnerHtml);
+                                AddVote(poster, new Vote(postNumber, c.InnerHtml));
+                            }
+                        }
+                    }
+
+                    UpdateLastPost(lastPost);
                 }
             }
+
             return lastPost;
         }
 
-        private void WebBrowserPage_DocumentCompleted(object sender, WebBrowserDocumentCompletedEventArgs e)
+        private void UpdateLastPost(Int32 lastPost)
         {
-            if (e.Url.AbsolutePath != WebBrowserPage.Url.AbsolutePath)
+            if (this.InvokeRequired)
             {
+                this.BeginInvoke(new LastPostDelegate(UpdateLastPost), new object[] { lastPost });
                 return;
             }
-            string doc = WebBrowserPage.Document.Body.InnerHtml;
-            int totalPages = 0;
-            int lastRead = ParseVotePage(doc, m_startPost, ref totalPages);
-            if (lastRead == 0)
-            {
-                return;
-            }
-            txtLastPost.Text = lastRead.ToString();
-            statusText.Text = "Got post " + lastRead.ToString();
-            m_startPost = lastRead + 1;
-            int lastPostThisPage = m_postsPerPage * m_currentPage;
-            if (totalPages > m_currentPage)
-            {
-                m_currentPage++;
-                string destination = URLTextBox.Text;
-                destination += "index" + m_currentPage.ToString() + ".html";
 
-                // if we make it to the end, start on next page
-                WebBrowserPage.Navigate(destination);
-                statusText.Text = "Fetching page " + m_currentPage.ToString();
-            }
+            txtLastPost.Text = lastPost.ToString();
+            statusText.Text = "Got post " + lastPost;
         }
 
-        class Vote
-        {
-            public Vote(string postNumber, string content)
-            {
-                Ignore = false;
-                Content = content;
-                PostNumber = postNumber;
-            }
-            public string PostNumber
-            {
-                get;
-                private set;
-            }
-            public string Content
-            {
-                get;
-                private set;
-            }
-            public bool Ignore
-            {
-                get;
-                set;
-            }
-        }
-        Dictionary<string, Tuple<LinkedList<Vote>, ListViewItem>> m_PlayerVotes = new Dictionary<string,Tuple<LinkedList<Vote>,ListViewItem>>();
+        private delegate void LastPostDelegate(Int32 lastPost);
+        private delegate void VoteDelegate(String player, Vote vote);
+        Dictionary<string, Tuple<LinkedList<Vote>, ListViewItem>> m_PlayerVotes = new Dictionary<string, Tuple<LinkedList<Vote>, ListViewItem>>();
         void AddVote(string player, Vote vote)
         {
-            if(!m_PlayerVotes.ContainsKey(player))
+            if (this.InvokeRequired)
+            {
+                this.BeginInvoke(new VoteDelegate(AddVote), new object[] { player, vote });
+                return;
+            }
+
+            if (!m_PlayerVotes.ContainsKey(player))
             {
                 LinkedList<Vote> list = new LinkedList<Vote>();
                 ListViewItem item = new ListViewItem(player);
@@ -244,9 +357,10 @@ namespace FennecFox
                 item.SubItems.Add("0");
                 item.SubItems.Add("");
                 ListViewItem itemInList = listVotes.Items.Add(item);
-                Tuple<LinkedList<Vote>, ListViewItem> t = new Tuple<LinkedList<Vote>,ListViewItem>(list, itemInList);
+                Tuple<LinkedList<Vote>, ListViewItem> t = new Tuple<LinkedList<Vote>, ListViewItem>(list, itemInList);
                 m_PlayerVotes.Add(player, t);
             }
+
             Tuple<LinkedList<Vote>, ListViewItem> tPlayer = m_PlayerVotes[player];
             if (tPlayer != null)
             {
@@ -256,6 +370,7 @@ namespace FennecFox
                 tPlayer.Item2.SubItems[2].Text = vote.Content;
             }
         }
+
         public void HideVote(string player)
         {
             Tuple<LinkedList<Vote>, ListViewItem> tPlayer = m_PlayerVotes[player];
@@ -290,6 +405,7 @@ namespace FennecFox
                 tPlayer.Item2.SubItems[2].Text = "";
             }
         }
+
         public void UnhideVote(string player)
         {
             Tuple<LinkedList<Vote>, ListViewItem> tPlayer = m_PlayerVotes[player];
@@ -329,7 +445,7 @@ namespace FennecFox
 
         private void btnIgnore_Click(object sender, EventArgs e)
         {
-            if(listVotes.SelectedItems.Count < 1)
+            if (listVotes.SelectedItems.Count < 1)
             {
                 return;
             }
@@ -353,7 +469,6 @@ namespace FennecFox
                 string player = item.SubItems[0].Text;
                 UnhideVote(player);
             }
-
         }
 
         private void listVotes_ColumnClick(object sender, ColumnClickEventArgs e)
@@ -391,121 +506,78 @@ namespace FennecFox
 
             statusText.Text = "Cleared votes";
         }
-    }
 
-    /// <summary>
-    /// This class is an implementation of the 'IComparer' interface.
-    /// </summary>
-    public class ListViewColumnSorter : IComparer
-    {
-        /// <summary>
-        /// Specifies the column to be sorted
-        /// </summary>
-        private int ColumnToSort;
-        /// <summary>
-        /// Specifies the order in which to sort (i.e. 'Ascending').
-        /// </summary>
-        private SortOrder OrderOfSort;
-        /// <summary>
-        /// Case insensitive comparer object
-        /// </summary>
-        private CaseInsensitiveComparer ObjectCompare;
-
-        /// <summary>
-        /// Class constructor.  Initializes various elements
-        /// </summary>
-        public ListViewColumnSorter()
+        private volatile bool _shouldStop = false;
+        private void StopButton_Click(object sender, EventArgs e)
         {
-            // Initialize the column to '0'
-            ColumnToSort = 0;
+            _shouldStop = true;
+            workerThread.Join();
 
-            // Initialize the sort order to 'none'
-            OrderOfSort = SortOrder.None;
-
-            // Initialize the CaseInsensitiveComparer object
-            ObjectCompare = new CaseInsensitiveComparer();
+            halt();
         }
 
-        /// <summary>
-        /// This method is inherited from the IComparer interface.  It compares the two objects passed using a case insensitive comparison.
-        /// </summary>
-        /// <param name="x">First object to be compared</param>
-        /// <param name="y">Second object to be compared</param>
-        /// <returns>The result of the comparison. "0" if equal, negative if 'x' is less than 'y' and positive if 'x' is greater than 'y'</returns>
-        public int Compare(object x, object y)
+        private void halt()
         {
-            int compareResult = 0;
-            ListViewItem listviewX, listviewY;
-
-            // Cast the objects to be compared to ListViewItem objects
-            listviewX = (ListViewItem)x;
-            listviewY = (ListViewItem)y;
-
-            // Compare the two items
-            int column = ColumnToSort;
-            if (listviewX.ListView.Columns[column].Tag.ToString() == "Numeric")
+            if (this.InvokeRequired)
             {
-                try
-                {
-                    float fl1 = float.Parse(listviewX.SubItems[column].Text);
-                    float fl2 = float.Parse(listviewY.SubItems[column].Text);
-                    compareResult = ObjectCompare.Compare(fl1, fl2);
-                }
-                catch
-                {
-                }
+                this.BeginInvoke(new MethodInvoker(halt));
+                return;
+            }
+
+            GoButton.Enabled = true;
+            StopButton.Enabled = false;
+        }
+
+        private void btnTestSettings_Click(object sender, EventArgs e)
+        {
+            String resp = DoLogin(txtUsername.Text, txtPassword.Text);
+            if (resp == null)
+            {
+                MessageBox.Show(this, "Login successful.", "Success");
             }
             else
             {
-                compareResult = ObjectCompare.Compare(listviewX.SubItems[column].Text, listviewY.SubItems[column].Text);
-            }
-            // Calculate correct return value based on object comparison
-            if (OrderOfSort == SortOrder.Ascending)
-            {
-                // Ascending sort is selected, return normal result of compare operation
-                return compareResult;
-            }
-            else if (OrderOfSort == SortOrder.Descending)
-            {
-                // Descending sort is selected, return negative result of compare operation
-                return (-compareResult);
-            }
-            else
-            {
-                // Return '0' to indicate they are equal
-                return 0;
+                MessageBox.Show(this, resp, "Failure");
             }
         }
 
-        /// <summary>
-        /// Gets or sets the number of the column to which to apply the sorting operation (Defaults to '0').
-        /// </summary>
-        public int SortColumn
+        private void tabControl_Selecting(object sender, TabControlCancelEventArgs e)
         {
-            set
+            if (e.TabPageIndex == 3 || e.TabPageIndex == 4)
             {
-                ColumnToSort = value;
-            }
-            get
-            {
-                return ColumnToSort;
+                e.Cancel = true;
             }
         }
 
-        /// <summary>
-        /// Gets or sets the order of sorting to apply (for example, 'Ascending' or 'Descending').
-        /// </summary>
-        public SortOrder Order
+        private void mnuHide_Click(object sender, EventArgs e)
         {
-            set
-            {
-                OrderOfSort = value;
-            }
-            get
-            {
-                return OrderOfSort;
-            }
+            btnIgnore_Click(sender, e);
         }
 
+        private void mnuUnhide_Click(object sender, EventArgs e)
+        {
+            btnUnignore_Click(sender, e);
+        }
+
+        private void Form_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            Properties.Settings.Default.username = txtUsername.Text.Trim();
+            Properties.Settings.Default.password = txtPassword.Text.Trim();
+            Properties.Settings.Default.threadUrl = URLTextBox.Text.Trim();
+            Properties.Settings.Default.firstPost = m_startPost;
+            Properties.Settings.Default.postsPerPage = m_postsPerPage;
+
+            Properties.Settings.Default.Save();
+        }
+
+        private void Form_Load(object sender, EventArgs e)
+        {
+            m_startPost = FennecFox.Properties.Settings.Default.firstPost;
+            txtFirstPost.Text = m_startPost.ToString();
+            m_postsPerPage = FennecFox.Properties.Settings.Default.postsPerPage;
+            txtUsername.Text = FennecFox.Properties.Settings.Default.username;
+            txtPassword.Text = FennecFox.Properties.Settings.Default.password;
+            URLTextBox.Text = FennecFox.Properties.Settings.Default.threadUrl;
+        }
     }
 }
