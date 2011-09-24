@@ -49,6 +49,8 @@
             this.button1 = new System.Windows.Forms.Button();
             this.label2 = new System.Windows.Forms.Label();
             this.txtLastPost = new System.Windows.Forms.TextBox();
+            this.btnUnignore = new System.Windows.Forms.Button();
+            this.btnIgnore = new System.Windows.Forms.Button();
             this.statusBrowser = new System.Windows.Forms.StatusStrip();
             this.statusText = new System.Windows.Forms.ToolStripStatusLabel();
             this.tabVotes = new System.Windows.Forms.TabControl();
@@ -88,8 +90,6 @@
             this.label5 = new System.Windows.Forms.Label();
             this.label8 = new System.Windows.Forms.Label();
             this.comboGameTypes = new System.Windows.Forms.ComboBox();
-            this.btnIgnore = new System.Windows.Forms.Button();
-            this.btnUnignore = new System.Windows.Forms.Button();
             this.tabPage4.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
             this.contextMenuStrip1.SuspendLayout();
@@ -175,7 +175,7 @@
             this.listVotes.Name = "listVotes";
             this.listVotes.Size = new System.Drawing.Size(516, 448);
             this.listVotes.Sorting = System.Windows.Forms.SortOrder.Ascending;
-            this.listVotes.TabIndex = 19;
+            this.listVotes.TabIndex = 7;
             this.listVotes.UseCompatibleStateImageBehavior = false;
             this.listVotes.View = System.Windows.Forms.View.Details;
             // 
@@ -252,10 +252,10 @@
             // 
             this.GoButton.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left)));
-            this.GoButton.Location = new System.Drawing.Point(309, 29);
+            this.GoButton.Location = new System.Drawing.Point(280, 29);
             this.GoButton.Name = "GoButton";
             this.GoButton.Size = new System.Drawing.Size(56, 23);
-            this.GoButton.TabIndex = 3;
+            this.GoButton.TabIndex = 4;
             this.GoButton.Text = "Get Em";
             this.GoButton.UseVisualStyleBackColor = true;
             this.GoButton.Click += new System.EventHandler(this.GoButtonAgain_Click);
@@ -277,7 +277,7 @@
             this.txtFirstPost.Location = new System.Drawing.Point(59, 30);
             this.txtFirstPost.Name = "txtFirstPost";
             this.txtFirstPost.Size = new System.Drawing.Size(70, 20);
-            this.txtFirstPost.TabIndex = 4;
+            this.txtFirstPost.TabIndex = 2;
             this.txtFirstPost.Text = "1";
             // 
             // StopButton
@@ -285,20 +285,20 @@
             this.StopButton.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left)));
             this.StopButton.Enabled = false;
-            this.StopButton.Location = new System.Drawing.Point(371, 29);
+            this.StopButton.Location = new System.Drawing.Point(342, 29);
             this.StopButton.Name = "StopButton";
             this.StopButton.Size = new System.Drawing.Size(58, 23);
-            this.StopButton.TabIndex = 18;
+            this.StopButton.TabIndex = 5;
             this.StopButton.Text = "Stop";
             this.StopButton.UseVisualStyleBackColor = true;
             this.StopButton.Click += new System.EventHandler(this.StopButton_Click);
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(435, 29);
+            this.button1.Location = new System.Drawing.Point(406, 29);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(75, 23);
-            this.button1.TabIndex = 16;
+            this.button1.TabIndex = 6;
             this.button1.Text = "Clear";
             this.button1.UseVisualStyleBackColor = true;
             this.button1.Click += new System.EventHandler(this.button1_Click);
@@ -320,8 +320,29 @@
             this.txtLastPost.Name = "txtLastPost";
             this.txtLastPost.ReadOnly = true;
             this.txtLastPost.Size = new System.Drawing.Size(70, 20);
-            this.txtLastPost.TabIndex = 5;
+            this.txtLastPost.TabIndex = 3;
+            this.txtLastPost.TabStop = false;
             this.txtLastPost.Text = "0";
+            // 
+            // btnUnignore
+            // 
+            this.btnUnignore.Location = new System.Drawing.Point(59, 532);
+            this.btnUnignore.Name = "btnUnignore";
+            this.btnUnignore.Size = new System.Drawing.Size(58, 23);
+            this.btnUnignore.TabIndex = 15;
+            this.btnUnignore.Text = "Unhide";
+            this.btnUnignore.UseVisualStyleBackColor = true;
+            this.btnUnignore.Click += new System.EventHandler(this.btnUnignore_Click);
+            // 
+            // btnIgnore
+            // 
+            this.btnIgnore.Location = new System.Drawing.Point(3, 532);
+            this.btnIgnore.Name = "btnIgnore";
+            this.btnIgnore.Size = new System.Drawing.Size(47, 23);
+            this.btnIgnore.TabIndex = 10;
+            this.btnIgnore.Text = "Hide";
+            this.btnIgnore.UseVisualStyleBackColor = true;
+            this.btnIgnore.Click += new System.EventHandler(this.btnIgnore_Click);
             // 
             // statusBrowser
             // 
@@ -371,7 +392,7 @@
             this.btnTestSettings.Location = new System.Drawing.Point(21, 111);
             this.btnTestSettings.Name = "btnTestSettings";
             this.btnTestSettings.Size = new System.Drawing.Size(75, 23);
-            this.btnTestSettings.TabIndex = 1;
+            this.btnTestSettings.TabIndex = 3;
             this.btnTestSettings.Text = "Test Login";
             this.btnTestSettings.UseVisualStyleBackColor = true;
             this.btnTestSettings.Click += new System.EventHandler(this.btnTestSettings_Click);
@@ -421,7 +442,7 @@
             this.txtPassword.Location = new System.Drawing.Point(82, 29);
             this.txtPassword.Name = "txtPassword";
             this.txtPassword.Size = new System.Drawing.Size(196, 20);
-            this.txtPassword.TabIndex = 12;
+            this.txtPassword.TabIndex = 2;
             // 
             // txtUsername
             // 
@@ -429,7 +450,7 @@
             this.txtUsername.Location = new System.Drawing.Point(82, 3);
             this.txtUsername.Name = "txtUsername";
             this.txtUsername.Size = new System.Drawing.Size(196, 20);
-            this.txtUsername.TabIndex = 13;
+            this.txtUsername.TabIndex = 1;
             // 
             // tabPage1
             // 
@@ -744,26 +765,6 @@
             this.comboGameTypes.Name = "comboGameTypes";
             this.comboGameTypes.Size = new System.Drawing.Size(121, 21);
             this.comboGameTypes.TabIndex = 1;
-            // 
-            // btnIgnore
-            // 
-            this.btnIgnore.Location = new System.Drawing.Point(3, 532);
-            this.btnIgnore.Name = "btnIgnore";
-            this.btnIgnore.Size = new System.Drawing.Size(47, 23);
-            this.btnIgnore.TabIndex = 10;
-            this.btnIgnore.Text = "Hide";
-            this.btnIgnore.UseVisualStyleBackColor = true;
-            this.btnIgnore.Click += new System.EventHandler(this.btnIgnore_Click);
-            // 
-            // btnUnignore
-            // 
-            this.btnUnignore.Location = new System.Drawing.Point(59, 532);
-            this.btnUnignore.Name = "btnUnignore";
-            this.btnUnignore.Size = new System.Drawing.Size(58, 23);
-            this.btnUnignore.TabIndex = 15;
-            this.btnUnignore.Text = "Unhide";
-            this.btnUnignore.UseVisualStyleBackColor = true;
-            this.btnUnignore.Click += new System.EventHandler(this.btnUnignore_Click);
             // 
             // FormVoteCounter
             // 
