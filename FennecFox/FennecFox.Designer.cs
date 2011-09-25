@@ -36,7 +36,6 @@
             this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader3 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.columnHeader4 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.mnuHide = new System.Windows.Forms.ToolStripMenuItem();
             this.mnuUnhide = new System.Windows.Forms.ToolStripMenuItem();
@@ -164,8 +163,7 @@
             this.listVotes.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.columnHeader1,
             this.columnHeader2,
-            this.columnHeader3,
-            this.columnHeader4});
+            this.columnHeader3});
             this.tableLayoutPanel1.SetColumnSpan(this.listVotes, 11);
             this.listVotes.ContextMenuStrip = this.contextMenuStrip1;
             this.listVotes.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -178,6 +176,7 @@
             this.listVotes.TabIndex = 7;
             this.listVotes.UseCompatibleStateImageBehavior = false;
             this.listVotes.View = System.Windows.Forms.View.Details;
+            this.listVotes.ColumnClick += new System.Windows.Forms.ColumnClickEventHandler(this.listVotes_ColumnClick);
             // 
             // columnHeader1
             // 
@@ -196,10 +195,6 @@
             this.columnHeader3.Tag = "String";
             this.columnHeader3.Text = "Bolded";
             this.columnHeader3.Width = 236;
-            // 
-            // columnHeader4
-            // 
-            this.columnHeader4.Text = "Vote";
             // 
             // contextMenuStrip1
             // 
@@ -246,7 +241,6 @@
             this.URLTextBox.Name = "URLTextBox";
             this.URLTextBox.Size = new System.Drawing.Size(384, 20);
             this.URLTextBox.TabIndex = 1;
-            this.URLTextBox.Text = "\r\n";
             // 
             // GoButton
             // 
@@ -830,7 +824,6 @@
         private System.Windows.Forms.TabPage tabPage2;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
         private System.Windows.Forms.TabPage tabPage3;
-        private System.Windows.Forms.ColumnHeader columnHeader4;
         private System.Windows.Forms.TabPage tabPage5;
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel3;
