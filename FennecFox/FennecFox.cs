@@ -1,6 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
+using System.ComponentModel;
+using System.Linq;
 using System.Net;
+using System.Text;
 using System.Threading;
 using System.Windows.Forms;
 using System.Text.RegularExpressions;
@@ -10,10 +14,27 @@ namespace FennecFox
 {
     public partial class FormVoteCounter : Form
     {
+        public String[] Players
+        {
+            get
+            {
+                return txtPlayers.Text.Split(
+                    new char[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries)
+                    .Select(p => p.Trim())
+                    .Distinct()
+                    .ToArray();
+            }
+        }
+        /*
+        private Dictionary<String, String> mappings = new Dictionary<string, string>();
+        public Dictionary<String, String> Mappings
+        {
+            get { return mappings; }
+        }*/
+
         int m_startPost = 1;
         int m_currentPage = 1;
         int m_postsPerPage = 50;
-        ListViewColumnSorter lvwColumnSorter;
         private Thread workerThread;
 
         private String m_username; // if this changes from what user entered previously, need to logout then re-login with new info.
@@ -26,8 +47,7 @@ namespace FennecFox
         {
             InitializeComponent();
 
-            lvwColumnSorter = new ListViewColumnSorter();
-            this.listVotes.ListViewItemSorter = lvwColumnSorter;
+            grdVotes.Columns[1].ValueType = typeof(Int32);
         }
 
         private int PageFromNumber(int number)
@@ -282,12 +302,12 @@ namespace FennecFox
                     // strip out colors
                     RemoveColors(post);
                     string poster = "";
-                    string postNumber = "";
+                    Int32 postNumber = 0;
 
                     HtmlAgilityPack.HtmlNode postNumberNode = post.SelectSingleNode("../../../tr[1]/td[2]/a");
                     if (postNumberNode != null)
                     {
-                        postNumber = postNumberNode.InnerText;
+                        postNumber = Int32.Parse(postNumberNode.InnerText);
                         lastPost = Convert.ToInt32(postNumber);
                         if (lastPost < firstPost)
                         {
@@ -305,21 +325,25 @@ namespace FennecFox
                         Console.WriteLine(post.InnerHtml);
                     }
 
-                    HtmlAgilityPack.HtmlNodeCollection bolds = post.SelectNodes("child::b");
-                    if (bolds != null)
+                    if (txtModerator.Text != poster)
                     {
-                        foreach (HtmlAgilityPack.HtmlNode c in bolds)
+                        HtmlAgilityPack.HtmlNodeCollection bolds = post.SelectNodes("child::b");
+                        if (bolds != null)
                         {
-                            if (c.InnerText.Trim().Length > 0)
+                            foreach (HtmlAgilityPack.HtmlNode c in bolds)
                             {
-                                //                            Console.WriteLine(String.Format("{0,8}\t{1,25}\t{2}", postNumber, poster, c.InnerHtml));
-                                Console.WriteLine("{0}\t{1}\t{2}", postNumber, poster, c.InnerHtml);
-                                AddVote(poster, new Vote(postNumber, c.InnerHtml));
+                                if (c.InnerText.Trim().Length > 0)
+                                {
+                                    //                            Console.WriteLine(String.Format("{0,8}\t{1,25}\t{2}", postNumber, poster, c.InnerHtml));
+                                    Console.WriteLine("{0}\t{1}\t{2}", postNumber, poster, c.InnerHtml);
+                                    AddVote(poster, new Vote(postNumber, c.InnerHtml));
+                                }
                             }
                         }
                     }
 
                     UpdateLastPost(lastPost);
+                    GenerateTable();
                 }
             }
 
@@ -330,7 +354,7 @@ namespace FennecFox
         {
             if (this.InvokeRequired)
             {
-                this.BeginInvoke(new LastPostDelegate(UpdateLastPost), new object[] { lastPost });
+                this.Invoke(new LastPostDelegate(UpdateLastPost), new object[] { lastPost });
                 return;
             }
 
@@ -340,40 +364,96 @@ namespace FennecFox
 
         private delegate void LastPostDelegate(Int32 lastPost);
         private delegate void VoteDelegate(String player, Vote vote);
-        Dictionary<string, Tuple<LinkedList<Vote>, ListViewItem>> m_PlayerVotes = new Dictionary<string, Tuple<LinkedList<Vote>, ListViewItem>>();
+        Dictionary<string, Tuple<LinkedList<Vote>, DataGridViewRow>> m_PlayerVotes = new Dictionary<string, Tuple<LinkedList<Vote>, DataGridViewRow>>();
         void AddVote(string player, Vote vote)
         {
             if (this.InvokeRequired)
             {
-                this.BeginInvoke(new VoteDelegate(AddVote), new object[] { player, vote });
+                this.Invoke(new VoteDelegate(AddVote), new object[] { player, vote });
                 return;
             }
 
             if (!m_PlayerVotes.ContainsKey(player))
             {
                 LinkedList<Vote> list = new LinkedList<Vote>();
+
+                /*
                 ListViewItem item = new ListViewItem(player);
                 item.SubItems.Add(player);
                 item.SubItems.Add("0");
                 item.SubItems.Add("");
                 ListViewItem itemInList = listVotes.Items.Add(item);
-                Tuple<LinkedList<Vote>, ListViewItem> t = new Tuple<LinkedList<Vote>, ListViewItem>(list, itemInList);
+                 * */
+
+                Int32 index = grdVotes.Rows.Add(MakeNewRow(player));
+
+                Tuple<LinkedList<Vote>, DataGridViewRow> t = new Tuple<LinkedList<Vote>, DataGridViewRow>(list, grdVotes.Rows[index]);
                 m_PlayerVotes.Add(player, t);
             }
 
-            Tuple<LinkedList<Vote>, ListViewItem> tPlayer = m_PlayerVotes[player];
+            Tuple<LinkedList<Vote>, DataGridViewRow> tPlayer = m_PlayerVotes[player];
             if (tPlayer != null)
             {
                 tPlayer.Item1.AddLast(vote);
                 // visual update
-                tPlayer.Item2.SubItems[1].Text = vote.PostNumber;
-                tPlayer.Item2.SubItems[2].Text = vote.Content;
+                tPlayer.Item2.Cells[1].Value = vote.PostNumber;
+                tPlayer.Item2.Cells[2].Value = vote.Content;
+            }
+
+            if (grdVotes.SortedColumn != null)
+            {
+                if (grdVotes.SortOrder == SortOrder.Descending)
+                {
+                    grdVotes.Sort(grdVotes.SortedColumn, ListSortDirection.Descending);
+                }
+                else
+                {
+                    grdVotes.Sort(grdVotes.SortedColumn, ListSortDirection.Ascending);
+                }
+            }
+            else
+            {
+                grdVotes.Sort(grdVotes.Columns[0], ListSortDirection.Ascending);
+            }
+        }
+
+        private DataGridViewRow MakeNewRow(String player)
+        {
+            var toRet = new DataGridViewRow();
+            toRet.Cells.Add(new DataGridViewTextBoxCell());
+            toRet.Cells.Add(new DataGridViewTextBoxCell());
+            toRet.Cells.Add(new DataGridViewTextBoxCell());
+            DataGridViewComboBoxCell c = new DataGridViewComboBoxCell();
+            SetComboRange(c);
+            toRet.Cells.Add(c);
+
+            toRet.Cells[0].Value = player;
+            toRet.Cells[1].Value = 0;
+            toRet.Cells[1].ValueType = typeof(Int32);
+            toRet.Cells[2].Value = "";
+
+            return toRet;
+        }
+
+        private void SetComboRange(DataGridViewComboBoxCell cell)
+        {
+            object v = cell.Value;
+            cell.Items.Clear();
+            cell.Items.Add("--Select Player--");
+            cell.Items.AddRange(Players);
+            if (v != null && cell.Items.Contains(v))
+            {
+                cell.Value = v;
+            }
+            else
+            {
+                cell.Value = cell.Items[0];
             }
         }
 
         public void HideVote(string player)
         {
-            Tuple<LinkedList<Vote>, ListViewItem> tPlayer = m_PlayerVotes[player];
+            Tuple<LinkedList<Vote>, DataGridViewRow> tPlayer = m_PlayerVotes[player];
             if (tPlayer != null)
             {
                 LinkedList<Vote> list = tPlayer.Item1;
@@ -395,20 +475,20 @@ namespace FennecFox
                     {
                         // winner, show this
                         Vote vote = node.Value;
-                        tPlayer.Item2.SubItems[1].Text = vote.PostNumber;
-                        tPlayer.Item2.SubItems[2].Text = vote.Content;
+                        tPlayer.Item2.Cells[1].Value = vote.PostNumber;
+                        tPlayer.Item2.Cells[2].Value = vote.Content;
                         return;
                     }
                     node = node.Previous;
                 }
-                tPlayer.Item2.SubItems[1].Text = "0";
-                tPlayer.Item2.SubItems[2].Text = "";
+                tPlayer.Item2.Cells[1].Value = "0";
+                tPlayer.Item2.Cells[2].Value = "";
             }
         }
 
         public void UnhideVote(string player)
         {
-            Tuple<LinkedList<Vote>, ListViewItem> tPlayer = m_PlayerVotes[player];
+            Tuple<LinkedList<Vote>, DataGridViewRow> tPlayer = m_PlayerVotes[player];
             if (tPlayer != null)
             {
                 LinkedList<Vote> list = tPlayer.Item1;
@@ -436,8 +516,8 @@ namespace FennecFox
                     // show this guy
                     node.Value.Ignore = false;
                     Vote vote = node.Value;
-                    tPlayer.Item2.SubItems[1].Text = vote.PostNumber;
-                    tPlayer.Item2.SubItems[2].Text = vote.Content;
+                    tPlayer.Item2.Cells[1].Value = vote.PostNumber;
+                    tPlayer.Item2.Cells[2].Value = vote.Content;
                 }
                 return;
             }
@@ -445,61 +525,36 @@ namespace FennecFox
 
         private void btnIgnore_Click(object sender, EventArgs e)
         {
-            if (listVotes.SelectedItems.Count < 1)
+            if (grdVotes.SelectedRows.Count < 1)
             {
                 return;
             }
-            ListViewItem item = listVotes.SelectedItems[0];
+
+            DataGridViewRow item = grdVotes.SelectedRows[0];
             if (item != null)
             {
-                string player = item.SubItems[0].Text;
+                var player = (String)item.Cells[0].Value;
                 HideVote(player);
             }
         }
 
         private void btnUnignore_Click(object sender, EventArgs e)
         {
-            if (listVotes.SelectedItems.Count < 1)
+            if (grdVotes.SelectedRows.Count < 1)
             {
                 return;
             }
-            ListViewItem item = listVotes.SelectedItems[0];
+            DataGridViewRow item = grdVotes.SelectedRows[0];
             if (item != null)
             {
-                string player = item.SubItems[0].Text;
+                string player = (String)item.Cells[0].Value;
                 UnhideVote(player);
             }
         }
 
-        private void listVotes_ColumnClick(object sender, ColumnClickEventArgs e)
-        {
-            // Determine if clicked column is already the column that is being sorted.
-            if (e.Column == lvwColumnSorter.SortColumn)
-            {
-                // Reverse the current sort direction for this column.
-                if (lvwColumnSorter.Order == SortOrder.Ascending)
-                {
-                    lvwColumnSorter.Order = SortOrder.Descending;
-                }
-                else
-                {
-                    lvwColumnSorter.Order = SortOrder.Ascending;
-                }
-            }
-            else
-            {
-                // Set the column number that is to be sorted; default to ascending.
-                lvwColumnSorter.SortColumn = e.Column;
-                lvwColumnSorter.Order = SortOrder.Ascending;
-            }
-
-            // Perform the sort with these new sort options.
-            this.listVotes.Sort();
-        }
-
         private void button1_Click(object sender, EventArgs e)
         {
-            listVotes.Items.Clear();
+            grdVotes.Rows.Clear();
             m_PlayerVotes.Clear();
             m_startPost = 1; // can/will be overridden by user first later
             txtLastPost.Text = "0";
@@ -520,7 +575,7 @@ namespace FennecFox
         {
             if (this.InvokeRequired)
             {
-                this.BeginInvoke(new MethodInvoker(halt));
+                this.Invoke(new MethodInvoker(halt));
                 return;
             }
 
@@ -543,7 +598,7 @@ namespace FennecFox
 
         private void tabControl_Selecting(object sender, TabControlCancelEventArgs e)
         {
-            if (e.TabPageIndex == 3 || e.TabPageIndex == 4)
+            if (/*e.TabPageIndex == 3 || */e.TabPageIndex == 4)
             {
                 e.Cancel = true;
             }
@@ -566,18 +621,171 @@ namespace FennecFox
             Properties.Settings.Default.threadUrl = URLTextBox.Text.Trim();
             Properties.Settings.Default.firstPost = m_startPost;
             Properties.Settings.Default.postsPerPage = m_postsPerPage;
+            Properties.Settings.Default.Players = new StringCollection();
+            Properties.Settings.Default.Players.AddRange(Players);
+            Properties.Settings.Default.Moderator = txtModerator.Text;
+            Properties.Settings.Default.EndOfDay = dtEOD.Value;
 
             Properties.Settings.Default.Save();
         }
 
         private void Form_Load(object sender, EventArgs e)
         {
+            if (FennecFox.Properties.Settings.Default.Mappings == null)
+            {
+                FennecFox.Properties.Settings.Default.Mappings = new StringDictionary();
+            }
+
+            if (FennecFox.Properties.Settings.Default.Players == null)
+            {
+                FennecFox.Properties.Settings.Default.Players = new StringCollection();
+            }
+
             m_startPost = FennecFox.Properties.Settings.Default.firstPost;
             txtFirstPost.Text = m_startPost.ToString();
             m_postsPerPage = FennecFox.Properties.Settings.Default.postsPerPage;
             txtUsername.Text = FennecFox.Properties.Settings.Default.username;
             txtPassword.Text = FennecFox.Properties.Settings.Default.password;
             URLTextBox.Text = FennecFox.Properties.Settings.Default.threadUrl;
+            String[] tmp = new string[FennecFox.Properties.Settings.Default.Players.Count];
+            FennecFox.Properties.Settings.Default.Players.CopyTo(tmp, 0);
+            txtModerator.Text = FennecFox.Properties.Settings.Default.Moderator;
+            txtPlayers.Lines = tmp;
+            dtEOD.Value = FennecFox.Properties.Settings.Default.EndOfDay;
+        }
+
+        private void txtPlayers_TextChanged(object sender, EventArgs e)
+        {
+            foreach (DataGridViewRow row in grdVotes.Rows)
+            {
+                DataGridViewComboBoxCell cell = (DataGridViewComboBoxCell)row.Cells[3];
+                SetComboRange(cell);
+            }
+        }
+
+        private void grdVotes_CellValueChanged(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.RowIndex >= 0)
+            {
+                var vote = ((String)grdVotes[2, e.RowIndex].Value).ToLower().Replace(" ", "");
+                if (vote.StartsWith("vote:"))
+                {
+                    vote = vote.Substring(5).Trim();
+                }
+
+                if (vote.StartsWith("vote"))
+                {
+                    vote = vote.Substring(4).Trim();
+                }
+
+                if (e.ColumnIndex == 2)
+                {
+                    if (String.IsNullOrWhiteSpace(vote) || vote == "unvote")
+                    {
+                        grdVotes[3, e.RowIndex].Value = ((DataGridViewComboBoxCell)grdVotes[3, e.RowIndex]).Items[0];
+                    }
+                    else
+                    {
+                        var player = Players.FirstOrDefault(p => p.ToLower().Replace(" ", "") == vote || p.ToLower().Replace(" ", "").StartsWith(vote));
+                        if (player != null)
+                        {
+                            grdVotes[3, e.RowIndex].Value = player;
+                        }
+                        else
+                        {
+                            // check if there is a mapping defined for this vote => player
+                            if (FennecFox.Properties.Settings.Default.Mappings.ContainsKey(vote))
+                            {
+                                player =
+                                    Players.FirstOrDefault(
+                                        p => p == FennecFox.Properties.Settings.Default.Mappings[vote]);
+                                if (player != null)
+                                {
+                                    grdVotes[3, e.RowIndex].Value = player;
+                                }
+                            }
+                        }
+                    }
+                }
+                else if (e.ColumnIndex == 3)
+                {
+                    FennecFox.Properties.Settings.Default.Mappings[vote] = (String)grdVotes[3, e.RowIndex].Value;
+                }
+
+                if (e.ColumnIndex == 2 || e.ColumnIndex == 3)
+                {
+                    GenerateTable();
+                }
+            }
+        }
+
+        private void GenerateTable()
+        {
+            StringBuilder sb = new StringBuilder(@"[b]As of #");
+            sb
+                .Append(txtLastPost.Text)
+                .AppendLine().AppendLine()
+                .AppendFormat("Night in {0}", (dtEOD.Value.TimeOfDay - DateTime.Now.TimeOfDay).ToString(@"h\:mm"))
+                .AppendLine("[/b]").AppendLine()
+                .AppendLine("[table=head][b]#[/b] | [b]Player[/b] | [b]votes for[/b]");
+
+            // get current votes for each player
+            var voteCountDict = new Dictionary<String, Int32>();
+            var voteDict = new Dictionary<String, String>();
+            var playerMap = new Dictionary<String, String>();
+
+            // for each LIVE player (todo)
+            foreach (var player in Players)
+            {
+                voteCountDict.Add(player.ToLower(), 0);
+                voteDict.Add(player.ToLower(), "");
+                playerMap.Add(player.ToLower(), player);
+            }
+
+            foreach (DataGridViewRow row in grdVotes.Rows)
+            {
+                var voted = (String)row.Cells[3].Value;
+                if (voteCountDict.ContainsKey(voted.ToLower()) && voteDict.ContainsKey(((String)row.Cells[0].Value).ToLower()))
+                {
+                    voteCountDict[voted.ToLower()] += 1;
+                }
+
+                if (voteDict.ContainsKey(((String)row.Cells[0].Value).ToLower()))
+                {
+                    voteDict[((String)row.Cells[0].Value).ToLower()] =
+                        (row.Cells[3].Value == ((DataGridViewComboBoxCell)row.Cells[3]).Items[0])
+                            ? ""
+                            : (String)row.Cells[3].Value;
+                }
+            }
+
+            // now sort by descending value
+            var sortedDict =
+                (from entry in voteCountDict orderby entry.Value descending select entry).ToDictionary(pair => pair.Key,
+                                                                                                  pair => pair.Value);
+
+            foreach (KeyValuePair<String, Int32> pair in sortedDict)
+            {
+                sb
+                    .AppendFormat("{0} | {1} | [color='red']{2}[/color]", pair.Value, playerMap[pair.Key], voteDict[pair.Key])
+                    .AppendLine();
+            }
+
+            sb.Append("[/table]");
+
+            this.Invoke(new PostTableDelegate(PostTable), new object[] { sb });
+        }
+
+        private delegate void PostTableDelegate(StringBuilder sb);
+        private void PostTable(StringBuilder sb)
+        {
+            txtPostTable.Text = sb.ToString();
+        }
+
+        private void txtPostTable_Click(object sender, EventArgs e)
+        {
+            txtPostTable.SelectAll();
+            Clipboard.SetDataObject(txtPostTable.Text, false);
         }
     }
 }

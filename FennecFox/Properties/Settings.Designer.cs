@@ -8,6 +8,8 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
+using System.Configuration;
+
 namespace FennecFox.Properties {
     
     
@@ -80,6 +82,53 @@ namespace FennecFox.Properties {
             }
             set {
                 this["threadUrl"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [SettingsSerializeAs(SettingsSerializeAs.Binary)]
+        public global::System.Collections.Specialized.StringDictionary Mappings {
+            get {
+                return ((global::System.Collections.Specialized.StringDictionary)(this["Mappings"]));
+            }
+            set {
+                this["Mappings"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        public global::System.Collections.Specialized.StringCollection Players {
+            get {
+                return ((global::System.Collections.Specialized.StringCollection)(this["Players"]));
+            }
+            set {
+                this["Players"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("YourNameHere")]
+        public string Moderator {
+            get {
+                return ((string)(this["Moderator"]));
+            }
+            set {
+                this["Moderator"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("09/29/2011 19:00:00")]
+        public global::System.DateTime EndOfDay {
+            get {
+                return ((global::System.DateTime)(this["EndOfDay"]));
+            }
+            set {
+                this["EndOfDay"] = value;
             }
         }
     }

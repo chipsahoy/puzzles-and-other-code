@@ -17,5 +17,17 @@
     <Setting Name="threadUrl" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
+    <Setting Name="Mappings" Type="System.Collections.Specialized.StringDictionary" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="Players" Type="System.Collections.Specialized.StringCollection" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="Moderator" Type="System.String" Scope="User">
+      <Value Profile="(Default)">YourNameHere</Value>
+    </Setting>
+    <Setting Name="EndOfDay" Type="System.DateTime" Scope="User">
+      <Value Profile="(Default)">09/29/2011 19:00:00</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

@@ -1,16 +1,18 @@
 ﻿
 
+using System;
+
 namespace FennecFox
 {
     public class Vote
     {
-        public Vote(string postNumber, string content)
+        public Vote(Int32 postNumber, string content)
         {
             Ignore = false;
             Content = content;
             PostNumber = postNumber;
         }
-        public string PostNumber
+        public Int32 PostNumber
         {
             get;
             private set;
