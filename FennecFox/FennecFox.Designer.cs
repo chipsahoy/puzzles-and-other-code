@@ -44,11 +44,18 @@
             this.btnUnignore = new System.Windows.Forms.Button();
             this.btnIgnore = new System.Windows.Forms.Button();
             this.grdVotes = new System.Windows.Forms.DataGridView();
-            this.statusBrowser = new System.Windows.Forms.StatusStrip();
-            this.statusText = new System.Windows.Forms.ToolStripStatusLabel();
+            this.colPlayer = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colPost = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colBolded = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colComboVote = new System.Windows.Forms.DataGridViewComboBoxColumn();
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.mnuHide = new System.Windows.Forms.ToolStripMenuItem();
             this.mnuUnhide = new System.Windows.Forms.ToolStripMenuItem();
+            this.txtPostTable = new System.Windows.Forms.TextBox();
+            this.dtEOD = new System.Windows.Forms.DateTimePicker();
+            this.label18 = new System.Windows.Forms.Label();
+            this.statusBrowser = new System.Windows.Forms.StatusStrip();
+            this.statusText = new System.Windows.Forms.ToolStripStatusLabel();
             this.tabVotes = new System.Windows.Forms.TabControl();
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.btnTestSettings = new System.Windows.Forms.Button();
@@ -68,11 +75,6 @@
             this.checkBox4 = new System.Windows.Forms.CheckBox();
             this.checkBox3 = new System.Windows.Forms.CheckBox();
             this.checkBox2 = new System.Windows.Forms.CheckBox();
-            this.label14 = new System.Windows.Forms.Label();
-            this.label13 = new System.Windows.Forms.Label();
-            this.numTurboDayNLength = new System.Windows.Forms.NumericUpDown();
-            this.numTurboDay1Length = new System.Windows.Forms.NumericUpDown();
-            this.checkBox1 = new System.Windows.Forms.CheckBox();
             this.label12 = new System.Windows.Forms.Label();
             this.label11 = new System.Windows.Forms.Label();
             this.dateTimePicker2 = new System.Windows.Forms.DateTimePicker();
@@ -90,32 +92,33 @@
             this.label5 = new System.Windows.Forms.Label();
             this.label8 = new System.Windows.Forms.Label();
             this.comboGameTypes = new System.Windows.Forms.ComboBox();
-            this.colPlayer = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.colPost = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.colBolded = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.colComboVote = new System.Windows.Forms.DataGridViewComboBoxColumn();
-            this.txtPostTable = new System.Windows.Forms.TextBox();
-            this.dtEOD = new System.Windows.Forms.DateTimePicker();
-            this.label18 = new System.Windows.Forms.Label();
+            this.chkTurboDay1 = new System.Windows.Forms.CheckBox();
+            this.label14 = new System.Windows.Forms.Label();
+            this.label13 = new System.Windows.Forms.Label();
+            this.numTurboDayNLength = new System.Windows.Forms.NumericUpDown();
+            this.numTurboDay1Length = new System.Windows.Forms.NumericUpDown();
+            this.chkTurbo = new System.Windows.Forms.CheckBox();
+            this.button2 = new System.Windows.Forms.Button();
+            this.txtTurboEnd = new System.Windows.Forms.TextBox();
             this.tabPage4.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.grdVotes)).BeginInit();
-            this.statusBrowser.SuspendLayout();
             this.contextMenuStrip1.SuspendLayout();
+            this.statusBrowser.SuspendLayout();
             this.tabVotes.SuspendLayout();
             this.tabPage2.SuspendLayout();
             this.tableLayoutPanel2.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.tabPage3.SuspendLayout();
             this.tabPage5.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.numTurboDayNLength)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numTurboDay1Length)).BeginInit();
             this.tableLayoutPanel4.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.tableLayoutPanel3.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numVanillaWolves)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numVanillagers)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numVillageSeers)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numTurboDayNLength)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numTurboDay1Length)).BeginInit();
             this.SuspendLayout();
             // 
             // tabPage4
@@ -311,21 +314,33 @@
             this.grdVotes.TabIndex = 18;
             this.grdVotes.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.grdVotes_CellValueChanged);
             // 
-            // statusBrowser
+            // colPlayer
             // 
-            this.statusBrowser.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.statusText});
-            this.statusBrowser.Location = new System.Drawing.Point(3, 562);
-            this.statusBrowser.Name = "statusBrowser";
-            this.statusBrowser.Size = new System.Drawing.Size(522, 22);
-            this.statusBrowser.TabIndex = 13;
-            this.statusBrowser.Text = "statusStrip1";
+            this.colPlayer.FillWeight = 119.797F;
+            this.colPlayer.HeaderText = "Player";
+            this.colPlayer.Name = "colPlayer";
+            this.colPlayer.ReadOnly = true;
             // 
-            // statusText
+            // colPost
             // 
-            this.statusText.Name = "statusText";
-            this.statusText.Size = new System.Drawing.Size(38, 17);
-            this.statusText.Text = "status";
+            this.colPost.FillWeight = 40.60914F;
+            this.colPost.HeaderText = "#";
+            this.colPost.Name = "colPost";
+            this.colPost.ReadOnly = true;
+            // 
+            // colBolded
+            // 
+            this.colBolded.FillWeight = 119.797F;
+            this.colBolded.HeaderText = "Bolded";
+            this.colBolded.Name = "colBolded";
+            this.colBolded.ReadOnly = true;
+            // 
+            // colComboVote
+            // 
+            this.colComboVote.FillWeight = 119.797F;
+            this.colComboVote.HeaderText = "Votes For";
+            this.colComboVote.Name = "colComboVote";
+            this.colComboVote.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Automatic;
             // 
             // contextMenuStrip1
             // 
@@ -352,6 +367,54 @@
             this.mnuUnhide.Size = new System.Drawing.Size(154, 22);
             this.mnuUnhide.Text = "Unhide";
             this.mnuUnhide.Click += new System.EventHandler(this.mnuUnhide_Click);
+            // 
+            // txtPostTable
+            // 
+            this.tableLayoutPanel1.SetColumnSpan(this.txtPostTable, 8);
+            this.txtPostTable.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.txtPostTable.Location = new System.Drawing.Point(3, 432);
+            this.txtPostTable.Multiline = true;
+            this.txtPostTable.Name = "txtPostTable";
+            this.txtPostTable.ReadOnly = true;
+            this.txtPostTable.Size = new System.Drawing.Size(516, 94);
+            this.txtPostTable.TabIndex = 19;
+            this.txtPostTable.Click += new System.EventHandler(this.txtPostTable_Click);
+            // 
+            // dtEOD
+            // 
+            this.tableLayoutPanel1.SetColumnSpan(this.dtEOD, 3);
+            this.dtEOD.Format = System.Windows.Forms.DateTimePickerFormat.Time;
+            this.dtEOD.Location = new System.Drawing.Point(59, 58);
+            this.dtEOD.Name = "dtEOD";
+            this.dtEOD.ShowUpDown = true;
+            this.dtEOD.Size = new System.Drawing.Size(109, 20);
+            this.dtEOD.TabIndex = 20;
+            // 
+            // label18
+            // 
+            this.label18.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
+            this.label18.AutoSize = true;
+            this.label18.Location = new System.Drawing.Point(3, 61);
+            this.label18.Name = "label18";
+            this.label18.Size = new System.Drawing.Size(50, 13);
+            this.label18.TabIndex = 21;
+            this.label18.Text = "EOD";
+            // 
+            // statusBrowser
+            // 
+            this.statusBrowser.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.statusText});
+            this.statusBrowser.Location = new System.Drawing.Point(3, 562);
+            this.statusBrowser.Name = "statusBrowser";
+            this.statusBrowser.Size = new System.Drawing.Size(522, 22);
+            this.statusBrowser.TabIndex = 13;
+            this.statusBrowser.Text = "statusStrip1";
+            // 
+            // statusText
+            // 
+            this.statusText.Name = "statusText";
+            this.statusText.Size = new System.Drawing.Size(38, 17);
+            this.statusText.Text = "status";
             // 
             // tabVotes
             // 
@@ -469,6 +532,14 @@
             // tabPage3
             // 
             this.tabPage3.BackColor = System.Drawing.Color.Gainsboro;
+            this.tabPage3.Controls.Add(this.txtTurboEnd);
+            this.tabPage3.Controls.Add(this.button2);
+            this.tabPage3.Controls.Add(this.label14);
+            this.tabPage3.Controls.Add(this.label13);
+            this.tabPage3.Controls.Add(this.numTurboDayNLength);
+            this.tabPage3.Controls.Add(this.numTurboDay1Length);
+            this.tabPage3.Controls.Add(this.chkTurbo);
+            this.tabPage3.Controls.Add(this.chkTurboDay1);
             this.tabPage3.Controls.Add(this.label17);
             this.tabPage3.Controls.Add(this.txtModerator);
             this.tabPage3.Controls.Add(this.label3);
@@ -520,11 +591,6 @@
             this.tabPage5.Controls.Add(this.checkBox4);
             this.tabPage5.Controls.Add(this.checkBox3);
             this.tabPage5.Controls.Add(this.checkBox2);
-            this.tabPage5.Controls.Add(this.label14);
-            this.tabPage5.Controls.Add(this.label13);
-            this.tabPage5.Controls.Add(this.numTurboDayNLength);
-            this.tabPage5.Controls.Add(this.numTurboDay1Length);
-            this.tabPage5.Controls.Add(this.checkBox1);
             this.tabPage5.Controls.Add(this.label12);
             this.tabPage5.Controls.Add(this.label11);
             this.tabPage5.Controls.Add(this.dateTimePicker2);
@@ -566,48 +632,6 @@
             this.checkBox2.TabIndex = 14;
             this.checkBox2.Text = "Weekends 1 day?";
             this.checkBox2.UseVisualStyleBackColor = true;
-            // 
-            // label14
-            // 
-            this.label14.AutoSize = true;
-            this.label14.Location = new System.Drawing.Point(28, 278);
-            this.label14.Name = "label14";
-            this.label14.Size = new System.Drawing.Size(77, 13);
-            this.label14.TabIndex = 13;
-            this.label14.Text = "Day 2+ Length";
-            // 
-            // label13
-            // 
-            this.label13.AutoSize = true;
-            this.label13.Location = new System.Drawing.Point(28, 236);
-            this.label13.Name = "label13";
-            this.label13.Size = new System.Drawing.Size(71, 13);
-            this.label13.TabIndex = 12;
-            this.label13.Text = "Day 1 Length";
-            // 
-            // numTurboDayNLength
-            // 
-            this.numTurboDayNLength.Location = new System.Drawing.Point(111, 276);
-            this.numTurboDayNLength.Name = "numTurboDayNLength";
-            this.numTurboDayNLength.Size = new System.Drawing.Size(45, 20);
-            this.numTurboDayNLength.TabIndex = 11;
-            // 
-            // numTurboDay1Length
-            // 
-            this.numTurboDay1Length.Location = new System.Drawing.Point(111, 236);
-            this.numTurboDay1Length.Name = "numTurboDay1Length";
-            this.numTurboDay1Length.Size = new System.Drawing.Size(45, 20);
-            this.numTurboDay1Length.TabIndex = 10;
-            // 
-            // checkBox1
-            // 
-            this.checkBox1.AutoSize = true;
-            this.checkBox1.Location = new System.Drawing.Point(31, 201);
-            this.checkBox1.Name = "checkBox1";
-            this.checkBox1.Size = new System.Drawing.Size(60, 17);
-            this.checkBox1.TabIndex = 9;
-            this.checkBox1.Text = "Turbo?";
-            this.checkBox1.UseVisualStyleBackColor = true;
             // 
             // label12
             // 
@@ -797,65 +821,75 @@
             this.comboGameTypes.Size = new System.Drawing.Size(121, 21);
             this.comboGameTypes.TabIndex = 1;
             // 
-            // colPlayer
+            // chkTurboDay1
             // 
-            this.colPlayer.FillWeight = 119.797F;
-            this.colPlayer.HeaderText = "Player";
-            this.colPlayer.Name = "colPlayer";
-            this.colPlayer.ReadOnly = true;
+            this.chkTurboDay1.AutoSize = true;
+            this.chkTurboDay1.Location = new System.Drawing.Point(224, 86);
+            this.chkTurboDay1.Name = "chkTurboDay1";
+            this.chkTurboDay1.Size = new System.Drawing.Size(60, 17);
+            this.chkTurboDay1.TabIndex = 25;
+            this.chkTurboDay1.Text = "Day 1?";
+            this.chkTurboDay1.UseVisualStyleBackColor = true;
             // 
-            // colPost
+            // label14
             // 
-            this.colPost.FillWeight = 40.60914F;
-            this.colPost.HeaderText = "#";
-            this.colPost.Name = "colPost";
-            this.colPost.ReadOnly = true;
+            this.label14.AutoSize = true;
+            this.label14.Location = new System.Drawing.Point(221, 186);
+            this.label14.Name = "label14";
+            this.label14.Size = new System.Drawing.Size(77, 13);
+            this.label14.TabIndex = 30;
+            this.label14.Text = "Day 2+ Length";
             // 
-            // colBolded
+            // label13
             // 
-            this.colBolded.FillWeight = 119.797F;
-            this.colBolded.HeaderText = "Bolded";
-            this.colBolded.Name = "colBolded";
-            this.colBolded.ReadOnly = true;
+            this.label13.AutoSize = true;
+            this.label13.Location = new System.Drawing.Point(221, 144);
+            this.label13.Name = "label13";
+            this.label13.Size = new System.Drawing.Size(71, 13);
+            this.label13.TabIndex = 29;
+            this.label13.Text = "Day 1 Length";
             // 
-            // colComboVote
+            // numTurboDayNLength
             // 
-            this.colComboVote.FillWeight = 119.797F;
-            this.colComboVote.HeaderText = "Votes For";
-            this.colComboVote.Name = "colComboVote";
-            this.colComboVote.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Automatic;
+            this.numTurboDayNLength.Location = new System.Drawing.Point(304, 184);
+            this.numTurboDayNLength.Name = "numTurboDayNLength";
+            this.numTurboDayNLength.Size = new System.Drawing.Size(45, 20);
+            this.numTurboDayNLength.TabIndex = 28;
             // 
-            // txtPostTable
+            // numTurboDay1Length
             // 
-            this.tableLayoutPanel1.SetColumnSpan(this.txtPostTable, 8);
-            this.txtPostTable.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.txtPostTable.Location = new System.Drawing.Point(3, 432);
-            this.txtPostTable.Multiline = true;
-            this.txtPostTable.Name = "txtPostTable";
-            this.txtPostTable.ReadOnly = true;
-            this.txtPostTable.Size = new System.Drawing.Size(516, 94);
-            this.txtPostTable.TabIndex = 19;
-            this.txtPostTable.Click += new System.EventHandler(this.txtPostTable_Click);
+            this.numTurboDay1Length.Location = new System.Drawing.Point(304, 144);
+            this.numTurboDay1Length.Name = "numTurboDay1Length";
+            this.numTurboDay1Length.Size = new System.Drawing.Size(45, 20);
+            this.numTurboDay1Length.TabIndex = 27;
             // 
-            // dtEOD
+            // chkTurbo
             // 
-            this.tableLayoutPanel1.SetColumnSpan(this.dtEOD, 3);
-            this.dtEOD.Format = System.Windows.Forms.DateTimePickerFormat.Time;
-            this.dtEOD.Location = new System.Drawing.Point(59, 58);
-            this.dtEOD.Name = "dtEOD";
-            this.dtEOD.ShowUpDown = true;
-            this.dtEOD.Size = new System.Drawing.Size(109, 20);
-            this.dtEOD.TabIndex = 20;
+            this.chkTurbo.AutoSize = true;
+            this.chkTurbo.Location = new System.Drawing.Point(224, 63);
+            this.chkTurbo.Name = "chkTurbo";
+            this.chkTurbo.Size = new System.Drawing.Size(60, 17);
+            this.chkTurbo.TabIndex = 26;
+            this.chkTurbo.Text = "Turbo?";
+            this.chkTurbo.UseVisualStyleBackColor = true;
             // 
-            // label18
+            // button2
             // 
-            this.label18.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-            this.label18.AutoSize = true;
-            this.label18.Location = new System.Drawing.Point(3, 61);
-            this.label18.Name = "label18";
-            this.label18.Size = new System.Drawing.Size(50, 13);
-            this.label18.TabIndex = 21;
-            this.label18.Text = "EOD";
+            this.button2.Location = new System.Drawing.Point(379, 113);
+            this.button2.Name = "button2";
+            this.button2.Size = new System.Drawing.Size(75, 23);
+            this.button2.TabIndex = 31;
+            this.button2.Text = "Generate End Times";
+            this.button2.UseVisualStyleBackColor = true;
+            this.button2.Click += new System.EventHandler(this.button2_Click);
+            // 
+            // txtTurboEnd
+            // 
+            this.txtTurboEnd.Location = new System.Drawing.Point(379, 144);
+            this.txtTurboEnd.Name = "txtTurboEnd";
+            this.txtTurboEnd.ReadOnly = true;
+            this.txtTurboEnd.Size = new System.Drawing.Size(100, 20);
+            this.txtTurboEnd.TabIndex = 32;
             // 
             // FormVoteCounter
             // 
@@ -872,9 +906,9 @@
             this.tableLayoutPanel1.ResumeLayout(false);
             this.tableLayoutPanel1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.grdVotes)).EndInit();
+            this.contextMenuStrip1.ResumeLayout(false);
             this.statusBrowser.ResumeLayout(false);
             this.statusBrowser.PerformLayout();
-            this.contextMenuStrip1.ResumeLayout(false);
             this.tabVotes.ResumeLayout(false);
             this.tabPage2.ResumeLayout(false);
             this.tableLayoutPanel2.ResumeLayout(false);
@@ -885,8 +919,6 @@
             this.tabPage3.PerformLayout();
             this.tabPage5.ResumeLayout(false);
             this.tabPage5.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.numTurboDayNLength)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numTurboDay1Length)).EndInit();
             this.tableLayoutPanel4.ResumeLayout(false);
             this.tableLayoutPanel4.PerformLayout();
             this.groupBox1.ResumeLayout(false);
@@ -895,6 +927,8 @@
             ((System.ComponentModel.ISupportInitialize)(this.numVanillaWolves)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numVanillagers)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numVillageSeers)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numTurboDayNLength)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numTurboDay1Length)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -934,11 +968,6 @@
         private System.Windows.Forms.ComboBox comboGameTypes;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel4;
         private System.Windows.Forms.Label label10;
-        private System.Windows.Forms.Label label14;
-        private System.Windows.Forms.Label label13;
-        private System.Windows.Forms.NumericUpDown numTurboDayNLength;
-        private System.Windows.Forms.NumericUpDown numTurboDay1Length;
-        private System.Windows.Forms.CheckBox checkBox1;
         private System.Windows.Forms.Label label12;
         private System.Windows.Forms.Label label11;
         private System.Windows.Forms.DateTimePicker dateTimePicker2;
@@ -968,6 +997,14 @@
         private System.Windows.Forms.TextBox txtPostTable;
         private System.Windows.Forms.DateTimePicker dtEOD;
         private System.Windows.Forms.Label label18;
+        private System.Windows.Forms.Label label14;
+        private System.Windows.Forms.Label label13;
+        private System.Windows.Forms.NumericUpDown numTurboDayNLength;
+        private System.Windows.Forms.NumericUpDown numTurboDay1Length;
+        private System.Windows.Forms.CheckBox chkTurbo;
+        private System.Windows.Forms.CheckBox chkTurboDay1;
+        private System.Windows.Forms.TextBox txtTurboEnd;
+        private System.Windows.Forms.Button button2;
 
 
     }

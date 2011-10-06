@@ -84,9 +84,14 @@ namespace FennecFox
                 String.Format("vb_login_username={0}&cookieuser=1&vb_login_password=&s=&securitytoken=guest&do=login&vb_login_md5password={1}&vb_login_md5password_utf={1}", username, passToken);
             String resp = HtmlHelper.PostToUrl(connectionSettings);
 
-            if (resp == null || !resp.Contains("exec_refresh()"))
+            if (resp == null)
             {
                 // login failure
+                return "The following error occurred while logging in:\n\n" + connectionSettings.Message;
+            }
+
+            if (!resp.Contains("exec_refresh()"))
+            {
                 return "Error logging in.  Please verify login information.";
             }
 
@@ -150,19 +155,18 @@ namespace FennecFox
                 string doc = HtmlHelper.GetUrlResponseString(connectionSettings);
                 int totalPages = 0;
                 int lastRead = ParseVotePage(doc, m_startPost, ref totalPages);
-                if (lastRead == 0)
+                if (lastRead != 0)
                 {
-                    return;
-                }
 
-                m_startPost = lastRead + 1;
-                int lastPostThisPage = m_postsPerPage * m_currentPage;
-                if (totalPages > m_currentPage)
-                {
-                    connectionSettings.Url = GetNextUrl(connectionSettings.Url, m_currentPage + 1);
-                    // if we make it to the end, start on next page
-                    DoWork();
-                    return;
+                    m_startPost = lastRead + 1;
+                    int lastPostThisPage = m_postsPerPage * m_currentPage;
+                    if (totalPages > m_currentPage)
+                    {
+                        connectionSettings.Url = GetNextUrl(connectionSettings.Url, m_currentPage + 1);
+                        // if we make it to the end, start on next page
+                        DoWork();
+                        return;
+                    }
                 }
             }
 
@@ -262,6 +266,14 @@ namespace FennecFox
             }
         }
 
+        void RemoveNewlines(HtmlAgilityPack.HtmlNode node)
+        {
+            foreach (var n in node.SelectNodes("//br") ?? new HtmlAgilityPack.HtmlNodeCollection(node))
+            {
+                n.Remove();
+            }
+        }
+
         private int ParseVotePage(string doc, int firstPost, ref int totalPages)
         {
             int lastPost = 0;
@@ -299,8 +311,12 @@ namespace FennecFox
                 {
                     // strip out quotes
                     RemoveQuotes(post);
+
                     // strip out colors
                     RemoveColors(post);
+
+                    // strip out newlines
+                    RemoveNewlines(post);
                     string poster = "";
                     Int32 postNumber = 0;
 
@@ -336,7 +352,7 @@ namespace FennecFox
                                 {
                                     //                            Console.WriteLine(String.Format("{0,8}\t{1,25}\t{2}", postNumber, poster, c.InnerHtml));
                                     Console.WriteLine("{0}\t{1}\t{2}", postNumber, poster, c.InnerHtml);
-                                    AddVote(poster, new Vote(postNumber, c.InnerHtml));
+                                    AddVote(poster, new Vote(postNumber, c.InnerHtml.Trim()));
                                 }
                             }
                         }
@@ -345,8 +361,14 @@ namespace FennecFox
                     UpdateLastPost(lastPost);
                     GenerateTable();
                 }
+                else
+                {
+                    break;
+                }
             }
 
+            // ensure the timestamp gets re-generated even if there were no new posts
+            GenerateTable();
             return lastPost;
         }
 
@@ -376,14 +398,6 @@ namespace FennecFox
             if (!m_PlayerVotes.ContainsKey(player))
             {
                 LinkedList<Vote> list = new LinkedList<Vote>();
-
-                /*
-                ListViewItem item = new ListViewItem(player);
-                item.SubItems.Add(player);
-                item.SubItems.Add("0");
-                item.SubItems.Add("");
-                ListViewItem itemInList = listVotes.Items.Add(item);
-                 * */
 
                 Int32 index = grdVotes.Rows.Add(MakeNewRow(player));
 
@@ -481,6 +495,7 @@ namespace FennecFox
                     }
                     node = node.Previous;
                 }
+
                 tPlayer.Item2.Cells[1].Value = "0";
                 tPlayer.Item2.Cells[2].Value = "";
             }
@@ -566,9 +581,6 @@ namespace FennecFox
         private void StopButton_Click(object sender, EventArgs e)
         {
             _shouldStop = true;
-            workerThread.Join();
-
-            halt();
         }
 
         private void halt()
@@ -721,13 +733,25 @@ namespace FennecFox
 
         private void GenerateTable()
         {
+            var leftInDay = (dtEOD.Value.TimeOfDay - DateTime.Now.TimeOfDay);
+            var leftInDayFormatted = String.Format("{0:00}:{1:00}", leftInDay.Hours, (leftInDay.Minutes == 59 ? 0 : leftInDay.Minutes + 1));
             StringBuilder sb = new StringBuilder(@"[b]As of #");
             sb
                 .Append(txtLastPost.Text)
-                .AppendLine().AppendLine()
-                .AppendFormat("Night in {0}", (dtEOD.Value.TimeOfDay - DateTime.Now.TimeOfDay).ToString(@"h\:mm"))
-                .AppendLine("[/b]").AppendLine()
-                .AppendLine("[table=head][b]#[/b] | [b]Player[/b] | [b]votes for[/b]");
+                .AppendLine().AppendLine();
+
+            if (chkTurbo.Checked)
+            {
+                sb.Append(txtTurboEnd.Text);
+            }
+            else
+            {
+                sb.AppendFormat("Night in {0}", leftInDayFormatted);
+
+            }
+
+            sb.AppendLine("[/b]").AppendLine()
+            .AppendLine("[table=head][b]#[/b] | [b]Player[/b] | [b]votes for[/b]");
 
             // get current votes for each player
             var voteCountDict = new Dictionary<String, Int32>();
@@ -786,6 +810,37 @@ namespace FennecFox
         {
             txtPostTable.SelectAll();
             Clipboard.SetDataObject(txtPostTable.Text, false);
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            Int32 start = 0;
+            Int32 end = 0;
+            if (chkTurboDay1.Checked)
+            {
+                TimeSpan ts = new TimeSpan(0, 0, (Int32)numTurboDay1Length.Value, 0);
+                start = DateTime.Now.TimeOfDay.Add(ts).Minutes;
+
+            }
+            else
+            {
+                TimeSpan ts = new TimeSpan(0, 0, (Int32)numTurboDayNLength.Value, 0);
+                start = DateTime.Now.TimeOfDay.Add(ts).Minutes;
+            }
+
+            if (start == 60)
+            {
+                start = 0;
+            }
+
+            end = start + 1;
+
+            if (end == 60)
+            {
+                end = 0;
+            }
+
+            txtTurboEnd.Text = String.Format(":{0:00} good :{1:00} bad", start, end);
         }
     }
 }
