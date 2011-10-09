@@ -57,10 +57,12 @@
       <DependentUpon>FennecFox.cs</DependentUpon>
     </Compile>
     <Compile Include="HtmlHelper.cs" />
+    <Compile Include="PrivateMessages.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SecurityUtils.cs" />
     <Compile Include="Settings.cs" />
+    <Compile Include="StateMachine.cs" />
     <Compile Include="Vote.cs" />
     <EmbeddedResource Include="FennecFox.resx">
       <DependentUpon>FennecFox.cs</DependentUpon>
