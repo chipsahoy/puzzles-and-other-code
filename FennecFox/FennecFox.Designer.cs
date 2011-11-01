@@ -43,17 +43,15 @@
             this.txtLastPost = new System.Windows.Forms.TextBox();
             this.btnUnignore = new System.Windows.Forms.Button();
             this.btnIgnore = new System.Windows.Forms.Button();
+            this.dtEOD = new System.Windows.Forms.DateTimePicker();
+            this.label18 = new System.Windows.Forms.Label();
+            this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.grdVotes = new System.Windows.Forms.DataGridView();
-            this.colPlayer = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.colPost = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.colBolded = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.colComboVote = new System.Windows.Forms.DataGridViewComboBoxColumn();
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.mnuHide = new System.Windows.Forms.ToolStripMenuItem();
             this.mnuUnhide = new System.Windows.Forms.ToolStripMenuItem();
             this.txtPostTable = new System.Windows.Forms.TextBox();
-            this.dtEOD = new System.Windows.Forms.DateTimePicker();
-            this.label18 = new System.Windows.Forms.Label();
+            this.chkEodTomorrow = new System.Windows.Forms.CheckBox();
             this.statusBrowser = new System.Windows.Forms.StatusStrip();
             this.statusText = new System.Windows.Forms.ToolStripStatusLabel();
             this.tabVotes = new System.Windows.Forms.TabControl();
@@ -67,6 +65,17 @@
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.textBox1 = new System.Windows.Forms.TextBox();
             this.tabPage3 = new System.Windows.Forms.TabPage();
+            this.label20 = new System.Windows.Forms.Label();
+            this.label19 = new System.Windows.Forms.Label();
+            this.txtDeadPlayers = new System.Windows.Forms.TextBox();
+            this.txtTurboEnd = new System.Windows.Forms.TextBox();
+            this.button2 = new System.Windows.Forms.Button();
+            this.label14 = new System.Windows.Forms.Label();
+            this.label13 = new System.Windows.Forms.Label();
+            this.numTurboDayNLength = new System.Windows.Forms.NumericUpDown();
+            this.numTurboDay1Length = new System.Windows.Forms.NumericUpDown();
+            this.chkTurbo = new System.Windows.Forms.CheckBox();
+            this.chkTurboDay1 = new System.Windows.Forms.CheckBox();
             this.label17 = new System.Windows.Forms.Label();
             this.txtModerator = new System.Windows.Forms.TextBox();
             this.label3 = new System.Windows.Forms.Label();
@@ -92,16 +101,17 @@
             this.label5 = new System.Windows.Forms.Label();
             this.label8 = new System.Windows.Forms.Label();
             this.comboGameTypes = new System.Windows.Forms.ComboBox();
-            this.chkTurboDay1 = new System.Windows.Forms.CheckBox();
-            this.label14 = new System.Windows.Forms.Label();
-            this.label13 = new System.Windows.Forms.Label();
-            this.numTurboDayNLength = new System.Windows.Forms.NumericUpDown();
-            this.numTurboDay1Length = new System.Windows.Forms.NumericUpDown();
-            this.chkTurbo = new System.Windows.Forms.CheckBox();
-            this.button2 = new System.Windows.Forms.Button();
-            this.txtTurboEnd = new System.Windows.Forms.TextBox();
+            this.colPlayer = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colPostcount = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colPost = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colBolded = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colComboVote = new System.Windows.Forms.DataGridViewComboBoxColumn();
             this.tabPage4.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
+            this.splitContainer1.Panel1.SuspendLayout();
+            this.splitContainer1.Panel2.SuspendLayout();
+            this.splitContainer1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.grdVotes)).BeginInit();
             this.contextMenuStrip1.SuspendLayout();
             this.statusBrowser.SuspendLayout();
@@ -110,6 +120,8 @@
             this.tableLayoutPanel2.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.tabPage3.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numTurboDayNLength)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numTurboDay1Length)).BeginInit();
             this.tabPage5.SuspendLayout();
             this.tableLayoutPanel4.SuspendLayout();
             this.groupBox1.SuspendLayout();
@@ -117,8 +129,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.numVanillaWolves)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numVanillagers)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numVillageSeers)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numTurboDayNLength)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numTurboDay1Length)).BeginInit();
             this.SuspendLayout();
             // 
             // tabPage4
@@ -129,7 +139,7 @@
             this.tabPage4.Location = new System.Drawing.Point(4, 22);
             this.tabPage4.Name = "tabPage4";
             this.tabPage4.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage4.Size = new System.Drawing.Size(528, 587);
+            this.tabPage4.Size = new System.Drawing.Size(564, 587);
             this.tabPage4.TabIndex = 3;
             this.tabPage4.Text = "Get Votes";
             // 
@@ -155,10 +165,10 @@
             this.tableLayoutPanel1.Controls.Add(this.txtLastPost, 3, 1);
             this.tableLayoutPanel1.Controls.Add(this.btnUnignore, 1, 5);
             this.tableLayoutPanel1.Controls.Add(this.btnIgnore, 0, 5);
-            this.tableLayoutPanel1.Controls.Add(this.grdVotes, 0, 3);
-            this.tableLayoutPanel1.Controls.Add(this.txtPostTable, 0, 4);
             this.tableLayoutPanel1.Controls.Add(this.dtEOD, 1, 2);
             this.tableLayoutPanel1.Controls.Add(this.label18, 0, 2);
+            this.tableLayoutPanel1.Controls.Add(this.splitContainer1, 0, 3);
+            this.tableLayoutPanel1.Controls.Add(this.chkEodTomorrow, 3, 2);
             this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel1.Location = new System.Drawing.Point(3, 3);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
@@ -169,7 +179,7 @@
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 100F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(522, 559);
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(558, 559);
             this.tableLayoutPanel1.TabIndex = 17;
             // 
             // label4
@@ -189,14 +199,14 @@
             this.tableLayoutPanel1.SetColumnSpan(this.URLTextBox, 6);
             this.URLTextBox.Location = new System.Drawing.Point(135, 3);
             this.URLTextBox.Name = "URLTextBox";
-            this.URLTextBox.Size = new System.Drawing.Size(384, 20);
+            this.URLTextBox.Size = new System.Drawing.Size(420, 20);
             this.URLTextBox.TabIndex = 1;
             // 
             // GoButton
             // 
-            this.GoButton.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left)));
-            this.GoButton.Location = new System.Drawing.Point(318, 29);
+            this.GoButton.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+                        | System.Windows.Forms.AnchorStyles.Left)));
+            this.GoButton.Location = new System.Drawing.Point(354, 29);
             this.GoButton.Name = "GoButton";
             this.GoButton.Size = new System.Drawing.Size(56, 23);
             this.GoButton.TabIndex = 4;
@@ -226,10 +236,10 @@
             // 
             // StopButton
             // 
-            this.StopButton.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left)));
+            this.StopButton.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+                        | System.Windows.Forms.AnchorStyles.Left)));
             this.StopButton.Enabled = false;
-            this.StopButton.Location = new System.Drawing.Point(380, 29);
+            this.StopButton.Location = new System.Drawing.Point(416, 29);
             this.StopButton.Name = "StopButton";
             this.StopButton.Size = new System.Drawing.Size(58, 23);
             this.StopButton.TabIndex = 5;
@@ -239,7 +249,7 @@
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(444, 29);
+            this.button1.Location = new System.Drawing.Point(480, 29);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(75, 23);
             this.button1.TabIndex = 6;
@@ -288,59 +298,72 @@
             this.btnIgnore.UseVisualStyleBackColor = true;
             this.btnIgnore.Click += new System.EventHandler(this.btnIgnore_Click);
             // 
+            // dtEOD
+            // 
+            this.tableLayoutPanel1.SetColumnSpan(this.dtEOD, 2);
+            this.dtEOD.Format = System.Windows.Forms.DateTimePickerFormat.Time;
+            this.dtEOD.Location = new System.Drawing.Point(59, 58);
+            this.dtEOD.Name = "dtEOD";
+            this.dtEOD.ShowUpDown = true;
+            this.dtEOD.Size = new System.Drawing.Size(109, 20);
+            this.dtEOD.TabIndex = 20;
+            // 
+            // label18
+            // 
+            this.label18.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
+            this.label18.AutoSize = true;
+            this.label18.Location = new System.Drawing.Point(3, 61);
+            this.label18.Name = "label18";
+            this.label18.Size = new System.Drawing.Size(50, 13);
+            this.label18.TabIndex = 21;
+            this.label18.Text = "EOD";
+            // 
+            // splitContainer1
+            // 
+            this.tableLayoutPanel1.SetColumnSpan(this.splitContainer1, 12);
+            this.splitContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.splitContainer1.Location = new System.Drawing.Point(3, 84);
+            this.splitContainer1.Name = "splitContainer1";
+            this.splitContainer1.Orientation = System.Windows.Forms.Orientation.Horizontal;
+            // 
+            // splitContainer1.Panel1
+            // 
+            this.splitContainer1.Panel1.Controls.Add(this.grdVotes);
+            // 
+            // splitContainer1.Panel2
+            // 
+            this.splitContainer1.Panel2.Controls.Add(this.txtPostTable);
+            this.tableLayoutPanel1.SetRowSpan(this.splitContainer1, 2);
+            this.splitContainer1.Size = new System.Drawing.Size(552, 442);
+            this.splitContainer1.SplitterDistance = 221;
+            this.splitContainer1.TabIndex = 22;
+            // 
             // grdVotes
             // 
             this.grdVotes.AllowUserToAddRows = false;
             this.grdVotes.AllowUserToDeleteRows = false;
+            this.grdVotes.AllowUserToOrderColumns = true;
             this.grdVotes.AllowUserToResizeRows = false;
             this.grdVotes.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
             this.grdVotes.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.grdVotes.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.colPlayer,
+            this.colPostcount,
             this.colPost,
             this.colBolded,
             this.colComboVote});
-            this.tableLayoutPanel1.SetColumnSpan(this.grdVotes, 8);
             this.grdVotes.ContextMenuStrip = this.contextMenuStrip1;
             this.grdVotes.Dock = System.Windows.Forms.DockStyle.Fill;
             this.grdVotes.EditMode = System.Windows.Forms.DataGridViewEditMode.EditOnEnter;
-            this.grdVotes.Location = new System.Drawing.Point(3, 84);
+            this.grdVotes.Location = new System.Drawing.Point(0, 0);
             this.grdVotes.MultiSelect = false;
             this.grdVotes.Name = "grdVotes";
             this.grdVotes.RowHeadersVisible = false;
             this.grdVotes.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.grdVotes.ShowEditingIcon = false;
-            this.grdVotes.Size = new System.Drawing.Size(516, 342);
+            this.grdVotes.Size = new System.Drawing.Size(552, 221);
             this.grdVotes.TabIndex = 18;
             this.grdVotes.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.grdVotes_CellValueChanged);
-            // 
-            // colPlayer
-            // 
-            this.colPlayer.FillWeight = 119.797F;
-            this.colPlayer.HeaderText = "Player";
-            this.colPlayer.Name = "colPlayer";
-            this.colPlayer.ReadOnly = true;
-            // 
-            // colPost
-            // 
-            this.colPost.FillWeight = 40.60914F;
-            this.colPost.HeaderText = "#";
-            this.colPost.Name = "colPost";
-            this.colPost.ReadOnly = true;
-            // 
-            // colBolded
-            // 
-            this.colBolded.FillWeight = 119.797F;
-            this.colBolded.HeaderText = "Bolded";
-            this.colBolded.Name = "colBolded";
-            this.colBolded.ReadOnly = true;
-            // 
-            // colComboVote
-            // 
-            this.colComboVote.FillWeight = 119.797F;
-            this.colComboVote.HeaderText = "Votes For";
-            this.colComboVote.Name = "colComboVote";
-            this.colComboVote.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Automatic;
             // 
             // contextMenuStrip1
             // 
@@ -370,35 +393,25 @@
             // 
             // txtPostTable
             // 
-            this.tableLayoutPanel1.SetColumnSpan(this.txtPostTable, 8);
             this.txtPostTable.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.txtPostTable.Location = new System.Drawing.Point(3, 432);
+            this.txtPostTable.Location = new System.Drawing.Point(0, 0);
             this.txtPostTable.Multiline = true;
             this.txtPostTable.Name = "txtPostTable";
             this.txtPostTable.ReadOnly = true;
-            this.txtPostTable.Size = new System.Drawing.Size(516, 94);
+            this.txtPostTable.Size = new System.Drawing.Size(552, 217);
             this.txtPostTable.TabIndex = 19;
             this.txtPostTable.Click += new System.EventHandler(this.txtPostTable_Click);
             // 
-            // dtEOD
+            // chkEodTomorrow
             // 
-            this.tableLayoutPanel1.SetColumnSpan(this.dtEOD, 3);
-            this.dtEOD.Format = System.Windows.Forms.DateTimePickerFormat.Time;
-            this.dtEOD.Location = new System.Drawing.Point(59, 58);
-            this.dtEOD.Name = "dtEOD";
-            this.dtEOD.ShowUpDown = true;
-            this.dtEOD.Size = new System.Drawing.Size(109, 20);
-            this.dtEOD.TabIndex = 20;
-            // 
-            // label18
-            // 
-            this.label18.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-            this.label18.AutoSize = true;
-            this.label18.Location = new System.Drawing.Point(3, 61);
-            this.label18.Name = "label18";
-            this.label18.Size = new System.Drawing.Size(50, 13);
-            this.label18.TabIndex = 21;
-            this.label18.Text = "EOD";
+            this.chkEodTomorrow.AutoSize = true;
+            this.tableLayoutPanel1.SetColumnSpan(this.chkEodTomorrow, 3);
+            this.chkEodTomorrow.Location = new System.Drawing.Point(192, 58);
+            this.chkEodTomorrow.Name = "chkEodTomorrow";
+            this.chkEodTomorrow.Size = new System.Drawing.Size(105, 17);
+            this.chkEodTomorrow.TabIndex = 23;
+            this.chkEodTomorrow.Text = "EOD Tomorrow?";
+            this.chkEodTomorrow.UseVisualStyleBackColor = true;
             // 
             // statusBrowser
             // 
@@ -406,7 +419,7 @@
             this.statusText});
             this.statusBrowser.Location = new System.Drawing.Point(3, 562);
             this.statusBrowser.Name = "statusBrowser";
-            this.statusBrowser.Size = new System.Drawing.Size(522, 22);
+            this.statusBrowser.Size = new System.Drawing.Size(558, 22);
             this.statusBrowser.TabIndex = 13;
             this.statusBrowser.Text = "statusStrip1";
             // 
@@ -427,7 +440,7 @@
             this.tabVotes.Location = new System.Drawing.Point(0, 0);
             this.tabVotes.Name = "tabVotes";
             this.tabVotes.SelectedIndex = 0;
-            this.tabVotes.Size = new System.Drawing.Size(536, 613);
+            this.tabVotes.Size = new System.Drawing.Size(572, 613);
             this.tabVotes.TabIndex = 4;
             this.tabVotes.Selecting += new System.Windows.Forms.TabControlCancelEventHandler(this.tabControl_Selecting);
             // 
@@ -532,6 +545,9 @@
             // tabPage3
             // 
             this.tabPage3.BackColor = System.Drawing.Color.Gainsboro;
+            this.tabPage3.Controls.Add(this.label20);
+            this.tabPage3.Controls.Add(this.label19);
+            this.tabPage3.Controls.Add(this.txtDeadPlayers);
             this.tabPage3.Controls.Add(this.txtTurboEnd);
             this.tabPage3.Controls.Add(this.button2);
             this.tabPage3.Controls.Add(this.label14);
@@ -551,10 +567,107 @@
             this.tabPage3.TabIndex = 6;
             this.tabPage3.Text = "Players";
             // 
+            // label20
+            // 
+            this.label20.AutoSize = true;
+            this.label20.Location = new System.Drawing.Point(56, 32);
+            this.label20.Name = "label20";
+            this.label20.Size = new System.Drawing.Size(119, 13);
+            this.label20.TabIndex = 35;
+            this.label20.Text = "All Players (live or dead)";
+            // 
+            // label19
+            // 
+            this.label19.AutoSize = true;
+            this.label19.Location = new System.Drawing.Point(56, 318);
+            this.label19.Name = "label19";
+            this.label19.Size = new System.Drawing.Size(70, 13);
+            this.label19.TabIndex = 34;
+            this.label19.Text = "Dead Players";
+            // 
+            // txtDeadPlayers
+            // 
+            this.txtDeadPlayers.Location = new System.Drawing.Point(59, 334);
+            this.txtDeadPlayers.Multiline = true;
+            this.txtDeadPlayers.Name = "txtDeadPlayers";
+            this.txtDeadPlayers.ScrollBars = System.Windows.Forms.ScrollBars.Both;
+            this.txtDeadPlayers.Size = new System.Drawing.Size(148, 108);
+            this.txtDeadPlayers.TabIndex = 33;
+            // 
+            // txtTurboEnd
+            // 
+            this.txtTurboEnd.Location = new System.Drawing.Point(379, 144);
+            this.txtTurboEnd.Name = "txtTurboEnd";
+            this.txtTurboEnd.ReadOnly = true;
+            this.txtTurboEnd.Size = new System.Drawing.Size(100, 20);
+            this.txtTurboEnd.TabIndex = 32;
+            // 
+            // button2
+            // 
+            this.button2.Location = new System.Drawing.Point(379, 113);
+            this.button2.Name = "button2";
+            this.button2.Size = new System.Drawing.Size(75, 23);
+            this.button2.TabIndex = 31;
+            this.button2.Text = "Generate End Times";
+            this.button2.UseVisualStyleBackColor = true;
+            this.button2.Click += new System.EventHandler(this.button2_Click);
+            // 
+            // label14
+            // 
+            this.label14.AutoSize = true;
+            this.label14.Location = new System.Drawing.Point(221, 186);
+            this.label14.Name = "label14";
+            this.label14.Size = new System.Drawing.Size(77, 13);
+            this.label14.TabIndex = 30;
+            this.label14.Text = "Day 2+ Length";
+            // 
+            // label13
+            // 
+            this.label13.AutoSize = true;
+            this.label13.Location = new System.Drawing.Point(221, 144);
+            this.label13.Name = "label13";
+            this.label13.Size = new System.Drawing.Size(71, 13);
+            this.label13.TabIndex = 29;
+            this.label13.Text = "Day 1 Length";
+            // 
+            // numTurboDayNLength
+            // 
+            this.numTurboDayNLength.Location = new System.Drawing.Point(304, 184);
+            this.numTurboDayNLength.Name = "numTurboDayNLength";
+            this.numTurboDayNLength.Size = new System.Drawing.Size(45, 20);
+            this.numTurboDayNLength.TabIndex = 28;
+            // 
+            // numTurboDay1Length
+            // 
+            this.numTurboDay1Length.Location = new System.Drawing.Point(304, 144);
+            this.numTurboDay1Length.Name = "numTurboDay1Length";
+            this.numTurboDay1Length.Size = new System.Drawing.Size(45, 20);
+            this.numTurboDay1Length.TabIndex = 27;
+            // 
+            // chkTurbo
+            // 
+            this.chkTurbo.AutoSize = true;
+            this.chkTurbo.Location = new System.Drawing.Point(224, 63);
+            this.chkTurbo.Name = "chkTurbo";
+            this.chkTurbo.Size = new System.Drawing.Size(60, 17);
+            this.chkTurbo.TabIndex = 26;
+            this.chkTurbo.Text = "Turbo?";
+            this.chkTurbo.UseVisualStyleBackColor = true;
+            // 
+            // chkTurboDay1
+            // 
+            this.chkTurboDay1.AutoSize = true;
+            this.chkTurboDay1.Location = new System.Drawing.Point(224, 86);
+            this.chkTurboDay1.Name = "chkTurboDay1";
+            this.chkTurboDay1.Size = new System.Drawing.Size(60, 17);
+            this.chkTurboDay1.TabIndex = 25;
+            this.chkTurboDay1.Text = "Day 1?";
+            this.chkTurboDay1.UseVisualStyleBackColor = true;
+            // 
             // label17
             // 
             this.label17.AutoSize = true;
-            this.label17.Location = new System.Drawing.Point(56, 367);
+            this.label17.Location = new System.Drawing.Point(56, 457);
             this.label17.Name = "label17";
             this.label17.Size = new System.Drawing.Size(55, 13);
             this.label17.TabIndex = 4;
@@ -562,7 +675,7 @@
             // 
             // txtModerator
             // 
-            this.txtModerator.Location = new System.Drawing.Point(59, 383);
+            this.txtModerator.Location = new System.Drawing.Point(59, 473);
             this.txtModerator.Name = "txtModerator";
             this.txtModerator.Size = new System.Drawing.Size(148, 20);
             this.txtModerator.TabIndex = 3;
@@ -570,7 +683,7 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(56, 36);
+            this.label3.Location = new System.Drawing.Point(56, 45);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(145, 13);
             this.label3.TabIndex = 1;
@@ -581,9 +694,11 @@
             this.txtPlayers.Location = new System.Drawing.Point(59, 61);
             this.txtPlayers.Multiline = true;
             this.txtPlayers.Name = "txtPlayers";
-            this.txtPlayers.Size = new System.Drawing.Size(148, 257);
+            this.txtPlayers.ScrollBars = System.Windows.Forms.ScrollBars.Both;
+            this.txtPlayers.Size = new System.Drawing.Size(148, 238);
             this.txtPlayers.TabIndex = 0;
             this.txtPlayers.TextChanged += new System.EventHandler(this.txtPlayers_TextChanged);
+            this.txtPlayers.KeyDown += new System.Windows.Forms.KeyEventHandler(this.txtMultiline_KeyDown);
             // 
             // tabPage5
             // 
@@ -821,81 +936,43 @@
             this.comboGameTypes.Size = new System.Drawing.Size(121, 21);
             this.comboGameTypes.TabIndex = 1;
             // 
-            // chkTurboDay1
+            // colPlayer
             // 
-            this.chkTurboDay1.AutoSize = true;
-            this.chkTurboDay1.Location = new System.Drawing.Point(224, 86);
-            this.chkTurboDay1.Name = "chkTurboDay1";
-            this.chkTurboDay1.Size = new System.Drawing.Size(60, 17);
-            this.chkTurboDay1.TabIndex = 25;
-            this.chkTurboDay1.Text = "Day 1?";
-            this.chkTurboDay1.UseVisualStyleBackColor = true;
+            this.colPlayer.HeaderText = "Player";
+            this.colPlayer.Name = "colPlayer";
+            this.colPlayer.ReadOnly = true;
             // 
-            // label14
+            // colPostcount
             // 
-            this.label14.AutoSize = true;
-            this.label14.Location = new System.Drawing.Point(221, 186);
-            this.label14.Name = "label14";
-            this.label14.Size = new System.Drawing.Size(77, 13);
-            this.label14.TabIndex = 30;
-            this.label14.Text = "Day 2+ Length";
+            this.colPostcount.FillWeight = 30F;
+            this.colPostcount.HeaderText = "Posts";
+            this.colPostcount.Name = "colPostcount";
+            this.colPostcount.ReadOnly = true;
             // 
-            // label13
+            // colPost
             // 
-            this.label13.AutoSize = true;
-            this.label13.Location = new System.Drawing.Point(221, 144);
-            this.label13.Name = "label13";
-            this.label13.Size = new System.Drawing.Size(71, 13);
-            this.label13.TabIndex = 29;
-            this.label13.Text = "Day 1 Length";
+            this.colPost.FillWeight = 30F;
+            this.colPost.HeaderText = "#";
+            this.colPost.Name = "colPost";
+            this.colPost.ReadOnly = true;
             // 
-            // numTurboDayNLength
+            // colBolded
             // 
-            this.numTurboDayNLength.Location = new System.Drawing.Point(304, 184);
-            this.numTurboDayNLength.Name = "numTurboDayNLength";
-            this.numTurboDayNLength.Size = new System.Drawing.Size(45, 20);
-            this.numTurboDayNLength.TabIndex = 28;
+            this.colBolded.HeaderText = "Bolded";
+            this.colBolded.Name = "colBolded";
+            this.colBolded.ReadOnly = true;
             // 
-            // numTurboDay1Length
+            // colComboVote
             // 
-            this.numTurboDay1Length.Location = new System.Drawing.Point(304, 144);
-            this.numTurboDay1Length.Name = "numTurboDay1Length";
-            this.numTurboDay1Length.Size = new System.Drawing.Size(45, 20);
-            this.numTurboDay1Length.TabIndex = 27;
-            // 
-            // chkTurbo
-            // 
-            this.chkTurbo.AutoSize = true;
-            this.chkTurbo.Location = new System.Drawing.Point(224, 63);
-            this.chkTurbo.Name = "chkTurbo";
-            this.chkTurbo.Size = new System.Drawing.Size(60, 17);
-            this.chkTurbo.TabIndex = 26;
-            this.chkTurbo.Text = "Turbo?";
-            this.chkTurbo.UseVisualStyleBackColor = true;
-            // 
-            // button2
-            // 
-            this.button2.Location = new System.Drawing.Point(379, 113);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(75, 23);
-            this.button2.TabIndex = 31;
-            this.button2.Text = "Generate End Times";
-            this.button2.UseVisualStyleBackColor = true;
-            this.button2.Click += new System.EventHandler(this.button2_Click);
-            // 
-            // txtTurboEnd
-            // 
-            this.txtTurboEnd.Location = new System.Drawing.Point(379, 144);
-            this.txtTurboEnd.Name = "txtTurboEnd";
-            this.txtTurboEnd.ReadOnly = true;
-            this.txtTurboEnd.Size = new System.Drawing.Size(100, 20);
-            this.txtTurboEnd.TabIndex = 32;
+            this.colComboVote.HeaderText = "Votes For";
+            this.colComboVote.Name = "colComboVote";
+            this.colComboVote.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Automatic;
             // 
             // FormVoteCounter
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(536, 613);
+            this.ClientSize = new System.Drawing.Size(572, 613);
             this.Controls.Add(this.tabVotes);
             this.Name = "FormVoteCounter";
             this.Text = "Fennec Fox Vote Counter";
@@ -905,6 +982,11 @@
             this.tabPage4.PerformLayout();
             this.tableLayoutPanel1.ResumeLayout(false);
             this.tableLayoutPanel1.PerformLayout();
+            this.splitContainer1.Panel1.ResumeLayout(false);
+            this.splitContainer1.Panel2.ResumeLayout(false);
+            this.splitContainer1.Panel2.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
+            this.splitContainer1.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.grdVotes)).EndInit();
             this.contextMenuStrip1.ResumeLayout(false);
             this.statusBrowser.ResumeLayout(false);
@@ -917,6 +999,8 @@
             this.tabPage1.PerformLayout();
             this.tabPage3.ResumeLayout(false);
             this.tabPage3.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numTurboDayNLength)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numTurboDay1Length)).EndInit();
             this.tabPage5.ResumeLayout(false);
             this.tabPage5.PerformLayout();
             this.tableLayoutPanel4.ResumeLayout(false);
@@ -927,8 +1011,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.numVanillaWolves)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numVanillagers)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numVillageSeers)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numTurboDayNLength)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numTurboDay1Length)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -990,10 +1072,6 @@
         private System.Windows.Forms.TextBox txtPlayers;
         private System.Windows.Forms.Label label17;
         private System.Windows.Forms.TextBox txtModerator;
-        private System.Windows.Forms.DataGridViewTextBoxColumn colPlayer;
-        private System.Windows.Forms.DataGridViewTextBoxColumn colPost;
-        private System.Windows.Forms.DataGridViewTextBoxColumn colBolded;
-        private System.Windows.Forms.DataGridViewComboBoxColumn colComboVote;
         private System.Windows.Forms.TextBox txtPostTable;
         private System.Windows.Forms.DateTimePicker dtEOD;
         private System.Windows.Forms.Label label18;
@@ -1005,6 +1083,16 @@
         private System.Windows.Forms.CheckBox chkTurboDay1;
         private System.Windows.Forms.TextBox txtTurboEnd;
         private System.Windows.Forms.Button button2;
+        private System.Windows.Forms.SplitContainer splitContainer1;
+        private System.Windows.Forms.CheckBox chkEodTomorrow;
+        private System.Windows.Forms.Label label20;
+        private System.Windows.Forms.Label label19;
+        private System.Windows.Forms.TextBox txtDeadPlayers;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colPlayer;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colPostcount;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colPost;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colBolded;
+        private System.Windows.Forms.DataGridViewComboBoxColumn colComboVote;
 
 
     }

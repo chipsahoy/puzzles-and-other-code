@@ -2,57 +2,111 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading;
 using System.Windows.Forms;
 using System.Text.RegularExpressions;
-using Timer = System.Windows.Forms.Timer;
 
 namespace FennecFox
 {
+
     public partial class FormVoteCounter : Form
     {
+        private class ObjectInt
+        {
+            public ObjectInt()
+            {
+                Value = 0;
+            }
+
+            public ObjectInt(Int32 value)
+            {
+                Value = value;
+            }
+
+            public override string ToString()
+            {
+                return Value.ToString();
+            }
+
+            public static implicit operator int(ObjectInt i)
+            {
+                return i.Value;
+            }
+
+            public Int32 Value { get; set; }
+        }
+
+        private String[] _players;
         public String[] Players
         {
             get
             {
-                return txtPlayers.Text.Split(
-                    new char[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries)
-                    .Select(p => p.Trim())
-                    .Distinct()
-                    .ToArray();
+                if (_players == null)
+                {
+                    List<String> list = txtPlayers.Text.Split(
+                        new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries)
+                        .Select(p => p.Trim())
+                        .Distinct().ToList();
+
+                    List<String> dead = txtDeadPlayers.Text.Split(
+                        new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries)
+                        .Select(p => p.Trim())
+                        .Distinct().ToList();
+                    dead.Add(txtModerator.Text);
+
+                    list = list.Except(dead).ToList();
+
+                    list.Sort();
+                    list.AddRange(new[] { "unvote", "No Lynch" });
+                    _players = list.ToArray();
+                }
+
+                return _players;
             }
         }
-        /*
-        private Dictionary<String, String> mappings = new Dictionary<string, string>();
-        public Dictionary<String, String> Mappings
+
+        public String[] DeadPlayers
         {
-            get { return mappings; }
-        }*/
+            get
+            {
+                var list = txtDeadPlayers.Text.Split(new char[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries).Select(
+                        p => p.Trim()).Distinct().ToList();
+                list.Sort();
+                return list.ToArray();
+            }
+        }
 
-        int m_startPost = 1;
-        int m_currentPage = 1;
-        int m_postsPerPage = 50;
-        private Thread workerThread;
+        public String[] AllPlayers
+        {
+            get { return Players.ToList().Union(DeadPlayers.ToList()).ToArray(); }
+        }
 
-        private String m_username; // if this changes from what user entered previously, need to logout then re-login with new info.
+        int _startPost = 1;
+        int _currentPage = 1;
+        int _postsPerPage = 50;
+        private Thread _workerThread;
 
-        ConnectionSettings connectionSettings = new ConnectionSettings();
+        private String _username; // if this changes from what user entered previously, need to logout then re-login with new info.
 
-        private static String BASE_URL = "http://forumserver.twoplustwo.com/";
+        readonly ConnectionSettings connectionSettings = new ConnectionSettings();
+
+        private const String BASE_URL = "http://forumserver.twoplustwo.com/";
 
         public FormVoteCounter()
         {
             InitializeComponent();
 
             grdVotes.Columns[1].ValueType = typeof(Int32);
+            grdVotes.Columns[2].ValueType = typeof(Int32);
         }
 
         private int PageFromNumber(int number)
         {
-            int page = (number / m_postsPerPage) + 1;
+            int page = (number / _postsPerPage) + 1;
             return page;
         }
 
@@ -64,19 +118,19 @@ namespace FennecFox
         /// <returns></returns>
         private String DoLogin(String username, String password)
         {
-            if (m_username != null && username != m_username)
+            if (_username != null && username != _username)
             {
                 // user switched accounts.  logout first
                 DoLogout();
             }
 
-            if (username == m_username)
+            if (username == _username)
             {
                 // don't need to do anything, we're already logged in
                 return null;
             }
 
-            m_username = null;
+            _username = null;
             String passToken = SecurityUtils.md5(password);
 
             connectionSettings.Url = String.Format("{0}login.php?do=login", BASE_URL);
@@ -98,23 +152,23 @@ namespace FennecFox
 
             // set posts/page
             connectionSettings.Url = String.Format("{0}profile.php?do=editoptions", BASE_URL);
-            m_username = username;
+            _username = username;
             resp = HtmlHelper.GetUrlResponseString(connectionSettings);
             if (resp != null)
             {
                 Match m = Regex.Match(resp, "umaxposts.*?value=\"(-?\\d+)\"[ ](class=\"[A-z0-9]*\")?[ ]*selected=\"selected\"", RegexOptions.Singleline);
                 if (m.Success)
                 {
-                    m_postsPerPage = Int32.Parse(m.Groups[1].Value);
-                    if (m_postsPerPage == -1)
+                    _postsPerPage = Int32.Parse(m.Groups[1].Value);
+                    if (_postsPerPage == -1)
                     {
-                        m_postsPerPage = 15;
+                        _postsPerPage = 15;
                     }
                 }
                 else
                 {
 
-                    m_postsPerPage = 100;
+                    _postsPerPage = 100;
                     return
                         "Login success, but there was an error setting the posts/page.  Please set your settings to 100 posts/page.";
                 }
@@ -122,7 +176,7 @@ namespace FennecFox
             }
             else
             {
-                m_postsPerPage = 100;
+                _postsPerPage = 100;
                 return
                     "Login success, but there was an error setting the posts/page.  Please set your settings to 100 posts/page.";
             }
@@ -148,30 +202,54 @@ namespace FennecFox
 
         private void DoWork()
         {
-            if (!_shouldStop)
+            try
             {
-                statusText.Text = "Fetching page " + m_currentPage.ToString();
-
-                string doc = HtmlHelper.GetUrlResponseString(connectionSettings);
-                int totalPages = 0;
-                int lastRead = ParseVotePage(doc, m_startPost, ref totalPages);
-                if (lastRead != 0)
+                if (!_shouldStop)
                 {
+                    statusText.Text = "Fetching page " + _currentPage.ToString();
 
-                    m_startPost = lastRead + 1;
-                    int lastPostThisPage = m_postsPerPage * m_currentPage;
-                    if (totalPages > m_currentPage)
+                    string doc = HtmlHelper.GetUrlResponseString(connectionSettings);
+                    int totalPages = 0;
+                    int lastRead = ParseVotePage(doc, _startPost, ref totalPages);
+                    if (lastRead != 0)
                     {
-                        connectionSettings.Url = GetNextUrl(connectionSettings.Url, m_currentPage + 1);
-                        // if we make it to the end, start on next page
-                        DoWork();
-                        return;
+
+                        _startPost = lastRead + 1;
+                        int lastPostThisPage = _postsPerPage * _currentPage;
+                        if (totalPages > _currentPage)
+                        {
+                            connectionSettings.Url = GetNextUrl(connectionSettings.Url, _currentPage + 1);
+                            // if we make it to the end, start on next page
+                            DoWork();
+                            return;
+                        }
                     }
                 }
+            }
+            catch (Exception e)
+            {
+                HandleError(e);
             }
 
             // when we get here, we're all done or aborted.
             halt();
+        }
+
+        private delegate void ErrorDelegate(Exception e);
+        private void HandleError(Exception e)
+        {
+            if (InvokeRequired)
+            {
+                Invoke(new ErrorDelegate(HandleError), new object[] { e });
+                return;
+            }
+
+            String file = Directory.GetCurrentDirectory() + @"\error.log";
+            File.AppendAllText(file, DateTime.Now + ": " + e.ToString() + "\n\n");
+            MessageBox.Show(this,
+                            String.Format(
+                                "An error has occurred and a crashdump was created at \n\n{0}\n\nPlease send the log file to the developer.  The message was:\n\n{1}",
+                                file, e.Message), "Critical Error");
         }
 
         private String GetNextUrl(String destination, Int32 page)
@@ -186,10 +264,10 @@ namespace FennecFox
                 destination += "/";
             }
 
-            m_currentPage = page;
+            _currentPage = page;
             if (page > 1)
             {
-                destination += "index" + page.ToString() + ".html";
+                destination += "index" + page + ".html";
             }
 
             return destination;
@@ -206,12 +284,13 @@ namespace FennecFox
                 StopButton.Enabled = true;
                 GoButton.Enabled = false;
                 _shouldStop = false;
+                _players = null;
 
-                workerThread = new Thread(DoWork);
+                _workerThread = new Thread(DoWork);
 
                 // find the min post # to search.
                 // Grab that page.
-                int firstPost = m_startPost;
+                int firstPost = _startPost;
                 int userFirst = Convert.ToInt32(txtFirstPost.Text);
                 if (userFirst > firstPost)
                 {
@@ -221,7 +300,7 @@ namespace FennecFox
                 {
                     firstPost = 1;
                 }
-                m_startPost = firstPost;
+                _startPost = firstPost;
 
                 int page = PageFromNumber(firstPost);
                 string destination = GetNextUrl(URLTextBox.Text.Trim(), page);
@@ -237,11 +316,11 @@ namespace FennecFox
 
                 connectionSettings.Url = destination;
 
-                workerThread.Start();
+                _workerThread.Start();
             }
         }
 
-        void RemoveComments(HtmlAgilityPack.HtmlNode node)
+        static void RemoveComments(HtmlAgilityPack.HtmlNode node)
         {
             foreach (var n in node.SelectNodes("//comment()") ?? new HtmlAgilityPack.HtmlNodeCollection(node))
             {
@@ -249,7 +328,7 @@ namespace FennecFox
             }
         }
 
-        void RemoveQuotes(HtmlAgilityPack.HtmlNode node)
+        static void RemoveQuotes(HtmlAgilityPack.HtmlNode node)
         {
             foreach (var n in node.SelectNodes("div/table/tbody/tr/td[@class='alt2']") ?? new HtmlAgilityPack.HtmlNodeCollection(node))
             {
@@ -258,7 +337,7 @@ namespace FennecFox
             }
         }
 
-        void RemoveColors(HtmlAgilityPack.HtmlNode node)
+        static void RemoveColors(HtmlAgilityPack.HtmlNode node)
         {
             foreach (var n in node.SelectNodes("//font") ?? new HtmlAgilityPack.HtmlNodeCollection(node))
             {
@@ -266,7 +345,7 @@ namespace FennecFox
             }
         }
 
-        void RemoveNewlines(HtmlAgilityPack.HtmlNode node)
+        static void RemoveNewlines(HtmlAgilityPack.HtmlNode node)
         {
             foreach (var n in node.SelectNodes("//br") ?? new HtmlAgilityPack.HtmlNodeCollection(node))
             {
@@ -274,10 +353,34 @@ namespace FennecFox
             }
         }
 
+        private delegate Tuple<LinkedList<Vote>, DataGridViewRow, ObjectInt> PlayerTupleDelegate(String player);
+        private Tuple<LinkedList<Vote>, DataGridViewRow, ObjectInt> GetPlayerTuple(String player)
+        {
+            if (InvokeRequired)
+            {
+                return (Tuple<LinkedList<Vote>, DataGridViewRow, ObjectInt>)Invoke(new PlayerTupleDelegate(GetPlayerTuple), new object[] { player });
+            }
+
+            if (!_playerVotes.ContainsKey(player))
+            {
+                var list = new LinkedList<Vote>();
+
+                Int32 index = grdVotes.Rows.Add(MakeNewRow(player));
+                grdVotes.Rows[index].Tag = new Vote();
+
+                var t = new Tuple<LinkedList<Vote>, DataGridViewRow, ObjectInt>(list, grdVotes.Rows[index], new ObjectInt(0));
+                _playerVotes.Add(player, t);
+            }
+
+            var tPlayer = _playerVotes[player];
+
+            return tPlayer;
+        }
+
         private int ParseVotePage(string doc, int firstPost, ref int totalPages)
         {
             int lastPost = 0;
-            HtmlAgilityPack.HtmlDocument html = new HtmlAgilityPack.HtmlDocument();
+            var html = new HtmlAgilityPack.HtmlDocument();
             html.LoadHtml(doc);
             HtmlAgilityPack.HtmlNode root = html.DocumentNode;
             RemoveComments(root);
@@ -290,7 +393,6 @@ namespace FennecFox
                 if (m.Success)
                 {
                     //Console.WriteLine("{0}/{1}", m.Groups[1].Value, m.Groups[2].Value);
-                    int currentPage = Convert.ToInt32(m.Groups[1].Value);
                     totalPages = Convert.ToInt32(m.Groups[2].Value);
                 }
             }
@@ -319,11 +421,13 @@ namespace FennecFox
                     RemoveNewlines(post);
                     string poster = "";
                     Int32 postNumber = 0;
+                    String postLink = null;
 
                     HtmlAgilityPack.HtmlNode postNumberNode = post.SelectSingleNode("../../../tr[1]/td[2]/a");
                     if (postNumberNode != null)
                     {
                         postNumber = Int32.Parse(postNumberNode.InnerText);
+                        postLink = postNumberNode.Attributes["href"].Value;
                         lastPost = Convert.ToInt32(postNumber);
                         if (lastPost < firstPost)
                         {
@@ -336,14 +440,23 @@ namespace FennecFox
                     {
                         poster = userNode.InnerText;
                     }
-                    if (lastPost == 17828)
-                    {
-                        Console.WriteLine(post.InnerHtml);
-                    }
 
-                    if (txtModerator.Text != poster)
+                    if (Players.Contains(poster, StringComparer.CurrentCultureIgnoreCase))
                     {
+                        // if the poster's name exists as a different case, replace the player.
+                        if (!Players.Contains(poster))
+                        {
+                            var tPoster = poster;
+                            // if we get here, the difference is only by case
+                            // just use the version that the mod wants to use - trying to update the list involves delegates and stuff.  meh.
+                            poster = Players.First(x => x.ToLower() == tPoster.ToLower());
+                        }
+
+                        // add a new
+                        var tPlayer = GetPlayerTuple(poster);
+                        tPlayer.Item3.Value++;
                         HtmlAgilityPack.HtmlNodeCollection bolds = post.SelectNodes("child::b");
+
                         if (bolds != null)
                         {
                             foreach (HtmlAgilityPack.HtmlNode c in bolds)
@@ -352,14 +465,14 @@ namespace FennecFox
                                 {
                                     //                            Console.WriteLine(String.Format("{0,8}\t{1,25}\t{2}", postNumber, poster, c.InnerHtml));
                                     Console.WriteLine("{0}\t{1}\t{2}", postNumber, poster, c.InnerHtml);
-                                    AddVote(poster, new Vote(postNumber, c.InnerHtml.Trim()));
+                                    AddVote(poster, new Vote(postNumber, poster, c.InnerHtml.Trim(), postLink));
                                 }
                             }
                         }
-                    }
 
-                    UpdateLastPost(lastPost);
-                    GenerateTable();
+                        UpdateLastPost(lastPost);
+                        GenerateTable();
+                    }
                 }
                 else
                 {
@@ -369,14 +482,15 @@ namespace FennecFox
 
             // ensure the timestamp gets re-generated even if there were no new posts
             GenerateTable();
+            UpdatePostcounts();
             return lastPost;
         }
 
         private void UpdateLastPost(Int32 lastPost)
         {
-            if (this.InvokeRequired)
+            if (InvokeRequired)
             {
-                this.Invoke(new LastPostDelegate(UpdateLastPost), new object[] { lastPost });
+                Invoke(new LastPostDelegate(UpdateLastPost), new object[] { lastPost });
                 return;
             }
 
@@ -385,49 +499,36 @@ namespace FennecFox
         }
 
         private delegate void LastPostDelegate(Int32 lastPost);
-        private delegate void VoteDelegate(String player, Vote vote);
-        Dictionary<string, Tuple<LinkedList<Vote>, DataGridViewRow>> m_PlayerVotes = new Dictionary<string, Tuple<LinkedList<Vote>, DataGridViewRow>>();
-        void AddVote(string player, Vote vote)
+        private delegate void VoteDelegate(String player, Vote vote, bool sort);
+
+        readonly Dictionary<string, Tuple<LinkedList<Vote>, DataGridViewRow, ObjectInt>> _playerVotes = new Dictionary<string, Tuple<LinkedList<Vote>, DataGridViewRow, ObjectInt>>();
+        void AddVote(string player, Vote vote, bool sort = true)
         {
-            if (this.InvokeRequired)
+            if (InvokeRequired)
             {
-                this.Invoke(new VoteDelegate(AddVote), new object[] { player, vote });
+                Invoke(new VoteDelegate(AddVote), new object[] { player, vote, sort });
                 return;
             }
 
-            if (!m_PlayerVotes.ContainsKey(player))
-            {
-                LinkedList<Vote> list = new LinkedList<Vote>();
+            var tPlayer = GetPlayerTuple(player);
 
-                Int32 index = grdVotes.Rows.Add(MakeNewRow(player));
-
-                Tuple<LinkedList<Vote>, DataGridViewRow> t = new Tuple<LinkedList<Vote>, DataGridViewRow>(list, grdVotes.Rows[index]);
-                m_PlayerVotes.Add(player, t);
-            }
-
-            Tuple<LinkedList<Vote>, DataGridViewRow> tPlayer = m_PlayerVotes[player];
             if (tPlayer != null)
             {
-                tPlayer.Item1.AddLast(vote);
+                if (vote != null)
+                {
+                    tPlayer.Item1.AddLast(vote);
+                    tPlayer.Item2.Cells[2].Value = vote.PostNumber;
+                    tPlayer.Item2.Cells[3].Value = vote.Content;
+                    tPlayer.Item2.Tag = vote;
+                }
+
                 // visual update
-                tPlayer.Item2.Cells[1].Value = vote.PostNumber;
-                tPlayer.Item2.Cells[2].Value = vote.Content;
+                tPlayer.Item2.Cells[1].Value = (Int32)tPlayer.Item3;
             }
 
-            if (grdVotes.SortedColumn != null)
+            if (sort)
             {
-                if (grdVotes.SortOrder == SortOrder.Descending)
-                {
-                    grdVotes.Sort(grdVotes.SortedColumn, ListSortDirection.Descending);
-                }
-                else
-                {
-                    grdVotes.Sort(grdVotes.SortedColumn, ListSortDirection.Ascending);
-                }
-            }
-            else
-            {
-                grdVotes.Sort(grdVotes.Columns[0], ListSortDirection.Ascending);
+                grdVotes.Sort();
             }
         }
 
@@ -437,14 +538,17 @@ namespace FennecFox
             toRet.Cells.Add(new DataGridViewTextBoxCell());
             toRet.Cells.Add(new DataGridViewTextBoxCell());
             toRet.Cells.Add(new DataGridViewTextBoxCell());
-            DataGridViewComboBoxCell c = new DataGridViewComboBoxCell();
+            toRet.Cells.Add(new DataGridViewTextBoxCell());
+            var c = new DataGridViewComboBoxCell();
             SetComboRange(c);
             toRet.Cells.Add(c);
 
             toRet.Cells[0].Value = player;
             toRet.Cells[1].Value = 0;
             toRet.Cells[1].ValueType = typeof(Int32);
-            toRet.Cells[2].Value = "";
+            toRet.Cells[2].Value = 0;
+            toRet.Cells[2].ValueType = typeof(Int32);
+            toRet.Cells[3].Value = "";
 
             return toRet;
         }
@@ -465,9 +569,33 @@ namespace FennecFox
             }
         }
 
+        public Vote GetActiveVote(String player)
+        {
+            Vote toRet = null;
+            var tPlayer = _playerVotes[player];
+            if (tPlayer != null)
+            {
+                var list = tPlayer.Item1;
+                var node = list.Last;
+                // find first shown node...
+                while (node != null)
+                {
+                    if (node.Value.Ignore == false)
+                    {
+                        toRet = node.Value;
+                        break;
+                    }
+
+                    node = node.Previous;
+                }
+            }
+
+            return toRet;
+        }
+
         public void HideVote(string player)
         {
-            Tuple<LinkedList<Vote>, DataGridViewRow> tPlayer = m_PlayerVotes[player];
+            var tPlayer = _playerVotes[player];
             if (tPlayer != null)
             {
                 LinkedList<Vote> list = tPlayer.Item1;
@@ -480,8 +608,10 @@ namespace FennecFox
                         node.Value.Ignore = true;
                         break;
                     }
+
                     node = node.Previous;
                 }
+
                 // now find a node to show
                 while (node != null)
                 {
@@ -489,21 +619,26 @@ namespace FennecFox
                     {
                         // winner, show this
                         Vote vote = node.Value;
-                        tPlayer.Item2.Cells[1].Value = vote.PostNumber;
-                        tPlayer.Item2.Cells[2].Value = vote.Content;
+                        tPlayer.Item2.Cells[1].Value = (Int32)tPlayer.Item3;
+                        tPlayer.Item2.Cells[2].Value = vote.PostNumber;
+                        tPlayer.Item2.Cells[3].Value = vote.Content;
+                        tPlayer.Item2.Tag = vote;
                         return;
                     }
+
                     node = node.Previous;
                 }
 
-                tPlayer.Item2.Cells[1].Value = "0";
-                tPlayer.Item2.Cells[2].Value = "";
+                tPlayer.Item2.Cells[1].Value = 0;
+                tPlayer.Item2.Cells[2].Value = 0;
+                tPlayer.Item2.Cells[3].Value = "";
+                tPlayer.Item2.Tag = new Vote();
             }
         }
 
         public void UnhideVote(string player)
         {
-            Tuple<LinkedList<Vote>, DataGridViewRow> tPlayer = m_PlayerVotes[player];
+            var tPlayer = _playerVotes[player];
             if (tPlayer != null)
             {
                 LinkedList<Vote> list = tPlayer.Item1;
@@ -515,25 +650,23 @@ namespace FennecFox
                     {
                         break;
                     }
+
                     node = node.Previous;
                 }
-                if (node == null)
-                {
-                    node = list.First;
-                }
-                else
-                {
-                    // now back up one.
-                    node = node.Next;
-                }
+
+                node = node == null ? list.First : node.Next;
+
                 if (node != null)
                 {
                     // show this guy
                     node.Value.Ignore = false;
                     Vote vote = node.Value;
-                    tPlayer.Item2.Cells[1].Value = vote.PostNumber;
-                    tPlayer.Item2.Cells[2].Value = vote.Content;
+                    tPlayer.Item2.Cells[1].Value = (Int32)tPlayer.Item3;
+                    tPlayer.Item2.Cells[2].Value = vote.PostNumber;
+                    tPlayer.Item2.Cells[3].Value = vote.Content;
+                    tPlayer.Item2.Tag = vote;
                 }
+
                 return;
             }
         }
@@ -545,7 +678,7 @@ namespace FennecFox
                 return;
             }
 
-            DataGridViewRow item = grdVotes.SelectedRows[0];
+            var item = grdVotes.SelectedRows[0];
             if (item != null)
             {
                 var player = (String)item.Cells[0].Value;
@@ -559,10 +692,10 @@ namespace FennecFox
             {
                 return;
             }
-            DataGridViewRow item = grdVotes.SelectedRows[0];
+            var item = grdVotes.SelectedRows[0];
             if (item != null)
             {
-                string player = (String)item.Cells[0].Value;
+                var player = (String)item.Cells[0].Value;
                 UnhideVote(player);
             }
         }
@@ -570,8 +703,8 @@ namespace FennecFox
         private void button1_Click(object sender, EventArgs e)
         {
             grdVotes.Rows.Clear();
-            m_PlayerVotes.Clear();
-            m_startPost = 1; // can/will be overridden by user first later
+            _playerVotes.Clear();
+            _startPost = 1; // can/will be overridden by user first later
             txtLastPost.Text = "0";
 
             statusText.Text = "Cleared votes";
@@ -585,9 +718,9 @@ namespace FennecFox
 
         private void halt()
         {
-            if (this.InvokeRequired)
+            if (InvokeRequired)
             {
-                this.Invoke(new MethodInvoker(halt));
+                Invoke(new MethodInvoker(halt));
                 return;
             }
 
@@ -631,10 +764,15 @@ namespace FennecFox
             Properties.Settings.Default.username = txtUsername.Text.Trim();
             Properties.Settings.Default.password = txtPassword.Text.Trim();
             Properties.Settings.Default.threadUrl = URLTextBox.Text.Trim();
-            Properties.Settings.Default.firstPost = m_startPost;
-            Properties.Settings.Default.postsPerPage = m_postsPerPage;
+            Properties.Settings.Default.firstPost = _startPost;
+            Properties.Settings.Default.postsPerPage = _postsPerPage;
             Properties.Settings.Default.Players = new StringCollection();
-            Properties.Settings.Default.Players.AddRange(Players);
+            var players = AllPlayers.ToList();
+            players.RemoveRange(Players.Count() - 2, 2);
+            Properties.Settings.Default.Players.AddRange(players.ToArray());
+
+            Properties.Settings.Default.DeadPlayers = new StringCollection();
+            Properties.Settings.Default.DeadPlayers.AddRange(DeadPlayers);
             Properties.Settings.Default.Moderator = txtModerator.Text;
             Properties.Settings.Default.EndOfDay = dtEOD.Value;
 
@@ -643,34 +781,47 @@ namespace FennecFox
 
         private void Form_Load(object sender, EventArgs e)
         {
-            if (FennecFox.Properties.Settings.Default.Mappings == null)
+            if (Properties.Settings.Default.Mappings == null)
             {
-                FennecFox.Properties.Settings.Default.Mappings = new StringDictionary();
+                Properties.Settings.Default.Mappings = new StringDictionary();
             }
 
-            if (FennecFox.Properties.Settings.Default.Players == null)
+            if (Properties.Settings.Default.Players == null)
             {
-                FennecFox.Properties.Settings.Default.Players = new StringCollection();
+                Properties.Settings.Default.Players = new StringCollection();
             }
 
-            m_startPost = FennecFox.Properties.Settings.Default.firstPost;
-            txtFirstPost.Text = m_startPost.ToString();
-            m_postsPerPage = FennecFox.Properties.Settings.Default.postsPerPage;
-            txtUsername.Text = FennecFox.Properties.Settings.Default.username;
-            txtPassword.Text = FennecFox.Properties.Settings.Default.password;
-            URLTextBox.Text = FennecFox.Properties.Settings.Default.threadUrl;
-            String[] tmp = new string[FennecFox.Properties.Settings.Default.Players.Count];
-            FennecFox.Properties.Settings.Default.Players.CopyTo(tmp, 0);
-            txtModerator.Text = FennecFox.Properties.Settings.Default.Moderator;
-            txtPlayers.Lines = tmp;
-            dtEOD.Value = FennecFox.Properties.Settings.Default.EndOfDay;
+            if (Properties.Settings.Default.DeadPlayers == null)
+            {
+                Properties.Settings.Default.DeadPlayers = new StringCollection();
+            }
+
+            _startPost = Properties.Settings.Default.firstPost;
+            txtFirstPost.Text = _startPost.ToString();
+            _postsPerPage = Properties.Settings.Default.postsPerPage;
+            txtUsername.Text = Properties.Settings.Default.username;
+            txtPassword.Text = Properties.Settings.Default.password;
+            URLTextBox.Text = Properties.Settings.Default.threadUrl;
+            var tmp = new string[Properties.Settings.Default.Players.Count];
+            Properties.Settings.Default.Players.CopyTo(tmp, 0);
+            var list = new List<String>(tmp);
+            list.Sort();
+            txtModerator.Text = Properties.Settings.Default.Moderator;
+            txtPlayers.Lines = list.ToArray();
+            tmp = new string[Properties.Settings.Default.DeadPlayers.Count];
+            Properties.Settings.Default.DeadPlayers.CopyTo(tmp, 0);
+            list = new List<string>(tmp);
+            list.Sort();
+            txtDeadPlayers.Lines = list.ToArray();
+            dtEOD.Value = Properties.Settings.Default.EndOfDay;
         }
 
         private void txtPlayers_TextChanged(object sender, EventArgs e)
         {
+            _players = null;
             foreach (DataGridViewRow row in grdVotes.Rows)
             {
-                DataGridViewComboBoxCell cell = (DataGridViewComboBoxCell)row.Cells[3];
+                var cell = (DataGridViewComboBoxCell)row.Cells[4];
                 SetComboRange(cell);
             }
         }
@@ -679,7 +830,7 @@ namespace FennecFox
         {
             if (e.RowIndex >= 0)
             {
-                var vote = ((String)grdVotes[2, e.RowIndex].Value).ToLower().Replace(" ", "");
+                var vote = ((String)grdVotes[3, e.RowIndex].Value).ToLower().Replace(" ", "");
                 if (vote.StartsWith("vote:"))
                 {
                     vote = vote.Substring(5).Trim();
@@ -690,55 +841,99 @@ namespace FennecFox
                     vote = vote.Substring(4).Trim();
                 }
 
-                if (e.ColumnIndex == 2)
+                if (e.ColumnIndex == 3)
                 {
+                    /*
                     if (String.IsNullOrWhiteSpace(vote) || vote == "unvote")
                     {
                         grdVotes[3, e.RowIndex].Value = ((DataGridViewComboBoxCell)grdVotes[3, e.RowIndex]).Items[0];
                     }
                     else
                     {
-                        var player = Players.FirstOrDefault(p => p.ToLower().Replace(" ", "") == vote || p.ToLower().Replace(" ", "").StartsWith(vote));
-                        if (player != null)
+                     * */
+                    var player = Players.FirstOrDefault(p => p.ToLower().Replace(" ", "") == vote || p.ToLower().Replace(" ", "").StartsWith(vote));
+                    if (player != null)
+                    {
+                        grdVotes[4, e.RowIndex].Value = player;
+                    }
+                    else
+                    {
+                        // check if there is a mapping defined for this vote => player
+                        if (Properties.Settings.Default.Mappings.ContainsKey(vote))
                         {
-                            grdVotes[3, e.RowIndex].Value = player;
-                        }
-                        else
-                        {
-                            // check if there is a mapping defined for this vote => player
-                            if (FennecFox.Properties.Settings.Default.Mappings.ContainsKey(vote))
+                            player =
+                                Players.FirstOrDefault(
+                                    p => p == Properties.Settings.Default.Mappings[vote]);
+                            if (player != null)
                             {
-                                player =
-                                    Players.FirstOrDefault(
-                                        p => p == FennecFox.Properties.Settings.Default.Mappings[vote]);
-                                if (player != null)
-                                {
-                                    grdVotes[3, e.RowIndex].Value = player;
-                                }
+                                grdVotes[4, e.RowIndex].Value = player;
                             }
                         }
                     }
+                    //}
                 }
-                else if (e.ColumnIndex == 3)
+                else if (e.ColumnIndex == 4)
                 {
-                    FennecFox.Properties.Settings.Default.Mappings[vote] = (String)grdVotes[3, e.RowIndex].Value;
+                    Properties.Settings.Default.Mappings[vote] = (String)grdVotes[4, e.RowIndex].Value;
                 }
 
-                if (e.ColumnIndex == 2 || e.ColumnIndex == 3)
+                if (e.ColumnIndex == 3 || e.ColumnIndex == 4)
                 {
                     GenerateTable();
                 }
             }
         }
 
+        private void UpdatePostcounts()
+        {
+            if (InvokeRequired)
+            {
+                Invoke(new MethodInvoker(UpdatePostcounts));
+                return;
+            }
+
+            foreach (DataGridViewRow row in grdVotes.Rows)
+            {
+                var voter = ((String)row.Cells[0].Value);
+                AddVote(voter, null, false);
+            }
+
+            grdVotes.Sort();
+            grdVotes.Refresh();
+        }
+
         private void GenerateTable()
         {
             var leftInDay = (dtEOD.Value.TimeOfDay - DateTime.Now.TimeOfDay);
-            var leftInDayFormatted = String.Format("{0:00}:{1:00}", leftInDay.Hours, (leftInDay.Minutes == 59 ? 0 : leftInDay.Minutes + 1));
-            StringBuilder sb = new StringBuilder(@"[b]As of #");
+            Int32 hours = leftInDay.Hours;
+            Int32 minutes = leftInDay.Minutes;
+
+            if (chkEodTomorrow.Checked)
+            {
+                hours += 24;
+            }
+
+            if (minutes == 59)
+            {
+                hours++;
+                minutes = 0;
+            }
+            else
+            {
+                minutes++;
+            }
+
+            if (hours < 0)
+            {
+                hours += 24;
+            }
+
+            var leftInDayFormatted = String.Format("{0:00}:{1:00}", hours, minutes);
+            var sb = new StringBuilder(@"[b]Votes as of post ");
+            String lastPost = txtLastPost.Text;
             sb
-                .Append(txtLastPost.Text)
-                .AppendLine().AppendLine();
+                .Append(lastPost)
+                .AppendLine();
 
             if (chkTurbo.Checked)
             {
@@ -750,54 +945,132 @@ namespace FennecFox
 
             }
 
-            sb.AppendLine("[/b]").AppendLine()
-            .AppendLine("[table=head][b]#[/b] | [b]Player[/b] | [b]votes for[/b]");
+            sb.AppendLine("[/b]").AppendLine("---")
+            .AppendLine("[table=head][b]Votes[/b]|[b]Lynch[/b]|[b]Voters[/b]");
 
             // get current votes for each player
-            var voteCountDict = new Dictionary<String, Int32>();
-            var voteDict = new Dictionary<String, String>();
-            var playerMap = new Dictionary<String, String>();
+            var votedDict = new Dictionary<String, List<String>>();
 
-            // for each LIVE player (todo)
+            // for each LIVE player
+            var playerMap = Players.ToDictionary(player => player.ToLower());
+
+            votedDict.Add("not voting", new List<string>());
+            playerMap.Add("not voting", "not voting");
+            var voting = new List<String>();
+
+            foreach (var voterPair in _playerVotes)
+            {
+                var vote = GetActiveVote(voterPair.Key);
+                var votee = ((String)voterPair.Value.Item2.Cells[4].Value).ToLower();
+                if (vote != null && playerMap.ContainsKey(voterPair.Key.ToLower()) && playerMap.ContainsKey(votee.ToLower()))
+                {
+                    //voteCountDict[voted] += 1;
+                    if (votedDict.ContainsKey(votee))
+                    {
+                        votedDict[votee].Add(playerMap[voterPair.Key.ToLower()]);
+                    }
+                    else
+                    {
+                        votedDict.Add(votee, new List<string>());
+                        votedDict[votee].Add(playerMap[voterPair.Key.ToLower()]);
+                    }
+
+                    voting.Add(voterPair.Key.ToLower());
+                }
+                else if (playerMap.ContainsKey(voterPair.Key) && (String.IsNullOrWhiteSpace(votee) || votee.ToLower() == "--select player--"))
+                {
+                    votedDict["not voting"].Add(playerMap[voterPair.Key]);
+                    voting.Add(voterPair.Key.ToLower());
+                }
+            }
+
+            // now add anyone who isn't here
             foreach (var player in Players)
             {
-                voteCountDict.Add(player.ToLower(), 0);
-                voteDict.Add(player.ToLower(), "");
-                playerMap.Add(player.ToLower(), player);
-            }
-
-            foreach (DataGridViewRow row in grdVotes.Rows)
-            {
-                var voted = (String)row.Cells[3].Value;
-                if (voteCountDict.ContainsKey(voted.ToLower()) && voteDict.ContainsKey(((String)row.Cells[0].Value).ToLower()))
+                var loweredPlayer = player.ToLower();
+                if (!voting.Contains(loweredPlayer, StringComparer.CurrentCultureIgnoreCase) && loweredPlayer != "unvote" && loweredPlayer != "no lynch")
                 {
-                    voteCountDict[voted.ToLower()] += 1;
-                }
-
-                if (voteDict.ContainsKey(((String)row.Cells[0].Value).ToLower()))
-                {
-                    voteDict[((String)row.Cells[0].Value).ToLower()] =
-                        (row.Cells[3].Value == ((DataGridViewComboBoxCell)row.Cells[3]).Items[0])
-                            ? ""
-                            : (String)row.Cells[3].Value;
+                    votedDict["not voting"].Add(playerMap[loweredPlayer]);
                 }
             }
 
-            // now sort by descending value
-            var sortedDict =
-                (from entry in voteCountDict orderby entry.Value descending select entry).ToDictionary(pair => pair.Key,
-                                                                                                  pair => pair.Value);
+            // now sort by descending value according to special rules (see VoteComparer)
+            var sortedDict = votedDict.OrderBy(t => t, new VoteComparer());
 
-            foreach (KeyValuePair<String, Int32> pair in sortedDict)
+            var unbold = new String[] { "unvote", "not voting", "no lynch" };
+            foreach (KeyValuePair<String, List<String>> pair in sortedDict)
             {
-                sb
-                    .AppendFormat("{0} | {1} | [color='red']{2}[/color]", pair.Value, playerMap[pair.Key], voteDict[pair.Key])
-                    .AppendLine();
+                if (unbold.Contains(pair.Key, StringComparer.CurrentCultureIgnoreCase))
+                {
+                    sb
+                        .AppendFormat("{0} | {1} | {2}", pair.Value.Count, playerMap[pair.Key],
+                                      VoteLinks(pair, playerMap))
+                        .AppendLine();
+                }
+                else
+                {
+                    sb
+                        .AppendFormat("{0} | [b]{1}[/b] | {2}", pair.Value.Count, playerMap[pair.Key],
+                                      VoteLinks(pair, playerMap))
+                        .AppendLine();
+                }
             }
 
             sb.Append("[/table]");
 
             this.Invoke(new PostTableDelegate(PostTable), new object[] { sb });
+        }
+
+        private String VoteLinks(KeyValuePair<String, List<String>> pair, Dictionary<String, String> playerMap)
+        {
+            StringBuilder sb = new StringBuilder();
+            foreach (var voter in pair.Value)
+            {
+                var tPlayer = GetPlayerTuple(playerMap[voter.ToLower()]);
+                //var tPlayer = _playerVotes[];
+                if (pair.Key == "not voting")
+                {
+                    sb.AppendFormat(", {0} ({1})", voter, tPlayer.Item3);
+                }
+                else
+                {
+                    if (tPlayer != null)
+                    {
+                        LinkedList<Vote> list = tPlayer.Item1;
+                        LinkedListNode<Vote> node = list.Last;
+                        // find first shown node...
+                        while (node != null)
+                        {
+                            if (node.Value.Ignore == false)
+                            {
+                                break;
+                            }
+
+                            node = node.Previous;
+                        }
+
+                        if (node == null)
+                        {
+                            node = list.First;
+                        }
+
+                        if (node != null)
+                        {
+                            // show this guy
+                            Vote vote = node.Value;
+                            sb.AppendFormat(", [url={0}]{1}[/url] ({2})", vote.PostLink, voter, tPlayer.Item3);
+                        }
+
+                    }
+                }
+            }
+
+            if (sb.Length > 2)
+            {
+                sb.Remove(0, 2);
+            }
+
+            return sb.ToString();
         }
 
         private delegate void PostTableDelegate(StringBuilder sb);
@@ -814,17 +1087,17 @@ namespace FennecFox
 
         private void button2_Click(object sender, EventArgs e)
         {
-            Int32 start = 0;
-            Int32 end = 0;
+            var start = 0;
+            var end = 0;
             if (chkTurboDay1.Checked)
             {
-                TimeSpan ts = new TimeSpan(0, 0, (Int32)numTurboDay1Length.Value, 0);
+                var ts = new TimeSpan(0, 0, (Int32)numTurboDay1Length.Value, 0);
                 start = DateTime.Now.TimeOfDay.Add(ts).Minutes;
 
             }
             else
             {
-                TimeSpan ts = new TimeSpan(0, 0, (Int32)numTurboDayNLength.Value, 0);
+                var ts = new TimeSpan(0, 0, (Int32)numTurboDayNLength.Value, 0);
                 start = DateTime.Now.TimeOfDay.Add(ts).Minutes;
             }
 
@@ -841,6 +1114,16 @@ namespace FennecFox
             }
 
             txtTurboEnd.Text = String.Format(":{0:00} good :{1:00} bad", start, end);
+        }
+
+        private void txtMultiline_KeyDown(object sender, KeyEventArgs e)
+        {
+            var txtBox = sender as TextBox;
+            if (txtBox != null && txtBox.Multiline && e.Control && e.KeyCode == Keys.A)
+            {
+                txtBox.SelectAll();
+                e.SuppressKeyPress = true;
+            }
         }
     }
 }
