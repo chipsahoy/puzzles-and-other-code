@@ -1,7 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual C# Express 2010
+# Visual Studio 2010
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FennecFox", "FennecFox\FennecFox.csproj", "{E0EDC0F5-6F5E-4B1A-B090-EA10F9ABE34E}"
+EndProject
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "FFSetup", "FFSetup\FFSetup.vdproj", "{FBB46EF3-7729-4F34-B62A-C5CC9F02C629}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -13,6 +15,8 @@ Global
 		{E0EDC0F5-6F5E-4B1A-B090-EA10F9ABE34E}.Debug|x86.Build.0 = Debug|x86
 		{E0EDC0F5-6F5E-4B1A-B090-EA10F9ABE34E}.Release|x86.ActiveCfg = Release|x86
 		{E0EDC0F5-6F5E-4B1A-B090-EA10F9ABE34E}.Release|x86.Build.0 = Release|x86
+		{FBB46EF3-7729-4F34-B62A-C5CC9F02C629}.Debug|x86.ActiveCfg = Debug
+		{FBB46EF3-7729-4F34-B62A-C5CC9F02C629}.Release|x86.ActiveCfg = Release
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
