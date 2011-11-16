@@ -438,7 +438,7 @@ namespace FennecFox
                     HtmlAgilityPack.HtmlNode userNode = post.SelectSingleNode("../../td[1]/div/a[@class='bigusername']");
                     if (userNode != null)
                     {
-                        poster = userNode.InnerText;
+                        poster = HtmlAgilityPack.HtmlEntity.DeEntitize(userNode.InnerText);
                     }
 
                     if (Players.Contains(poster, StringComparer.CurrentCultureIgnoreCase))
@@ -451,6 +451,7 @@ namespace FennecFox
                             // just use the version that the mod wants to use - trying to update the list involves delegates and stuff.  meh.
                             poster = Players.First(x => x.ToLower() == tPoster.ToLower());
                         }
+                        Console.WriteLine("{0}\t{1}", postNumber, poster);
 
                         // add a new
                         var tPlayer = GetPlayerTuple(poster);
@@ -461,11 +462,12 @@ namespace FennecFox
                         {
                             foreach (HtmlAgilityPack.HtmlNode c in bolds)
                             {
-                                if (c.InnerText.Trim().Length > 0)
+                                string bold = HtmlAgilityPack.HtmlEntity.DeEntitize(c.InnerText.Trim());
+                                if (bold.Length > 0)
                                 {
                                     //                            Console.WriteLine(String.Format("{0,8}\t{1,25}\t{2}", postNumber, poster, c.InnerHtml));
-                                    Console.WriteLine("{0}\t{1}\t{2}", postNumber, poster, c.InnerHtml);
-                                    AddVote(poster, new Vote(postNumber, poster, c.InnerHtml.Trim(), postLink));
+                                    //Console.WriteLine("{0}\t{1}\t[url={2}]{3}[/url]", postNumber, poster, postLink, c.InnerHtml);
+                                    AddVote(poster, new Vote(postNumber, poster, bold, postLink));
                                 }
                             }
                         }
