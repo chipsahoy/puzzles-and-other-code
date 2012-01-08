@@ -910,20 +910,18 @@ namespace FennecFox
         private void GenerateTable()
         {
             TimeSpan tsNow = DateTime.Now.TimeOfDay;
-            tsNow = new TimeSpan(tsNow.Days, tsNow.Hours, tsNow.Minutes, 0);
+            tsNow = new TimeSpan(tsNow.Hours, tsNow.Minutes, 0);
             var leftInDay = (dtEOD.Value.TimeOfDay - tsNow);
+            if(leftInDay.Hours < 0) // If night was 0-59 minutes ago, assume it is night.
+            {
+                leftInDay = leftInDay.Add(new TimeSpan(1, 0, 0, 0)); // assume night is in future.
+
+            }
+            
             Int32 hours = leftInDay.Hours;
             Int32 minutes = leftInDay.Minutes;
 
-            if (chkEodTomorrow.Checked)
-            {
-                hours += 24;
-            }
 
-            if (hours < 0)
-            {
-                hours += 24;
-            }
 
             var leftInDayFormatted = String.Format("{0:00}:{1:00}", hours, minutes);
             var sb = new StringBuilder(@"[b]Votes as of post ");
@@ -932,13 +930,20 @@ namespace FennecFox
                 .Append(lastPost)
                 .AppendLine();
 
-            if (leftInDay >= TimeSpan.FromSeconds(0))
+            if (chkEodFarAway.Checked)
             {
-                sb.AppendFormat("Night in {0}", leftInDayFormatted);
+                sb.AppendLine("Night is more than 24 hours away");
             }
             else
             {
-                sb.Append("It is night");
+                if (leftInDay >= TimeSpan.FromSeconds(0))
+                {
+                    sb.AppendFormat("Night in {0}", leftInDayFormatted);
+                }
+                else
+                {
+                    sb.Append("It is night");
+                }
             }
 
             sb.AppendLine("[/b]").AppendLine("---")
@@ -1136,8 +1141,8 @@ namespace FennecFox
             if (chkTurbo.Checked)
             {
                 btnSetEOD.Enabled = true;
-                chkEodTomorrow.Visible = false;
-                chkEodTomorrow.Checked = false;
+                chkEodFarAway.Visible = false;
+                chkEodFarAway.Checked = false;
                 chkTurboDay1.Enabled = true;
                 numTurboDay1Length.Enabled = true;
                 numTurboDayNLength.Enabled = true;
@@ -1145,7 +1150,7 @@ namespace FennecFox
             else
             {
                 btnSetEOD.Enabled = false;
-                chkEodTomorrow.Visible = true;
+                chkEodFarAway.Visible = true;
                 chkTurboDay1.Enabled = false;
                 numTurboDay1Length.Enabled = false;
                 numTurboDayNLength.Enabled = false;

@@ -56,7 +56,7 @@
             this.mnuHide = new System.Windows.Forms.ToolStripMenuItem();
             this.mnuUnhide = new System.Windows.Forms.ToolStripMenuItem();
             this.txtPostTable = new System.Windows.Forms.TextBox();
-            this.chkEodTomorrow = new System.Windows.Forms.CheckBox();
+            this.chkEodFarAway = new System.Windows.Forms.CheckBox();
             this.statusBrowser = new System.Windows.Forms.StatusStrip();
             this.statusText = new System.Windows.Forms.ToolStripStatusLabel();
             this.tabVotes = new System.Windows.Forms.TabControl();
@@ -105,7 +105,6 @@
             this.label5 = new System.Windows.Forms.Label();
             this.label8 = new System.Windows.Forms.Label();
             this.comboGameTypes = new System.Windows.Forms.ComboBox();
-            this.textBox2 = new System.Windows.Forms.TextBox();
             this.txtVersion = new System.Windows.Forms.TextBox();
             this.tabPage4.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
@@ -169,7 +168,7 @@
             this.tableLayoutPanel1.Controls.Add(this.dtEOD, 1, 2);
             this.tableLayoutPanel1.Controls.Add(this.label18, 0, 2);
             this.tableLayoutPanel1.Controls.Add(this.splitContainer1, 0, 3);
-            this.tableLayoutPanel1.Controls.Add(this.chkEodTomorrow, 3, 2);
+            this.tableLayoutPanel1.Controls.Add(this.chkEodFarAway, 3, 2);
             this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel1.Location = new System.Drawing.Point(3, 3);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
@@ -207,7 +206,7 @@
             // 
             this.GoButton.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left)));
-            this.GoButton.Location = new System.Drawing.Point(354, 29);
+            this.GoButton.Location = new System.Drawing.Point(272, 29);
             this.GoButton.Name = "GoButton";
             this.GoButton.Size = new System.Drawing.Size(56, 23);
             this.GoButton.TabIndex = 4;
@@ -240,7 +239,7 @@
             this.StopButton.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left)));
             this.StopButton.Enabled = false;
-            this.StopButton.Location = new System.Drawing.Point(416, 29);
+            this.StopButton.Location = new System.Drawing.Point(334, 29);
             this.StopButton.Name = "StopButton";
             this.StopButton.Size = new System.Drawing.Size(58, 23);
             this.StopButton.TabIndex = 5;
@@ -250,7 +249,7 @@
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(480, 29);
+            this.button1.Location = new System.Drawing.Point(398, 29);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(75, 23);
             this.button1.TabIndex = 6;
@@ -436,17 +435,17 @@
             this.txtPostTable.TabIndex = 19;
             this.txtPostTable.Click += new System.EventHandler(this.txtPostTable_Click);
             // 
-            // chkEodTomorrow
+            // chkEodFarAway
             // 
-            this.chkEodTomorrow.AutoSize = true;
-            this.tableLayoutPanel1.SetColumnSpan(this.chkEodTomorrow, 3);
-            this.chkEodTomorrow.Location = new System.Drawing.Point(192, 58);
-            this.chkEodTomorrow.Name = "chkEodTomorrow";
-            this.chkEodTomorrow.Size = new System.Drawing.Size(105, 17);
-            this.chkEodTomorrow.TabIndex = 23;
-            this.chkEodTomorrow.Text = "EOD Tomorrow?";
-            this.chkEodTomorrow.UseVisualStyleBackColor = true;
-            this.chkEodTomorrow.Visible = false;
+            this.chkEodFarAway.AutoSize = true;
+            this.tableLayoutPanel1.SetColumnSpan(this.chkEodFarAway, 3);
+            this.chkEodFarAway.Location = new System.Drawing.Point(192, 58);
+            this.chkEodFarAway.Name = "chkEodFarAway";
+            this.chkEodFarAway.Size = new System.Drawing.Size(136, 17);
+            this.chkEodFarAway.TabIndex = 23;
+            this.chkEodFarAway.Text = "EOD > 24 hours away?";
+            this.chkEodFarAway.UseVisualStyleBackColor = true;
+            this.chkEodFarAway.Visible = false;
             // 
             // statusBrowser
             // 
@@ -978,13 +977,6 @@
             this.comboGameTypes.Size = new System.Drawing.Size(121, 21);
             this.comboGameTypes.TabIndex = 1;
             // 
-            // textBox2
-            // 
-            this.textBox2.Location = new System.Drawing.Point(346, 0);
-            this.textBox2.Name = "textBox2";
-            this.textBox2.Size = new System.Drawing.Size(100, 20);
-            this.textBox2.TabIndex = 5;
-            // 
             // txtVersion
             // 
             this.txtVersion.Location = new System.Drawing.Point(8, 420);
@@ -998,7 +990,6 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(572, 613);
-            this.Controls.Add(this.textBox2);
             this.Controls.Add(this.tabVotes);
             this.Name = "FormVoteCounter";
             this.Text = "Fennec Fox Vote Counter";
@@ -1038,7 +1029,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.numVanillagers)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numVillageSeers)).EndInit();
             this.ResumeLayout(false);
-            this.PerformLayout();
 
         }
 
@@ -1110,7 +1100,7 @@
         private System.Windows.Forms.CheckBox chkTurboDay1;
         private System.Windows.Forms.Button btnSetEOD;
         private System.Windows.Forms.SplitContainer splitContainer1;
-        private System.Windows.Forms.CheckBox chkEodTomorrow;
+        private System.Windows.Forms.CheckBox chkEodFarAway;
         private System.Windows.Forms.Label label20;
         private System.Windows.Forms.Label label19;
         private System.Windows.Forms.TextBox txtDeadPlayers;
@@ -1120,7 +1110,6 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn colBolded;
         private System.Windows.Forms.DataGridViewComboBoxColumn colComboVote;
         private System.Windows.Forms.TextBox txtVersion;
-        private System.Windows.Forms.TextBox textBox2;
 
 
     }
