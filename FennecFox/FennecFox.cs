@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading;
 using System.Windows.Forms;
 using System.Text.RegularExpressions;
+using System.Reflection;
 
 namespace FennecFox
 {
@@ -99,9 +100,11 @@ namespace FennecFox
         public FormVoteCounter()
         {
             InitializeComponent();
+            tabVotes.TabPages.Remove(tabPage5);
 
             grdVotes.Columns[1].ValueType = typeof(Int32);
             grdVotes.Columns[2].ValueType = typeof(Int32);
+            txtVersion.Text = String.Format("Fennic Fox Vote Counter Version " + Assembly.GetExecutingAssembly().GetName().Version.ToString());
         }
 
         private int PageFromNumber(int number)
@@ -906,23 +909,15 @@ namespace FennecFox
 
         private void GenerateTable()
         {
-            var leftInDay = (dtEOD.Value.TimeOfDay - DateTime.Now.TimeOfDay);
+            TimeSpan tsNow = DateTime.Now.TimeOfDay;
+            tsNow = new TimeSpan(tsNow.Days, tsNow.Hours, tsNow.Minutes, 0);
+            var leftInDay = (dtEOD.Value.TimeOfDay - tsNow);
             Int32 hours = leftInDay.Hours;
             Int32 minutes = leftInDay.Minutes;
 
             if (chkEodTomorrow.Checked)
             {
                 hours += 24;
-            }
-
-            if (minutes == 59)
-            {
-                hours++;
-                minutes = 0;
-            }
-            else
-            {
-                minutes++;
             }
 
             if (hours < 0)
@@ -937,14 +932,13 @@ namespace FennecFox
                 .Append(lastPost)
                 .AppendLine();
 
-            if (chkTurbo.Checked)
+            if (leftInDay >= TimeSpan.FromSeconds(0))
             {
-                sb.Append(txtTurboEnd.Text);
+                sb.AppendFormat("Night in {0}", leftInDayFormatted);
             }
             else
             {
-                sb.AppendFormat("Night in {0}", leftInDayFormatted);
-
+                sb.Append("It is night");
             }
 
             sb.AppendLine("[/b]").AppendLine("---")
@@ -1019,6 +1013,25 @@ namespace FennecFox
             }
 
             sb.Append("[/table]");
+            if ((hours == 0) && (minutes <= 30)) // It's EOD, remind them.
+            {
+                if (leftInDay >= TimeSpan.FromSeconds(0))
+                {
+                    Int32 start = dtEOD.Value.Minute;
+                    Int32 end = (start + 1) % 60;
+                    sb
+                        .AppendLine()
+                        .AppendLine()
+                        .AppendFormat("[highlight]:{0:00} [color=green]good[/color] :{1:00} [color=red]bad[/color][/highlight]", start, end);
+                }
+                else
+                {
+                    sb
+                        .AppendLine()
+                        .AppendLine()
+                        .Append("[highlight]It is night. Do not post.[/highlight]");
+                }
+            }
 
             this.Invoke(new PostTableDelegate(PostTable), new object[] { sb });
         }
@@ -1087,35 +1100,25 @@ namespace FennecFox
             Clipboard.SetDataObject(txtPostTable.Text, false);
         }
 
-        private void button2_Click(object sender, EventArgs e)
+        private void btnSetEOD_Click(object sender, EventArgs e)
         {
-            var start = 0;
-            var end = 0;
+            Int32 dayLength = 20;
             if (chkTurboDay1.Checked)
             {
-                var ts = new TimeSpan(0, 0, (Int32)numTurboDay1Length.Value, 0);
-                start = DateTime.Now.TimeOfDay.Add(ts).Minutes;
-
+                dayLength = (Int32)numTurboDay1Length.Value;
             }
             else
             {
-                var ts = new TimeSpan(0, 0, (Int32)numTurboDayNLength.Value, 0);
-                start = DateTime.Now.TimeOfDay.Add(ts).Minutes;
+                dayLength = (Int32)numTurboDayNLength.Value;
             }
-
-            if (start == 60)
+            if (dayLength < 1)
             {
-                start = 0;
+                dayLength = 20;
             }
-
-            end = start + 1;
-
-            if (end == 60)
-            {
-                end = 0;
-            }
-
-            txtTurboEnd.Text = String.Format(":{0:00} good :{1:00} bad", start, end);
+            DateTime dt = DateTime.Now;
+            dt = dt.AddMinutes(dayLength);
+            dt = dt.AddSeconds(-dt.Second);
+            dtEOD.Value = dt;
         }
 
         private void txtMultiline_KeyDown(object sender, KeyEventArgs e)
@@ -1125,6 +1128,27 @@ namespace FennecFox
             {
                 txtBox.SelectAll();
                 e.SuppressKeyPress = true;
+            }
+        }
+
+        private void chkTurbo_CheckedChanged(object sender, EventArgs e)
+        {
+            if (chkTurbo.Checked)
+            {
+                btnSetEOD.Enabled = true;
+                chkEodTomorrow.Visible = false;
+                chkEodTomorrow.Checked = false;
+                chkTurboDay1.Enabled = true;
+                numTurboDay1Length.Enabled = true;
+                numTurboDayNLength.Enabled = true;
+            }
+            else
+            {
+                btnSetEOD.Enabled = false;
+                chkEodTomorrow.Visible = true;
+                chkTurboDay1.Enabled = false;
+                numTurboDay1Length.Enabled = false;
+                numTurboDayNLength.Enabled = false;
             }
         }
     }

@@ -47,6 +47,11 @@
             this.label18 = new System.Windows.Forms.Label();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.grdVotes = new System.Windows.Forms.DataGridView();
+            this.colPlayer = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colPostcount = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colPost = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colBolded = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colComboVote = new System.Windows.Forms.DataGridViewComboBoxColumn();
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.mnuHide = new System.Windows.Forms.ToolStripMenuItem();
             this.mnuUnhide = new System.Windows.Forms.ToolStripMenuItem();
@@ -68,8 +73,7 @@
             this.label20 = new System.Windows.Forms.Label();
             this.label19 = new System.Windows.Forms.Label();
             this.txtDeadPlayers = new System.Windows.Forms.TextBox();
-            this.txtTurboEnd = new System.Windows.Forms.TextBox();
-            this.button2 = new System.Windows.Forms.Button();
+            this.btnSetEOD = new System.Windows.Forms.Button();
             this.label14 = new System.Windows.Forms.Label();
             this.label13 = new System.Windows.Forms.Label();
             this.numTurboDayNLength = new System.Windows.Forms.NumericUpDown();
@@ -101,11 +105,8 @@
             this.label5 = new System.Windows.Forms.Label();
             this.label8 = new System.Windows.Forms.Label();
             this.comboGameTypes = new System.Windows.Forms.ComboBox();
-            this.colPlayer = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.colPostcount = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.colPost = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.colBolded = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.colComboVote = new System.Windows.Forms.DataGridViewComboBoxColumn();
+            this.textBox2 = new System.Windows.Forms.TextBox();
+            this.txtVersion = new System.Windows.Forms.TextBox();
             this.tabPage4.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
@@ -204,8 +205,8 @@
             // 
             // GoButton
             // 
-            this.GoButton.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Left)));
+            this.GoButton.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
             this.GoButton.Location = new System.Drawing.Point(354, 29);
             this.GoButton.Name = "GoButton";
             this.GoButton.Size = new System.Drawing.Size(56, 23);
@@ -236,8 +237,8 @@
             // 
             // StopButton
             // 
-            this.StopButton.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Left)));
+            this.StopButton.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
             this.StopButton.Enabled = false;
             this.StopButton.Location = new System.Drawing.Point(416, 29);
             this.StopButton.Name = "StopButton";
@@ -301,11 +302,12 @@
             // dtEOD
             // 
             this.tableLayoutPanel1.SetColumnSpan(this.dtEOD, 2);
-            this.dtEOD.Format = System.Windows.Forms.DateTimePickerFormat.Time;
+            this.dtEOD.CustomFormat = "h:mm:tt";
+            this.dtEOD.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
             this.dtEOD.Location = new System.Drawing.Point(59, 58);
             this.dtEOD.Name = "dtEOD";
             this.dtEOD.ShowUpDown = true;
-            this.dtEOD.Size = new System.Drawing.Size(109, 20);
+            this.dtEOD.Size = new System.Drawing.Size(70, 20);
             this.dtEOD.TabIndex = 20;
             // 
             // label18
@@ -365,6 +367,38 @@
             this.grdVotes.TabIndex = 18;
             this.grdVotes.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.grdVotes_CellValueChanged);
             // 
+            // colPlayer
+            // 
+            this.colPlayer.HeaderText = "Player";
+            this.colPlayer.Name = "colPlayer";
+            this.colPlayer.ReadOnly = true;
+            // 
+            // colPostcount
+            // 
+            this.colPostcount.FillWeight = 30F;
+            this.colPostcount.HeaderText = "Posts";
+            this.colPostcount.Name = "colPostcount";
+            this.colPostcount.ReadOnly = true;
+            // 
+            // colPost
+            // 
+            this.colPost.FillWeight = 30F;
+            this.colPost.HeaderText = "#";
+            this.colPost.Name = "colPost";
+            this.colPost.ReadOnly = true;
+            // 
+            // colBolded
+            // 
+            this.colBolded.HeaderText = "Bolded";
+            this.colBolded.Name = "colBolded";
+            this.colBolded.ReadOnly = true;
+            // 
+            // colComboVote
+            // 
+            this.colComboVote.HeaderText = "Votes For";
+            this.colComboVote.Name = "colComboVote";
+            this.colComboVote.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Automatic;
+            // 
             // contextMenuStrip1
             // 
             this.contextMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -412,6 +446,7 @@
             this.chkEodTomorrow.TabIndex = 23;
             this.chkEodTomorrow.Text = "EOD Tomorrow?";
             this.chkEodTomorrow.UseVisualStyleBackColor = true;
+            this.chkEodTomorrow.Visible = false;
             // 
             // statusBrowser
             // 
@@ -452,7 +487,7 @@
             this.tabPage2.Location = new System.Drawing.Point(4, 22);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(528, 587);
+            this.tabPage2.Size = new System.Drawing.Size(564, 587);
             this.tabPage2.TabIndex = 5;
             this.tabPage2.Text = "Gimmick Settings";
             // 
@@ -524,11 +559,12 @@
             // tabPage1
             // 
             this.tabPage1.BackColor = System.Drawing.Color.Gainsboro;
+            this.tabPage1.Controls.Add(this.txtVersion);
             this.tabPage1.Controls.Add(this.textBox1);
             this.tabPage1.Location = new System.Drawing.Point(4, 22);
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(528, 587);
+            this.tabPage1.Size = new System.Drawing.Size(564, 587);
             this.tabPage1.TabIndex = 4;
             this.tabPage1.Text = "Help";
             // 
@@ -548,8 +584,7 @@
             this.tabPage3.Controls.Add(this.label20);
             this.tabPage3.Controls.Add(this.label19);
             this.tabPage3.Controls.Add(this.txtDeadPlayers);
-            this.tabPage3.Controls.Add(this.txtTurboEnd);
-            this.tabPage3.Controls.Add(this.button2);
+            this.tabPage3.Controls.Add(this.btnSetEOD);
             this.tabPage3.Controls.Add(this.label14);
             this.tabPage3.Controls.Add(this.label13);
             this.tabPage3.Controls.Add(this.numTurboDayNLength);
@@ -563,7 +598,7 @@
             this.tabPage3.Location = new System.Drawing.Point(4, 22);
             this.tabPage3.Name = "tabPage3";
             this.tabPage3.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage3.Size = new System.Drawing.Size(528, 587);
+            this.tabPage3.Size = new System.Drawing.Size(564, 587);
             this.tabPage3.TabIndex = 6;
             this.tabPage3.Text = "Players";
             // 
@@ -594,23 +629,15 @@
             this.txtDeadPlayers.Size = new System.Drawing.Size(148, 108);
             this.txtDeadPlayers.TabIndex = 33;
             // 
-            // txtTurboEnd
+            // btnSetEOD
             // 
-            this.txtTurboEnd.Location = new System.Drawing.Point(379, 144);
-            this.txtTurboEnd.Name = "txtTurboEnd";
-            this.txtTurboEnd.ReadOnly = true;
-            this.txtTurboEnd.Size = new System.Drawing.Size(100, 20);
-            this.txtTurboEnd.TabIndex = 32;
-            // 
-            // button2
-            // 
-            this.button2.Location = new System.Drawing.Point(379, 113);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(75, 23);
-            this.button2.TabIndex = 31;
-            this.button2.Text = "Generate End Times";
-            this.button2.UseVisualStyleBackColor = true;
-            this.button2.Click += new System.EventHandler(this.button2_Click);
+            this.btnSetEOD.Location = new System.Drawing.Point(224, 109);
+            this.btnSetEOD.Name = "btnSetEOD";
+            this.btnSetEOD.Size = new System.Drawing.Size(125, 23);
+            this.btnSetEOD.TabIndex = 31;
+            this.btnSetEOD.Text = "Set EOD Time Now!";
+            this.btnSetEOD.UseVisualStyleBackColor = true;
+            this.btnSetEOD.Click += new System.EventHandler(this.btnSetEOD_Click);
             // 
             // label14
             // 
@@ -636,6 +663,11 @@
             this.numTurboDayNLength.Name = "numTurboDayNLength";
             this.numTurboDayNLength.Size = new System.Drawing.Size(45, 20);
             this.numTurboDayNLength.TabIndex = 28;
+            this.numTurboDayNLength.Value = new decimal(new int[] {
+            20,
+            0,
+            0,
+            0});
             // 
             // numTurboDay1Length
             // 
@@ -643,20 +675,30 @@
             this.numTurboDay1Length.Name = "numTurboDay1Length";
             this.numTurboDay1Length.Size = new System.Drawing.Size(45, 20);
             this.numTurboDay1Length.TabIndex = 27;
+            this.numTurboDay1Length.Value = new decimal(new int[] {
+            25,
+            0,
+            0,
+            0});
             // 
             // chkTurbo
             // 
             this.chkTurbo.AutoSize = true;
+            this.chkTurbo.Checked = true;
+            this.chkTurbo.CheckState = System.Windows.Forms.CheckState.Checked;
             this.chkTurbo.Location = new System.Drawing.Point(224, 63);
             this.chkTurbo.Name = "chkTurbo";
             this.chkTurbo.Size = new System.Drawing.Size(60, 17);
             this.chkTurbo.TabIndex = 26;
             this.chkTurbo.Text = "Turbo?";
             this.chkTurbo.UseVisualStyleBackColor = true;
+            this.chkTurbo.CheckedChanged += new System.EventHandler(this.chkTurbo_CheckedChanged);
             // 
             // chkTurboDay1
             // 
             this.chkTurboDay1.AutoSize = true;
+            this.chkTurboDay1.Checked = true;
+            this.chkTurboDay1.CheckState = System.Windows.Forms.CheckState.Checked;
             this.chkTurboDay1.Location = new System.Drawing.Point(224, 86);
             this.chkTurboDay1.Name = "chkTurboDay1";
             this.chkTurboDay1.Size = new System.Drawing.Size(60, 17);
@@ -714,7 +756,7 @@
             this.tabPage5.Location = new System.Drawing.Point(4, 22);
             this.tabPage5.Name = "tabPage5";
             this.tabPage5.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage5.Size = new System.Drawing.Size(528, 587);
+            this.tabPage5.Size = new System.Drawing.Size(564, 587);
             this.tabPage5.TabIndex = 7;
             this.tabPage5.Text = "Game Settings";
             // 
@@ -936,43 +978,27 @@
             this.comboGameTypes.Size = new System.Drawing.Size(121, 21);
             this.comboGameTypes.TabIndex = 1;
             // 
-            // colPlayer
+            // textBox2
             // 
-            this.colPlayer.HeaderText = "Player";
-            this.colPlayer.Name = "colPlayer";
-            this.colPlayer.ReadOnly = true;
+            this.textBox2.Location = new System.Drawing.Point(346, 0);
+            this.textBox2.Name = "textBox2";
+            this.textBox2.Size = new System.Drawing.Size(100, 20);
+            this.textBox2.TabIndex = 5;
             // 
-            // colPostcount
+            // txtVersion
             // 
-            this.colPostcount.FillWeight = 30F;
-            this.colPostcount.HeaderText = "Posts";
-            this.colPostcount.Name = "colPostcount";
-            this.colPostcount.ReadOnly = true;
-            // 
-            // colPost
-            // 
-            this.colPost.FillWeight = 30F;
-            this.colPost.HeaderText = "#";
-            this.colPost.Name = "colPost";
-            this.colPost.ReadOnly = true;
-            // 
-            // colBolded
-            // 
-            this.colBolded.HeaderText = "Bolded";
-            this.colBolded.Name = "colBolded";
-            this.colBolded.ReadOnly = true;
-            // 
-            // colComboVote
-            // 
-            this.colComboVote.HeaderText = "Votes For";
-            this.colComboVote.Name = "colComboVote";
-            this.colComboVote.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Automatic;
+            this.txtVersion.Location = new System.Drawing.Point(8, 420);
+            this.txtVersion.Name = "txtVersion";
+            this.txtVersion.ReadOnly = true;
+            this.txtVersion.Size = new System.Drawing.Size(264, 20);
+            this.txtVersion.TabIndex = 1;
             // 
             // FormVoteCounter
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(572, 613);
+            this.Controls.Add(this.textBox2);
             this.Controls.Add(this.tabVotes);
             this.Name = "FormVoteCounter";
             this.Text = "Fennec Fox Vote Counter";
@@ -1012,6 +1038,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.numVanillagers)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numVillageSeers)).EndInit();
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
@@ -1081,8 +1108,7 @@
         private System.Windows.Forms.NumericUpDown numTurboDay1Length;
         private System.Windows.Forms.CheckBox chkTurbo;
         private System.Windows.Forms.CheckBox chkTurboDay1;
-        private System.Windows.Forms.TextBox txtTurboEnd;
-        private System.Windows.Forms.Button button2;
+        private System.Windows.Forms.Button btnSetEOD;
         private System.Windows.Forms.SplitContainer splitContainer1;
         private System.Windows.Forms.CheckBox chkEodTomorrow;
         private System.Windows.Forms.Label label20;
@@ -1093,6 +1119,8 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn colPost;
         private System.Windows.Forms.DataGridViewTextBoxColumn colBolded;
         private System.Windows.Forms.DataGridViewComboBoxColumn colComboVote;
+        private System.Windows.Forms.TextBox txtVersion;
+        private System.Windows.Forms.TextBox textBox2;
 
 
     }
