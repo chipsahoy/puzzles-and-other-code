@@ -404,7 +404,8 @@ namespace FennecFox
             // td[1]/div[1] has (id with post #, <a> with user id, user name.)
             // td[2]/div[1] has title
             // td[2]/div[2] has post
-            HtmlAgilityPack.HtmlNodeCollection posts = root.SelectNodes("//div[@id='posts']/div/div/div/div/table/tr[2]/td[2]/div[@class='postbitlinks']");
+            // "/html[1]/body[1]/table[2]/tr[2]/td[1]/td[1]/div[2]/div[1]/div[1]/div[1]/div[1]/table[1]/tr[2]/td[2]/div[2]" is a post
+            HtmlAgilityPack.HtmlNodeCollection posts = root.SelectNodes("//div[@id='posts']/div/div/div/div/table/tr[2]/td[2]/div[contains(@id, 'post_message_')]");
             if (posts == null)
             {
                 return lastPost;
