@@ -18,6 +18,15 @@ namespace FennecFox
 
     public partial class FormVoteCounter : Form
     {
+        enum CounterColumn
+        {
+            Player = 0,
+            Posts,
+            PostNumber,
+            PostTime,
+            Bolded,
+            VotesFor
+        };
         private class ObjectInt
         {
             public ObjectInt()
@@ -107,8 +116,8 @@ namespace FennecFox
             InitializeComponent();
             tabVotes.TabPages.Remove(tabPage5);
 
-            grdVotes.Columns[1].ValueType = typeof(Int32);
-            grdVotes.Columns[2].ValueType = typeof(Int32);
+            grdVotes.Columns[(Int32)CounterColumn.Posts].ValueType = typeof(Int32);
+            grdVotes.Columns[(Int32)CounterColumn.PostNumber].ValueType = typeof(Int32);
             txtVersion.Text = String.Format("Fennic Fox Vote Counter Version " + Assembly.GetExecutingAssembly().GetName().Version.ToString());
 
             DateTime dtBad = dtEOD.Value.AddMinutes(1);
@@ -580,7 +589,7 @@ namespace FennecFox
                 }
 
                 // visual update
-                tPlayer.Item2.Cells[1].Value = (Int32)tPlayer.Item3;
+                tPlayer.Item2.Cells[(Int32)CounterColumn.Posts].Value = (Int32)tPlayer.Item3;
             }
 
             if (sort)
@@ -592,22 +601,23 @@ namespace FennecFox
         private DataGridViewRow MakeNewRow(String player)
         {
             var toRet = new DataGridViewRow();
-            toRet.Cells.Add(new DataGridViewTextBoxCell());
-            toRet.Cells.Add(new DataGridViewTextBoxCell());
-            toRet.Cells.Add(new DataGridViewTextBoxCell());
-            toRet.Cells.Add(new DataGridViewTextBoxCell());
-            toRet.Cells.Add(new DataGridViewTextBoxCell());
-            var c = new DataGridViewComboBoxCell();
+            toRet.Cells.Add(new DataGridViewTextBoxCell()); // player
+            toRet.Cells.Add(new DataGridViewTextBoxCell()); // posts
+            toRet.Cells.Add(new DataGridViewTextBoxCell()); // post number
+            toRet.Cells.Add(new DataGridViewTextBoxCell()); // post time
+            toRet.Cells.Add(new DataGridViewTextBoxCell()); // bolded
+            var c = new DataGridViewComboBoxCell(); // Votes For
             SetComboRange(c);
             toRet.Cells.Add(c);
 
-            toRet.Cells[0].Value = player;
-            toRet.Cells[1].Value = 0;
-            toRet.Cells[1].ValueType = typeof(Int32);
-            toRet.Cells[2].Value = 0;
-            toRet.Cells[2].ValueType = typeof(Int32);
-            toRet.Cells[3].Value = "";
-            toRet.Cells[4].Value = "";
+            toRet.Cells[(Int32)CounterColumn.Player].Value = player;
+            toRet.Cells[(Int32)CounterColumn.Posts].Value = 0;
+            toRet.Cells[(Int32)CounterColumn.Posts].ValueType = typeof(Int32);
+            toRet.Cells[(Int32)CounterColumn.PostNumber].Value = 0;
+            toRet.Cells[(Int32)CounterColumn.PostNumber].ValueType = typeof(Int32);
+            toRet.Cells[(Int32)CounterColumn.PostTime].Value = "";
+            toRet.Cells[(Int32)CounterColumn.Bolded].Value = "";
+            toRet.Cells[(Int32)CounterColumn.VotesFor].Value = "";
 
             return toRet;
         }
@@ -685,19 +695,20 @@ namespace FennecFox
                     node = node.Previous;
                 }
 
-                tPlayer.Item2.Cells[1].Value = 0;
-                tPlayer.Item2.Cells[2].Value = 0;
-                tPlayer.Item2.Cells[3].Value = "";
-                tPlayer.Item2.Cells[4].Value = "";
+                tPlayer.Item2.Cells[(Int32)CounterColumn.Posts].Value = 0;
+                tPlayer.Item2.Cells[(Int32)CounterColumn.PostNumber].Value = 0;
+                tPlayer.Item2.Cells[(Int32)CounterColumn.PostTime].Value = "";
+                tPlayer.Item2.Cells[(Int32)CounterColumn.Bolded].Value = "";
+                tPlayer.Item2.Cells[(Int32)CounterColumn.VotesFor].Value = "";
                 tPlayer.Item2.Tag = new Vote();
             }
         }
         private void FillInRow(DataGridViewRow row, Vote vote, Int32 postCount)
         {
-            row.Cells[1].Value = postCount;
-            row.Cells[2].Value = vote.PostNumber;
-            row.Cells[3].Value = vote.Time.ToString("HH:mm");
-            row.Cells[4].Value = vote.Content;
+            row.Cells[(Int32)CounterColumn.Posts].Value = postCount;
+            row.Cells[(Int32)CounterColumn.PostNumber].Value = vote.PostNumber;
+            row.Cells[(Int32)CounterColumn.PostTime].Value = vote.Time.ToString("HH:mm");
+            row.Cells[(Int32)CounterColumn.Bolded].Value = vote.Content;
             row.Tag = vote;
         }
 
@@ -743,7 +754,7 @@ namespace FennecFox
             var item = grdVotes.SelectedRows[0];
             if (item != null)
             {
-                var player = (String)item.Cells[0].Value;
+                var player = (String)item.Cells[(Int32)CounterColumn.Player].Value;
                 HideVote(player);
             }
         }
@@ -757,7 +768,7 @@ namespace FennecFox
             var item = grdVotes.SelectedRows[0];
             if (item != null)
             {
-                var player = (String)item.Cells[0].Value;
+                var player = (String)item.Cells[(Int32)CounterColumn.Player].Value;
                 UnhideVote(player);
             }
         }
@@ -883,7 +894,7 @@ namespace FennecFox
             _players = null;
             foreach (DataGridViewRow row in grdVotes.Rows)
             {
-                var cell = (DataGridViewComboBoxCell)row.Cells[4];
+                var cell = (DataGridViewComboBoxCell)row.Cells[(Int32)CounterColumn.VotesFor];
                 SetComboRange(cell);
             }
         }
@@ -892,7 +903,7 @@ namespace FennecFox
         {
             if (e.RowIndex >= 0)
             {
-                var vote = ((String)grdVotes[3, e.RowIndex].Value).ToLower().Replace(" ", "");
+                var vote = ((String)grdVotes[(Int32)CounterColumn.Bolded, e.RowIndex].Value).ToLower().Replace(" ", "");
                 if (vote.StartsWith("vote:"))
                 {
                     vote = vote.Substring(5).Trim();
@@ -903,7 +914,7 @@ namespace FennecFox
                     vote = vote.Substring(4).Trim();
                 }
 
-                if (e.ColumnIndex == 3)
+                if (e.ColumnIndex == (Int32)CounterColumn.Bolded)
                 {
                     /*
                     if (String.IsNullOrWhiteSpace(vote) || vote == "unvote")
@@ -916,7 +927,7 @@ namespace FennecFox
                     var player = Players.FirstOrDefault(p => p.ToLower().Replace(" ", "") == vote || p.ToLower().Replace(" ", "").StartsWith(vote));
                     if (player != null)
                     {
-                        grdVotes[4, e.RowIndex].Value = player;
+                        grdVotes[(Int32)CounterColumn.VotesFor, e.RowIndex].Value = player;
                     }
                     else
                     {
@@ -928,18 +939,18 @@ namespace FennecFox
                                     p => p == Properties.Settings.Default.Mappings[vote]);
                             if (player != null)
                             {
-                                grdVotes[4, e.RowIndex].Value = player;
+                                grdVotes[(Int32)CounterColumn.VotesFor, e.RowIndex].Value = player;
                             }
                         }
                     }
                     //}
                 }
-                else if (e.ColumnIndex == 4)
+                else if (e.ColumnIndex == (Int32)CounterColumn.VotesFor)
                 {
-                    Properties.Settings.Default.Mappings[vote] = (String)grdVotes[4, e.RowIndex].Value;
+                    Properties.Settings.Default.Mappings[vote] = (String)grdVotes[(Int32)CounterColumn.VotesFor, e.RowIndex].Value;
                 }
 
-                if (e.ColumnIndex == 3 || e.ColumnIndex == 4)
+                if (e.ColumnIndex == (Int32)CounterColumn.Bolded || e.ColumnIndex == (Int32)CounterColumn.VotesFor)
                 {
                     GenerateTable();
                 }
@@ -956,7 +967,7 @@ namespace FennecFox
 
             foreach (DataGridViewRow row in grdVotes.Rows)
             {
-                var voter = ((String)row.Cells[0].Value);
+                var voter = ((String)row.Cells[(Int32)CounterColumn.Player].Value);
                 AddVote(voter, null, false);
             }
 
@@ -1019,7 +1030,7 @@ namespace FennecFox
             foreach (var voterPair in _playerVotes)
             {
                 var vote = GetActiveVote(voterPair.Key);
-                var votee = ((String)voterPair.Value.Item2.Cells[4].Value).ToLower();
+                var votee = ((String)voterPair.Value.Item2.Cells[(Int32)CounterColumn.VotesFor].Value).ToLower();
                 if (vote != null && playerMap.ContainsKey(voterPair.Key.ToLower()) && playerMap.ContainsKey(votee.ToLower()))
                 {
                     //voteCountDict[voted] += 1;
