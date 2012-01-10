@@ -18,13 +18,14 @@ namespace FennecFox
             PostNumber = postNumber;
         }*/
 
-        public Vote(Int32 postNumber, String voter, string content, String postLink)
+        public Vote(Int32 postNumber, String voter, string content, String postLink, DateTime time)
         {
             Ignore = false;
             Content = content;
             PostNumber = postNumber;
             PostLink = postLink;
             Voter = voter;
+            Time = time;
         }
 
         public Int32 PostNumber { get; private set; }
@@ -36,5 +37,7 @@ namespace FennecFox
         public bool Ignore { get; set; }
 
         public String PostLink { get; private set; }
+
+        public DateTime Time { get; private set; }
     }
 }

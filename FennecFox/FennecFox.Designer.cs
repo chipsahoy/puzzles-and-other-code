@@ -47,16 +47,12 @@
             this.label18 = new System.Windows.Forms.Label();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.grdVotes = new System.Windows.Forms.DataGridView();
-            this.colPlayer = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.colPostcount = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.colPost = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.colBolded = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.colComboVote = new System.Windows.Forms.DataGridViewComboBoxColumn();
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.mnuHide = new System.Windows.Forms.ToolStripMenuItem();
             this.mnuUnhide = new System.Windows.Forms.ToolStripMenuItem();
             this.txtPostTable = new System.Windows.Forms.TextBox();
             this.chkEodFarAway = new System.Windows.Forms.CheckBox();
+            this.txtCountDown = new System.Windows.Forms.TextBox();
             this.statusBrowser = new System.Windows.Forms.StatusStrip();
             this.statusText = new System.Windows.Forms.ToolStripStatusLabel();
             this.tabVotes = new System.Windows.Forms.TabControl();
@@ -68,6 +64,7 @@
             this.txtPassword = new System.Windows.Forms.TextBox();
             this.txtUsername = new System.Windows.Forms.TextBox();
             this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.txtVersion = new System.Windows.Forms.TextBox();
             this.textBox1 = new System.Windows.Forms.TextBox();
             this.tabPage3 = new System.Windows.Forms.TabPage();
             this.label20 = new System.Windows.Forms.Label();
@@ -105,7 +102,12 @@
             this.label5 = new System.Windows.Forms.Label();
             this.label8 = new System.Windows.Forms.Label();
             this.comboGameTypes = new System.Windows.Forms.ComboBox();
-            this.txtVersion = new System.Windows.Forms.TextBox();
+            this.colPlayer = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colPostcount = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colPost = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colTime = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colBolded = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colComboVote = new System.Windows.Forms.DataGridViewComboBoxColumn();
             this.tabPage4.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
@@ -139,7 +141,7 @@
             this.tabPage4.Location = new System.Drawing.Point(4, 22);
             this.tabPage4.Name = "tabPage4";
             this.tabPage4.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage4.Size = new System.Drawing.Size(564, 587);
+            this.tabPage4.Size = new System.Drawing.Size(636, 587);
             this.tabPage4.TabIndex = 3;
             this.tabPage4.Text = "Get Votes";
             // 
@@ -169,6 +171,7 @@
             this.tableLayoutPanel1.Controls.Add(this.label18, 0, 2);
             this.tableLayoutPanel1.Controls.Add(this.splitContainer1, 0, 3);
             this.tableLayoutPanel1.Controls.Add(this.chkEodFarAway, 3, 2);
+            this.tableLayoutPanel1.Controls.Add(this.txtCountDown, 6, 5);
             this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel1.Location = new System.Drawing.Point(3, 3);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
@@ -179,7 +182,7 @@
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 100F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(558, 559);
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(630, 559);
             this.tableLayoutPanel1.TabIndex = 17;
             // 
             // label4
@@ -199,7 +202,7 @@
             this.tableLayoutPanel1.SetColumnSpan(this.URLTextBox, 6);
             this.URLTextBox.Location = new System.Drawing.Point(135, 3);
             this.URLTextBox.Name = "URLTextBox";
-            this.URLTextBox.Size = new System.Drawing.Size(420, 20);
+            this.URLTextBox.Size = new System.Drawing.Size(492, 20);
             this.URLTextBox.TabIndex = 1;
             // 
             // GoButton
@@ -249,7 +252,7 @@
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(398, 29);
+            this.button1.Location = new System.Drawing.Point(440, 29);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(75, 23);
             this.button1.TabIndex = 6;
@@ -308,6 +311,7 @@
             this.dtEOD.ShowUpDown = true;
             this.dtEOD.Size = new System.Drawing.Size(70, 20);
             this.dtEOD.TabIndex = 20;
+            this.dtEOD.ValueChanged += new System.EventHandler(this.dtEOD_ValueChanged);
             // 
             // label18
             // 
@@ -335,7 +339,7 @@
             // 
             this.splitContainer1.Panel2.Controls.Add(this.txtPostTable);
             this.tableLayoutPanel1.SetRowSpan(this.splitContainer1, 2);
-            this.splitContainer1.Size = new System.Drawing.Size(552, 442);
+            this.splitContainer1.Size = new System.Drawing.Size(624, 442);
             this.splitContainer1.SplitterDistance = 221;
             this.splitContainer1.TabIndex = 22;
             // 
@@ -351,6 +355,7 @@
             this.colPlayer,
             this.colPostcount,
             this.colPost,
+            this.colTime,
             this.colBolded,
             this.colComboVote});
             this.grdVotes.ContextMenuStrip = this.contextMenuStrip1;
@@ -362,41 +367,9 @@
             this.grdVotes.RowHeadersVisible = false;
             this.grdVotes.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.grdVotes.ShowEditingIcon = false;
-            this.grdVotes.Size = new System.Drawing.Size(552, 221);
+            this.grdVotes.Size = new System.Drawing.Size(624, 221);
             this.grdVotes.TabIndex = 18;
             this.grdVotes.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.grdVotes_CellValueChanged);
-            // 
-            // colPlayer
-            // 
-            this.colPlayer.HeaderText = "Player";
-            this.colPlayer.Name = "colPlayer";
-            this.colPlayer.ReadOnly = true;
-            // 
-            // colPostcount
-            // 
-            this.colPostcount.FillWeight = 30F;
-            this.colPostcount.HeaderText = "Posts";
-            this.colPostcount.Name = "colPostcount";
-            this.colPostcount.ReadOnly = true;
-            // 
-            // colPost
-            // 
-            this.colPost.FillWeight = 30F;
-            this.colPost.HeaderText = "#";
-            this.colPost.Name = "colPost";
-            this.colPost.ReadOnly = true;
-            // 
-            // colBolded
-            // 
-            this.colBolded.HeaderText = "Bolded";
-            this.colBolded.Name = "colBolded";
-            this.colBolded.ReadOnly = true;
-            // 
-            // colComboVote
-            // 
-            this.colComboVote.HeaderText = "Votes For";
-            this.colComboVote.Name = "colComboVote";
-            this.colComboVote.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Automatic;
             // 
             // contextMenuStrip1
             // 
@@ -431,7 +404,7 @@
             this.txtPostTable.Multiline = true;
             this.txtPostTable.Name = "txtPostTable";
             this.txtPostTable.ReadOnly = true;
-            this.txtPostTable.Size = new System.Drawing.Size(552, 217);
+            this.txtPostTable.Size = new System.Drawing.Size(624, 217);
             this.txtPostTable.TabIndex = 19;
             this.txtPostTable.Click += new System.EventHandler(this.txtPostTable_Click);
             // 
@@ -443,9 +416,17 @@
             this.chkEodFarAway.Name = "chkEodFarAway";
             this.chkEodFarAway.Size = new System.Drawing.Size(136, 17);
             this.chkEodFarAway.TabIndex = 23;
-            this.chkEodFarAway.Text = "EOD > 24 hours away?";
+            this.chkEodFarAway.Text = "EOD > 23 hours away?";
             this.chkEodFarAway.UseVisualStyleBackColor = true;
             this.chkEodFarAway.Visible = false;
+            // 
+            // txtCountDown
+            // 
+            this.txtCountDown.Location = new System.Drawing.Point(334, 532);
+            this.txtCountDown.Name = "txtCountDown";
+            this.txtCountDown.ReadOnly = true;
+            this.txtCountDown.Size = new System.Drawing.Size(100, 20);
+            this.txtCountDown.TabIndex = 27;
             // 
             // statusBrowser
             // 
@@ -453,7 +434,7 @@
             this.statusText});
             this.statusBrowser.Location = new System.Drawing.Point(3, 562);
             this.statusBrowser.Name = "statusBrowser";
-            this.statusBrowser.Size = new System.Drawing.Size(558, 22);
+            this.statusBrowser.Size = new System.Drawing.Size(630, 22);
             this.statusBrowser.TabIndex = 13;
             this.statusBrowser.Text = "statusStrip1";
             // 
@@ -474,7 +455,7 @@
             this.tabVotes.Location = new System.Drawing.Point(0, 0);
             this.tabVotes.Name = "tabVotes";
             this.tabVotes.SelectedIndex = 0;
-            this.tabVotes.Size = new System.Drawing.Size(572, 613);
+            this.tabVotes.Size = new System.Drawing.Size(644, 613);
             this.tabVotes.TabIndex = 4;
             this.tabVotes.Selecting += new System.Windows.Forms.TabControlCancelEventHandler(this.tabControl_Selecting);
             // 
@@ -486,7 +467,7 @@
             this.tabPage2.Location = new System.Drawing.Point(4, 22);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(564, 587);
+            this.tabPage2.Size = new System.Drawing.Size(629, 587);
             this.tabPage2.TabIndex = 5;
             this.tabPage2.Text = "Gimmick Settings";
             // 
@@ -563,9 +544,17 @@
             this.tabPage1.Location = new System.Drawing.Point(4, 22);
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(564, 587);
+            this.tabPage1.Size = new System.Drawing.Size(629, 587);
             this.tabPage1.TabIndex = 4;
             this.tabPage1.Text = "Help";
+            // 
+            // txtVersion
+            // 
+            this.txtVersion.Location = new System.Drawing.Point(8, 420);
+            this.txtVersion.Name = "txtVersion";
+            this.txtVersion.ReadOnly = true;
+            this.txtVersion.Size = new System.Drawing.Size(264, 20);
+            this.txtVersion.TabIndex = 1;
             // 
             // textBox1
             // 
@@ -597,7 +586,7 @@
             this.tabPage3.Location = new System.Drawing.Point(4, 22);
             this.tabPage3.Name = "tabPage3";
             this.tabPage3.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage3.Size = new System.Drawing.Size(564, 587);
+            this.tabPage3.Size = new System.Drawing.Size(629, 587);
             this.tabPage3.TabIndex = 6;
             this.tabPage3.Text = "Players";
             // 
@@ -755,7 +744,7 @@
             this.tabPage5.Location = new System.Drawing.Point(4, 22);
             this.tabPage5.Name = "tabPage5";
             this.tabPage5.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage5.Size = new System.Drawing.Size(564, 587);
+            this.tabPage5.Size = new System.Drawing.Size(629, 587);
             this.tabPage5.TabIndex = 7;
             this.tabPage5.Text = "Game Settings";
             // 
@@ -977,19 +966,53 @@
             this.comboGameTypes.Size = new System.Drawing.Size(121, 21);
             this.comboGameTypes.TabIndex = 1;
             // 
-            // txtVersion
+            // colPlayer
             // 
-            this.txtVersion.Location = new System.Drawing.Point(8, 420);
-            this.txtVersion.Name = "txtVersion";
-            this.txtVersion.ReadOnly = true;
-            this.txtVersion.Size = new System.Drawing.Size(264, 20);
-            this.txtVersion.TabIndex = 1;
+            this.colPlayer.FillWeight = 95.73603F;
+            this.colPlayer.HeaderText = "Player";
+            this.colPlayer.Name = "colPlayer";
+            this.colPlayer.ReadOnly = true;
+            // 
+            // colPostcount
+            // 
+            this.colPostcount.FillWeight = 38.00685F;
+            this.colPostcount.HeaderText = "Posts";
+            this.colPostcount.Name = "colPostcount";
+            this.colPostcount.ReadOnly = true;
+            // 
+            // colPost
+            // 
+            this.colPost.FillWeight = 38.00685F;
+            this.colPost.HeaderText = "#";
+            this.colPost.Name = "colPost";
+            this.colPost.ReadOnly = true;
+            // 
+            // colTime
+            // 
+            this.colTime.FillWeight = 34.87126F;
+            this.colTime.HeaderText = "Time";
+            this.colTime.Name = "colTime";
+            this.colTime.ReadOnly = true;
+            // 
+            // colBolded
+            // 
+            this.colBolded.FillWeight = 126.6895F;
+            this.colBolded.HeaderText = "Bolded";
+            this.colBolded.Name = "colBolded";
+            this.colBolded.ReadOnly = true;
+            // 
+            // colComboVote
+            // 
+            this.colComboVote.FillWeight = 126.6895F;
+            this.colComboVote.HeaderText = "Votes For";
+            this.colComboVote.Name = "colComboVote";
+            this.colComboVote.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Automatic;
             // 
             // FormVoteCounter
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(572, 613);
+            this.ClientSize = new System.Drawing.Size(644, 613);
             this.Controls.Add(this.tabVotes);
             this.Name = "FormVoteCounter";
             this.Text = "Fennec Fox Vote Counter";
@@ -1104,12 +1127,14 @@
         private System.Windows.Forms.Label label20;
         private System.Windows.Forms.Label label19;
         private System.Windows.Forms.TextBox txtDeadPlayers;
+        private System.Windows.Forms.TextBox txtVersion;
+        private System.Windows.Forms.TextBox txtCountDown;
         private System.Windows.Forms.DataGridViewTextBoxColumn colPlayer;
         private System.Windows.Forms.DataGridViewTextBoxColumn colPostcount;
         private System.Windows.Forms.DataGridViewTextBoxColumn colPost;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colTime;
         private System.Windows.Forms.DataGridViewTextBoxColumn colBolded;
         private System.Windows.Forms.DataGridViewComboBoxColumn colComboVote;
-        private System.Windows.Forms.TextBox txtVersion;
 
 
     }

@@ -10,6 +10,8 @@ using System.Threading;
 using System.Windows.Forms;
 using System.Text.RegularExpressions;
 using System.Reflection;
+using System.Globalization;
+using System.Runtime.InteropServices;
 
 namespace FennecFox
 {
@@ -90,6 +92,9 @@ namespace FennecFox
         int _currentPage = 1;
         int _postsPerPage = 50;
         private Thread _workerThread;
+        System.Windows.Forms.Timer TimerEODCountdown = new System.Windows.Forms.Timer();
+        TimeSpan tsCurrentTime;
+        TimeSpan tsBadTime;
 
         private String _username; // if this changes from what user entered previously, need to logout then re-login with new info.
 
@@ -105,6 +110,32 @@ namespace FennecFox
             grdVotes.Columns[1].ValueType = typeof(Int32);
             grdVotes.Columns[2].ValueType = typeof(Int32);
             txtVersion.Text = String.Format("Fennic Fox Vote Counter Version " + Assembly.GetExecutingAssembly().GetName().Version.ToString());
+
+            DateTime dtBad = dtEOD.Value.AddMinutes(1);
+            tsBadTime = new TimeSpan(dtBad.Hour, dtBad.Minute, dtBad.Second);
+            TimerEODCountdown.Interval = 100;
+            TimerEODCountdown.Tick += new EventHandler(TimerEODCountdown_Tick);
+            TimerEODCountdown.Start();
+        }
+
+        void TimerEODCountdown_Tick(object sender, EventArgs e)
+        {
+            DateTime dtNow = DateTime.Now;
+            TimeSpan tsNow = new TimeSpan(dtNow.Hour, dtNow.Minute, dtNow.Second); // truncate to second.
+            if (tsNow != tsCurrentTime)
+            {
+                tsCurrentTime = tsNow;
+                TimeSpan tsRemaining = tsBadTime.Subtract(tsCurrentTime);
+                if (tsRemaining.Ticks < 0)
+                {
+                    tsRemaining = tsRemaining.Add(new TimeSpan(1, 0, 0, 0));
+                }
+                txtCountDown.Text = String.Format("EOD in {0:00}:{1:00}:{2:00}", tsRemaining.Hours, tsRemaining.Minutes, tsRemaining.Seconds);
+                if (tsRemaining.TotalSeconds == 20)
+                {
+                    FlashWindow.Flash(this);
+                }
+            }
         }
 
         private int PageFromNumber(int number)
@@ -426,7 +457,29 @@ namespace FennecFox
                     string poster = "";
                     Int32 postNumber = 0;
                     String postLink = null;
+                    DateTime postTime = DateTime.Now;
 
+                    HtmlAgilityPack.HtmlNode postTimeNode = post.SelectSingleNode("../../../tr[1]/td[1]");
+                    if (postTimeNode != null)
+                    {
+                        string time = postTimeNode.InnerText.Trim();
+                        DateTime dtNow = DateTime.Now;
+                        string today = dtNow.ToString("MM-dd-yyyy");
+                        time = time.Replace("Today", today);
+                        DateTime dtYesterday = dtNow - new TimeSpan(1, 0, 0, 0);
+                        string yesterday = dtYesterday.ToString("MM-dd-yyyy");
+                        time = time.Replace("Yesterday", yesterday);
+                        var culture = Thread.CurrentThread.CurrentCulture;
+                        try
+                        {
+                            Thread.CurrentThread.CurrentCulture = CultureInfo.CreateSpecificCulture("en-US");
+                            postTime = DateTime.ParseExact(time, "MM-dd-yyyy, hh:mm tt", null);
+                        }
+                        finally
+                        {
+                            Thread.CurrentThread.CurrentCulture = culture;
+                        }
+                    }
                     HtmlAgilityPack.HtmlNode postNumberNode = post.SelectSingleNode("../../../tr[1]/td[2]/a");
                     if (postNumberNode != null)
                     {
@@ -471,7 +524,7 @@ namespace FennecFox
                                 {
                                     //                            Console.WriteLine(String.Format("{0,8}\t{1,25}\t{2}", postNumber, poster, c.InnerHtml));
                                     //Console.WriteLine("{0}\t{1}\t[url={2}]{3}[/url]", postNumber, poster, postLink, c.InnerHtml);
-                                    AddVote(poster, new Vote(postNumber, poster, bold, postLink));
+                                    AddVote(poster, new Vote(postNumber, poster, bold, postLink, postTime));
                                 }
                             }
                         }
@@ -523,9 +576,7 @@ namespace FennecFox
                 if (vote != null)
                 {
                     tPlayer.Item1.AddLast(vote);
-                    tPlayer.Item2.Cells[2].Value = vote.PostNumber;
-                    tPlayer.Item2.Cells[3].Value = vote.Content;
-                    tPlayer.Item2.Tag = vote;
+                    FillInRow(tPlayer.Item2, vote, (Int32)tPlayer.Item3);
                 }
 
                 // visual update
@@ -545,6 +596,7 @@ namespace FennecFox
             toRet.Cells.Add(new DataGridViewTextBoxCell());
             toRet.Cells.Add(new DataGridViewTextBoxCell());
             toRet.Cells.Add(new DataGridViewTextBoxCell());
+            toRet.Cells.Add(new DataGridViewTextBoxCell());
             var c = new DataGridViewComboBoxCell();
             SetComboRange(c);
             toRet.Cells.Add(c);
@@ -555,6 +607,7 @@ namespace FennecFox
             toRet.Cells[2].Value = 0;
             toRet.Cells[2].ValueType = typeof(Int32);
             toRet.Cells[3].Value = "";
+            toRet.Cells[4].Value = "";
 
             return toRet;
         }
@@ -625,10 +678,7 @@ namespace FennecFox
                     {
                         // winner, show this
                         Vote vote = node.Value;
-                        tPlayer.Item2.Cells[1].Value = (Int32)tPlayer.Item3;
-                        tPlayer.Item2.Cells[2].Value = vote.PostNumber;
-                        tPlayer.Item2.Cells[3].Value = vote.Content;
-                        tPlayer.Item2.Tag = vote;
+                        FillInRow(tPlayer.Item2, vote, (Int32)tPlayer.Item3);
                         return;
                     }
 
@@ -638,8 +688,17 @@ namespace FennecFox
                 tPlayer.Item2.Cells[1].Value = 0;
                 tPlayer.Item2.Cells[2].Value = 0;
                 tPlayer.Item2.Cells[3].Value = "";
+                tPlayer.Item2.Cells[4].Value = "";
                 tPlayer.Item2.Tag = new Vote();
             }
+        }
+        private void FillInRow(DataGridViewRow row, Vote vote, Int32 postCount)
+        {
+            row.Cells[1].Value = postCount;
+            row.Cells[2].Value = vote.PostNumber;
+            row.Cells[3].Value = vote.Time.ToString("HH:mm");
+            row.Cells[4].Value = vote.Content;
+            row.Tag = vote;
         }
 
         public void UnhideVote(string player)
@@ -667,10 +726,7 @@ namespace FennecFox
                     // show this guy
                     node.Value.Ignore = false;
                     Vote vote = node.Value;
-                    tPlayer.Item2.Cells[1].Value = (Int32)tPlayer.Item3;
-                    tPlayer.Item2.Cells[2].Value = vote.PostNumber;
-                    tPlayer.Item2.Cells[3].Value = vote.Content;
-                    tPlayer.Item2.Tag = vote;
+                    FillInRow(tPlayer.Item2, vote, (Int32)tPlayer.Item3);
                 }
 
                 return;
@@ -1156,6 +1212,156 @@ namespace FennecFox
                 numTurboDay1Length.Enabled = false;
                 numTurboDayNLength.Enabled = false;
             }
+        }
+
+        private void dtEOD_ValueChanged(object sender, EventArgs e)
+        {
+            DateTime dtBad = dtEOD.Value.AddMinutes(1);
+            tsBadTime = new TimeSpan(dtBad.Hour, dtBad.Minute, dtBad.Second);
+        }
+    }
+    public static class FlashWindow
+    {
+        [DllImport("user32.dll")]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        private static extern bool FlashWindowEx(ref FLASHWINFO pwfi);
+
+        [StructLayout(LayoutKind.Sequential)]
+        private struct FLASHWINFO
+        {
+            /// <summary>
+            /// The size of the structure in bytes.
+            /// </summary>
+            public uint cbSize;
+            /// <summary>
+            /// A Handle to the Window to be Flashed. The window can be either opened or minimized.
+            /// </summary>
+            public IntPtr hwnd;
+            /// <summary>
+            /// The Flash Status.
+            /// </summary>
+            public uint dwFlags;
+            /// <summary>
+            /// The number of times to Flash the window.
+            /// </summary>
+            public uint uCount;
+            /// <summary>
+            /// The rate at which the Window is to be flashed, in milliseconds. If Zero, the function uses the default cursor blink rate.
+            /// </summary>
+            public uint dwTimeout;
+        }
+
+        /// <summary>
+        /// Stop flashing. The system restores the window to its original stae.
+        /// </summary>
+        public const uint FLASHW_STOP = 0;
+
+        /// <summary>
+        /// Flash the window caption.
+        /// </summary>
+        public const uint FLASHW_CAPTION = 1;
+
+        /// <summary>
+        /// Flash the taskbar button.
+        /// </summary>
+        public const uint FLASHW_TRAY = 2;
+
+        /// <summary>
+        /// Flash both the window caption and taskbar button.
+        /// This is equivalent to setting the FLASHW_CAPTION | FLASHW_TRAY flags.
+        /// </summary>
+        public const uint FLASHW_ALL = 3;
+
+        /// <summary>
+        /// Flash continuously, until the FLASHW_STOP flag is set.
+        /// </summary>
+        public const uint FLASHW_TIMER = 4;
+
+        /// <summary>
+        /// Flash continuously until the window comes to the foreground.
+        /// </summary>
+        public const uint FLASHW_TIMERNOFG = 12;
+
+
+        /// <summary>
+        /// Flash the spacified Window (Form) until it recieves focus.
+        /// </summary>
+        /// <param name="form">The Form (Window) to Flash.</param>
+        /// <returns></returns>
+        public static bool Flash(System.Windows.Forms.Form form)
+        {
+            // Make sure we're running under Windows 2000 or later
+            if (Win2000OrLater)
+            {
+                FLASHWINFO fi = Create_FLASHWINFO(form.Handle, FLASHW_ALL | FLASHW_TIMERNOFG, uint.MaxValue, 0);
+                return FlashWindowEx(ref fi);
+            }
+            return false;
+        }
+
+        private static FLASHWINFO Create_FLASHWINFO(IntPtr handle, uint flags, uint count, uint timeout)
+        {
+            FLASHWINFO fi = new FLASHWINFO();
+            fi.cbSize = Convert.ToUInt32(Marshal.SizeOf(fi));
+            fi.hwnd = handle;
+            fi.dwFlags = flags;
+            fi.uCount = count;
+            fi.dwTimeout = timeout;
+            return fi;
+        }
+
+        /// <summary>
+        /// Flash the specified Window (form) for the specified number of times
+        /// </summary>
+        /// <param name="form">The Form (Window) to Flash.</param>
+        /// <param name="count">The number of times to Flash.</param>
+        /// <returns></returns>
+        public static bool Flash(System.Windows.Forms.Form form, uint count)
+        {
+            if (Win2000OrLater)
+            {
+                FLASHWINFO fi = Create_FLASHWINFO(form.Handle, FLASHW_ALL, count, 0);
+                return FlashWindowEx(ref fi);
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// Start Flashing the specified Window (form)
+        /// </summary>
+        /// <param name="form">The Form (Window) to Flash.</param>
+        /// <returns></returns>
+        public static bool Start(System.Windows.Forms.Form form)
+        {
+            if (Win2000OrLater)
+            {
+                FLASHWINFO fi = Create_FLASHWINFO(form.Handle, FLASHW_ALL, uint.MaxValue, 0);
+                return FlashWindowEx(ref fi);
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// Stop Flashing the specified Window (form)
+        /// </summary>
+        /// <param name="form"></param>
+        /// <returns></returns>
+        public static bool Stop(System.Windows.Forms.Form form)
+        {
+            if (Win2000OrLater)
+            {
+                FLASHWINFO fi = Create_FLASHWINFO(form.Handle, FLASHW_STOP, uint.MaxValue, 0);
+                return FlashWindowEx(ref fi);
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// A boolean value indicating whether the application is running on Windows 2000 or later.
+        /// </summary>
+        private static bool Win2000OrLater
+        {
+            get { return System.Environment.OSVersion.Version.Major >= 5; }
         }
     }
 }
