@@ -77,9 +77,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DataLibrary\Poster.cs" />
     <Compile Include="DataLibrary\PrivateMessages.cs" />
     <Compile Include="DataLibrary\StateMachine.cs" />
     <Compile Include="DataLibrary\Vote.cs" />
+    <Compile Include="DataLibrary\WerewolfGame.cs" />
     <Compile Include="utils\ConnectionSettings.cs" />
     <Compile Include="utils\ExtensionMethods.cs" />
     <Compile Include="FennecFox.cs">

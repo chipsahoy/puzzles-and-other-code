@@ -140,7 +140,7 @@ namespace FennecFox
                     tsRemaining = tsRemaining.Add(new TimeSpan(1, 0, 0, 0));
                 }
                 txtCountDown.Text = String.Format("EOD in {0:00}:{1:00}:{2:00}", tsRemaining.Hours, tsRemaining.Minutes, tsRemaining.Seconds);
-                if (tsRemaining.TotalSeconds == 20)
+                if (tsRemaining.TotalSeconds == 120)
                 {
                     FlashWindow.Flash(this);
                 }
@@ -708,6 +708,22 @@ namespace FennecFox
             row.Cells[(Int32)CounterColumn.Posts].Value = postCount;
             row.Cells[(Int32)CounterColumn.PostNumber].Value = vote.PostNumber;
             row.Cells[(Int32)CounterColumn.PostTime].Value = vote.Time.ToString("HH:mm");
+            TimeSpan ts = tsBadTime - new TimeSpan(vote.Time.Hour, vote.Time.Minute, 0);
+            if (ts.Ticks < 0)
+            {
+                ts = ts.Add(new TimeSpan(1, 0, 0, 0));
+            }
+            if (((ts.Ticks == 0) || (ts.Hours == 23)) && !chkEodFarAway.Checked)
+            {
+                // matches exact :01 votes or votes up to an hour after EOD.
+                row.Cells[(Int32)CounterColumn.PostTime].Style.BackColor = System.Drawing.Color.Red;
+                row.Cells[(Int32)CounterColumn.PostTime].Style.SelectionBackColor = System.Drawing.Color.Red;
+            }
+            else
+            {
+                row.Cells[(Int32)CounterColumn.PostTime].Style.BackColor = row.Cells[(Int32)CounterColumn.Player].Style.BackColor;
+                row.Cells[(Int32)CounterColumn.PostTime].Style.SelectionBackColor = row.Cells[(Int32)CounterColumn.Player].Style.SelectionBackColor;
+            }
             row.Cells[(Int32)CounterColumn.Bolded].Value = vote.Content;
             row.Tag = vote;
         }
@@ -916,20 +932,8 @@ namespace FennecFox
 
                 if (e.ColumnIndex == (Int32)CounterColumn.Bolded)
                 {
-                    /*
-                    if (String.IsNullOrWhiteSpace(vote) || vote == "unvote")
-                    {
-                        grdVotes[3, e.RowIndex].Value = ((DataGridViewComboBoxCell)grdVotes[3, e.RowIndex]).Items[0];
-                    }
-                    else
-                    {
-                     * */
                     var player = Players.FirstOrDefault(p => p.ToLower().Replace(" ", "") == vote || p.ToLower().Replace(" ", "").StartsWith(vote));
-                    if (player != null)
-                    {
-                        grdVotes[(Int32)CounterColumn.VotesFor, e.RowIndex].Value = player;
-                    }
-                    else
+                    if (player == null)
                     {
                         // check if there is a mapping defined for this vote => player
                         if (Properties.Settings.Default.Mappings.ContainsKey(vote))
@@ -937,17 +941,24 @@ namespace FennecFox
                             player =
                                 Players.FirstOrDefault(
                                     p => p == Properties.Settings.Default.Mappings[vote]);
-                            if (player != null)
-                            {
-                                grdVotes[(Int32)CounterColumn.VotesFor, e.RowIndex].Value = player;
-                            }
                         }
                     }
-                    //}
+                    if (player != null)
+                    {
+                        grdVotes[(Int32)CounterColumn.VotesFor, e.RowIndex].Value = player;
+                        grdVotes[(Int32)CounterColumn.Bolded, e.RowIndex].Style.BackColor= grdVotes[(Int32)CounterColumn.Player, e.RowIndex].Style.BackColor;
+                        grdVotes[(Int32)CounterColumn.Bolded, e.RowIndex].Style.SelectionBackColor = grdVotes[(Int32)CounterColumn.Player, e.RowIndex].Style.SelectionBackColor;
+                    }
+                    else
+                    {
+                        grdVotes[(Int32)CounterColumn.Bolded, e.RowIndex].Style.BackColor = System.Drawing.Color.Red;
+                        grdVotes[(Int32)CounterColumn.Bolded, e.RowIndex].Style.SelectionBackColor = System.Drawing.Color.Red;
+                    }
                 }
                 else if (e.ColumnIndex == (Int32)CounterColumn.VotesFor)
                 {
                     Properties.Settings.Default.Mappings[vote] = (String)grdVotes[(Int32)CounterColumn.VotesFor, e.RowIndex].Value;
+                    grdVotes[(Int32)CounterColumn.Bolded, e.RowIndex].Style.BackColor = grdVotes[(Int32)CounterColumn.Player, e.RowIndex].Style.BackColor;
                 }
 
                 if (e.ColumnIndex == (Int32)CounterColumn.Bolded || e.ColumnIndex == (Int32)CounterColumn.VotesFor)
@@ -1095,7 +1106,7 @@ namespace FennecFox
                     sb
                         .AppendLine()
                         .AppendLine()
-                        .AppendFormat("[highlight]:{0:00} [color=green]good[/color] :{1:00} [color=red]bad[/color][/highlight]", start, end);
+                        .AppendFormat("[highlight][color=green]:{0:00} good[/color] [color=red]:{1:00} bad[/color][/highlight]", start, end);
                 }
                 else
                 {
@@ -1171,6 +1182,7 @@ namespace FennecFox
         {
             txtPostTable.SelectAll();
             Clipboard.SetDataObject(txtPostTable.Text, false);
+            statusText.Text = "Copied vote count to clipboard.";
         }
 
         private void btnSetEOD_Click(object sender, EventArgs e)
@@ -1194,7 +1206,7 @@ namespace FennecFox
             dtEOD.Value = dt;
         }
 
-        private void txtMultiline_KeyDown(object sender, KeyEventArgs e)
+        private void txtPlayers_KeyDown(object sender, KeyEventArgs e)
         {
             var txtBox = sender as TextBox;
             if (txtBox != null && txtBox.Multiline && e.Control && e.KeyCode == Keys.A)

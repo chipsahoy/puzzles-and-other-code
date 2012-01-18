@@ -47,6 +47,12 @@
             this.label18 = new System.Windows.Forms.Label();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.grdVotes = new System.Windows.Forms.DataGridView();
+            this.colPlayer = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colPostcount = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colPost = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colTime = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colBolded = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colComboVote = new System.Windows.Forms.DataGridViewComboBoxColumn();
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.mnuHide = new System.Windows.Forms.ToolStripMenuItem();
             this.mnuUnhide = new System.Windows.Forms.ToolStripMenuItem();
@@ -102,12 +108,6 @@
             this.label5 = new System.Windows.Forms.Label();
             this.label8 = new System.Windows.Forms.Label();
             this.comboGameTypes = new System.Windows.Forms.ComboBox();
-            this.colPlayer = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.colPostcount = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.colPost = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.colTime = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.colBolded = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.colComboVote = new System.Windows.Forms.DataGridViewComboBoxColumn();
             this.tabPage4.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
@@ -167,11 +167,11 @@
             this.tableLayoutPanel1.Controls.Add(this.txtLastPost, 3, 1);
             this.tableLayoutPanel1.Controls.Add(this.btnUnignore, 1, 5);
             this.tableLayoutPanel1.Controls.Add(this.btnIgnore, 0, 5);
-            this.tableLayoutPanel1.Controls.Add(this.dtEOD, 1, 2);
             this.tableLayoutPanel1.Controls.Add(this.label18, 0, 2);
             this.tableLayoutPanel1.Controls.Add(this.splitContainer1, 0, 3);
             this.tableLayoutPanel1.Controls.Add(this.chkEodFarAway, 3, 2);
             this.tableLayoutPanel1.Controls.Add(this.txtCountDown, 6, 5);
+            this.tableLayoutPanel1.Controls.Add(this.dtEOD, 1, 2);
             this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel1.Location = new System.Drawing.Point(3, 3);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
@@ -309,7 +309,7 @@
             this.dtEOD.Location = new System.Drawing.Point(59, 58);
             this.dtEOD.Name = "dtEOD";
             this.dtEOD.ShowUpDown = true;
-            this.dtEOD.Size = new System.Drawing.Size(70, 20);
+            this.dtEOD.Size = new System.Drawing.Size(90, 20);
             this.dtEOD.TabIndex = 20;
             this.dtEOD.ValueChanged += new System.EventHandler(this.dtEOD_ValueChanged);
             // 
@@ -370,6 +370,48 @@
             this.grdVotes.Size = new System.Drawing.Size(624, 221);
             this.grdVotes.TabIndex = 18;
             this.grdVotes.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.grdVotes_CellValueChanged);
+            // 
+            // colPlayer
+            // 
+            this.colPlayer.FillWeight = 95.73603F;
+            this.colPlayer.HeaderText = "Player";
+            this.colPlayer.Name = "colPlayer";
+            this.colPlayer.ReadOnly = true;
+            // 
+            // colPostcount
+            // 
+            this.colPostcount.FillWeight = 38.00685F;
+            this.colPostcount.HeaderText = "Posts";
+            this.colPostcount.Name = "colPostcount";
+            this.colPostcount.ReadOnly = true;
+            // 
+            // colPost
+            // 
+            this.colPost.FillWeight = 38.00685F;
+            this.colPost.HeaderText = "#";
+            this.colPost.Name = "colPost";
+            this.colPost.ReadOnly = true;
+            // 
+            // colTime
+            // 
+            this.colTime.FillWeight = 34.87126F;
+            this.colTime.HeaderText = "Time";
+            this.colTime.Name = "colTime";
+            this.colTime.ReadOnly = true;
+            // 
+            // colBolded
+            // 
+            this.colBolded.FillWeight = 126.6895F;
+            this.colBolded.HeaderText = "Bolded";
+            this.colBolded.Name = "colBolded";
+            this.colBolded.ReadOnly = true;
+            // 
+            // colComboVote
+            // 
+            this.colComboVote.FillWeight = 126.6895F;
+            this.colComboVote.HeaderText = "Votes For";
+            this.colComboVote.Name = "colComboVote";
+            this.colComboVote.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Automatic;
             // 
             // contextMenuStrip1
             // 
@@ -467,7 +509,7 @@
             this.tabPage2.Location = new System.Drawing.Point(4, 22);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(629, 587);
+            this.tabPage2.Size = new System.Drawing.Size(636, 587);
             this.tabPage2.TabIndex = 5;
             this.tabPage2.Text = "Gimmick Settings";
             // 
@@ -544,7 +586,7 @@
             this.tabPage1.Location = new System.Drawing.Point(4, 22);
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(629, 587);
+            this.tabPage1.Size = new System.Drawing.Size(636, 587);
             this.tabPage1.TabIndex = 4;
             this.tabPage1.Text = "Help";
             // 
@@ -586,7 +628,7 @@
             this.tabPage3.Location = new System.Drawing.Point(4, 22);
             this.tabPage3.Name = "tabPage3";
             this.tabPage3.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage3.Size = new System.Drawing.Size(629, 587);
+            this.tabPage3.Size = new System.Drawing.Size(636, 587);
             this.tabPage3.TabIndex = 6;
             this.tabPage3.Text = "Players";
             // 
@@ -728,7 +770,7 @@
             this.txtPlayers.Size = new System.Drawing.Size(148, 238);
             this.txtPlayers.TabIndex = 0;
             this.txtPlayers.TextChanged += new System.EventHandler(this.txtPlayers_TextChanged);
-            this.txtPlayers.KeyDown += new System.Windows.Forms.KeyEventHandler(this.txtMultiline_KeyDown);
+            this.txtPlayers.KeyDown += new System.Windows.Forms.KeyEventHandler(this.txtPlayers_KeyDown);
             // 
             // tabPage5
             // 
@@ -744,7 +786,7 @@
             this.tabPage5.Location = new System.Drawing.Point(4, 22);
             this.tabPage5.Name = "tabPage5";
             this.tabPage5.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage5.Size = new System.Drawing.Size(629, 587);
+            this.tabPage5.Size = new System.Drawing.Size(636, 587);
             this.tabPage5.TabIndex = 7;
             this.tabPage5.Text = "Game Settings";
             // 
@@ -965,48 +1007,6 @@
             this.comboGameTypes.Name = "comboGameTypes";
             this.comboGameTypes.Size = new System.Drawing.Size(121, 21);
             this.comboGameTypes.TabIndex = 1;
-            // 
-            // colPlayer
-            // 
-            this.colPlayer.FillWeight = 95.73603F;
-            this.colPlayer.HeaderText = "Player";
-            this.colPlayer.Name = "colPlayer";
-            this.colPlayer.ReadOnly = true;
-            // 
-            // colPostcount
-            // 
-            this.colPostcount.FillWeight = 38.00685F;
-            this.colPostcount.HeaderText = "Posts";
-            this.colPostcount.Name = "colPostcount";
-            this.colPostcount.ReadOnly = true;
-            // 
-            // colPost
-            // 
-            this.colPost.FillWeight = 38.00685F;
-            this.colPost.HeaderText = "#";
-            this.colPost.Name = "colPost";
-            this.colPost.ReadOnly = true;
-            // 
-            // colTime
-            // 
-            this.colTime.FillWeight = 34.87126F;
-            this.colTime.HeaderText = "Time";
-            this.colTime.Name = "colTime";
-            this.colTime.ReadOnly = true;
-            // 
-            // colBolded
-            // 
-            this.colBolded.FillWeight = 126.6895F;
-            this.colBolded.HeaderText = "Bolded";
-            this.colBolded.Name = "colBolded";
-            this.colBolded.ReadOnly = true;
-            // 
-            // colComboVote
-            // 
-            this.colComboVote.FillWeight = 126.6895F;
-            this.colComboVote.HeaderText = "Votes For";
-            this.colComboVote.Name = "colComboVote";
-            this.colComboVote.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Automatic;
             // 
             // FormVoteCounter
             // 
