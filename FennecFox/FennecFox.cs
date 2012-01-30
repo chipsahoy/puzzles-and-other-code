@@ -34,9 +34,6 @@ namespace FennecFox
         int _currentPage = 1;
         int _postsPerPage = 50;
         private Thread _workerThread;
-        System.Windows.Forms.Timer TimerEODCountdown = new System.Windows.Forms.Timer();
-        TimeSpan tsCurrentTime;
-        TimeSpan tsBadTime;
 
         private String _username; // if this changes from what user entered previously, need to logout then re-login with new info.
 
@@ -206,18 +203,9 @@ namespace FennecFox
             tabVotes.TabPages.Remove(tabPage5);
 
             m_game = new DataLibrary.WerewolfGame(a => Invoke(a));
-            m_game.PropertyChanged += new PropertyChangedEventHandler(m_game_PropertyChanged);
-            CreateVoteGridColumns();
-            SetupVoteGrid();
-
-            txtVersion.Text = String.Format("Fennic Fox Vote Counter Version " + Assembly.GetExecutingAssembly().GetName().Version.ToString());
-            txtLastPost.DataBindings.Add("Text", m_game, "LastPost", false, DataSourceUpdateMode.OnPropertyChanged);
-            DateTime dtBad = dtEOD.Value.AddMinutes(1);
-            tsBadTime = new TimeSpan(dtBad.Hour, dtBad.Minute, dtBad.Second);
-            TimerEODCountdown.Interval = 100;
-            TimerEODCountdown.Tick += new EventHandler(TimerEODCountdown_Tick);
-            TimerEODCountdown.Start();
+            m_game.PropertyChanged += new PropertyChangedEventHandler(m_game_PropertyChanged);            
         }
+
 
         void m_game_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
@@ -227,25 +215,25 @@ namespace FennecFox
             }
         }
 
-        void TimerEODCountdown_Tick(object sender, EventArgs e)
-        {
-            DateTime dtNow = DateTime.Now;
-            TimeSpan tsNow = new TimeSpan(dtNow.Hour, dtNow.Minute, dtNow.Second); // truncate to second.
-            if (tsNow != tsCurrentTime)
-            {
-                tsCurrentTime = tsNow;
-                TimeSpan tsRemaining = tsBadTime.Subtract(tsCurrentTime);
-                if (tsRemaining.Ticks < 0)
-                {
-                    tsRemaining = tsRemaining.Add(new TimeSpan(1, 0, 0, 0));
-                }
-                txtCountDown.Text = String.Format("EOD in {0:00}:{1:00}:{2:00}", tsRemaining.Hours, tsRemaining.Minutes, tsRemaining.Seconds);
-                if (tsRemaining.TotalSeconds == 120)
-                {
-                    FlashWindow.Flash(this);
-                }
-            }
-        }
+        //void TimerEODCountdown_Tick(object sender, EventArgs e)
+        //{
+        //    DateTime dtNow = DateTime.Now;
+        //    TimeSpan tsNow = new TimeSpan(dtNow.Hour, dtNow.Minute, dtNow.Second); // truncate to second.
+        //    if (tsNow != tsCurrentTime)
+        //    {
+        //        tsCurrentTime = tsNow;
+        //        TimeSpan tsRemaining = tsBadTime.Subtract(tsCurrentTime);
+        //        if (tsRemaining.Ticks < 0)
+        //        {
+        //            tsRemaining = tsRemaining.Add(new TimeSpan(1, 0, 0, 0));
+        //        }
+        //        txtCountDown.Text = String.Format("EOD in {0:00}:{1:00}:{2:00}", tsRemaining.Hours, tsRemaining.Minutes, tsRemaining.Seconds);
+        //        if (tsRemaining.TotalSeconds == 120)
+        //        {
+        //            FlashWindow.Flash(this);
+        //        }
+        //    }
+        //}
 
         private int PageFromNumber(int number)
         {
@@ -433,21 +421,9 @@ namespace FennecFox
 
                 _workerThread = new Thread(DoWork);
 
-                // find the min post # to search.
-                // Grab that page.
-                int firstPost = _startPost;
-                int userFirst = Convert.ToInt32(txtFirstPost.Text);
-                if (userFirst > firstPost)
-                {
-                    firstPost = userFirst;
-                }
-                if (firstPost <= 0)
-                {
-                    firstPost = 1;
-                }
-                _startPost = firstPost;
+                _startPost = m_game.LastPost;
 
-                int page = PageFromNumber(firstPost);
+                int page = PageFromNumber(_startPost);
                 string destination = GetNextUrl(URLTextBox.Text.Trim(), page);
 
                 String resp = DoLogin(txtUsername.Text, txtPassword.Text);
@@ -598,15 +574,6 @@ namespace FennecFox
             }
         }
 
-        private void button1_Click(object sender, EventArgs e)
-        {
-            grdVotes.Rows.Clear();
-            m_game.OnNewDay();
-            _startPost = 1; // can/will be overridden by user first later
-            txtLastPost.Text = "0";
-
-            statusText.Text = "Cleared votes";
-        }
 
         private volatile bool _shouldStop = false;
         private void StopButton_Click(object sender, EventArgs e)
@@ -670,12 +637,11 @@ namespace FennecFox
                 Properties.Settings.Default.Players.Add(p.Name);
             }
             Properties.Settings.Default.Moderator = txtModerator.Text;
-            Properties.Settings.Default.EndOfDay = dtEOD.Value;
 
             Properties.Settings.Default.Save();
         }
 
-        private void Form_Load(object sender, EventArgs e)
+        protected override void OnLoad(EventArgs e)
         {
             if (Properties.Settings.Default.Mappings == null)
             {
@@ -691,9 +657,10 @@ namespace FennecFox
             {
                 Properties.Settings.Default.DeadPlayers = new StringCollection();
             }
+            CreateVoteGridColumns();
+            SetupVoteGrid();
 
             _startPost = Properties.Settings.Default.firstPost;
-            txtFirstPost.Text = _startPost.ToString();
             _postsPerPage = Properties.Settings.Default.postsPerPage;
             txtUsername.Text = Properties.Settings.Default.username;
             txtPassword.Text = Properties.Settings.Default.password;
@@ -709,7 +676,16 @@ namespace FennecFox
             list = new List<string>(tmp);
             list.Sort();
             txtDeadPlayers.Lines = list.ToArray();
-            dtEOD.Value = Properties.Settings.Default.EndOfDay;
+
+
+            txtVersion.Text = String.Format("Fennic Fox Vote Counter Version " + Assembly.GetExecutingAssembly().GetName().Version.ToString());
+            txtLastPost.DataBindings.Add("Text", m_game, "LastPost", false, DataSourceUpdateMode.OnPropertyChanged);
+
+            udStartPost.DataBindings.Add("Value", m_game, "StartPost", true, DataSourceUpdateMode.OnPropertyChanged);
+            txtEndPost.DataBindings.Add("Text", m_game, "EndPost", false, DataSourceUpdateMode.OnPropertyChanged);
+            dtEndTime.DataBindings.Add("Value", m_game, "EndTime", false, DataSourceUpdateMode.OnPropertyChanged);
+            dtStartTime.DataBindings.Add("Value", m_game, "StartTime", true, DataSourceUpdateMode.OnPropertyChanged);
+            Console.WriteLine("OnLoad complete");
         }
 
         private void txtPlayers_TextChanged(object sender, EventArgs e)
@@ -800,7 +776,6 @@ namespace FennecFox
             DateTime dt = DateTime.Now;
             dt = dt.AddMinutes(dayLength);
             dt = dt.AddSeconds(-dt.Second);
-            dtEOD.Value = dt;
         }
 
         private void txtPlayers_KeyDown(object sender, KeyEventArgs e)
@@ -817,29 +792,21 @@ namespace FennecFox
         {
             if (chkTurbo.Checked)
             {
+                m_game.Turbo = true;
                 btnSetEOD.Enabled = true;
-                chkEodFarAway.Visible = false;
-                chkEodFarAway.Checked = false;
                 chkTurboDay1.Enabled = true;
                 numTurboDay1Length.Enabled = true;
                 numTurboDayNLength.Enabled = true;
             }
             else
             {
+                m_game.Turbo = false;
                 btnSetEOD.Enabled = false;
-                chkEodFarAway.Visible = true;
                 chkTurboDay1.Enabled = false;
                 numTurboDay1Length.Enabled = false;
                 numTurboDayNLength.Enabled = false;
             }
         }
-
-        private void dtEOD_ValueChanged(object sender, EventArgs e)
-        {
-            DateTime dtBad = dtEOD.Value.AddMinutes(1);
-            tsBadTime = new TimeSpan(dtBad.Hour, dtBad.Minute, dtBad.Second);
-        }
-
     }
     public static class FlashWindow
     {

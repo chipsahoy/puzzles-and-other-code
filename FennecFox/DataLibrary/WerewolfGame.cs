@@ -13,7 +13,7 @@ namespace FennecFox.DataLibrary
     class WerewolfGame : INotifyPropertyChanged
     {
         private Dictionary<String, Poster> _lookupPoster = new Dictionary<string, Poster>();
-        private Dictionary<Int32, Poster> _lookupPostNumber = new Dictionary<int, Poster>();
+        private Posts _allPosts = new Posts();
         SortableBindingList<Poster> _livePosters = new SortableBindingList<Poster>();
         List<String> _validVotes;
         List<Poster> _allPosters = new List<Poster>();
@@ -23,6 +23,12 @@ namespace FennecFox.DataLibrary
         {
             _synchronousInvoker = synchronousInvoker;
             BuildValidVotesList();
+        }
+        [System.ComponentModel.Bindable(true)]
+        public Boolean Turbo
+        {
+            get;
+            set;
         }
         [System.ComponentModel.Bindable(true)]
         public Int32 DayNumber
@@ -63,6 +69,104 @@ namespace FennecFox.DataLibrary
             get
             {
                 return _livePosters;
+            }
+        }
+        Int32 _startPost = 1;
+        DateTime? _startTime = null;
+        DateTime _endTime = DateTime.Now;
+
+        public Int32 StartPost
+        {
+            get
+            {
+                return _startPost;
+            }
+            set
+            {
+                if (value > LastPost)
+                {
+                    value = LastPost;
+                }
+                if(value == _startPost)
+                {
+                    return;
+                }
+                _startPost = value;
+                var firstPost = (from p in _allPosts where (p.PostNumber == value) select p).FirstOrDefault();
+                if (firstPost != null)
+                {
+                    _startTime = firstPost.Time;
+                }
+                else
+                {
+                    _startTime = null;
+                }
+                OnPropertyChanged("StartTime");
+                OnPropertyChanged("StartPost");
+                UpdateDayFilter();                
+            }
+        }
+        Int32? _endPost;
+        public Int32? EndPost
+        {
+            get
+            {
+                Int32? endPost = null;
+                var nightPost = (from p in _allPosts where (p.Time > EndTime) select p).FirstOrDefault();
+                if (nightPost != null)
+                {
+                    endPost = nightPost.PostNumber - 1;
+                }
+                if (endPost != _endPost)
+                {
+                    _endPost = endPost;
+                    OnPropertyChanged("EndPost");
+                }
+                return _endPost;
+            }
+        }
+        public DateTime? StartTime
+        {
+            get
+            {
+                return _startTime;
+            }
+        }
+        public DateTime EndTime
+        {
+            get
+            {
+                return _endTime;
+            }
+            set
+            {
+                if (value == null)
+                {
+                    value = DateTime.MaxValue;
+                }
+                if (value == _endTime)
+                {
+                    return;
+                }
+                _endTime = value;
+                Int32? ep = EndPost; // side effects.
+                OnPropertyChanged("EndTime");
+                UpdateDayFilter();
+            }
+        }
+        public TimeSpan TimeUntilNight
+        {
+            get
+            {
+                TimeSpan rc = EndTime - DateTime.Now;
+                return rc;
+            }
+        }
+        private void UpdateDayFilter()
+        {
+            foreach (Poster p in LivePlayers)
+            {
+                p.UpdateDayFilter();
             }
         }
         public readonly String SelectVote = "Error!";
@@ -117,20 +221,22 @@ namespace FennecFox.DataLibrary
         {
             get
             {
-                var sb = new StringBuilder(@"[highlight]Votes as of post ");
-                String lastPost = m_lastPost.ToString();
+                var sb = new StringBuilder(@"[highlight]Votes from post ");
                 sb
-                    .Append(lastPost)
+                    .Append(StartPost.ToString())
+                    .Append(" to post ")
+                    .Append(EndPost.ToString())
                     .AppendLine();
 
-                //if (leftInDay >= TimeSpan.FromSeconds(0))
-                //{
-                //    sb.AppendFormat("Night in {0}", leftInDayFormatted);
-                //}
-                //else
-                //{
-                //    sb.Append("It is night");
-                //}
+                TimeSpan ts = TimeUntilNight;
+                if (ts >= TimeSpan.FromSeconds(0))
+                {
+                    sb.AppendFormat("Night in {0}", ts);
+                }
+                else
+                {
+                    sb.Append("It is night");
+                }
 
                 sb.AppendLine("[/highlight]").AppendLine("---")
                 .AppendLine("[table=head][b]Votes[/b]|[b]Lynch[/b]|[b]Voters[/b]");
@@ -340,6 +446,7 @@ namespace FennecFox.DataLibrary
                 BuildValidVotesList();
             }
             Post p = new Post(posterName, postNumber, postTime, postLink, post);
+            _allPosts.Add(p);
             poster.AddPost(p);
             RefreshVoteCount();
             return true;

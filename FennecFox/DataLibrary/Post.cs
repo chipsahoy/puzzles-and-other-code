@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 
@@ -118,6 +119,18 @@ namespace FennecFox.DataLibrary
             {
                 n.Remove();
             }
+        }
+    }
+    class Posts : KeyedCollection<int, Post>
+    {
+        public Posts() :
+            base()
+        {
+        }
+
+        protected override int GetKeyForItem(Post item)
+        {
+            return item.PostNumber;
         }
     }
 }

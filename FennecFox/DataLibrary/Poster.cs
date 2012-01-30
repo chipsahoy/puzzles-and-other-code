@@ -8,7 +8,7 @@ namespace FennecFox.DataLibrary
 {
     class Poster : INotifyPropertyChanged
     {
-        SortedList<Int32, Post> _posts = new SortedList<Int32, Post>();
+        Posts _posts = new Posts();
         WerewolfGame _game;
         Action<Action> _synchronousInvoker;
         String _name;
@@ -31,8 +31,16 @@ namespace FennecFox.DataLibrary
         public void UnhideVote()
         {
             Bold hidden = null;
-            foreach (Post p in _posts.Values.Reverse())
+            foreach (Post p in _posts.Reverse())
             {
+                if (p.Time > _game.EndTime)
+                {
+                    continue;
+                }
+                if (p.PostNumber < _game.StartPost)
+                {
+                    break;
+                }
                 foreach (Bold b in p.Bolded)
                 {
                     if (b.Ignore)
@@ -153,7 +161,8 @@ namespace FennecFox.DataLibrary
         {
             get
             {
-                return _posts.Count;
+                Int32 count = (from Post post in _posts where (post.PostNumber >= _game.StartPost) && (post.Time <= _game.EndTime) select post).Count();
+                return count;
             }
         }
         private Int32 _votes;
@@ -173,7 +182,12 @@ namespace FennecFox.DataLibrary
                 }
             }
         }
-
+        internal void UpdateDayFilter()
+        {
+            CurrentVoteChanged();
+            OnPropertyChanged("VoteCount");
+            OnPropertyChanged("PostCount");
+        }
 
         private void CurrentVoteChanged()
         {
@@ -196,15 +210,23 @@ namespace FennecFox.DataLibrary
 
         internal void AddPost(DataLibrary.Post p)
         {
-            _posts.Add(p.PostNumber, p);
+            _posts.Add(p);
             CurrentVoteChanged();
             OnPropertyChanged("PostCount");
         }
 
         private Boolean FindActiveBold(out Post pActive, out Bold bActive)
         {
-            foreach (Post p in _posts.Values.Reverse())
+            foreach (Post p in _posts.Reverse())
             {
+                if (p.Time > _game.EndTime)
+                {
+                    continue;
+                }
+                if (p.PostNumber < _game.StartPost)
+                {
+                    break;
+                }
                 foreach (Bold bold in p.Bolded)
                 {
                     if (!bold.Ignore)

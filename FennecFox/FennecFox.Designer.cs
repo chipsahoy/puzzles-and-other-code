@@ -32,15 +32,9 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormVoteCounter));
             this.tabPage4 = new System.Windows.Forms.TabPage();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
-            this.label4 = new System.Windows.Forms.Label();
-            this.URLTextBox = new System.Windows.Forms.TextBox();
             this.GoButton = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
-            this.txtFirstPost = new System.Windows.Forms.TextBox();
             this.StopButton = new System.Windows.Forms.Button();
-            this.button1 = new System.Windows.Forms.Button();
-            this.label2 = new System.Windows.Forms.Label();
-            this.txtLastPost = new System.Windows.Forms.TextBox();
             this.btnUnignore = new System.Windows.Forms.Button();
             this.btnIgnore = new System.Windows.Forms.Button();
             this.label18 = new System.Windows.Forms.Label();
@@ -51,9 +45,13 @@
             this.mnuUnhide = new System.Windows.Forms.ToolStripMenuItem();
             this.grdVotes2 = new System.Windows.Forms.DataGridView();
             this.txtPostTable = new System.Windows.Forms.TextBox();
-            this.chkEodFarAway = new System.Windows.Forms.CheckBox();
             this.txtCountDown = new System.Windows.Forms.TextBox();
-            this.dtEOD = new System.Windows.Forms.DateTimePicker();
+            this.dtEndTime = new System.Windows.Forms.DateTimePicker();
+            this.label2 = new System.Windows.Forms.Label();
+            this.txtLastPost = new System.Windows.Forms.TextBox();
+            this.dtStartTime = new System.Windows.Forms.DateTimePicker();
+            this.udStartPost = new System.Windows.Forms.NumericUpDown();
+            this.txtEndPost = new System.Windows.Forms.TextBox();
             this.statusBrowser = new System.Windows.Forms.StatusStrip();
             this.statusText = new System.Windows.Forms.ToolStripStatusLabel();
             this.tabVotes = new System.Windows.Forms.TabControl();
@@ -68,6 +66,8 @@
             this.txtVersion = new System.Windows.Forms.TextBox();
             this.textBox1 = new System.Windows.Forms.TextBox();
             this.tabPage3 = new System.Windows.Forms.TabPage();
+            this.URLTextBox = new System.Windows.Forms.TextBox();
+            this.label4 = new System.Windows.Forms.Label();
             this.label20 = new System.Windows.Forms.Label();
             this.label19 = new System.Windows.Forms.Label();
             this.txtDeadPlayers = new System.Windows.Forms.TextBox();
@@ -112,6 +112,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.grdVotes)).BeginInit();
             this.contextMenuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.grdVotes2)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.udStartPost)).BeginInit();
             this.statusBrowser.SuspendLayout();
             this.tabVotes.SuspendLayout();
             this.tabPage2.SuspendLayout();
@@ -152,22 +153,20 @@
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel1.Controls.Add(this.label4, 0, 0);
-            this.tableLayoutPanel1.Controls.Add(this.URLTextBox, 2, 0);
             this.tableLayoutPanel1.Controls.Add(this.GoButton, 5, 1);
             this.tableLayoutPanel1.Controls.Add(this.label1, 0, 1);
-            this.tableLayoutPanel1.Controls.Add(this.txtFirstPost, 1, 1);
             this.tableLayoutPanel1.Controls.Add(this.StopButton, 6, 1);
-            this.tableLayoutPanel1.Controls.Add(this.button1, 7, 1);
-            this.tableLayoutPanel1.Controls.Add(this.label2, 2, 1);
-            this.tableLayoutPanel1.Controls.Add(this.txtLastPost, 3, 1);
             this.tableLayoutPanel1.Controls.Add(this.btnUnignore, 1, 5);
             this.tableLayoutPanel1.Controls.Add(this.btnIgnore, 0, 5);
             this.tableLayoutPanel1.Controls.Add(this.label18, 0, 2);
             this.tableLayoutPanel1.Controls.Add(this.splitContainer1, 0, 3);
-            this.tableLayoutPanel1.Controls.Add(this.chkEodFarAway, 3, 2);
             this.tableLayoutPanel1.Controls.Add(this.txtCountDown, 6, 5);
-            this.tableLayoutPanel1.Controls.Add(this.dtEOD, 1, 2);
+            this.tableLayoutPanel1.Controls.Add(this.dtEndTime, 2, 2);
+            this.tableLayoutPanel1.Controls.Add(this.label2, 6, 2);
+            this.tableLayoutPanel1.Controls.Add(this.txtLastPost, 7, 2);
+            this.tableLayoutPanel1.Controls.Add(this.dtStartTime, 2, 1);
+            this.tableLayoutPanel1.Controls.Add(this.udStartPost, 1, 1);
+            this.tableLayoutPanel1.Controls.Add(this.txtEndPost, 1, 2);
             this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel1.Location = new System.Drawing.Point(3, 3);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
@@ -181,31 +180,11 @@
             this.tableLayoutPanel1.Size = new System.Drawing.Size(630, 559);
             this.tableLayoutPanel1.TabIndex = 17;
             // 
-            // label4
-            // 
-            this.label4.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-            this.label4.AutoSize = true;
-            this.tableLayoutPanel1.SetColumnSpan(this.label4, 2);
-            this.label4.Location = new System.Drawing.Point(3, 6);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(126, 13);
-            this.label4.TabIndex = 17;
-            this.label4.Text = "Main Thread URL";
-            // 
-            // URLTextBox
-            // 
-            this.URLTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-            this.tableLayoutPanel1.SetColumnSpan(this.URLTextBox, 6);
-            this.URLTextBox.Location = new System.Drawing.Point(135, 3);
-            this.URLTextBox.Name = "URLTextBox";
-            this.URLTextBox.Size = new System.Drawing.Size(492, 20);
-            this.URLTextBox.TabIndex = 1;
-            // 
             // GoButton
             // 
             this.GoButton.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left)));
-            this.GoButton.Location = new System.Drawing.Point(272, 29);
+            this.GoButton.Location = new System.Drawing.Point(391, 3);
             this.GoButton.Name = "GoButton";
             this.GoButton.Size = new System.Drawing.Size(56, 23);
             this.GoButton.TabIndex = 4;
@@ -217,28 +196,18 @@
             // 
             this.label1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(3, 34);
+            this.label1.Location = new System.Drawing.Point(3, 8);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(50, 13);
+            this.label1.Size = new System.Drawing.Size(47, 13);
             this.label1.TabIndex = 7;
-            this.label1.Text = "First Post";
-            this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-            // 
-            // txtFirstPost
-            // 
-            this.txtFirstPost.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtFirstPost.Location = new System.Drawing.Point(59, 30);
-            this.txtFirstPost.Name = "txtFirstPost";
-            this.txtFirstPost.Size = new System.Drawing.Size(70, 20);
-            this.txtFirstPost.TabIndex = 2;
-            this.txtFirstPost.Text = "1";
+            this.label1.Text = "Start";
             // 
             // StopButton
             // 
             this.StopButton.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left)));
             this.StopButton.Enabled = false;
-            this.StopButton.Location = new System.Drawing.Point(334, 29);
+            this.StopButton.Location = new System.Drawing.Point(453, 3);
             this.StopButton.Name = "StopButton";
             this.StopButton.Size = new System.Drawing.Size(58, 23);
             this.StopButton.TabIndex = 5;
@@ -246,40 +215,9 @@
             this.StopButton.UseVisualStyleBackColor = true;
             this.StopButton.Click += new System.EventHandler(this.StopButton_Click);
             // 
-            // button1
-            // 
-            this.button1.Location = new System.Drawing.Point(440, 29);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(75, 23);
-            this.button1.TabIndex = 6;
-            this.button1.Text = "Clear";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
-            // 
-            // label2
-            // 
-            this.label2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(135, 34);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(51, 13);
-            this.label2.TabIndex = 8;
-            this.label2.Text = "Last Post";
-            // 
-            // txtLastPost
-            // 
-            this.txtLastPost.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtLastPost.Location = new System.Drawing.Point(192, 30);
-            this.txtLastPost.Name = "txtLastPost";
-            this.txtLastPost.ReadOnly = true;
-            this.txtLastPost.Size = new System.Drawing.Size(70, 20);
-            this.txtLastPost.TabIndex = 3;
-            this.txtLastPost.TabStop = false;
-            this.txtLastPost.Text = "0";
-            // 
             // btnUnignore
             // 
-            this.btnUnignore.Location = new System.Drawing.Point(59, 532);
+            this.btnUnignore.Location = new System.Drawing.Point(56, 532);
             this.btnUnignore.Name = "btnUnignore";
             this.btnUnignore.Size = new System.Drawing.Size(58, 23);
             this.btnUnignore.TabIndex = 15;
@@ -301,17 +239,17 @@
             // 
             this.label18.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
             this.label18.AutoSize = true;
-            this.label18.Location = new System.Drawing.Point(3, 61);
+            this.label18.Location = new System.Drawing.Point(3, 35);
             this.label18.Name = "label18";
-            this.label18.Size = new System.Drawing.Size(50, 13);
+            this.label18.Size = new System.Drawing.Size(47, 13);
             this.label18.TabIndex = 21;
-            this.label18.Text = "EOD";
+            this.label18.Text = "End";
             // 
             // splitContainer1
             // 
             this.tableLayoutPanel1.SetColumnSpan(this.splitContainer1, 12);
             this.splitContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.splitContainer1.Location = new System.Drawing.Point(3, 84);
+            this.splitContainer1.Location = new System.Drawing.Point(3, 58);
             this.splitContainer1.Name = "splitContainer1";
             this.splitContainer1.Orientation = System.Windows.Forms.Orientation.Horizontal;
             // 
@@ -324,8 +262,8 @@
             // 
             this.splitContainer1.Panel2.Controls.Add(this.txtPostTable);
             this.tableLayoutPanel1.SetRowSpan(this.splitContainer1, 2);
-            this.splitContainer1.Size = new System.Drawing.Size(624, 442);
-            this.splitContainer1.SplitterDistance = 218;
+            this.splitContainer1.Size = new System.Drawing.Size(631, 468);
+            this.splitContainer1.SplitterDistance = 230;
             this.splitContainer1.TabIndex = 22;
             // 
             // grdVotes
@@ -345,7 +283,7 @@
             this.grdVotes.RowHeadersVisible = false;
             this.grdVotes.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.grdVotes.ShowEditingIcon = false;
-            this.grdVotes.Size = new System.Drawing.Size(624, 218);
+            this.grdVotes.Size = new System.Drawing.Size(631, 230);
             this.grdVotes.TabIndex = 19;
             // 
             // contextMenuStrip1
@@ -391,7 +329,7 @@
             this.grdVotes2.RowHeadersVisible = false;
             this.grdVotes2.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.grdVotes2.ShowEditingIcon = false;
-            this.grdVotes2.Size = new System.Drawing.Size(624, 218);
+            this.grdVotes2.Size = new System.Drawing.Size(631, 230);
             this.grdVotes2.TabIndex = 18;
             this.grdVotes2.Visible = false;
             this.grdVotes2.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.grdVotes_CellValueChanged);
@@ -403,41 +341,84 @@
             this.txtPostTable.Multiline = true;
             this.txtPostTable.Name = "txtPostTable";
             this.txtPostTable.ReadOnly = true;
-            this.txtPostTable.Size = new System.Drawing.Size(624, 220);
+            this.txtPostTable.Size = new System.Drawing.Size(631, 234);
             this.txtPostTable.TabIndex = 19;
             this.txtPostTable.Click += new System.EventHandler(this.txtPostTable_Click);
             // 
-            // chkEodFarAway
-            // 
-            this.chkEodFarAway.AutoSize = true;
-            this.tableLayoutPanel1.SetColumnSpan(this.chkEodFarAway, 3);
-            this.chkEodFarAway.Location = new System.Drawing.Point(192, 58);
-            this.chkEodFarAway.Name = "chkEodFarAway";
-            this.chkEodFarAway.Size = new System.Drawing.Size(136, 17);
-            this.chkEodFarAway.TabIndex = 23;
-            this.chkEodFarAway.Text = "EOD > 23 hours away?";
-            this.chkEodFarAway.UseVisualStyleBackColor = true;
-            this.chkEodFarAway.Visible = false;
-            // 
             // txtCountDown
             // 
-            this.txtCountDown.Location = new System.Drawing.Point(334, 532);
+            this.txtCountDown.Location = new System.Drawing.Point(453, 532);
             this.txtCountDown.Name = "txtCountDown";
             this.txtCountDown.ReadOnly = true;
             this.txtCountDown.Size = new System.Drawing.Size(100, 20);
             this.txtCountDown.TabIndex = 27;
             // 
-            // dtEOD
+            // dtEndTime
             // 
-            this.tableLayoutPanel1.SetColumnSpan(this.dtEOD, 2);
-            this.dtEOD.CustomFormat = "h:mm:tt";
-            this.dtEOD.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
-            this.dtEOD.Location = new System.Drawing.Point(59, 58);
-            this.dtEOD.Name = "dtEOD";
-            this.dtEOD.ShowUpDown = true;
-            this.dtEOD.Size = new System.Drawing.Size(90, 20);
-            this.dtEOD.TabIndex = 20;
-            this.dtEOD.ValueChanged += new System.EventHandler(this.dtEOD_ValueChanged);
+            this.dtEndTime.CustomFormat = "ddd, dd MMM hh:mm tt";
+            this.dtEndTime.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
+            this.dtEndTime.Location = new System.Drawing.Point(182, 32);
+            this.dtEndTime.Name = "dtEndTime";
+            this.dtEndTime.ShowUpDown = true;
+            this.dtEndTime.Size = new System.Drawing.Size(200, 20);
+            this.dtEndTime.TabIndex = 28;
+            // 
+            // label2
+            // 
+            this.label2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(453, 35);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(100, 13);
+            this.label2.TabIndex = 8;
+            this.label2.Text = "Last Post";
+            // 
+            // txtLastPost
+            // 
+            this.txtLastPost.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtLastPost.Location = new System.Drawing.Point(559, 32);
+            this.txtLastPost.Name = "txtLastPost";
+            this.txtLastPost.ReadOnly = true;
+            this.txtLastPost.Size = new System.Drawing.Size(75, 20);
+            this.txtLastPost.TabIndex = 3;
+            this.txtLastPost.TabStop = false;
+            this.txtLastPost.Text = "0";
+            // 
+            // dtStartTime
+            // 
+            this.dtStartTime.CustomFormat = "ddd, dd MMM hh:mm tt";
+            this.dtStartTime.Enabled = false;
+            this.dtStartTime.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
+            this.dtStartTime.Location = new System.Drawing.Point(182, 3);
+            this.dtStartTime.Name = "dtStartTime";
+            this.dtStartTime.ShowUpDown = true;
+            this.dtStartTime.Size = new System.Drawing.Size(200, 20);
+            this.dtStartTime.TabIndex = 29;
+            // 
+            // udStartPost
+            // 
+            this.udStartPost.Location = new System.Drawing.Point(56, 3);
+            this.udStartPost.Maximum = new decimal(new int[] {
+            1000000,
+            0,
+            0,
+            0});
+            this.udStartPost.Name = "udStartPost";
+            this.udStartPost.Size = new System.Drawing.Size(120, 20);
+            this.udStartPost.TabIndex = 31;
+            this.udStartPost.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            // 
+            // txtEndPost
+            // 
+            this.txtEndPost.Location = new System.Drawing.Point(56, 32);
+            this.txtEndPost.Name = "txtEndPost";
+            this.txtEndPost.ReadOnly = true;
+            this.txtEndPost.Size = new System.Drawing.Size(100, 20);
+            this.txtEndPost.TabIndex = 32;
             // 
             // statusBrowser
             // 
@@ -580,6 +561,8 @@
             // tabPage3
             // 
             this.tabPage3.BackColor = System.Drawing.Color.Gainsboro;
+            this.tabPage3.Controls.Add(this.URLTextBox);
+            this.tabPage3.Controls.Add(this.label4);
             this.tabPage3.Controls.Add(this.label20);
             this.tabPage3.Controls.Add(this.label19);
             this.tabPage3.Controls.Add(this.txtDeadPlayers);
@@ -600,6 +583,24 @@
             this.tabPage3.Size = new System.Drawing.Size(636, 587);
             this.tabPage3.TabIndex = 6;
             this.tabPage3.Text = "Players";
+            // 
+            // URLTextBox
+            // 
+            this.URLTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
+            this.URLTextBox.Location = new System.Drawing.Point(113, 6);
+            this.URLTextBox.Name = "URLTextBox";
+            this.URLTextBox.Size = new System.Drawing.Size(492, 20);
+            this.URLTextBox.TabIndex = 37;
+            // 
+            // label4
+            // 
+            this.label4.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(15, 13);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(92, 13);
+            this.label4.TabIndex = 36;
+            this.label4.Text = "Main Thread URL";
             // 
             // label20
             // 
@@ -986,7 +987,6 @@
             this.Name = "FormVoteCounter";
             this.Text = "Fennec Fox Vote Counter";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form_FormClosing);
-            this.Load += new System.EventHandler(this.Form_Load);
             this.tabPage4.ResumeLayout(false);
             this.tabPage4.PerformLayout();
             this.tableLayoutPanel1.ResumeLayout(false);
@@ -999,6 +999,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.grdVotes)).EndInit();
             this.contextMenuStrip1.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.grdVotes2)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.udStartPost)).EndInit();
             this.statusBrowser.ResumeLayout(false);
             this.statusBrowser.PerformLayout();
             this.tabVotes.ResumeLayout(false);
@@ -1030,19 +1031,9 @@
         private System.Windows.Forms.TabPage tabPage4;
         private System.Windows.Forms.StatusStrip statusBrowser;
         private System.Windows.Forms.ToolStripStatusLabel statusText;
-        private System.Windows.Forms.TextBox txtLastPost;
-        private System.Windows.Forms.TextBox txtFirstPost;
-        private System.Windows.Forms.TextBox URLTextBox;
-        private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.Button GoButton;
         private System.Windows.Forms.TabControl tabVotes;
-        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
-        private System.Windows.Forms.Button button1;
-        private System.Windows.Forms.Label label4;
         private System.Windows.Forms.TabPage tabPage1;
         private System.Windows.Forms.TextBox textBox1;
-        private System.Windows.Forms.Button StopButton;
         private System.Windows.Forms.TabPage tabPage2;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
         private System.Windows.Forms.TabPage tabPage3;
@@ -1075,16 +1066,10 @@
         private System.Windows.Forms.ContextMenuStrip contextMenuStrip1;
         private System.Windows.Forms.ToolStripMenuItem mnuHide;
         private System.Windows.Forms.ToolStripMenuItem mnuUnhide;
-        private System.Windows.Forms.Button btnUnignore;
-        private System.Windows.Forms.Button btnIgnore;
-        private System.Windows.Forms.DataGridView grdVotes2;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.TextBox txtPlayers;
         private System.Windows.Forms.Label label17;
         private System.Windows.Forms.TextBox txtModerator;
-        private System.Windows.Forms.TextBox txtPostTable;
-        private System.Windows.Forms.DateTimePicker dtEOD;
-        private System.Windows.Forms.Label label18;
         private System.Windows.Forms.Label label14;
         private System.Windows.Forms.Label label13;
         private System.Windows.Forms.NumericUpDown numTurboDayNLength;
@@ -1092,14 +1077,30 @@
         private System.Windows.Forms.CheckBox chkTurbo;
         private System.Windows.Forms.CheckBox chkTurboDay1;
         private System.Windows.Forms.Button btnSetEOD;
-        private System.Windows.Forms.SplitContainer splitContainer1;
-        private System.Windows.Forms.CheckBox chkEodFarAway;
         private System.Windows.Forms.Label label20;
         private System.Windows.Forms.Label label19;
         private System.Windows.Forms.TextBox txtDeadPlayers;
         private System.Windows.Forms.TextBox txtVersion;
-        private System.Windows.Forms.TextBox txtCountDown;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
+        private System.Windows.Forms.Button GoButton;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Button StopButton;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.TextBox txtLastPost;
+        private System.Windows.Forms.Button btnUnignore;
+        private System.Windows.Forms.Button btnIgnore;
+        private System.Windows.Forms.Label label18;
+        private System.Windows.Forms.SplitContainer splitContainer1;
         private System.Windows.Forms.DataGridView grdVotes;
+        private System.Windows.Forms.DataGridView grdVotes2;
+        private System.Windows.Forms.TextBox txtPostTable;
+        private System.Windows.Forms.TextBox txtCountDown;
+        private System.Windows.Forms.DateTimePicker dtEndTime;
+        private System.Windows.Forms.TextBox URLTextBox;
+        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.DateTimePicker dtStartTime;
+        private System.Windows.Forms.NumericUpDown udStartPost;
+        private System.Windows.Forms.TextBox txtEndPost;
 
 
     }
