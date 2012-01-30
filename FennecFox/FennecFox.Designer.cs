@@ -43,22 +43,17 @@
             this.txtLastPost = new System.Windows.Forms.TextBox();
             this.btnUnignore = new System.Windows.Forms.Button();
             this.btnIgnore = new System.Windows.Forms.Button();
-            this.dtEOD = new System.Windows.Forms.DateTimePicker();
             this.label18 = new System.Windows.Forms.Label();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.grdVotes = new System.Windows.Forms.DataGridView();
-            this.colPlayer = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.colPostcount = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.colPost = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.colTime = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.colBolded = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.colComboVote = new System.Windows.Forms.DataGridViewComboBoxColumn();
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.mnuHide = new System.Windows.Forms.ToolStripMenuItem();
             this.mnuUnhide = new System.Windows.Forms.ToolStripMenuItem();
+            this.grdVotes2 = new System.Windows.Forms.DataGridView();
             this.txtPostTable = new System.Windows.Forms.TextBox();
             this.chkEodFarAway = new System.Windows.Forms.CheckBox();
             this.txtCountDown = new System.Windows.Forms.TextBox();
+            this.dtEOD = new System.Windows.Forms.DateTimePicker();
             this.statusBrowser = new System.Windows.Forms.StatusStrip();
             this.statusText = new System.Windows.Forms.ToolStripStatusLabel();
             this.tabVotes = new System.Windows.Forms.TabControl();
@@ -116,6 +111,7 @@
             this.splitContainer1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.grdVotes)).BeginInit();
             this.contextMenuStrip1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.grdVotes2)).BeginInit();
             this.statusBrowser.SuspendLayout();
             this.tabVotes.SuspendLayout();
             this.tabPage2.SuspendLayout();
@@ -301,18 +297,6 @@
             this.btnIgnore.UseVisualStyleBackColor = true;
             this.btnIgnore.Click += new System.EventHandler(this.btnIgnore_Click);
             // 
-            // dtEOD
-            // 
-            this.tableLayoutPanel1.SetColumnSpan(this.dtEOD, 2);
-            this.dtEOD.CustomFormat = "h:mm:tt";
-            this.dtEOD.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
-            this.dtEOD.Location = new System.Drawing.Point(59, 58);
-            this.dtEOD.Name = "dtEOD";
-            this.dtEOD.ShowUpDown = true;
-            this.dtEOD.Size = new System.Drawing.Size(90, 20);
-            this.dtEOD.TabIndex = 20;
-            this.dtEOD.ValueChanged += new System.EventHandler(this.dtEOD_ValueChanged);
-            // 
             // label18
             // 
             this.label18.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
@@ -334,13 +318,14 @@
             // splitContainer1.Panel1
             // 
             this.splitContainer1.Panel1.Controls.Add(this.grdVotes);
+            this.splitContainer1.Panel1.Controls.Add(this.grdVotes2);
             // 
             // splitContainer1.Panel2
             // 
             this.splitContainer1.Panel2.Controls.Add(this.txtPostTable);
             this.tableLayoutPanel1.SetRowSpan(this.splitContainer1, 2);
             this.splitContainer1.Size = new System.Drawing.Size(624, 442);
-            this.splitContainer1.SplitterDistance = 221;
+            this.splitContainer1.SplitterDistance = 218;
             this.splitContainer1.TabIndex = 22;
             // 
             // grdVotes
@@ -351,13 +336,6 @@
             this.grdVotes.AllowUserToResizeRows = false;
             this.grdVotes.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
             this.grdVotes.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.grdVotes.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
-            this.colPlayer,
-            this.colPostcount,
-            this.colPost,
-            this.colTime,
-            this.colBolded,
-            this.colComboVote});
             this.grdVotes.ContextMenuStrip = this.contextMenuStrip1;
             this.grdVotes.Dock = System.Windows.Forms.DockStyle.Fill;
             this.grdVotes.EditMode = System.Windows.Forms.DataGridViewEditMode.EditOnEnter;
@@ -367,51 +345,8 @@
             this.grdVotes.RowHeadersVisible = false;
             this.grdVotes.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.grdVotes.ShowEditingIcon = false;
-            this.grdVotes.Size = new System.Drawing.Size(624, 221);
-            this.grdVotes.TabIndex = 18;
-            this.grdVotes.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.grdVotes_CellValueChanged);
-            // 
-            // colPlayer
-            // 
-            this.colPlayer.FillWeight = 95.73603F;
-            this.colPlayer.HeaderText = "Player";
-            this.colPlayer.Name = "colPlayer";
-            this.colPlayer.ReadOnly = true;
-            // 
-            // colPostcount
-            // 
-            this.colPostcount.FillWeight = 38.00685F;
-            this.colPostcount.HeaderText = "Posts";
-            this.colPostcount.Name = "colPostcount";
-            this.colPostcount.ReadOnly = true;
-            // 
-            // colPost
-            // 
-            this.colPost.FillWeight = 38.00685F;
-            this.colPost.HeaderText = "#";
-            this.colPost.Name = "colPost";
-            this.colPost.ReadOnly = true;
-            // 
-            // colTime
-            // 
-            this.colTime.FillWeight = 34.87126F;
-            this.colTime.HeaderText = "Time";
-            this.colTime.Name = "colTime";
-            this.colTime.ReadOnly = true;
-            // 
-            // colBolded
-            // 
-            this.colBolded.FillWeight = 126.6895F;
-            this.colBolded.HeaderText = "Bolded";
-            this.colBolded.Name = "colBolded";
-            this.colBolded.ReadOnly = true;
-            // 
-            // colComboVote
-            // 
-            this.colComboVote.FillWeight = 126.6895F;
-            this.colComboVote.HeaderText = "Votes For";
-            this.colComboVote.Name = "colComboVote";
-            this.colComboVote.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Automatic;
+            this.grdVotes.Size = new System.Drawing.Size(624, 218);
+            this.grdVotes.TabIndex = 19;
             // 
             // contextMenuStrip1
             // 
@@ -439,6 +374,28 @@
             this.mnuUnhide.Text = "Unhide";
             this.mnuUnhide.Click += new System.EventHandler(this.mnuUnhide_Click);
             // 
+            // grdVotes2
+            // 
+            this.grdVotes2.AllowUserToAddRows = false;
+            this.grdVotes2.AllowUserToDeleteRows = false;
+            this.grdVotes2.AllowUserToOrderColumns = true;
+            this.grdVotes2.AllowUserToResizeRows = false;
+            this.grdVotes2.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
+            this.grdVotes2.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.grdVotes2.ContextMenuStrip = this.contextMenuStrip1;
+            this.grdVotes2.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.grdVotes2.EditMode = System.Windows.Forms.DataGridViewEditMode.EditOnEnter;
+            this.grdVotes2.Location = new System.Drawing.Point(0, 0);
+            this.grdVotes2.MultiSelect = false;
+            this.grdVotes2.Name = "grdVotes2";
+            this.grdVotes2.RowHeadersVisible = false;
+            this.grdVotes2.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
+            this.grdVotes2.ShowEditingIcon = false;
+            this.grdVotes2.Size = new System.Drawing.Size(624, 218);
+            this.grdVotes2.TabIndex = 18;
+            this.grdVotes2.Visible = false;
+            this.grdVotes2.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.grdVotes_CellValueChanged);
+            // 
             // txtPostTable
             // 
             this.txtPostTable.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -446,7 +403,7 @@
             this.txtPostTable.Multiline = true;
             this.txtPostTable.Name = "txtPostTable";
             this.txtPostTable.ReadOnly = true;
-            this.txtPostTable.Size = new System.Drawing.Size(624, 217);
+            this.txtPostTable.Size = new System.Drawing.Size(624, 220);
             this.txtPostTable.TabIndex = 19;
             this.txtPostTable.Click += new System.EventHandler(this.txtPostTable_Click);
             // 
@@ -469,6 +426,18 @@
             this.txtCountDown.ReadOnly = true;
             this.txtCountDown.Size = new System.Drawing.Size(100, 20);
             this.txtCountDown.TabIndex = 27;
+            // 
+            // dtEOD
+            // 
+            this.tableLayoutPanel1.SetColumnSpan(this.dtEOD, 2);
+            this.dtEOD.CustomFormat = "h:mm:tt";
+            this.dtEOD.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
+            this.dtEOD.Location = new System.Drawing.Point(59, 58);
+            this.dtEOD.Name = "dtEOD";
+            this.dtEOD.ShowUpDown = true;
+            this.dtEOD.Size = new System.Drawing.Size(90, 20);
+            this.dtEOD.TabIndex = 20;
+            this.dtEOD.ValueChanged += new System.EventHandler(this.dtEOD_ValueChanged);
             // 
             // statusBrowser
             // 
@@ -1029,6 +998,7 @@
             this.splitContainer1.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.grdVotes)).EndInit();
             this.contextMenuStrip1.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.grdVotes2)).EndInit();
             this.statusBrowser.ResumeLayout(false);
             this.statusBrowser.PerformLayout();
             this.tabVotes.ResumeLayout(false);
@@ -1107,7 +1077,7 @@
         private System.Windows.Forms.ToolStripMenuItem mnuUnhide;
         private System.Windows.Forms.Button btnUnignore;
         private System.Windows.Forms.Button btnIgnore;
-        private System.Windows.Forms.DataGridView grdVotes;
+        private System.Windows.Forms.DataGridView grdVotes2;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.TextBox txtPlayers;
         private System.Windows.Forms.Label label17;
@@ -1129,12 +1099,7 @@
         private System.Windows.Forms.TextBox txtDeadPlayers;
         private System.Windows.Forms.TextBox txtVersion;
         private System.Windows.Forms.TextBox txtCountDown;
-        private System.Windows.Forms.DataGridViewTextBoxColumn colPlayer;
-        private System.Windows.Forms.DataGridViewTextBoxColumn colPostcount;
-        private System.Windows.Forms.DataGridViewTextBoxColumn colPost;
-        private System.Windows.Forms.DataGridViewTextBoxColumn colTime;
-        private System.Windows.Forms.DataGridViewTextBoxColumn colBolded;
-        private System.Windows.Forms.DataGridViewComboBoxColumn colComboVote;
+        private System.Windows.Forms.DataGridView grdVotes;
 
 
     }

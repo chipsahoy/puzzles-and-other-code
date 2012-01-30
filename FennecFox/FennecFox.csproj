@@ -77,10 +77,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DataLibrary\Post.cs" />
     <Compile Include="DataLibrary\Poster.cs" />
     <Compile Include="DataLibrary\PrivateMessages.cs" />
+    <Compile Include="DataLibrary\PropertyComparer.cs" />
+    <Compile Include="DataLibrary\SortableBindingList.cs" />
     <Compile Include="DataLibrary\StateMachine.cs" />
-    <Compile Include="DataLibrary\Vote.cs" />
     <Compile Include="DataLibrary\WerewolfGame.cs" />
     <Compile Include="utils\ConnectionSettings.cs" />
     <Compile Include="utils\ExtensionMethods.cs" />
@@ -95,7 +97,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="utils\SecurityUtils.cs" />
     <Compile Include="Settings.cs" />
-    <Compile Include="utils\VoteComparer.cs" />
     <EmbeddedResource Include="FennecFox.resx">
       <DependentUpon>FennecFox.cs</DependentUpon>
     </EmbeddedResource>
