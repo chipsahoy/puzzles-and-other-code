@@ -11,8 +11,10 @@ using System.Text.RegularExpressions;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Threading;
+using POG.Werewolf;
 
-namespace FennecFox
+
+namespace POG.FennecFox
 {
 
     public partial class FormVoteCounter : Form
@@ -28,18 +30,10 @@ namespace FennecFox
             VotesFor,
             Bolded,
         };
-        private DataLibrary.WerewolfGame m_game;
+        private VoteCount m_game;
 
-        int _startPost = 1;
-        int _currentPage = 1;
-        int _postsPerPage = 50;
-        private Thread _workerThread;
 
-        private String _username; // if this changes from what user entered previously, need to logout then re-login with new info.
 
-        readonly ConnectionSettings connectionSettings = new ConnectionSettings();
-
-        private const String BASE_URL = "http://forumserver.twoplustwo.com/";
 
         private void SetupVoteGrid()
         {
@@ -202,8 +196,44 @@ namespace FennecFox
             InitializeComponent();
             tabVotes.TabPages.Remove(tabPage5);
 
-            m_game = new DataLibrary.WerewolfGame(a => Invoke(a));
-            m_game.PropertyChanged += new PropertyChangedEventHandler(m_game_PropertyChanged);            
+            m_game = new VoteCount(a => Invoke(a));
+            m_game.PropertyChanged += new PropertyChangedEventHandler(m_game_PropertyChanged);
+            m_game.LoginEvent += new EventHandler<POG.Forum.LoginEventArgs>(m_game_LoginEvent);
+        }
+
+        void m_game_LoginEvent(object sender, POG.Forum.LoginEventArgs e)
+        {
+            switch (e.LoginEventType)
+            {
+                case Forum.LoginEventType.LoginFailure:
+                    {
+                        MessageBox.Show(this, "Login failed! Check the username and password.");
+                        btnLogin.Enabled = true;
+                    }
+                    break;
+
+                case Forum.LoginEventType.LoginSuccess:
+                    {
+                        btnLogin.Enabled = false;
+                        btnLogout.Enabled = true;
+                        txtUsername.ReadOnly = true;
+                        txtPassword.ReadOnly = true;
+                        txtPassword.PasswordChar = '*';
+                    }
+                    break;
+
+                case Forum.LoginEventType.LogoutSuccess:
+                    {
+                        btnLogin.Enabled = true;
+                        btnLogout.Enabled = false;
+                        txtUsername.Text = "";
+                        txtPassword.Text = "";
+                        txtUsername.ReadOnly = false;
+                        txtPassword.ReadOnly = false;
+                        txtPassword.PasswordChar = '\0';
+                    }
+                    break;
+            }
         }
 
 
@@ -212,6 +242,10 @@ namespace FennecFox
             if (e.PropertyName == "LivePlayers")
             {
                 SetupVoteGrid();
+            }
+            if (e.PropertyName == "Status")
+            {
+                statusText.Text = m_game.Status; // no direct binding support in status strip.
             }
         }
 
@@ -235,139 +269,6 @@ namespace FennecFox
         //    }
         //}
 
-        private int PageFromNumber(int number)
-        {
-            int page = (number / _postsPerPage) + 1;
-            return page;
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="username">username of gimmick account</param>
-        /// <param name="password">password of gimmick account</param>
-        /// <returns></returns>
-        private String DoLogin(String username, String password)
-        {
-            if (_username != null && username != _username)
-            {
-                // user switched accounts.  logout first
-                DoLogout();
-            }
-
-            if (username == _username)
-            {
-                // don't need to do anything, we're already logged in
-                return null;
-            }
-
-            _username = null;
-            String passToken = SecurityUtils.md5(password);
-
-            connectionSettings.Url = String.Format("{0}login.php?do=login", BASE_URL);
-            connectionSettings.Data =
-                String.Format("vb_login_username={0}&cookieuser=1&vb_login_password=&s=&securitytoken=guest&do=login&vb_login_md5password={1}&vb_login_md5password_utf={1}", username, passToken);
-            String resp = HtmlHelper.PostToUrl(connectionSettings);
-
-            if (resp == null)
-            {
-                // login failure
-                return "The following error occurred while logging in:\n\n" + connectionSettings.Message;
-            }
-
-            if (!resp.Contains("exec_refresh()"))
-            {
-                return "Error logging in.  Please verify login information.";
-            }
-
-
-            // set posts/page
-            connectionSettings.Url = String.Format("{0}profile.php?do=editoptions", BASE_URL);
-            _username = username;
-            resp = HtmlHelper.GetUrlResponseString(connectionSettings);
-            if (resp != null)
-            {
-                Match m = Regex.Match(resp, "umaxposts.*?value=\"(-?\\d+)\"[ ](class=\"[A-z0-9]*\")?[ ]*selected=\"selected\"", RegexOptions.Singleline);
-                if (m.Success)
-                {
-                    _postsPerPage = Int32.Parse(m.Groups[1].Value);
-                    if (_postsPerPage == -1)
-                    {
-                        _postsPerPage = 15;
-                    }
-                }
-                else
-                {
-
-                    _postsPerPage = 100;
-                    return
-                        "Login success, but there was an error setting the posts/page.  Please set your settings to 100 posts/page.";
-                }
-
-            }
-            else
-            {
-                _postsPerPage = 100;
-                return
-                    "Login success, but there was an error setting the posts/page.  Please set your settings to 100 posts/page.";
-            }
-
-            // logging in sets the cookies in connectionSettings so we don't have to do anything else.
-            return null;
-        }
-
-        private void DoLogout()
-        {
-            // get the page once to find the logout url
-            connectionSettings.Url = BASE_URL;
-            String resp = HtmlHelper.GetUrlResponseString(connectionSettings);
-            Match m = Regex.Match(resp, "logouthash=([A-z0-9-])");
-            if (m.Success)
-            {
-                String hash = m.Groups[1].Value;
-                connectionSettings.Url = String.Format("http://forumserver.twoplustwo.com/login.php?do=logout&amp;logouthash={0}", hash);
-                HtmlHelper.GetUrlResponseString(connectionSettings);
-                connectionSettings.CC = new CookieContainer(); // just in case
-            }
-        }
-
-        private void DoWork()
-        {
-            //try
-            {
-                Boolean foundNewPosts = true;
-                while (foundNewPosts)
-                {
-                    statusText.Text = "Fetching page " + _currentPage.ToString();
-
-                    string doc = HtmlHelper.GetUrlResponseString(connectionSettings);
-                    int totalPages = 0;
-                    foundNewPosts = ParseVotePage(doc, _startPost, ref totalPages);
-                    if (foundNewPosts)
-                    {
-                        _startPost = m_game.LastPost + 1;
-                        int lastPostThisPage = _postsPerPage * _currentPage;
-                        if (totalPages > _currentPage)
-                        {
-                            connectionSettings.Url = GetNextUrl(connectionSettings.Url, _currentPage + 1);
-                            // if we make it to the end, start on next page
-                        }
-                        else
-                        {
-                            break;
-                        }
-                    }
-                }
-                statusText.Text = "Finished on page " + _currentPage.ToString();
-            }
-            //catch (Exception e)
-            {
-                //HandleError(e);
-            }
-
-            // when we get here, we're all done or aborted.
-            halt();
-        }
 
         private delegate void ErrorDelegate(Exception e);
         private void HandleError(Exception e)
@@ -386,112 +287,15 @@ namespace FennecFox
                                 file, e.Message), "Critical Error");
         }
 
-        private String GetNextUrl(String destination, Int32 page)
-        {
-            if (destination.EndsWith(".html") || destination.EndsWith(".htm"))
-            {
-                destination = destination.Substring(0, destination.LastIndexOf("index"));
-            }
-
-            if (!destination.EndsWith("/"))
-            {
-                destination += "/";
-            }
-
-            _currentPage = page;
-            if (page > 1)
-            {
-                destination += "index" + page + ".html";
-            }
-
-            return destination;
-        }
-
-        private void GoButtonAgain_Click(object sender, EventArgs e)
-        {
-            if (String.IsNullOrWhiteSpace(URLTextBox.Text))
-            {
-                MessageBox.Show(this, "URL cannot be empty.", "Error");
-            }
-            else
-            {
-                StopButton.Enabled = true;
-                GoButton.Enabled = false;
-                _shouldStop = false;
-
-                _workerThread = new Thread(DoWork);
-
-                _startPost = m_game.LastPost;
-
-                int page = PageFromNumber(_startPost);
-                string destination = GetNextUrl(URLTextBox.Text.Trim(), page);
-
-                String resp = DoLogin(txtUsername.Text, txtPassword.Text);
-
-                if (resp != null)
-                {
-                    halt();
-                    MessageBox.Show(this, resp, "Failure");
-                    return;
-                }
-
-                connectionSettings.Url = destination;
-
-                _workerThread.Start();
-            }
-        }
 
 
 
-        private Boolean ParseVotePage(string doc, int firstPost, ref int totalPages)
-        {
-            Boolean foundNewPosts = false;
-            var html = new HtmlAgilityPack.HtmlDocument();
-            html.LoadHtml(doc);
-            HtmlAgilityPack.HtmlNode root = html.DocumentNode;
-            // find total posts: /table/tr[1]/td[2]/div[@class="pagenav"]/table[1]/tr[1]/td[1] -- Page 106 of 106
-            HtmlAgilityPack.HtmlNode pageNode = root.SelectSingleNode("//div[@class='pagenav']/table/tr/td");
-            if (pageNode != null)
-            {
-                string pages = pageNode.InnerText;
-                Match m = Regex.Match(pages, @"Page (\d+) of (\d+)");
-                if (m.Success)
-                {
-                    //Console.WriteLine("{0}/{1}", m.Groups[1].Value, m.Groups[2].Value);
-                    totalPages = Convert.ToInt32(m.Groups[2].Value);
-                }
-            }
 
-            // //div[@id='posts']/div/div/div/div/table/tbody/tr[2]
-            // td[1]/div[1] has (id with post #, <a> with user id, user name.)
-            // td[2]/div[1] has title
-            // td[2]/div[2] has post
-            // "/html[1]/body[1]/table[2]/tr[2]/td[1]/td[1]/div[2]/div[1]/div[1]/div[1]/div[1]/table[1]/tr[2]/td[2]/div[2]" is a post
-            HtmlAgilityPack.HtmlNodeCollection posts = root.SelectNodes("//div[@id='posts']/div/div/div/div/table/tr[2]/td[2]/div[contains(@id, 'post_message_')]");
-            if (posts == null)
-            {
-                return false;
-            }
-
-            foreach (HtmlAgilityPack.HtmlNode post in posts)
-            {
-                if (_shouldStop)
-                {
-                    break;
-                }
-                foundNewPosts |= m_game.OnNewPost(post);
-            }
-
-            // ensure the timestamp gets re-generated even if there were no new posts
-            UpdatePostcounts();
-            return foundNewPosts;
-        }
 
         private void SetComboRange(DataGridViewComboBoxCell cell)
         {
             object v = cell.Value;
             cell.Items.Clear();
-            cell.Items.Add("--Select Player--");
             cell.Items.AddRange(m_game);
             if (v != null && cell.Items.Contains(v))
             {
@@ -511,30 +315,6 @@ namespace FennecFox
                 tPlayer.HideVote();
             }
         }
-        //private void FillInRow(DataGridViewRow row, Vote vote, Int32 postCount)
-        //{
-        //    row.Cells[(Int32)CounterColumn.Posts].Value = postCount;
-        //    row.Cells[(Int32)CounterColumn.PostNumber].Value = vote.PostNumber;
-        //    row.Cells[(Int32)CounterColumn.PostTime].Value = vote.Time.ToString("HH:mm");
-        //    TimeSpan ts = tsBadTime - new TimeSpan(vote.Time.Hour, vote.Time.Minute, 0);
-        //    if (ts.Ticks < 0)
-        //    {
-        //        ts = ts.Add(new TimeSpan(1, 0, 0, 0));
-        //    }
-        //    if (((ts.Ticks == 0) || (ts.Hours == 23)) && !chkEodFarAway.Checked)
-        //    {
-        //        // matches exact :01 votes or votes up to an hour after EOD.
-        //        row.Cells[(Int32)CounterColumn.PostTime].Style.BackColor = System.Drawing.Color.Red;
-        //        row.Cells[(Int32)CounterColumn.PostTime].Style.SelectionBackColor = System.Drawing.Color.Red;
-        //    }
-        //    else
-        //    {
-        //        row.Cells[(Int32)CounterColumn.PostTime].Style.BackColor = row.Cells[(Int32)CounterColumn.Player].Style.BackColor;
-        //        row.Cells[(Int32)CounterColumn.PostTime].Style.SelectionBackColor = row.Cells[(Int32)CounterColumn.Player].Style.SelectionBackColor;
-        //    }
-        //    row.Cells[(Int32)CounterColumn.Bolded].Value = vote.Content;
-        //    row.Tag = vote;
-        //}
 
         public void UnhideVote(string player)
         {
@@ -575,36 +355,6 @@ namespace FennecFox
         }
 
 
-        private volatile bool _shouldStop = false;
-        private void StopButton_Click(object sender, EventArgs e)
-        {
-            _shouldStop = true;
-        }
-
-        private void halt()
-        {
-            if (InvokeRequired)
-            {
-                Invoke(new MethodInvoker(halt));
-                return;
-            }
-
-            GoButton.Enabled = true;
-            StopButton.Enabled = false;
-        }
-
-        private void btnTestSettings_Click(object sender, EventArgs e)
-        {
-            String resp = DoLogin(txtUsername.Text, txtPassword.Text);
-            if (resp == null)
-            {
-                MessageBox.Show(this, "Login successful.", "Success");
-            }
-            else
-            {
-                MessageBox.Show(this, resp, "Failure");
-            }
-        }
 
         private void tabControl_Selecting(object sender, TabControlCancelEventArgs e)
         {
@@ -623,59 +373,42 @@ namespace FennecFox
         {
             btnUnignore_Click(sender, e);
         }
-
+        
         private void Form_FormClosing(object sender, FormClosingEventArgs e)
         {
-            Properties.Settings.Default.username = txtUsername.Text.Trim();
-            Properties.Settings.Default.password = txtPassword.Text.Trim();
-            Properties.Settings.Default.threadUrl = URLTextBox.Text.Trim();
-            Properties.Settings.Default.firstPost = _startPost;
-            Properties.Settings.Default.postsPerPage = _postsPerPage;
-            Properties.Settings.Default.Players = new StringCollection();
-            foreach (DataLibrary.Poster p in m_game.LivePlayers)
-            {
-                Properties.Settings.Default.Players.Add(p.Name);
-            }
-            Properties.Settings.Default.Moderator = txtModerator.Text;
 
-            Properties.Settings.Default.Save();
+            POG.FennecFox.Properties.Settings.Default.username = txtUsername.Text.Trim();
+            POG.FennecFox.Properties.Settings.Default.password = txtPassword.Text.Trim();
+            POG.FennecFox.Properties.Settings.Default.threadUrl = URLTextBox.Text.Trim();
+            POG.FennecFox.Properties.Settings.Default.Players = new StringCollection();
+            foreach (Voter p in m_game.LivePlayers)
+            {
+                POG.FennecFox.Properties.Settings.Default.Players.Add(p.Name);
+            }
+
+            POG.FennecFox.Properties.Settings.Default.Save();
+            
         }
 
         protected override void OnLoad(EventArgs e)
         {
-            if (Properties.Settings.Default.Mappings == null)
+
+            if (POG.FennecFox.Properties.Settings.Default.Players == null)
             {
-                Properties.Settings.Default.Mappings = new StringDictionary();
+                POG.FennecFox.Properties.Settings.Default.Players = new StringCollection();
             }
 
-            if (Properties.Settings.Default.Players == null)
-            {
-                Properties.Settings.Default.Players = new StringCollection();
-            }
-
-            if (Properties.Settings.Default.DeadPlayers == null)
-            {
-                Properties.Settings.Default.DeadPlayers = new StringCollection();
-            }
             CreateVoteGridColumns();
             SetupVoteGrid();
 
-            _startPost = Properties.Settings.Default.firstPost;
-            _postsPerPage = Properties.Settings.Default.postsPerPage;
-            txtUsername.Text = Properties.Settings.Default.username;
-            txtPassword.Text = Properties.Settings.Default.password;
-            URLTextBox.Text = Properties.Settings.Default.threadUrl;
-            var tmp = new string[Properties.Settings.Default.Players.Count];
-            Properties.Settings.Default.Players.CopyTo(tmp, 0);
+            txtUsername.Text = POG.FennecFox.Properties.Settings.Default.username;
+            txtPassword.Text = POG.FennecFox.Properties.Settings.Default.password;
+            URLTextBox.Text = POG.FennecFox.Properties.Settings.Default.threadUrl;
+            var tmp = new string[POG.FennecFox.Properties.Settings.Default.Players.Count];
+            POG.FennecFox.Properties.Settings.Default.Players.CopyTo(tmp, 0);
             var list = new List<String>(tmp);
             list.Sort();
-            txtModerator.Text = Properties.Settings.Default.Moderator;
             txtPlayers.Lines = list.ToArray();
-            tmp = new string[Properties.Settings.Default.DeadPlayers.Count];
-            Properties.Settings.Default.DeadPlayers.CopyTo(tmp, 0);
-            list = new List<string>(tmp);
-            list.Sort();
-            txtDeadPlayers.Lines = list.ToArray();
 
 
             txtVersion.Text = String.Format("Fennic Fox Vote Counter Version " + Assembly.GetExecutingAssembly().GetName().Version.ToString());
@@ -686,63 +419,15 @@ namespace FennecFox
             dtEndTime.DataBindings.Add("Value", m_game, "EndTime", false, DataSourceUpdateMode.OnPropertyChanged);
             dtStartTime.DataBindings.Add("Value", m_game, "StartTime", true, DataSourceUpdateMode.OnPropertyChanged);
             Console.WriteLine("OnLoad complete");
+            btnLogin_Click(btnLogin, EventArgs.Empty);
         }
 
         private void txtPlayers_TextChanged(object sender, EventArgs e)
         {
             m_game.SetPlayerList(txtPlayers.Text);
-            //DataGridViewComboBoxColumn colCB = (DataGridViewComboBoxColumn)grdVotes.Columns[(Int32)CounterColumn.VotesFor];
-            //grdVotes.Refresh();
         }
 
 
-        private void grdVotes_CellValueChanged(object sender, DataGridViewCellEventArgs e)
-        {
-            //if (e.RowIndex >= 0)
-            //{
-            //    String bolded = (String)grdVotes[(Int32)CounterColumn.Bolded, e.RowIndex].Value;
-                
-
-            //    if (e.ColumnIndex == (Int32)CounterColumn.Bolded)
-            //    {
-            //        DataLibrary.Poster player = m_game.ParseBoldedToVote(bolded);
-            //        if (player != null)
-            //        {
-            //            grdVotes[(Int32)CounterColumn.VotesFor, e.RowIndex].Value = player;
-            //            grdVotes[(Int32)CounterColumn.Bolded, e.RowIndex].Style.BackColor= grdVotes[(Int32)CounterColumn.Player, e.RowIndex].Style.BackColor;
-            //            grdVotes[(Int32)CounterColumn.Bolded, e.RowIndex].Style.SelectionBackColor = grdVotes[(Int32)CounterColumn.Player, e.RowIndex].Style.SelectionBackColor;
-            //        }
-            //        else
-            //        {
-            //            grdVotes[(Int32)CounterColumn.Bolded, e.RowIndex].Style.BackColor = System.Drawing.Color.Red;
-            //            grdVotes[(Int32)CounterColumn.Bolded, e.RowIndex].Style.SelectionBackColor = System.Drawing.Color.Red;
-            //        }
-            //    }
-            //    else if (e.ColumnIndex == (Int32)CounterColumn.VotesFor)
-            //    {
-            //        m_game.AddVoteAlias(bolded, (String)grdVotes[(Int32)CounterColumn.VotesFor, e.RowIndex].Value);
-            //        grdVotes[(Int32)CounterColumn.Bolded, e.RowIndex].Style.BackColor = grdVotes[(Int32)CounterColumn.Player, e.RowIndex].Style.BackColor;
-            //    }
-            //}
-        }
-
-        private void UpdatePostcounts()
-        {
-            if (InvokeRequired)
-            {
-                Invoke(new MethodInvoker(UpdatePostcounts));
-                return;
-            }
-
-            foreach (DataGridViewRow row in grdVotes.Rows)
-            {
-                //var voter = ((String)row.Cells[(Int32)CounterColumn.Player].Value);
-                //AddVote(voter, null, false);
-            }
-
-            //grdVotes.Sort();
-            //grdVotes.Refresh();
-        }
 
         private delegate void PostTableDelegate(StringBuilder sb);
         private void PostTable(StringBuilder sb)
@@ -760,22 +445,7 @@ namespace FennecFox
 
         private void btnSetEOD_Click(object sender, EventArgs e)
         {
-            Int32 dayLength = 20;
-            if (chkTurboDay1.Checked)
-            {
-                dayLength = (Int32)numTurboDay1Length.Value;
-            }
-            else
-            {
-                dayLength = (Int32)numTurboDayNLength.Value;
-            }
-            if (dayLength < 1)
-            {
-                dayLength = 20;
-            }
-            DateTime dt = DateTime.Now;
-            dt = dt.AddMinutes(dayLength);
-            dt = dt.AddSeconds(-dt.Second);
+
         }
 
         private void txtPlayers_KeyDown(object sender, KeyEventArgs e)
@@ -807,6 +477,44 @@ namespace FennecFox
                 numTurboDayNLength.Enabled = false;
             }
         }
+
+        private void URLTextBox_TextChanged(object sender, EventArgs e)
+        {
+            if (URLTextBox.Text != "")
+            {
+                btnStartGame.Enabled = true;
+            }
+        }
+
+        private void btnStartGame_Click(object sender, EventArgs e)
+        {
+            m_game.URL = URLTextBox.Text;
+            URLTextBox.ReadOnly = true;
+            btnReset.Enabled = true;
+            btnStartGame.Enabled = false;
+        }
+
+        private void btnReset_Click(object sender, EventArgs e)
+        {
+            URLTextBox.ReadOnly = false;
+            m_game.Clear();
+            URLTextBox.Text = "";
+            txtPlayers.Text = "";
+            btnReset.Enabled = false;
+        }
+
+        private void btnLogin_Click(object sender, EventArgs e)
+        {
+            btnLogin.Enabled = false;
+            m_game.Login(txtUsername.Text, txtPassword.Text);
+        }
+
+        private void btnLogout_Click(object sender, EventArgs e)
+        {
+            m_game.Logout();
+        }
+
+
     }
     public static class FlashWindow
     {

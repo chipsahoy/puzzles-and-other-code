@@ -7,7 +7,7 @@ using System.Reflection;
 
 #endregion
 
-namespace FennecFox.DataLibrary
+namespace POG.Utils
 {
   public class PropertyComparer<T> : System.Collections.Generic.IComparer<T> {
 

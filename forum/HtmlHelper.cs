@@ -9,7 +9,7 @@ using System.Security.Policy;
 using System.Text;
 using System.Text.RegularExpressions;
 
-namespace FennecFox
+namespace POG.Forum
 {
     public class HtmlHelper
     {

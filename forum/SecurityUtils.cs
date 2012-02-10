@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace FennecFox
+namespace POG.Forum
 {
     public class SecurityUtils
     {

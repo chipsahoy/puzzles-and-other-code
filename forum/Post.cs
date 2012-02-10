@@ -4,9 +4,9 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 
-namespace FennecFox.DataLibrary
+namespace POG.Forum
 {
-    class Bold
+    public class Bold
     {
         public Bold(String content)
         {
@@ -23,7 +23,7 @@ namespace FennecFox.DataLibrary
             set;
         }
     }
-    class Post
+    public class Post
     {
         HtmlAgilityPack.HtmlNode _content;
         List<Bold> _bolded;
@@ -121,7 +121,7 @@ namespace FennecFox.DataLibrary
             }
         }
     }
-    class Posts : KeyedCollection<int, Post>
+    public class Posts : KeyedCollection<int, Post>
     {
         public Posts() :
             base()
@@ -131,6 +131,18 @@ namespace FennecFox.DataLibrary
         protected override int GetKeyForItem(Post item)
         {
             return item.PostNumber;
+        }
+        public virtual Post GetByIndex(Int32 index)
+        {
+            return Items[index];
+        }
+
+        public void AddRange(IEnumerable<Post> posts)
+        {
+            foreach (Post p in posts)
+            {
+                Add(p);
+            }
         }
     }
 }

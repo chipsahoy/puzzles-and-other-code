@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Windows.Forms;
 
-namespace POG.FennecFox
+namespace FoxTester
 {
     static class Program
     {
@@ -13,7 +15,7 @@ namespace POG.FennecFox
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new FormVoteCounter());
+            Application.Run(new FoxTester());
         }
     }
 }

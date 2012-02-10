@@ -3,17 +3,19 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.ComponentModel;
+using POG.Forum;
 
-namespace FennecFox.DataLibrary
+namespace POG.Werewolf
 {
-    class Poster : INotifyPropertyChanged
+    public class Voter : INotifyPropertyChanged
     {
         Posts _posts = new Posts();
-        WerewolfGame _game;
+        VoteCount _game;
         Action<Action> _synchronousInvoker;
         String _name;
+        Int32 _postCount;
 
-        public Poster(string name, WerewolfGame game, Action<Action> synchronousInvoker)
+        public Voter(string name, VoteCount game, Action<Action> synchronousInvoker)
         {
             Name = name;
             _game = game;
@@ -33,14 +35,6 @@ namespace FennecFox.DataLibrary
             Bold hidden = null;
             foreach (Post p in _posts.Reverse())
             {
-                if (p.Time > _game.EndTime)
-                {
-                    continue;
-                }
-                if (p.PostNumber < _game.StartPost)
-                {
-                    break;
-                }
                 foreach (Bold b in p.Bolded)
                 {
                     if (b.Ignore)
@@ -112,7 +106,8 @@ namespace FennecFox.DataLibrary
                 Bold v = ActiveVote;
                 if (v != null)
                 {
-                    //OnPropertyChanged("Votee");
+                    _game.AddVoteAlias(v.Content, value);
+                    OnPropertyChanged("Votee");
                 }
             }
         }
@@ -161,8 +156,16 @@ namespace FennecFox.DataLibrary
         {
             get
             {
-                Int32 count = (from Post post in _posts where (post.PostNumber >= _game.StartPost) && (post.Time <= _game.EndTime) select post).Count();
+                Int32 count = _posts.Count;
                 return count;
+            }
+            private set
+            {
+                if (_postCount != value)
+                {
+                    _postCount = value;
+                    OnPropertyChanged("PostCount");
+                }
             }
         }
         private Int32 _votes;
@@ -182,11 +185,16 @@ namespace FennecFox.DataLibrary
                 }
             }
         }
-        internal void UpdateDayFilter()
+        internal void SetPosts(IEnumerable<Post> posts)
         {
-            CurrentVoteChanged();
-            OnPropertyChanged("VoteCount");
-            OnPropertyChanged("PostCount");
+            _posts.Clear();
+            _posts.AddRange(posts);
+            PostCount = _posts.Count;
+            if (_posts.Count > 0)
+            {
+                Name = _posts.First().Poster; // fix case issues
+            }
+            CurrentVoteChanged();   
         }
 
         private void CurrentVoteChanged()
@@ -208,25 +216,19 @@ namespace FennecFox.DataLibrary
             }
         }
 
-        internal void AddPost(DataLibrary.Post p)
-        {
-            _posts.Add(p);
-            CurrentVoteChanged();
-            OnPropertyChanged("PostCount");
-        }
 
         private Boolean FindActiveBold(out Post pActive, out Bold bActive)
         {
-            foreach (Post p in _posts.Reverse())
+            for(Int32 i = _posts.Count - 1; i >= 0; i--)
             {
-                if (p.Time > _game.EndTime)
+
+                Post p = _posts.GetByIndex(i);
+                if (p.Bolded == null)
                 {
+                    _posts.Remove(p);
                     continue;
                 }
-                if (p.PostNumber < _game.StartPost)
-                {
-                    break;
-                }
+
                 foreach (Bold bold in p.Bolded)
                 {
                     if (!bold.Ignore)
@@ -262,9 +264,9 @@ namespace FennecFox.DataLibrary
             } 
         }
     }
-    class SpecialVote : Poster
+    class SpecialVote : Voter
     {
-        public SpecialVote(string name, WerewolfGame game, Action<Action> synchronousInvoker) :
+        public SpecialVote(string name, VoteCount game, Action<Action> synchronousInvoker) :
             base(name, game, synchronousInvoker)
         {
         }

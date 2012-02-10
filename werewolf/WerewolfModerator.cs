@@ -2,8 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using POG.Utils;
 
-namespace FennecFox
+namespace POG.Werewolf
 {
     class twoplustwo
     {
@@ -29,7 +30,7 @@ namespace FennecFox
         {
             
         }
-        public override void Initialize()
+        protected override void OnInitialize()
         {
             SetInitialState(StateIdle);
         }

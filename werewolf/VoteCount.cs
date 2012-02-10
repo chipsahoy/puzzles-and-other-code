@@ -5,24 +5,101 @@ using System.Text;
 using System.Threading;
 using System.Globalization;
 using System.ComponentModel;
-using System.Windows.Forms;
+using POG.Utils;
+using POG.Forum;
+using System.Collections.Specialized;
+using System.Configuration;
 
-
-namespace FennecFox.DataLibrary
+namespace POG.Werewolf
 {
-    class WerewolfGame : INotifyPropertyChanged
+    public class VoteCount : INotifyPropertyChanged
     {
-        private Dictionary<String, Poster> _lookupPoster = new Dictionary<string, Poster>();
+        #region fields
+        StringDictionary Mappings = new StringDictionary();
+        private Dictionary<String, Voter> _lookupPoster = new Dictionary<string, Voter>();
         private Posts _allPosts = new Posts();
-        SortableBindingList<Poster> _livePosters = new SortableBindingList<Poster>();
+        SortableBindingList<Voter> _livePosters = new SortableBindingList<Voter>();
         List<String> _validVotes;
-        List<Poster> _allPosters = new List<Poster>();
+        List<Voter> _allPosters = new List<Voter>();
         Action<Action> _synchronousInvoker;
-
-        public WerewolfGame(Action<Action> synchronousInvoker)
+        VBulletin_3_8_7 _forum;
+        Int32 _startPost = 1;
+        DateTime? _startTime = null;
+        DateTime _endTime = DateTime.Now;
+        Int32? _endPost;
+        private Int32 m_lastPost;
+        public readonly String SelectVote = "Error!";
+        public readonly String Unvote = "unvote";
+        public readonly String NoLynch = "no lynch";
+        #endregion
+        #region constructors
+        public VoteCount(Action<Action> synchronousInvoker) 
         {
             _synchronousInvoker = synchronousInvoker;
+            _forum = new VBulletin_3_8_7(synchronousInvoker);
+            _forum.NewPostsAvailable += new EventHandler<NewPostsAvailableEventArgs>(_forum_NewPostsAvailable);
+            _forum.PropertyChanged += new PropertyChangedEventHandler(_forum_PropertyChanged);
+            _forum.StatusUpdate += new EventHandler<NewStatusEventArgs>(_forum_StatusUpdate);
+            _forum.LoginEvent += new EventHandler<LoginEventArgs>(_forum_LoginEvent);
+            Refresh();
+        }
+        #endregion
+
+
+        #region forum event handlers
+        void _forum_LoginEvent(object sender, LoginEventArgs e)
+        {
+            OnLoginEvent(e);
+        }
+        void _forum_StatusUpdate(object sender, NewStatusEventArgs e)
+        {
+            Status = e.Status;
+            OnPropertyChanged("Status");
+        }
+
+        void _forum_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+        }
+
+        void _forum_NewPostsAvailable(object sender, NewPostsAvailableEventArgs e)
+        {
+            Post[] posts = _forum.GetPosts(m_lastPost + 1, e.NewestPostNumber);
+            foreach (Post post in posts)
+            {
+                _allPosts.Add(post);
+            }
+            LastPost = e.NewestPostNumber;
+            Refresh();
+            OnPropertyChanged("LastPost");
+        }
+        private void Refresh()
+        {
+            var qry = from post in _allPosts where (post.PostNumber >= _startPost) && (post.Time <= _endTime) select (post);
+            foreach (Voter p in _livePosters)
+            {
+                var playerPosts = from post in qry where (String.Equals(post.Poster, p.Name, StringComparison.InvariantCultureIgnoreCase)) select post;                
+                p.SetPosts(playerPosts);
+            }
             BuildValidVotesList();
+            RefreshVoteCount();
+        }
+        #endregion
+        #region public properties
+        public String URL
+        {
+            get
+            {
+                String rc = "";
+                if (_forum != null)
+                {
+                    rc = _forum.ThreadURL;
+                }
+                return rc;
+            }
+            set
+            {
+                _forum.ThreadURL = value;
+            }
         }
         [System.ComponentModel.Bindable(true)]
         public Boolean Turbo
@@ -49,11 +126,11 @@ namespace FennecFox.DataLibrary
             set;
         }
         [System.ComponentModel.Bindable(true)]
-        public Poster this[string name]
+        public Voter this[string name]
         {
             get
             {
-                foreach (Poster p in _livePosters)
+                foreach (Voter p in _livePosters)
                 {
                     if (p.Name == name)
                     {
@@ -64,17 +141,13 @@ namespace FennecFox.DataLibrary
             }
 
         }
-        public SortableBindingList<Poster> LivePlayers
+        public SortableBindingList<Voter> LivePlayers
         {
             get
             {
                 return _livePosters;
             }
         }
-        Int32 _startPost = 1;
-        DateTime? _startTime = null;
-        DateTime _endTime = DateTime.Now;
-
         public Int32 StartPost
         {
             get
@@ -87,7 +160,7 @@ namespace FennecFox.DataLibrary
                 {
                     value = LastPost;
                 }
-                if(value == _startPost)
+                if (value == _startPost)
                 {
                     return;
                 }
@@ -103,10 +176,9 @@ namespace FennecFox.DataLibrary
                 }
                 OnPropertyChanged("StartTime");
                 OnPropertyChanged("StartPost");
-                UpdateDayFilter();                
+                Refresh();
             }
         }
-        Int32? _endPost;
         public Int32? EndPost
         {
             get
@@ -151,7 +223,7 @@ namespace FennecFox.DataLibrary
                 _endTime = value;
                 Int32? ep = EndPost; // side effects.
                 OnPropertyChanged("EndTime");
-                UpdateDayFilter();
+                Refresh();
             }
         }
         public TimeSpan TimeUntilNight
@@ -161,31 +233,6 @@ namespace FennecFox.DataLibrary
                 TimeSpan rc = EndTime - DateTime.Now;
                 return rc;
             }
-        }
-        private void UpdateDayFilter()
-        {
-            foreach (Poster p in LivePlayers)
-            {
-                p.UpdateDayFilter();
-            }
-        }
-        public readonly String SelectVote = "Error!";
-        public readonly String NotAVote = "NOT A VOTE (HIDE THIS)";
-        public readonly String Unvote = "unvote";
-        public readonly String NoLynch = "no lynch";
-        private void BuildValidVotesList()
-        {
-            List<String> validVotes = new List<string>();
-            foreach (Poster p in _livePosters)
-            {
-                validVotes.Add(p.Name);
-            }
-            validVotes.Sort();
-            validVotes.Add(Unvote);
-            validVotes.Add(NoLynch);
-            validVotes.Add(NotAVote);
-            _validVotes = validVotes;
-            OnPropertyChanged("LivePlayers");
         }
         public IEnumerable<String> ValidVotes
         {
@@ -198,8 +245,6 @@ namespace FennecFox.DataLibrary
                 return _validVotes;
             }
         }
-
-        private Int32 m_lastPost;
         [System.ComponentModel.Bindable(true)]
         public Int32 LastPost
         {
@@ -207,15 +252,145 @@ namespace FennecFox.DataLibrary
             {
                 return m_lastPost;
             }
-            set
+            private set
             {
                 m_lastPost = value;
                 OnPropertyChanged("LastPost");
             }
         }
+        public string Status { get; private set; }
+        #endregion
+
+
+        #region private methods
+        private void BuildValidVotesList()
+        {
+            List<String> validVotes = new List<string>();
+            foreach (Voter p in _livePosters)
+            {
+                validVotes.Add(p.Name);
+            }
+            validVotes.Sort();
+            validVotes.Add(Unvote);
+            validVotes.Add(NoLynch);
+            _validVotes = validVotes;
+            OnPropertyChanged("LivePlayers");
+        }
         private void RefreshVoteCount()
         {
             String s = PostableVoteCount; // do it for side effects.
+        }
+        private String VoteLinks(List<Voter> wagon, Boolean linkToVote)
+        {
+            StringBuilder sb = new StringBuilder();
+            foreach (Voter voter in wagon)
+            {
+                if (linkToVote)
+                {
+                    sb.AppendFormat(", [url={0}]{1}[/url] ({2})", voter.PostLink, voter.Name, voter.PostCount);
+                }
+                else
+                {
+                    sb.AppendFormat(", {0} ({1})", voter.Name, voter.PostCount);
+                }
+            }
+
+            if (sb.Length > 2) // get rid of ", " from first item.
+            {
+                sb.Remove(0, 2);
+            }
+
+            return sb.ToString();
+        }
+
+        private Voter LookupOrAddPoster(string name)
+        {
+            Voter p;
+            if (_lookupPoster.ContainsKey(name.ToLower()))
+            {
+                p = _lookupPoster[name.ToLower()];
+            }
+            else
+            {
+                p = new Voter(name, this, _synchronousInvoker);
+                _lookupPoster.Add(name.ToLower(), p);
+            }
+            return p;
+        }
+        #endregion
+
+        #region public methods
+        public void Clear()
+        {
+            _lookupPoster.Clear();
+            _allPosts.Clear();
+            _livePosters.Clear();
+            _validVotes.Clear();
+            _allPosters.Clear();
+            _forum.Clear();
+
+        }
+        public void Login(string user, string password)
+        {
+            _forum.Login(user, password);
+        }
+        public void Logout()
+        {
+            _forum.Logout();
+        }
+        public void AddPlayer(string name)
+        {
+
+            _synchronousInvoker.Invoke(
+                () =>
+                {
+                    Voter p = LookupOrAddPoster(name);
+                    _livePosters.Add(p);
+                    BuildValidVotesList();
+                    RefreshVoteCount();
+                }
+            );
+        }
+        public void KillPlayer(string name)
+        {
+            Voter p = this[name];
+            if (p != null)
+            {
+                _synchronousInvoker.Invoke(
+                    () =>
+                    {
+                        _livePosters.Remove(p);
+                        _validVotes.Remove(p.Name);
+                        RefreshVoteCount();
+                    }
+
+                );
+            }
+        }
+        public void OnNewDay()
+        {
+        }
+        public void SetPlayerList(string players)
+        {
+            List<String> rawList = players.Split(
+                new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries)
+                .Select(p => p.Trim())
+                .Distinct().ToList();
+            SortableBindingList<Voter> livePlayers = new SortableBindingList<Voter>();
+            foreach (String name in rawList)
+            {
+                Voter p = LookupOrAddPoster(name);
+                livePlayers.Add(p);
+            }
+            _livePosters = livePlayers;
+            Refresh();
+            OnPropertyChanged("LivePlayers");
+        }
+        public void AddVoteAlias(string bolded, string votee)
+        {
+            String vote = PrepBolded(bolded);
+            Mappings[vote] = votee;
+            RefreshVoteCount();
         }
         public string PostableVoteCount
         {
@@ -241,11 +416,11 @@ namespace FennecFox.DataLibrary
                 sb.AppendLine("[/highlight]").AppendLine("---")
                 .AppendLine("[table=head][b]Votes[/b]|[b]Lynch[/b]|[b]Voters[/b]");
 
-                Dictionary<String, List<Poster>> wagons = new Dictionary<string, List<Poster>>();
-                List<Poster> listError = new List<Poster>();
-                List<Poster> listNoLynch = new List<Poster>();
-                List<Poster> listUnvote = new List<Poster>();
-                List<Poster> listNotVoting = new List<Poster>();
+                Dictionary<String, List<Voter>> wagons = new Dictionary<string, List<Voter>>();
+                List<Voter> listError = new List<Voter>();
+                List<Voter> listNoLynch = new List<Voter>();
+                List<Voter> listUnvote = new List<Voter>();
+                List<Voter> listNotVoting = new List<Voter>();
                 string sError = "Error";
                 string sNotVoting = "not voting";
                 wagons.Add(sError, listError);
@@ -253,12 +428,12 @@ namespace FennecFox.DataLibrary
                 wagons.Add(Unvote, listUnvote);
                 wagons.Add(sNotVoting, listNotVoting);
                 // for each live player
-                foreach (Poster p in _livePosters)
+                foreach (Voter p in _livePosters)
                 {
-                    wagons.Add(p.Name, new List<Poster>());
+                    wagons.Add(p.Name, new List<Voter>());
                 }
                 // find out who they are voting, add vote to that wagon.
-                foreach (Poster p in _livePosters)
+                foreach (Voter p in _livePosters)
                 {
                     String votee = p.Votee;
                     if (votee == SelectVote)
@@ -282,7 +457,8 @@ namespace FennecFox.DataLibrary
                 wagons.Remove(sError);
                 foreach (var wagon in wagons)
                 {
-                    this[wagon.Key].VoteCount = wagon.Value.Count;
+                    Voter v = _lookupPoster[wagon.Key.ToLower()];
+                    v.VoteCount = wagon.Value.Count;
                 }
                 var sortedWagons = (from wagon in wagons where (wagon.Value.Count > 0) orderby wagon.Value.Count descending select wagon).ToDictionary(pair => pair.Key, pair => pair.Value);
                 // build string with wagons followed by optional {unvote, no lynch, not voting}
@@ -325,152 +501,8 @@ namespace FennecFox.DataLibrary
                 return sb.ToString();
             }
         }
-        private String VoteLinks(List<Poster> wagon, Boolean linkToVote)
-        {
-            StringBuilder sb = new StringBuilder();
-            foreach (Poster voter in wagon)
-            {
-                if (linkToVote)
-                {
-                    sb.AppendFormat(", [url={0}]{1}[/url] ({2})", voter.PostLink, voter.Name, voter.PostCount);
-                }
-                else
-                {
-                    sb.AppendFormat(", {0} ({1})", voter.Name, voter.PostCount);
-                }
-            }
-
-            if (sb.Length > 2) // get rid of ", " from first item.
-            {
-                sb.Remove(0, 2);
-            }
-
-            return sb.ToString();
-        }
-
-        private Poster LookupOrAddPoster(string name)
-        {
-            Poster p;
-            if (_lookupPoster.ContainsKey(name.ToLower()))
-            {
-                p = _lookupPoster[name.ToLower()];
-            }
-            else
-            {
-                p = new Poster(name, this, _synchronousInvoker);
-                _lookupPoster.Add(name.ToLower(), p);
-            }
-            return p;
-        }
-        public void AddPlayer(string name)
-        {
-
-            _synchronousInvoker.Invoke(
-                () =>
-                {
-                    Poster p = LookupOrAddPoster(name);
-                    _livePosters.Add(p);
-                    BuildValidVotesList();
-                    RefreshVoteCount();
-                }
-            );
-        }
-        public void KillPlayer(string name)
-        {
-            Poster p = this[name];
-            if (p != null)
-            {
-                _synchronousInvoker.Invoke(
-                    () =>
-                    {
-                        _livePosters.Remove(p);
-                        _validVotes.Remove(p.Name);
-                        RefreshVoteCount();
-                    }
-
-                );
-            }
-        }
-        public Boolean OnNewPost(HtmlAgilityPack.HtmlNode post)
-        {
-            string posterName = "";
-            Int32 postNumber = 0;
-            String postLink = null;
-            DateTime postTime = DateTime.Now;
-            HtmlAgilityPack.HtmlNode postNumberNode = post.SelectSingleNode("../../../tr[1]/td[2]/a");
-
-            if (postNumberNode != null)
-            {
-                postNumber = Int32.Parse(postNumberNode.InnerText);
-                postLink = postNumberNode.Attributes["href"].Value;
-                Int32 lastPost = Convert.ToInt32(postNumber);
-                if (lastPost < LastPost)
-                {
-                    return false;
-                }
-                LastPost = lastPost;
-            }
-            RemoveComments(post);
-            HtmlAgilityPack.HtmlNode postTimeNode = post.SelectSingleNode("../../../tr[1]/td[1]");
-            if (postTimeNode != null)
-            {
-                string time = postTimeNode.InnerText.Trim();
-                DateTime dtNow = DateTime.Now;
-                string today = dtNow.ToString("MM-dd-yyyy");
-                time = time.Replace("Today", today);
-                DateTime dtYesterday = dtNow - new TimeSpan(1, 0, 0, 0);
-                string yesterday = dtYesterday.ToString("MM-dd-yyyy");
-                time = time.Replace("Yesterday", yesterday);
-                var culture = Thread.CurrentThread.CurrentCulture;
-                try
-                {
-                    Thread.CurrentThread.CurrentCulture = CultureInfo.CreateSpecificCulture("en-US");
-                    postTime = DateTime.ParseExact(time, "MM-dd-yyyy, hh:mm tt", null);
-                }
-                finally
-                {
-                    Thread.CurrentThread.CurrentCulture = culture;
-                }
-            }
-
-            HtmlAgilityPack.HtmlNode userNode = post.SelectSingleNode("../../td[1]/div/a[@class='bigusername']");
-            if (userNode != null)
-            {
-                posterName = HtmlAgilityPack.HtmlEntity.DeEntitize(userNode.InnerText);
-            }
-            Poster poster = LookupOrAddPoster(posterName);
-            // if the poster's name exists as a different case, replace the player.
-            if (poster.Name != posterName)
-            {
-                poster.Name = posterName;
-                BuildValidVotesList();
-            }
-            Post p = new Post(posterName, postNumber, postTime, postLink, post);
-            _allPosts.Add(p);
-            poster.AddPost(p);
-            RefreshVoteCount();
-            return true;
-        }
-        public void OnNewDay()
-        {
-        }
-        public void SetPlayerList(string players)
-        {
-            List<String> rawList = players.Split(
-                new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries)
-                .Select(p => p.Trim())
-                .Distinct().ToList();
-            SortableBindingList<Poster> livePlayers = new SortableBindingList<Poster>();
-            foreach (String name in rawList)
-            {
-                Poster p = LookupOrAddPoster(name);
-                livePlayers.Add(p);
-            }
-            _livePosters = livePlayers;
-            BuildValidVotesList();
-            OnPropertyChanged("LivePlayers");
-            RefreshVoteCount();
-        }
+        #endregion
+        #region internal methods
         private String PrepBolded(String bolded)
         {
             String vote = bolded.ToLower().Replace(" ", "");
@@ -485,7 +517,7 @@ namespace FennecFox.DataLibrary
             }
             return vote;
         }
-        public String ParseBoldedToVote(String bolded)
+        internal String ParseBoldedToVote(String bolded)
         {
             String vote = PrepBolded(bolded);
             if (vote == "")
@@ -496,11 +528,11 @@ namespace FennecFox.DataLibrary
             if (player == null)
             {
                 // check if there is a mapping defined for this vote => player
-                if (Properties.Settings.Default.Mappings.ContainsKey(vote))
+                if (Mappings.ContainsKey(vote))
                 {
                     player =
                         ValidVotes.FirstOrDefault(
-                            p => p == Properties.Settings.Default.Mappings[vote]);
+                            p => p == Mappings[vote]);
                 }
                 if (player == null)
                 {
@@ -509,21 +541,9 @@ namespace FennecFox.DataLibrary
             }
             return player;
         }
-        public void AddVoteAlias(string bolded, string votee)
-        {
-            String vote = PrepBolded(bolded);
-            Properties.Settings.Default.Mappings[vote] = votee;
-            RefreshVoteCount();
-        }
+        #endregion
 
-        static void RemoveComments(HtmlAgilityPack.HtmlNode node)
-        {
-            foreach (var n in node.SelectNodes("//comment()") ?? new HtmlAgilityPack.HtmlNodeCollection(node))
-            {
-                n.Remove();
-            }
-        }
-
+        #region Events
         public event PropertyChangedEventHandler PropertyChanged;
         private void OnPropertyChanged(string propertyName)
         {
@@ -534,5 +554,18 @@ namespace FennecFox.DataLibrary
                 );
             }
         }
+        public event EventHandler<Forum.LoginEventArgs> LoginEvent;
+        private void OnLoginEvent(Forum.LoginEventArgs e)
+        {
+            var handler = LoginEvent;
+            if (handler != null)
+            {
+                _synchronousInvoker.Invoke(
+                    () => handler(this, e)
+                );
+            }
+        }
+        #endregion
+
     }
 }

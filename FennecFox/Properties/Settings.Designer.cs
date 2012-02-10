@@ -8,9 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-using System.Configuration;
-
-namespace FennecFox.Properties {
+namespace POG.FennecFox.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
@@ -22,42 +20,6 @@ namespace FennecFox.Properties {
         public static Settings Default {
             get {
                 return defaultInstance;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("myusername")]
-        public string username {
-            get {
-                return ((string)(this["username"]));
-            }
-            set {
-                this["username"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("mypassword")]
-        public string password {
-            get {
-                return ((string)(this["password"]));
-            }
-            set {
-                this["password"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("100")]
-        public int postsPerPage {
-            get {
-                return ((int)(this["postsPerPage"]));
-            }
-            set {
-                this["postsPerPage"] = value;
             }
         }
         
@@ -87,36 +49,12 @@ namespace FennecFox.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [SettingsSerializeAs(SettingsSerializeAs.Binary)]
-        public global::System.Collections.Specialized.StringDictionary Mappings {
-            get {
-                return ((global::System.Collections.Specialized.StringDictionary)(this["Mappings"]));
-            }
-            set {
-                this["Mappings"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         public global::System.Collections.Specialized.StringCollection Players {
             get {
                 return ((global::System.Collections.Specialized.StringCollection)(this["Players"]));
             }
             set {
                 this["Players"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("YourNameHere")]
-        public string Moderator {
-            get {
-                return ((string)(this["Moderator"]));
-            }
-            set {
-                this["Moderator"] = value;
             }
         }
         
@@ -134,12 +72,25 @@ namespace FennecFox.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        public global::System.Collections.Specialized.StringCollection DeadPlayers {
+        [global::System.Configuration.DefaultSettingValueAttribute("oreos")]
+        public string username {
             get {
-                return ((global::System.Collections.Specialized.StringCollection)(this["DeadPlayers"]));
+                return ((string)(this["username"]));
             }
             set {
-                this["DeadPlayers"] = value;
+                this["username"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("wwdraft")]
+        public string password {
+            get {
+                return ((string)(this["password"]));
+            }
+            set {
+                this["password"] = value;
             }
         }
     }

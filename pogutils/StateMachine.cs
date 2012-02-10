@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Threading;
 
-namespace FennecFox
+namespace POG.Utils
 {
 	public class StateMachineHost
 	{
@@ -115,12 +115,17 @@ namespace FennecFox
 		private object m_stateLock = new object();
 		private Stack<Queue<Event>> m_EventQueues = new Stack<Queue<Event>>();
 		private Dictionary<string, Queue<Event>> m_EventQueueMap = new Dictionary<string, Queue<Event>>();
+        private Dictionary<string, System.Threading.Timer> _Timers = new Dictionary<string, Timer>();
 
 		public string Name { get; private set; }
 
-		public virtual void Initialize() // runs on host thread.
+		internal void Initialize() // runs on host thread.
 		{
+            OnInitialize();
 		}
+        protected virtual void OnInitialize()
+        {
+        }
 
 		protected StateMachine(string name, StateMachineHost host)
 		{
@@ -142,13 +147,32 @@ namespace FennecFox
 			Queue<Event> qStack = m_EventQueues.Pop();
 			qStack.Clear();
 		}
-
+        private void OneShotTimer(object state)
+        {
+            Event evt = (Event)state;
+            Timer t;
+            if (_Timers.TryGetValue(evt.EventName, out t))
+            {
+                _Timers.Remove(evt.EventName);
+                t.Dispose();
+            }
+            PostEvent(evt);
+        }
 		protected void StartOneShotTimer(int delayMS, Event evt)
 		{
+            CancelTimer(evt.EventName);
+            Timer t= new Timer(OneShotTimer, evt, delayMS, Timeout.Infinite);
+            _Timers.Add(evt.EventName, t);
 		}
 
 		protected void CancelTimer(string eventName)
 		{
+            Timer t;
+            if (_Timers.TryGetValue(eventName, out t))
+            {
+                _Timers.Remove(eventName);
+                t.Dispose();
+            }
 		}
 
 		protected void SetInitialState(State initialState)

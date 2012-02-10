@@ -7,11 +7,11 @@ using System.ComponentModel;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
-using System.Windows.Forms;
 
 #endregion
 
-namespace FennecFox.DataLibrary {
+namespace POG.Utils
+{
 
   public class SortableBindingList<T> : BindingList<T> {
 
