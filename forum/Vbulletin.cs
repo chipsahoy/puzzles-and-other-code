@@ -267,6 +267,21 @@ namespace POG.Forum
         /// <returns></returns>
         private String DoLogin(String username, String password)
         {
+            // Get some needed cookies!
+            connectionSettings.Url = BASE_URL;
+            String page = HtmlHelper.GetUrlResponseString(connectionSettings);
+            // They are hidden in javascript...
+            Regex reg = new Regex(Regex.Escape("setCookie('") + "([^\']*)\', \'([^\']*)\'");
+            Match match = reg.Match(page);
+            if (match.Success)
+            {
+                string cookieName = match.Groups[1].Value;
+                string cookieValue = match.Groups[2].Value;
+                Cookie cookie = new Cookie(cookieName, cookieValue, "/", "forumserver.twoplustwo.com");
+                connectionSettings.CC.Add(cookie);
+                Cookie cReferrer = new Cookie("DOAReferrer", "http://forumserver.twoplustwo.com", "/", "forumserver.twoplustwo.com");
+                connectionSettings.CC.Add(cReferrer);
+            }
             _username = null;
             String passToken = SecurityUtils.md5(password);
 
