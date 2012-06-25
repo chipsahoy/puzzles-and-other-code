@@ -7,6 +7,7 @@ using System.Text.RegularExpressions;
 using System.Net;
 using System.Globalization;
 using System.ComponentModel;
+using System.Windows.Forms;
 using POG.Utils;
 
 
@@ -25,6 +26,7 @@ namespace POG.Forum
         private Post[] _posts = new Post[100];
         int _postsPerPage = 50;
         private String _threadURL = "";
+        DateTime _lastModPostTime = new DateTime(2012, 1, 1);
         #endregion
 
         internal VBulletinSM(VBulletin_3_8_7 outer, StateMachineHost host) :
@@ -156,11 +158,11 @@ namespace POG.Forum
                     {
                         if (_threadURL.Length == 0)
                         {
-                            ChangeState(StateIdle);
+                            ChangeState(StateNoThread);
                         }
                         else
                         {
-                            ChangeState(StateMonitoring);
+                            ChangeState(StateThreadUnlocked);
                         }
                     }
                     return null;
@@ -173,7 +175,7 @@ namespace POG.Forum
                 case "NewURL":
                     {
                         ResetThread();
-                        ChangeState(StateMonitoring);
+                        ChangeState(StateThreadUnlocked);
                     }
                     return null;
 
@@ -189,7 +191,7 @@ namespace POG.Forum
         {
             return null;
         }
-        private State StateIdle(Event e)
+        private State StateNoThread(Event e)
         {
             switch (e.EventName)
             {
@@ -207,7 +209,39 @@ namespace POG.Forum
             }
             return StateLoggedIn;
         }
-        private State StateMonitoring(Event e)
+        private State StateHaveThread(Event e)
+        {
+            switch (e.EventName)
+            {
+                case "EventEnter":
+                    {
+                    }
+                    return null;
+
+                case "EventExit":
+                    {
+                    }
+                    return null;
+            }
+            return StateLoggedIn;
+        }
+        private State StateThreadLocked(Event e)
+        {
+            switch (e.EventName)
+            {
+                case "EventEnter":
+                    {
+                    }
+                    return null;
+
+                case "EventExit":
+                    {
+                    }
+                    return null;
+            }
+            return StateHaveThread;
+        }
+        private State StateThreadUnlocked(Event e)
         {
             switch (e.EventName)
             {
@@ -247,11 +281,18 @@ namespace POG.Forum
 
                 case "Reset":
                     {
-                        ChangeState(StateIdle);
+                        ChangeState(StateNoThread);
+                    }
+                    return null;
+
+                case "DelayedPost":
+                    {
+                        Event<String> evtDP = (Event<String>)e;
+                        MakePost(evtDP.Param);
                     }
                     return null;
             }
-            return StateLoggedIn;
+            return StateHaveThread;
         }
         #endregion
         #region private methods
@@ -283,11 +324,11 @@ namespace POG.Forum
                 connectionSettings.CC.Add(cReferrer);
             }
             _username = null;
-            String passToken = SecurityUtils.md5(password);
+            String hashedPassword = SecurityUtils.md5(password);
 
             connectionSettings.Url = String.Format("{0}login.php?do=login", BASE_URL);
             connectionSettings.Data =
-                String.Format("vb_login_username={0}&cookieuser=1&vb_login_password=&s=&securitytoken=guest&do=login&vb_login_md5password={1}&vb_login_md5password_utf={1}", username, passToken);
+                String.Format("vb_login_username={0}&cookieuser=1&vb_login_password=&s=&securitytoken=guest&do=login&vb_login_md5password={1}&vb_login_md5password_utf={1}", username, hashedPassword);
             String resp = HtmlHelper.PostToUrl(connectionSettings);
 
             if (resp == null)
@@ -441,7 +482,138 @@ namespace POG.Forum
         {
             PostEvent(new Event("DoLogout"));
         }
+        internal Boolean MakePost(String content, Int32 icon = 0)
+        {
+            /* headers
+                POST /newreply.php?do=postreply&t=1198532 HTTP/1.1
+                Host: forumserver.twoplustwo.com
+                Connection: keep-alive
+                Content-Length: 299
+                Origin: http://forumserver.twoplustwo.com
+                X-Requested-With: XMLHttpRequest
+                User-Agent: Mozilla/5.0 (Windows NT 5.1) AppleWebKit/536.5 (KHTML, like Gecko) Chrome/19.0.1084.52 Safari/536.5
+                Content-Type: application/x-www-form-urlencoded; charset=UTF-8
+                Accept: * /* <-- space added
+                Referer: http://forumserver.twoplustwo.com/59/puzzles-other-games/pog-pub-may-2012-lc-now-even-more-gimmicks-nsfw-1198532/index62.html
+                Accept-Encoding: gzip,deflate,sdch
+                Accept-Language: en-US,en;q=0.8
+                Accept-Charset: ISO-8859-1,utf-8;q=0.7,*;q=0.3
+                Cookie: __utmz=126502536.1325477731.1.1.utmcsr=(direct)|utmccn=(direct)|utmcmd=(none); Listing15=Open; Listing8=Open; Listing2=Open; bblastvisit=1325477737; bblastactivity=0; bbuserid=81718; bbpassword=bed5d97301ccb4e84503ce49bedcf76a; __utma=126502536.1375902440.1325477731.1337991697.1338028399.110; __utmc=126502536; bbsessionhash=2c6af250e2d1881d045bd64c74a8626f; vbseo_loggedin=yes; Listing9=Open; __utmb=126502536
 
+             * querystring do=postreply&t=1198532
+             * body --
+securitytoken blah
+ajax 1
+ajax_lastpost 1338033352
+message test
+wysiwyg 0 
+styleid 0
+fromquickreply 1
+s
+securitytoken blah
+do postreply
+t 1198532
+p who care
+specifiedpost 0
+parseurl 1
+loggedinuser 81788
+             * openclose 1 <-- lock thread
+             * */
+            ConnectionSettings cs = connectionSettings.Clone();
+            cs.Url = _threadURL;
+            String doc = HtmlHelper.GetUrlResponseString(cs);
+            if (doc == null)
+            {
+                return false;
+            }
+            // parse out securitytoken
+            Regex reg = new Regex("var SECURITYTOKEN = \"(.+)\"");
+            String securityToken = "";
+            Match match = reg.Match(doc);
+            if (match.Success)
+            {
+                securityToken = match.Groups[1].Value;
+            }
+            //			var ajax_last_post = 1338251071;
+            String ajaxLastPost = "";
+            reg = new Regex("var ajax_last_post = (.+);");
+            match = reg.Match(doc);
+            if (match.Success)
+            {
+                ajaxLastPost = match.Groups[1].Value;
+            }
+            String threadId = "";
+            reg = new Regex("<input type=\"hidden\" name=\"t\" value=\"(.+)\" id=\"qr_threadid\" />");
+            match = reg.Match(doc);
+            if (match.Success)
+            {
+                threadId = match.Groups[1].Value;
+            }
+            /*				<input type="hidden" name="fromquickreply" value="1" />
+				<input type="hidden" name="s" value="" />
+				<input type="hidden" name="securitytoken" value="1338251187-cd0e85748ac090ba7cb5281011b49332c0ba455a" />
+				<input type="hidden" name="do" value="postreply" />
+				<input type="hidden" name="t" value="1204368" id="qr_threadid" />
+				<input type="hidden" name="p" value="who cares" id="qr_postid" />
+				<input type="hidden" name="specifiedpost" value="0" id="qr_specifiedpost" />
+				<input type="hidden" name="parseurl" value="1" />
+				<input type="hidden" name="loggedinuser" value="198669" />
+             * 
+             * openclose=1
+             * open:
+             * POST http://forumserver.twoplustwo.com/postings.php?t=1204368&pollid= 
+             * do=openclosethread&s=&securitytoken=1338253787-f7a244e5e823e6d88002169f4f314e97febf4dce&t=1204368&pollid=
+             * close:
+             * POST /postings.php?t=1204368&pollid= HTTP/1.1
+             * do=openclosethread&s=&securitytoken=1338253981-5657f92aed9e901b4292a60cab0e9efaac4be1fe&t=1204368&pollid=
+*/
+            StringBuilder msg = new StringBuilder();
+            msg.AppendFormat("{0}={1}&", "securitytoken", securityToken);
+            msg.AppendFormat("{0}={1}&", "ajax", "1");
+            msg.AppendFormat("{0}={1}&", "ajax_lastpost", ajaxLastPost);
+            msg.AppendFormat("{0}={1}&", "message", content + " " + DateTime.Now.Millisecond);
+            msg.AppendFormat("{0}={1}&", "wysiwyg", "0");
+            msg.AppendFormat("{0}={1}&", "styleid", "0");
+            msg.AppendFormat("{0}={1}&", "fromquickreply", "1");
+            msg.AppendFormat("{0}={1}&", "s", "");
+            msg.AppendFormat("{0}={1}&", "securitytoken", securityToken);
+            msg.AppendFormat("{0}={1}&", "do", "postreply");
+            msg.AppendFormat("{0}={1}&", "t", threadId);
+            msg.AppendFormat("{0}={1}&", "p", "who cares");
+            msg.AppendFormat("{0}={1}&", "specifiedpost", "0");
+            msg.AppendFormat("{0}={1}&", "parseurl", "1");
+            msg.AppendFormat("{0}={1}", "loggedinuser", cs.CC.GetCookies(new System.Uri(BASE_URL))["bbuserid"]);
+            cs.Url = String.Format("{0}newreply.php?do=postreply&t={1}", BASE_URL, threadId);
+            cs.Data = msg.ToString();
+            Console.WriteLine("Posting: " + cs.Data);
+            String resp = HtmlHelper.PostToUrl(cs);
+            if (resp == null)
+            {
+                // failure
+            }
+
+            return false;
+        }
+        internal Boolean MakePostAtTime(DateTime dt, String content, Int32 icon = 0)
+        {
+            DateTime dtNow = DateTime.Now;
+            TimeSpan ts = dt - dtNow;
+            int ms = (int)ts.TotalMilliseconds;
+            StartOneShotTimer(ms, new Event<String>("DelayedPost", content));
+            return false;
+        }
+        internal Boolean LockThread()
+        {
+            // POST /postings.php?t=1204368&pollid= HTTP/1.1
+            /*
+             * do=openclosethread
+             * s=
+             * securitytoken=
+             * t=
+             * pollid=
+             * */
+
+        }
         private int PageFromNumber(int number)
         {
             int page = (number / _postsPerPage) + 1;
@@ -701,6 +873,12 @@ namespace POG.Forum
         }
         public Boolean MakePost(String content, Int32 icon = 0)
         {
+            _inner.MakePost(content, icon);
+            return false;
+        }
+        public Boolean MakePostAtTime(DateTime dt, String content, Int32 icon = 0)
+        {
+            _inner.MakePostAtTime(dt, content, icon);
             return false;
         }
         public void Start()

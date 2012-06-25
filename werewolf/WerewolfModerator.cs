@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using POG.Utils;
+using POG.Forum;
 
 namespace POG.Werewolf
 {
@@ -90,9 +91,18 @@ namespace POG.Werewolf
     
     class ModeratorSM : StateMachine
     {
-        ModeratorSM(StateMachineHost host)
+        VoteCount _game;
+        VBulletin_3_8_7 _forum;
+        Moderator _outer;
+        Int32 _countNumber = 1;
+
+        public ModeratorSM(Moderator outer, VoteCount game, VBulletin_3_8_7 forum, StateMachineHost host)
             : base("Moderator", host)
         {
+            _outer = outer;
+            _game = game;
+            _forum = forum;
+            SetInitialState(StateTop);
         }
         public void StartGame(string sender, params string[] players)
         {
@@ -112,6 +122,16 @@ namespace POG.Werewolf
 
         State StateTop(Event evt)
         {
+            switch (evt.EventName)
+            {
+                case "PostCount":
+                    {
+                        _game.MakePost("Vote Count #" + _countNumber.ToString());
+                        _countNumber++;
+                        SetVoteCountTimer();
+                    }
+                    break;
+            }
             return null;
         }
         State StateIdle(Event evt)
@@ -157,5 +177,82 @@ namespace POG.Werewolf
         {
             return StatePollingThread;
         }
+        internal void StartAutoPost()
+        {
+            SetVoteCountTimer();
+        }
+
+        Boolean SetVoteCountTimer()
+        {
+            DateTime eod = _game.EndTime;
+            DateTime now = DateTime.Now;
+            DateTime alarm = now;
+            TimeSpan daylight = eod - now;
+            if (daylight.Milliseconds < 0)
+            {
+                return false;
+            }
+            if (daylight.Hours > 1)
+            {
+                // vote counts every 2 hours.
+                int hour = (daylight.Hours / 2) * 2;
+                alarm = eod - new TimeSpan(hour, 0, 0);
+            }
+            else if (daylight.Hours == 1)
+            {
+                alarm = eod - new TimeSpan(1, 0, 0);
+            }
+            else if (daylight.Minutes >= 30)
+            {
+                alarm = eod - new TimeSpan(0, 30, 0);
+            }
+            else if (daylight.Minutes >= 15)
+            {
+                alarm = eod - new TimeSpan(0, 15, 0);
+            }
+            else if (daylight.Minutes >= 10)
+            {
+                alarm = eod - new TimeSpan(0, 10, 0);
+            }
+            else if (daylight.Minutes >= 5)
+            {
+                alarm = eod - new TimeSpan(0, 5, 0);
+            }
+            else if (daylight.Minutes >= 2)
+            {
+                alarm = eod - new TimeSpan(0, 2, 0);
+            }
+            else if (daylight.Minutes == 1)
+            {
+                alarm = eod - new TimeSpan(0, 1, 0);
+            }
+            else if (daylight.Minutes == 0)
+            {
+                alarm = eod - new TimeSpan(0, 15, 0);
+            }
+            TimeSpan duration = alarm - now;
+            
+            StartOneShotTimer((int)duration.TotalMilliseconds, new Event("PostCount"));
+            return true;
+        }
+    }
+    public class Moderator
+    {
+        #region members
+        ModeratorSM _inner;
+        Action<Action> _synchronousInvoker;
+        #endregion
+        #region constructors
+
+        public Moderator(Action<Action> synchronousInvoker, VoteCount voteCount, VBulletin_3_8_7 forum)
+        {
+            _synchronousInvoker = synchronousInvoker;
+            _inner = new ModeratorSM(this, voteCount, forum, new StateMachineHost("ForumHost"));
+        }
+        public void StartAutoPost()
+        {
+            _inner.StartAutoPost();
+        }
+        #endregion
     }
 }

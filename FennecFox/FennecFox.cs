@@ -12,6 +12,7 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Threading;
 using POG.Werewolf;
+using POG.Forum;
 
 
 namespace POG.FennecFox
@@ -31,6 +32,8 @@ namespace POG.FennecFox
             Bolded,
         };
         private VoteCount m_game;
+        Moderator _moderator;
+        VBulletin_3_8_7 _forum;
 
 
 
@@ -196,9 +199,12 @@ namespace POG.FennecFox
             InitializeComponent();
             tabVotes.TabPages.Remove(tabPage5);
 
-            m_game = new VoteCount(a => Invoke(a));
+            Action<Action> synchronousInvoker = a => Invoke(a);
+            _forum = new VBulletin_3_8_7(synchronousInvoker);
+            m_game = new VoteCount(synchronousInvoker, _forum);
             m_game.PropertyChanged += new PropertyChangedEventHandler(m_game_PropertyChanged);
             m_game.LoginEvent += new EventHandler<POG.Forum.LoginEventArgs>(m_game_LoginEvent);
+            _moderator = new Moderator(synchronousInvoker, m_game, _forum);
         }
 
         void m_game_LoginEvent(object sender, POG.Forum.LoginEventArgs e)
@@ -410,6 +416,10 @@ namespace POG.FennecFox
             list.Sort();
             txtPlayers.Lines = list.ToArray();
 
+            DateTime dt = DateTime.Now;
+            dt = dt.AddSeconds(-dt.Second);
+            dt = dt.AddMilliseconds(-dt.Millisecond);
+            dtPostAtTime.Value = dt;
 
             txtVersion.Text = String.Format("Fennic Fox Vote Counter Version " + Assembly.GetExecutingAssembly().GetName().Version.ToString());
             txtLastPost.DataBindings.Add("Text", m_game, "LastPost", false, DataSourceUpdateMode.OnPropertyChanged);
@@ -513,6 +523,21 @@ namespace POG.FennecFox
         {
             m_game.Logout();
         }
+
+        private void btnPost_Click(object sender, EventArgs e)
+        {
+        }
+
+        private void btnPostNow_Click(object sender, EventArgs e)
+        {
+            _forum.MakePost(txtModPost.Text);
+        }
+
+        private void btnPostAtTime_Click(object sender, EventArgs e)
+        {
+            _forum.MakePostAtTime(dtPostAtTime.Value, txtModPost.Text);
+        }
+
 
 
     }

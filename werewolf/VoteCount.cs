@@ -33,10 +33,10 @@ namespace POG.Werewolf
         public readonly String NoLynch = "no lynch";
         #endregion
         #region constructors
-        public VoteCount(Action<Action> synchronousInvoker) 
+        public VoteCount(Action<Action> synchronousInvoker, VBulletin_3_8_7 forum) 
         {
             _synchronousInvoker = synchronousInvoker;
-            _forum = new VBulletin_3_8_7(synchronousInvoker);
+            _forum = forum;
             _forum.NewPostsAvailable += new EventHandler<NewPostsAvailableEventArgs>(_forum_NewPostsAvailable);
             _forum.PropertyChanged += new PropertyChangedEventHandler(_forum_PropertyChanged);
             _forum.StatusUpdate += new EventHandler<NewStatusEventArgs>(_forum_StatusUpdate);
@@ -337,6 +337,10 @@ namespace POG.Werewolf
         public void Logout()
         {
             _forum.Logout();
+        }
+        public void MakePost(string content)
+        {
+            _forum.MakePost(content);
         }
         public void AddPlayer(string name)
         {
