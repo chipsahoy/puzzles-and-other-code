@@ -428,7 +428,7 @@ namespace POG.FennecFox
             txtEndPost.DataBindings.Add("Text", m_game, "EndPost", false, DataSourceUpdateMode.OnPropertyChanged);
             dtEndTime.DataBindings.Add("Value", m_game, "EndTime", false, DataSourceUpdateMode.OnPropertyChanged);
             dtStartTime.DataBindings.Add("Value", m_game, "StartTime", true, DataSourceUpdateMode.OnPropertyChanged);
-            Console.WriteLine("OnLoad complete");
+            //Console.WriteLine("OnLoad complete");
             btnLogin_Click(btnLogin, EventArgs.Empty);
         }
 
@@ -537,6 +537,11 @@ namespace POG.FennecFox
         {
             _forum.MakePostAtTime(dtPostAtTime.Value, txtModPost.Text);
         }
+
+		private void button1_Click(object sender, EventArgs e)
+		{
+			_forum.GetAlias();
+		}
 
 
 

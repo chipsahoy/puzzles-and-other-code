@@ -35,6 +35,7 @@ namespace POG.Forum
             Time = ts;
             PostLink = postLink;
             _content = content;
+            ParseBolded();
         }
         public string Poster
         {
@@ -79,7 +80,7 @@ namespace POG.Forum
             _bolded = new List<Bold>();
 
             RemoveQuotes(_content); // strip out quotes
-            RemoveColors(_content); // strip out colors
+            //RemoveColors(_content); // strip out colors
             RemoveNewlines(_content); // strip out newlines
 
             HtmlAgilityPack.HtmlNodeCollection bolds = _content.SelectNodes("child::b");
@@ -91,6 +92,7 @@ namespace POG.Forum
                     string bold = HtmlAgilityPack.HtmlEntity.DeEntitize(c.InnerText.Trim());
                     if (bold.Length > 0)
                     {
+                        System.Console.WriteLine("{0}\t{1}\t{2}", PostNumber, Poster, bold);
                         _bolded.Add(new Bold(bold));
                     }
                 }

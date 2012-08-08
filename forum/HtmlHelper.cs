@@ -60,7 +60,7 @@ namespace POG.Forum
 
                 // DEBUG ONLY
 #if DEBUG
-                //myRequest.Proxy = new WebProxy("127.0.0.1", 8888);
+                myRequest.Proxy = new WebProxy("127.0.0.1", 8888);
 #endif
                 myRequest.CookieContainer = settings.CC;
                 myRequest.Method = "POST";
@@ -195,7 +195,7 @@ namespace POG.Forum
 
                 // DEBUG ONLY
 #if DEBUG
-                //objRequest.Proxy = new WebProxy("127.0.0.1", 8888);
+                objRequest.Proxy = new WebProxy("127.0.0.1", 8888);
 #endif
                 objRequest.CookieContainer = settings.CC;
                 objRequest.Timeout = 600000;
