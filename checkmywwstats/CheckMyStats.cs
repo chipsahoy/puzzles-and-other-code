@@ -25,7 +25,7 @@ namespace POG.Database
 			request.Properties["URL"] = threadURL;
 			request.Properties["Poster"] = posterName;
 			request.Properties["Number"] = postNumber.ToString();
-			request.Properties["Time"] = postTime.ToUniversalTime().ToString();
+			request.Properties["Time"] = postTime.ToUniversalTime().ToString("yyyy-MM-dd HH:mm:ss");
 			request.Properties["Link"] = postLink;
 			// Link: ?p=....&
 			int ixPostStart = postLink.LastIndexOf("?p=") + 3;

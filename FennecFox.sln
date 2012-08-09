@@ -14,8 +14,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Forum", "forum\Forum.csproj
 		{C1C1B5FD-7C05-467A-BE22-F6670E013D05} = {C1C1B5FD-7C05-467A-BE22-F6670E013D05}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FoxTester", "FoxTester\FoxTester.csproj", "{474E3488-8A8B-40EF-AA7F-9A8D5BA37596}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{3206B393-939D-46C1-8E07-641FD6CB9179}"
 	ProjectSection(SolutionItems) = preProject
 		.nuget\NuGet.Config = .nuget\NuGet.Config
@@ -84,16 +82,6 @@ Global
 		{DF0D7868-C4C0-4388-BF11-138E1FC9BF87}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{DF0D7868-C4C0-4388-BF11-138E1FC9BF87}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{DF0D7868-C4C0-4388-BF11-138E1FC9BF87}.Release|x86.ActiveCfg = Release|Any CPU
-		{474E3488-8A8B-40EF-AA7F-9A8D5BA37596}.Debug|Any CPU.ActiveCfg = Debug|x86
-		{474E3488-8A8B-40EF-AA7F-9A8D5BA37596}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
-		{474E3488-8A8B-40EF-AA7F-9A8D5BA37596}.Debug|Mixed Platforms.Build.0 = Debug|x86
-		{474E3488-8A8B-40EF-AA7F-9A8D5BA37596}.Debug|x86.ActiveCfg = Debug|x86
-		{474E3488-8A8B-40EF-AA7F-9A8D5BA37596}.Debug|x86.Build.0 = Debug|x86
-		{474E3488-8A8B-40EF-AA7F-9A8D5BA37596}.Release|Any CPU.ActiveCfg = Release|x86
-		{474E3488-8A8B-40EF-AA7F-9A8D5BA37596}.Release|Mixed Platforms.ActiveCfg = Release|x86
-		{474E3488-8A8B-40EF-AA7F-9A8D5BA37596}.Release|Mixed Platforms.Build.0 = Release|x86
-		{474E3488-8A8B-40EF-AA7F-9A8D5BA37596}.Release|x86.ActiveCfg = Release|x86
-		{474E3488-8A8B-40EF-AA7F-9A8D5BA37596}.Release|x86.Build.0 = Release|x86
 		{C1C1B5FD-7C05-467A-BE22-F6670E013D05}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{C1C1B5FD-7C05-467A-BE22-F6670E013D05}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C1C1B5FD-7C05-467A-BE22-F6670E013D05}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
