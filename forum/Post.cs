@@ -78,18 +78,22 @@ namespace POG.Forum
                 return;
             }
             _bolded = new List<Bold>();
+            HtmlAgilityPack.HtmlNode content = _content.CloneNode("Votes", true);
+            RemoveQuotes(content); // strip out quotes
+            RemoveColors(content); // strip out colors
+            RemoveNewlines(content); // strip out newlines
 
-            RemoveQuotes(_content); // strip out quotes
-            //RemoveColors(_content); // strip out colors
-            RemoveNewlines(_content); // strip out newlines
-
-            HtmlAgilityPack.HtmlNodeCollection bolds = _content.SelectNodes("child::b");
+            HtmlAgilityPack.HtmlNodeCollection bolds = content.SelectNodes("child::b");
 
             if (bolds != null)
             {
                 foreach (HtmlAgilityPack.HtmlNode c in bolds)
                 {
                     string bold = HtmlAgilityPack.HtmlEntity.DeEntitize(c.InnerText.Trim());
+                    if(bold.StartsWith("Votes as of post"))
+                    {
+                        continue;
+                    }
                     if (bold.Length > 0)
                     {
                         System.Console.WriteLine("{0}\t{1}\t{2}", PostNumber, Poster, bold);

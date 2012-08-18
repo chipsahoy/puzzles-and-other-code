@@ -8,7 +8,7 @@
     <ProjectGuid>{DF0D7868-C4C0-4388-BF11-138E1FC9BF87}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>vbulletin</RootNamespace>
+    <RootNamespace>POG.Forum</RootNamespace>
     <AssemblyName>vbulletin</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -51,6 +51,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ConnectionSettings.cs" />
+    <Compile Include="Thread.cs" />
     <Compile Include="Vbulletin.cs" />
     <Compile Include="HtmlHelper.cs" />
     <Compile Include="PrivateMessage.cs" />
@@ -59,10 +60,6 @@
     <Compile Include="SecurityUtils.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\checkmywwstats\checkmywwstats.csproj">
-      <Project>{C1C1B5FD-7C05-467A-BE22-F6670E013D05}</Project>
-      <Name>checkmywwstats</Name>
-    </ProjectReference>
     <ProjectReference Include="..\pogutils\pogutils.csproj">
       <Project>{D1549E8C-BAB5-4E3B-AE03-DC9895752D31}</Project>
       <Name>pogutils</Name>

@@ -18,7 +18,10 @@
       <Value Profile="(Default)">oreos</Value>
     </Setting>
     <Setting Name="password" Type="System.String" Scope="User">
-      <Value Profile="(Default)">wwdraft</Value>
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="updateSettings" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
     </Setting>
   </Settings>
 </SettingsFile>

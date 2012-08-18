@@ -31,17 +31,22 @@ namespace POG.FennecFox
             VotesFor,
             Bolded,
         };
-        private VoteCount m_game;
-        Moderator _moderator;
+        private VoteCount _voteCount;
         VBulletin_3_8_7 _forum;
+        Action<Action> _synchronousInvoker;
+        System.Windows.Forms.Timer TimerEODCountdown = new System.Windows.Forms.Timer();
 
 
 
 
         private void SetupVoteGrid()
         {
+            if (_voteCount == null)
+            {
+                return;
+            }
             BindingSource bs = new BindingSource();
-            bs.DataSource = m_game.LivePlayers;
+            bs.DataSource = _voteCount.LivePlayers;
             grdVotes.DataSource = null;
 
             //bs = new BindingSource();
@@ -49,8 +54,8 @@ namespace POG.FennecFox
             List<String> validVotes = new List<string>();
             String notVoting = "not voting";
             validVotes.Add(notVoting);
-            validVotes.Add(m_game.SelectVote);
-            validVotes.AddRange(m_game.ValidVotes.ToArray());
+            validVotes.Add(_voteCount.ErrorVote);
+            validVotes.AddRange(_voteCount.ValidVotes.ToArray());
             validVotes.Add("");
             DataGridViewComboBoxColumn colCB = (DataGridViewComboBoxColumn)grdVotes.Columns[(Int32)CounterColumn.VotesFor];
             colCB.DataSource = validVotes.ToArray();
@@ -160,6 +165,10 @@ namespace POG.FennecFox
 
                 case (Int32)CounterColumn.VotesFor:
                     {
+                        if (((String)e.Value) == _voteCount.ErrorVote)
+                        {
+                            e.CellStyle.BackColor = System.Drawing.Color.Red;
+                        }
                     }
                     break;
 
@@ -198,16 +207,13 @@ namespace POG.FennecFox
         {
             InitializeComponent();
             tabVotes.TabPages.Remove(tabPage5);
+            _synchronousInvoker = a => Invoke(a);
+            _forum = new VBulletin_3_8_7(_synchronousInvoker);
+            _forum.LoginEvent += new EventHandler<POG.Forum.LoginEventArgs>(_forum_LoginEvent);
 
-            Action<Action> synchronousInvoker = a => Invoke(a);
-            _forum = new VBulletin_3_8_7(synchronousInvoker);
-            m_game = new VoteCount(synchronousInvoker, _forum);
-            m_game.PropertyChanged += new PropertyChangedEventHandler(m_game_PropertyChanged);
-            m_game.LoginEvent += new EventHandler<POG.Forum.LoginEventArgs>(m_game_LoginEvent);
-            _moderator = new Moderator(synchronousInvoker, m_game, _forum);
         }
 
-        void m_game_LoginEvent(object sender, POG.Forum.LoginEventArgs e)
+        void _forum_LoginEvent(object sender, POG.Forum.LoginEventArgs e)
         {
             switch (e.LoginEventType)
             {
@@ -225,6 +231,26 @@ namespace POG.FennecFox
                         txtUsername.ReadOnly = true;
                         txtPassword.ReadOnly = true;
                         txtPassword.PasswordChar = '*';
+                        {
+                            if (URLTextBox.Text == "")
+                            {
+                                URLTextBox.Text = POG.FennecFox.Properties.Settings.Default.threadUrl;
+                                if (URLTextBox.Text != "")
+                                {
+                                    btnStartGame_Click(this, EventArgs.Empty);
+                                    if (txtPlayers.Text == "")
+                                    {
+                                        var players = new string[POG.FennecFox.Properties.Settings.Default.Players.Count];
+                                        POG.FennecFox.Properties.Settings.Default.Players.CopyTo(players, 0);
+                                        var list = new List<String>(players);
+                                        list.Sort();
+                                        txtPlayers.Lines = list.ToArray();
+                                    }
+                                    udStartPost.Value = POG.FennecFox.Properties.Settings.Default.firstPost;
+                                    dtEndTime.Value = POG.FennecFox.Properties.Settings.Default.EndOfDay;
+                                }
+                            }
+                        }
                     }
                     break;
 
@@ -243,7 +269,7 @@ namespace POG.FennecFox
         }
 
 
-        void m_game_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        void _voteCount_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             if (e.PropertyName == "LivePlayers")
             {
@@ -251,29 +277,31 @@ namespace POG.FennecFox
             }
             if (e.PropertyName == "Status")
             {
-                statusText.Text = m_game.Status; // no direct binding support in status strip.
+                statusText.Text = _voteCount.Status; // no direct binding support in status strip.
             }
         }
 
-        //void TimerEODCountdown_Tick(object sender, EventArgs e)
-        //{
-        //    DateTime dtNow = DateTime.Now;
-        //    TimeSpan tsNow = new TimeSpan(dtNow.Hour, dtNow.Minute, dtNow.Second); // truncate to second.
-        //    if (tsNow != tsCurrentTime)
-        //    {
-        //        tsCurrentTime = tsNow;
-        //        TimeSpan tsRemaining = tsBadTime.Subtract(tsCurrentTime);
-        //        if (tsRemaining.Ticks < 0)
-        //        {
-        //            tsRemaining = tsRemaining.Add(new TimeSpan(1, 0, 0, 0));
-        //        }
-        //        txtCountDown.Text = String.Format("EOD in {0:00}:{1:00}:{2:00}", tsRemaining.Hours, tsRemaining.Minutes, tsRemaining.Seconds);
-        //        if (tsRemaining.TotalSeconds == 120)
-        //        {
-        //            FlashWindow.Flash(this);
-        //        }
-        //    }
-        //}
+        void TimerEODCountdown_Tick(object sender, EventArgs e)
+        {
+            if (_voteCount == null)
+            {
+                txtCountDown.Text = "No Game";
+                return;
+            }
+            TimeSpan tsRemaining = _voteCount.TimeUntilNight;
+            if (tsRemaining.Ticks < 0)
+            {
+                txtCountDown.Text = "Night!";
+                return;
+            }
+                
+            txtCountDown.Text = String.Format("EOD in {0:00}:{1:00}:{2:00}", 
+                    tsRemaining.Hours, tsRemaining.Minutes, tsRemaining.Seconds);
+            if (tsRemaining.TotalSeconds == 120)
+            {
+                FlashWindow.Flash(this);
+            }
+        }
 
 
         private delegate void ErrorDelegate(Exception e);
@@ -302,7 +330,7 @@ namespace POG.FennecFox
         {
             object v = cell.Value;
             cell.Items.Clear();
-            cell.Items.AddRange(m_game);
+            cell.Items.AddRange(_voteCount);
             if (v != null && cell.Items.Contains(v))
             {
                 cell.Value = v;
@@ -315,7 +343,7 @@ namespace POG.FennecFox
 
         public void HideVote(string player)
         {
-            var tPlayer = m_game[player];
+            var tPlayer = _voteCount[player];
             if (tPlayer != null)
             {
                 tPlayer.HideVote();
@@ -324,7 +352,7 @@ namespace POG.FennecFox
 
         public void UnhideVote(string player)
         {
-            var tPlayer = m_game[player];
+            var tPlayer = _voteCount[player];
             if (tPlayer != null)
             {
                 tPlayer.UnhideVote();
@@ -382,14 +410,18 @@ namespace POG.FennecFox
         
         private void Form_FormClosing(object sender, FormClosingEventArgs e)
         {
-
+            POG.FennecFox.Properties.Settings.Default.EndOfDay = dtEndTime.Value;
+            POG.FennecFox.Properties.Settings.Default.firstPost = (Int32)udStartPost.Value;
             POG.FennecFox.Properties.Settings.Default.username = txtUsername.Text.Trim();
             POG.FennecFox.Properties.Settings.Default.password = txtPassword.Text.Trim();
             POG.FennecFox.Properties.Settings.Default.threadUrl = URLTextBox.Text.Trim();
             POG.FennecFox.Properties.Settings.Default.Players = new StringCollection();
-            foreach (Voter p in m_game.LivePlayers)
+            if (_voteCount != null)
             {
-                POG.FennecFox.Properties.Settings.Default.Players.Add(p.Name);
+                foreach (Voter p in _voteCount.LivePlayers)
+                {
+                    POG.FennecFox.Properties.Settings.Default.Players.Add(p.Name);
+                }
             }
 
             POG.FennecFox.Properties.Settings.Default.Save();
@@ -398,43 +430,77 @@ namespace POG.FennecFox
 
         protected override void OnLoad(EventArgs e)
         {
-
+            txtVersion.Text = String.Format("Fennic Fox Vote Counter Version " + Assembly.GetExecutingAssembly().GetName().Version.ToString());
+            if (POG.FennecFox.Properties.Settings.Default.updateSettings)
+            {
+                POG.FennecFox.Properties.Settings.Default.Upgrade();
+                POG.FennecFox.Properties.Settings.Default.updateSettings = false;
+                POG.FennecFox.Properties.Settings.Default.Save();
+            }
             if (POG.FennecFox.Properties.Settings.Default.Players == null)
             {
                 POG.FennecFox.Properties.Settings.Default.Players = new StringCollection();
             }
+            DateTime now = DateTime.Now;
+            dtEndTime.Value = new DateTime(now.Year, now.Month, now.Day, 20, 0, 0, now.Kind);
 
             CreateVoteGridColumns();
             SetupVoteGrid();
 
             txtUsername.Text = POG.FennecFox.Properties.Settings.Default.username;
             txtPassword.Text = POG.FennecFox.Properties.Settings.Default.password;
-            URLTextBox.Text = POG.FennecFox.Properties.Settings.Default.threadUrl;
-            var tmp = new string[POG.FennecFox.Properties.Settings.Default.Players.Count];
-            POG.FennecFox.Properties.Settings.Default.Players.CopyTo(tmp, 0);
-            var list = new List<String>(tmp);
-            list.Sort();
-            txtPlayers.Lines = list.ToArray();
-
-            DateTime dt = DateTime.Now;
-            dt = dt.AddSeconds(-dt.Second);
-            dt = dt.AddMilliseconds(-dt.Millisecond);
-            dtPostAtTime.Value = dt;
-
-            txtVersion.Text = String.Format("Fennic Fox Vote Counter Version " + Assembly.GetExecutingAssembly().GetName().Version.ToString());
-            txtLastPost.DataBindings.Add("Text", m_game, "LastPost", false, DataSourceUpdateMode.OnPropertyChanged);
-
-            udStartPost.DataBindings.Add("Value", m_game, "StartPost", true, DataSourceUpdateMode.OnPropertyChanged);
-            txtEndPost.DataBindings.Add("Text", m_game, "EndPost", false, DataSourceUpdateMode.OnPropertyChanged);
-            dtEndTime.DataBindings.Add("Value", m_game, "EndTime", false, DataSourceUpdateMode.OnPropertyChanged);
-            dtStartTime.DataBindings.Add("Value", m_game, "StartTime", true, DataSourceUpdateMode.OnPropertyChanged);
-            //Console.WriteLine("OnLoad complete");
             btnLogin_Click(btnLogin, EventArgs.Empty);
+            TimerEODCountdown.Interval = 1000;
+            TimerEODCountdown.Tick+= new EventHandler(TimerEODCountdown_Tick);
+            TimerEODCountdown.Start();
+            
+        }
+        private void BindToNewGame()
+        {
+            ThreadReader t = _forum.Reader();
+            _voteCount = new VoteCount(_synchronousInvoker, t, URLTextBox.Text);
+            _voteCount.PropertyChanged += new PropertyChangedEventHandler(_voteCount_PropertyChanged);
+            
+            URLTextBox.ReadOnly = true;
+            btnReset.Enabled = true;
+            btnStartGame.Enabled = false;
+
+            txtLastPost.DataBindings.Clear();
+            udStartPost.DataBindings.Clear();
+            txtEndPost.DataBindings.Clear();
+            dtEndTime.DataBindings.Clear();
+            dtStartTime.DataBindings.Clear();
+
+            txtLastPost.DataBindings.Add("Text", _voteCount, "LastPost", false, DataSourceUpdateMode.OnPropertyChanged);
+            udStartPost.DataBindings.Add("Value", _voteCount, "StartPost", true, DataSourceUpdateMode.OnPropertyChanged);
+            txtEndPost.DataBindings.Add("Text", _voteCount, "EndPost", false, DataSourceUpdateMode.OnPropertyChanged);
+            dtEndTime.DataBindings.Add("Value", _voteCount, "EndTime", false, DataSourceUpdateMode.OnPropertyChanged);
+            dtStartTime.DataBindings.Add("Value", _voteCount, "StartTime", true, DataSourceUpdateMode.OnPropertyChanged);
+        }
+        private void UnbindFromGame()
+        {
+            txtLastPost.DataBindings.Clear();
+            udStartPost.DataBindings.Clear();
+            txtEndPost.DataBindings.Clear();
+            dtEndTime.DataBindings.Clear();
+            dtStartTime.DataBindings.Clear();
+            if (_voteCount != null)
+            {
+                _voteCount.PropertyChanged -= _voteCount_PropertyChanged;
+                _voteCount = null;
+            }
+            URLTextBox.ReadOnly = false;
+            URLTextBox.Text = "";
+            txtPlayers.Text = "";
+            btnReset.Enabled = false;
         }
 
         private void txtPlayers_TextChanged(object sender, EventArgs e)
         {
-            m_game.SetPlayerList(txtPlayers.Text);
+            if (_voteCount != null)
+            {
+                _voteCount.SetPlayerList(txtPlayers.Text);
+            }
         }
 
 
@@ -447,7 +513,7 @@ namespace POG.FennecFox
 
         private void txtPostTable_Click(object sender, EventArgs e)
         {
-            txtPostTable.Text = m_game.PostableVoteCount;
+            txtPostTable.Text = _voteCount.PostableVoteCount;
             txtPostTable.SelectAll();
             Clipboard.SetDataObject(txtPostTable.Text, false);
             statusText.Text = "Copied vote count to clipboard.";
@@ -455,7 +521,22 @@ namespace POG.FennecFox
 
         private void btnSetEOD_Click(object sender, EventArgs e)
         {
-
+            DateTime now = DateTime.Now;
+            DateTime eod = new DateTime(now.Year, now.Month, now.Day, now.Hour, now.Minute, 0, now.Kind);
+            Int32 duration = 20;
+            if (chkTurboDay1.Checked)
+            {
+                duration = (Int32)numTurboDay1Length.Value;
+                chkTurboDay1.Checked = false;
+                statusText.Text = "Day 1 EOD Set";
+            }
+            else
+            {
+                duration = (Int32)numTurboDayNLength.Value;
+                statusText.Text = "EOD Set";
+            }
+            eod = eod.AddMinutes(duration);
+            dtEndTime.Value = eod;
         }
 
         private void txtPlayers_KeyDown(object sender, KeyEventArgs e)
@@ -472,7 +553,6 @@ namespace POG.FennecFox
         {
             if (chkTurbo.Checked)
             {
-                m_game.Turbo = true;
                 btnSetEOD.Enabled = true;
                 chkTurboDay1.Enabled = true;
                 numTurboDay1Length.Enabled = true;
@@ -480,7 +560,6 @@ namespace POG.FennecFox
             }
             else
             {
-                m_game.Turbo = false;
                 btnSetEOD.Enabled = false;
                 chkTurboDay1.Enabled = false;
                 numTurboDay1Length.Enabled = false;
@@ -498,50 +577,57 @@ namespace POG.FennecFox
 
         private void btnStartGame_Click(object sender, EventArgs e)
         {
-            m_game.URL = URLTextBox.Text;
-            URLTextBox.ReadOnly = true;
-            btnReset.Enabled = true;
-            btnStartGame.Enabled = false;
+            String url = NormalizeUrl(URLTextBox.Text);
+            if (url != URLTextBox.Text)
+            {
+                URLTextBox.Text = url;
+            }
+            BindToNewGame();
         }
 
         private void btnReset_Click(object sender, EventArgs e)
         {
-            URLTextBox.ReadOnly = false;
-            m_game.Clear();
-            URLTextBox.Text = "";
-            txtPlayers.Text = "";
-            btnReset.Enabled = false;
+            UnbindFromGame();
         }
 
         private void btnLogin_Click(object sender, EventArgs e)
         {
             btnLogin.Enabled = false;
-            m_game.Login(txtUsername.Text, txtPassword.Text);
+            _forum.Login(txtUsername.Text, txtPassword.Text);
         }
 
         private void btnLogout_Click(object sender, EventArgs e)
         {
-            m_game.Logout();
+            _forum.Logout();
         }
 
-        private void btnPost_Click(object sender, EventArgs e)
+        private void btnGetPosts_Click(object sender, EventArgs e)
         {
+            _voteCount.Refresh();
         }
-
-        private void btnPostNow_Click(object sender, EventArgs e)
+        String NormalizeUrl(String url)
         {
-            _forum.MakePost(txtModPost.Text);
+            if (url == null)
+            {
+                url = String.Empty;
+            }
+            url = url.Trim();
+            if (url.Length > 0)
+            {
+                if (url.EndsWith(".html") || url.EndsWith(".htm"))
+                {
+                    url = url.Substring(0, url.LastIndexOf("index"));
+                }
+
+                if (!url.EndsWith("/"))
+                {
+                    url += "/";
+                }
+            }
+            return url;
         }
 
-        private void btnPostAtTime_Click(object sender, EventArgs e)
-        {
-            _forum.MakePostAtTime(dtPostAtTime.Value, txtModPost.Text);
-        }
 
-		private void button1_Click(object sender, EventArgs e)
-		{
-			_forum.GetAlias();
-		}
 
 
 

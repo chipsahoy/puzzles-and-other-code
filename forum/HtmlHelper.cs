@@ -14,7 +14,7 @@ namespace POG.Forum
     public class HtmlHelper
     {
         private static String USER_AGENT = "Mozilla/5.0 (Windows NT 6.1; U; ru; rv:5.0.1.6) Gecko/20110501 Firefox/5.0.1 Firefox/5.0.1";
-
+        private static Boolean FIDDLER = false;
         /// <summary>
         /// Copies the contents of input to output. Doesn't close either stream.
         /// </summary>
@@ -59,9 +59,10 @@ namespace POG.Forum
                 myRequest.Proxy = null;
 
                 // DEBUG ONLY
-#if DEBUG
-                myRequest.Proxy = new WebProxy("127.0.0.1", 8888);
-#endif
+                if(FIDDLER)
+                {
+                    myRequest.Proxy = new WebProxy("127.0.0.1", 8888);
+                }
                 myRequest.CookieContainer = settings.CC;
                 myRequest.Method = "POST";
                 myRequest.Timeout = 600000;
@@ -194,9 +195,10 @@ namespace POG.Forum
                 objRequest.Proxy = null;
 
                 // DEBUG ONLY
-#if DEBUG
-                objRequest.Proxy = new WebProxy("127.0.0.1", 8888);
-#endif
+                if (FIDDLER)
+                {
+                    objRequest.Proxy = new WebProxy("127.0.0.1", 8888);
+                }
                 objRequest.CookieContainer = settings.CC;
                 objRequest.Timeout = 600000;
                 objRequest.Method = "GET";
