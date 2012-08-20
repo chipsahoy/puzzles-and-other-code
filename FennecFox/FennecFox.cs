@@ -32,9 +32,9 @@ namespace POG.FennecFox
             Bolded,
         };
         private VoteCount _voteCount;
-        VBulletin_3_8_7 _forum;
+        TwoPlusTwoForum _forum;
         Action<Action> _synchronousInvoker;
-        System.Windows.Forms.Timer TimerEODCountdown = new System.Windows.Forms.Timer();
+        System.Windows.Forms.Timer _timerEODCountdown = new System.Windows.Forms.Timer();
 
 
 
@@ -208,7 +208,7 @@ namespace POG.FennecFox
             InitializeComponent();
             tabVotes.TabPages.Remove(tabPage5);
             _synchronousInvoker = a => Invoke(a);
-            _forum = new VBulletin_3_8_7(_synchronousInvoker);
+            _forum = new TwoPlusTwoForum(_synchronousInvoker);
             _forum.LoginEvent += new EventHandler<POG.Forum.LoginEventArgs>(_forum_LoginEvent);
 
         }
@@ -281,8 +281,11 @@ namespace POG.FennecFox
             }
         }
 
-        void TimerEODCountdown_Tick(object sender, EventArgs e)
+        void _timerEODCountdown_Tick(object sender, EventArgs e)
         {
+            DateTime now = DateTime.Now;
+            _timerEODCountdown.Interval = 1000 - now.Millisecond;
+
             if (_voteCount == null)
             {
                 txtCountDown.Text = "No Game";
@@ -450,9 +453,9 @@ namespace POG.FennecFox
             txtUsername.Text = POG.FennecFox.Properties.Settings.Default.username;
             txtPassword.Text = POG.FennecFox.Properties.Settings.Default.password;
             btnLogin_Click(btnLogin, EventArgs.Empty);
-            TimerEODCountdown.Interval = 1000;
-            TimerEODCountdown.Tick+= new EventHandler(TimerEODCountdown_Tick);
-            TimerEODCountdown.Start();
+            _timerEODCountdown.Interval = 1000;
+            _timerEODCountdown.Tick+= new EventHandler(_timerEODCountdown_Tick);
+            _timerEODCountdown.Start();
             
         }
         private void BindToNewGame()
@@ -603,7 +606,10 @@ namespace POG.FennecFox
 
         private void btnGetPosts_Click(object sender, EventArgs e)
         {
-            _voteCount.Refresh();
+            if (_voteCount != null)
+            {
+                _voteCount.Refresh();
+            }
         }
         String NormalizeUrl(String url)
         {

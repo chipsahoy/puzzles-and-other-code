@@ -9,11 +9,13 @@ namespace POG.Werewolf
 {
     public class Voter : INotifyPropertyChanged
     {
-        Posts _posts = new Posts();
         VoteCount _game;
         Action<Action> _synchronousInvoker;
         String _name;
         Int32 _postCount;
+        Int32 _postId;
+        Int32 _postNumber;
+        Int32 _boldPosition;
 
         public Voter(string name, VoteCount game, Action<Action> synchronousInvoker)
         {
@@ -23,35 +25,11 @@ namespace POG.Werewolf
         }
         public void HideVote()
         {
-            Bold v = ActiveVote;
-            if (v != null)
-            {
-                v.Ignore = true;
-                CurrentVoteChanged();
-            }
+            _game.HideVote(this, _postNumber, _boldPosition);
         }
         public void UnhideVote()
         {
-            Bold hidden = null;
-            foreach (Post p in _posts.Reverse())
-            {
-                foreach (Bold b in p.Bolded)
-                {
-                    if (b.Ignore)
-                    {
-                        hidden = b;
-                    }
-                    else
-                    {
-                        break;
-                    }
-                }
-            }
-            if (hidden != null)
-            {
-                hidden.Ignore = false;
-                CurrentVoteChanged();
-            }
+            _game.UnhideVote(this, _postNumber, _boldPosition);
         }
         [Browsable(true)]
         public String Name
@@ -60,7 +38,7 @@ namespace POG.Werewolf
             {
                 return _name;
             }
-            set
+            internal set
             {
                 if (value != _name)
                 {
@@ -72,15 +50,8 @@ namespace POG.Werewolf
         [Browsable(true)]
         public virtual String Bolded
         {
-            get
-            {
-                Bold v = ActiveVote;
-                if(v != null)
-                {
-                        return v.Content;
-                }
-                return "";
-            }
+            get;
+            private set;
         }
 
         [Browsable(true)]
@@ -88,12 +59,7 @@ namespace POG.Werewolf
         {
             get
             {
-                String content = "";
-                Bold v = ActiveVote;
-                if (v != null)
-                {
-                    content = v.Content;
-                }
+                String content = Bolded;
                 String votee = _game.ParseBoldedToVote(content);
                 if (votee == "")
                 {
@@ -103,10 +69,10 @@ namespace POG.Werewolf
             }
             set
             {
-                Bold v = ActiveVote;
-                if (v != null)
+                String content = Bolded;
+                if (content != "")
                 {
-                    _game.AddVoteAlias(v.Content, value);
+                    _game.AddVoteAlias(content, value);
                     OnPropertyChanged("Votee");
                 }
             }
@@ -117,38 +83,27 @@ namespace POG.Werewolf
         {
             get
             {
-                Post p = ActivePost;
-                if (p != null)
-                {
-                    return p.PostNumber;
-                }
-                return 0;
+                return _postNumber;
             }
         }
         [Browsable(true)]
         public virtual DateTime PostTime
         {
-            get
-            {
-                Post p = ActivePost;
-                if (p != null)
-                {
-                    return p.Time;
-                }
-                return DateTime.MinValue;
-            }
+            get;
+            internal set;
         }
         [Browsable(true)]
         public virtual String PostLink
         {
             get
             {
-                Post p = ActivePost;
-                if (p != null)
+                String rc = "";
+                if (_postId > 0)
                 {
-                    return p.PostLink;
+                    rc = String.Format("{0}/showpost.php?p={1}&postcount={2}", 
+                            TwoPlusTwoForum.BASE_URL, _postId, _postNumber);
                 }
-                return "";
+                return rc;
             }
         }
         [Browsable(true)]
@@ -156,10 +111,9 @@ namespace POG.Werewolf
         {
             get
             {
-                Int32 count = _posts.Count;
-                return count;
+                return _postCount;
             }
-            private set
+            internal set
             {
                 if (_postCount != value)
                 {
@@ -185,16 +139,24 @@ namespace POG.Werewolf
                 }
             }
         }
-        internal void SetPosts(IEnumerable<Post> posts)
+        internal void SetVote(String bolded, Int32 postNumber, DateTime time, Int32 id, Int32 position)
         {
-            _posts.Clear();
-            _posts.AddRange(posts);
-            PostCount = _posts.Count;
-            if (_posts.Count > 0)
-            {
-                Name = _posts.First().Poster; // fix case issues
-            }
-            CurrentVoteChanged();   
+            _postNumber = postNumber;
+            _postId = id;
+            _boldPosition = position;
+            Bolded = bolded;
+            PostTime = time;
+            Console.WriteLine("My vote[{0}]: '{1}'", postNumber, bolded);
+            CurrentVoteChanged();
+        }
+        internal void ClearVote()
+        {
+            _postNumber = 0;
+            _postId = 0;
+            _boldPosition = 0;
+            Bolded = "";
+            PostTime = new DateTime(2012, 1, 1);
+            CurrentVoteChanged();
         }
 
         private void CurrentVoteChanged()
@@ -213,114 +175,6 @@ namespace POG.Werewolf
                 _synchronousInvoker.Invoke(
                     () => PropertyChanged(this, new PropertyChangedEventArgs(propertyName))
                 );
-            }
-        }
-
-
-        private Boolean FindActiveBold(out Post pActive, out Bold bActive)
-        {
-            for(Int32 i = _posts.Count - 1; i >= 0; i--)
-            {
-
-                Post p = _posts.GetByIndex(i);
-                if (p.Bolded == null)
-                {
-                    _posts.Remove(p);
-                    continue;
-                }
-
-                foreach (Bold bold in p.Bolded)
-                {
-                    if (!bold.Ignore)
-                    {
-                        pActive = p;
-                        bActive = bold;
-                        return true;
-                    }
-                }
-            }
-            pActive = null;
-            bActive = null;
-            return false;
-        }
-        private Bold ActiveVote
-        {
-            get
-            {
-                Post p;
-                Bold b;
-                FindActiveBold(out p, out b);
-                return b;
-            }
-        }
-        private Post ActivePost
-        { 
-            get
-            {
-                Post p;
-                Bold b;
-                FindActiveBold(out p, out b);
-                return p;
-            } 
-        }
-    }
-    class SpecialVote : Voter
-    {
-        public SpecialVote(string name, VoteCount game, Action<Action> synchronousInvoker) :
-            base(name, game, synchronousInvoker)
-        {
-        }
-        [Browsable(true)]
-        public override String Bolded
-        {
-            get
-            {
-                return "";
-            }
-        }
-
-        [Browsable(true)]
-        public override String Votee
-        {
-            get
-            {
-                return "";
-            }
-            set
-            {
-            }
-        }
-
-        [Browsable(true)]
-        public override Int32 PostNumber
-        {
-            get
-            {
-                return 0;
-            }
-        }
-        [Browsable(true)]
-        public override DateTime PostTime
-        {
-            get
-            {
-                return DateTime.MinValue;
-            }
-        }
-        [Browsable(true)]
-        public override String PostLink
-        {
-            get
-            {
-                return "";
-            }
-        }
-        [Browsable(true)]
-        public override Int32 PostCount
-        {
-            get
-            {
-                return 0;
             }
         }
     }

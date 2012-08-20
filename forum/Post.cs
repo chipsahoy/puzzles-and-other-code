@@ -28,14 +28,22 @@ namespace POG.Forum
         HtmlAgilityPack.HtmlNode _content;
         List<Bold> _bolded;
 
-        public Post(String poster, Int32 postNumber, DateTime ts, String postLink, HtmlAgilityPack.HtmlNode content)
+        public Post(Int32 threadId, String poster, Int32 postNumber, DateTime ts, String postLink, HtmlAgilityPack.HtmlNode content)
         {
             Poster = poster;
             PostNumber = postNumber;
             Time = ts;
             PostLink = postLink;
             _content = content;
+            ThreadId = threadId;
             ParseBolded();
+            int ixPostStart = postLink.LastIndexOf("?p=") + 3;
+            string sPost = postLink.Substring(ixPostStart);
+            int ixPostLast = sPost.IndexOf('&');
+            sPost = sPost.Substring(0, ixPostLast);
+            Int32 postId = -1;
+            Int32.TryParse(sPost, out postId);
+            PostId = postId;
         }
         public string Poster
         {
@@ -47,6 +55,24 @@ namespace POG.Forum
             get;
             private set;
         }
+        public Int32 ThreadId
+        {
+            get;
+            private set;
+        }
+        public String Content
+        {
+            get
+            {
+                return _content.OuterHtml;
+            }
+        }
+        public String Title
+        {
+            get;
+            private set;
+        }
+
         public Int32 PostNumber
         {
             get;

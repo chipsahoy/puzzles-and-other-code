@@ -31,9 +31,9 @@ namespace POG.Forum
         }
         #endregion
         #region public methods
-        public void ReadPosts(String url, Int32 page)
+        public void ReadPosts(String url, Int32 pageStart, Int32 pageEnd)
         {
-            Task t = new Task(() => GetPage(url, page));
+            Task t = new Task(() => GetPages(url, pageStart, pageEnd));
             t.Start();
         }
         #endregion
@@ -42,7 +42,7 @@ namespace POG.Forum
         public event EventHandler<PostEventArgs> PostEvent;
         #endregion
         #region event helpers
-        virtual internal void OnPageComplete(String url, Int32 page, Int32 totalPages, DateTime ts)
+        virtual internal void OnPageComplete(String url, Int32 page, Int32 totalPages, DateTime ts, Posts posts)
         {
             try
             {
@@ -50,7 +50,7 @@ namespace POG.Forum
                 if (handler != null)
                 {
                     _synchronousInvoker.Invoke(
-                        () => handler(this, new PageCompleteEventArgs(url, page, totalPages, ts))
+                        () => handler(this, new PageCompleteEventArgs(url, page, totalPages, ts, posts))
                     );
                 }
             }
@@ -65,9 +65,7 @@ namespace POG.Forum
                 var handler = PostEvent;
                 if (handler != null)
                 {
-                    _synchronousInvoker.Invoke(
-                        () => handler(this, new PostEventArgs(url, post))
-                    );
+                    handler(this, new PostEventArgs(url, post));
                 }
             }
             catch
@@ -76,18 +74,21 @@ namespace POG.Forum
         }
         #endregion
         #region private methods
-
-        void GetPage(String destination, Int32 pageNumber)
+        void GetPages(String url, Int32 pageStart, Int32 pageEnd)
+        {
+            Parallel.For(pageStart, pageEnd + 1, (Int32 page) => { GetPage(url, page); }); 
+        }
+        void GetPage(String url, Int32 pageNumber)
         {
             if (pageNumber > 1)
             {
-                destination += "index" + pageNumber + ".html";
+                url += "index" + pageNumber + ".html";
             }
             string doc = null;
             for (int i = 0; i < 10; i++)
             {
                 ConnectionSettings cs = _connectionSettings.Clone();
-                cs.Url = destination;
+                cs.Url = url;
                 doc = HtmlHelper.GetUrlResponseString(cs);
                 if (doc != null)
                 {
@@ -98,19 +99,21 @@ namespace POG.Forum
                     Console.WriteLine("*** Error fetching page " + pageNumber.ToString());
                 }
             }
+            Posts posts = new Posts();
             if (doc == null)
             {
-                OnPageComplete(destination, pageNumber, pageNumber - 1, DateTime.Now);
+                OnPageComplete(url, pageNumber, pageNumber - 1, DateTime.Now, posts);
                 return;
             }
             Int32 totalPages;
             DateTime ts;
-            ParseThreadPage(destination, doc, out totalPages, out ts);
-            OnPageComplete(destination, pageNumber, totalPages, ts);
+            ParseThreadPage(url, doc, out totalPages, out ts, ref posts);
+            OnPageComplete(url, pageNumber, totalPages, ts, posts);
         }
-        private void ParseThreadPage(String url, String doc, out Int32 lastPageNumber, out DateTime ts)
+        private void ParseThreadPage(String url, String doc, out Int32 lastPageNumber, out DateTime ts, ref Posts postList)
         {
             ts = DateTime.Now;
+            Int32 threadId = TwoPlusTwoForum.ThreadIdFromUrl(url);
             lastPageNumber = 0;
             var html = new HtmlAgilityPack.HtmlDocument();
             html.LoadHtml(doc);
@@ -138,18 +141,17 @@ namespace POG.Forum
             {
                 return;
             }
-
+            postList = new Posts();
             foreach (HtmlAgilityPack.HtmlNode post in posts)
             {
-                Post p = HtmlToPost(post);
+                Post p = HtmlToPost(threadId, post);
                 if (p != null)
                 {
-                    OnPostEvent(url, p);
-                    Console.WriteLine("Found post " + p.PostNumber.ToString());
+                    postList.Add(p);
                 }
             }
         }
-        private Post HtmlToPost(HtmlAgilityPack.HtmlNode html)
+        private Post HtmlToPost(Int32 threadId, HtmlAgilityPack.HtmlNode html)
         {
 
             string posterName = "";
@@ -191,7 +193,7 @@ namespace POG.Forum
             {
                 posterName = HtmlAgilityPack.HtmlEntity.DeEntitize(userNode.InnerText);
             }
-            Post p = new Post(posterName, postNumber, postTime, postLink, html);
+            Post p = new Post(threadId, posterName, postNumber, postTime, postLink, html);
             return p;
         }
         private void RemoveComments(HtmlAgilityPack.HtmlNode node)

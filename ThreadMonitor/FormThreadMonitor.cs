@@ -12,12 +12,12 @@ namespace ThreadMonitor
 {
     public partial class frmThreadMonitor : Form
     {
-        VBulletin_3_8_7 _forum;
+        TwoPlusTwoForum _forum;
         public frmThreadMonitor()
         {
             InitializeComponent();
             Action<Action> synchronousInvoker = a => Invoke(a);
-            _forum = new VBulletin_3_8_7(synchronousInvoker);
+            _forum = new TwoPlusTwoForum(synchronousInvoker);
             _forum.StatusUpdate += new EventHandler<NewStatusEventArgs>(_forum_StatusUpdate);
             _forum.PropertyChanged += new PropertyChangedEventHandler(_forum_PropertyChanged);
             //_forum.NewPostsAvailable += new EventHandler<NewPostsAvailableEventArgs>(_forum_NewPostsAvailable);

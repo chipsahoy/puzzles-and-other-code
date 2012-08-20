@@ -15,7 +15,49 @@
     {
         "Entry"
         {
-        "MsmKey" = "8:_7C7907D45350A47F0B1EF6F046EE9865"
+        "MsmKey" = "8:_02B4B7E09778DC7010B16370A5136A41"
+        "OwnerKey" = "8:_9D159AEB4DD54FB7AFD8717C3E3179FA"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_5B6F069340DE8D827069B24B39F0288D"
+        "OwnerKey" = "8:_9D159AEB4DD54FB7AFD8717C3E3179FA"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_5B6F069340DE8D827069B24B39F0288D"
+        "OwnerKey" = "8:_82A551EF37531662A5F6C78B1B7194FE"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_82A551EF37531662A5F6C78B1B7194FE"
+        "OwnerKey" = "8:_9D159AEB4DD54FB7AFD8717C3E3179FA"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_82A551EF37531662A5F6C78B1B7194FE"
+        "OwnerKey" = "8:_02B4B7E09778DC7010B16370A5136A41"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_944E8E083A2EEDC8E28E258BA5EAD025"
+        "OwnerKey" = "8:_82A551EF37531662A5F6C78B1B7194FE"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_944E8E083A2EEDC8E28E258BA5EAD025"
+        "OwnerKey" = "8:_02B4B7E09778DC7010B16370A5136A41"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_944E8E083A2EEDC8E28E258BA5EAD025"
         "OwnerKey" = "8:_9D159AEB4DD54FB7AFD8717C3E3179FA"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -27,6 +69,18 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_A766E86F936485EAC243B45ED86FE71C"
+        "OwnerKey" = "8:_9D159AEB4DD54FB7AFD8717C3E3179FA"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_A766E86F936485EAC243B45ED86FE71C"
+        "OwnerKey" = "8:_02B4B7E09778DC7010B16370A5136A41"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_UNDEFINED"
         "OwnerKey" = "8:_9D159AEB4DD54FB7AFD8717C3E3179FA"
         "MsmSig" = "8:_UNDEFINED"
@@ -34,7 +88,31 @@
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_7C7907D45350A47F0B1EF6F046EE9865"
+        "OwnerKey" = "8:_02B4B7E09778DC7010B16370A5136A41"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_A766E86F936485EAC243B45ED86FE71C"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_82A551EF37531662A5F6C78B1B7194FE"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_944E8E083A2EEDC8E28E258BA5EAD025"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_5B6F069340DE8D827069B24B39F0288D"
         "MsmSig" = "8:_UNDEFINED"
         }
     }
@@ -64,10 +142,10 @@
             "ComponentsUrl" = "8:"
                 "Items"
                 {
-                    "{EDC2488A-8267-493A-A98E-7D9C3B36CDF3}:.NETFramework,Version=v4.0,Profile=Client"
+                    "{EDC2488A-8267-493A-A98E-7D9C3B36CDF3}:.NETFramework,Version=v4.0"
                     {
-                    "Name" = "8:Microsoft .NET Framework 4 Client Profile (x86 and x64)"
-                    "ProductCode" = "8:.NETFramework,Version=v4.0,Profile=Client"
+                    "Name" = "8:Microsoft .NET Framework 4 (x86 and x64)"
+                    "ProductCode" = "8:.NETFramework,Version=v4.0"
                     }
                     "{EDC2488A-8267-493A-A98E-7D9C3B36CDF3}:Microsoft.Windows.Installer.3.1"
                     {
@@ -134,7 +212,7 @@
                 {
                 "Name" = "8:.NET Framework"
                 "Message" = "8:[VSDNETMSG]"
-                "FrameworkVersion" = "8:.NETFramework,Version=v4.0,Profile=Client"
+                "FrameworkVersion" = "8:.NETFramework,Version=v4.0"
                 "AllowLaterVersions" = "11:FALSE"
                 "InstallUrl" = "8:http://go.microsoft.com/fwlink/?LinkId=131000"
                 }
@@ -142,20 +220,144 @@
         }
         "File"
         {
-            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_7C7907D45350A47F0B1EF6F046EE9865"
+            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_02B4B7E09778DC7010B16370A5136A41"
+            {
+            "AssemblyRegister" = "3:1"
+            "AssemblyIsInGAC" = "11:FALSE"
+            "AssemblyAsmDisplayName" = "8:werewolf, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL"
+                "ScatterAssemblies"
+                {
+                    "_02B4B7E09778DC7010B16370A5136A41"
+                    {
+                    "Name" = "8:werewolf.dll"
+                    "Attributes" = "3:512"
+                    }
+                }
+            "SourcePath" = "8:werewolf.dll"
+            "TargetName" = "8:"
+            "Tag" = "8:"
+            "Folder" = "8:_7C9DB022BBCE42118E5A2BD274AFF1BA"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:TRUE"
+            "IsolateTo" = "8:"
+            }
+            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_5B6F069340DE8D827069B24B39F0288D"
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
             "AssemblyAsmDisplayName" = "8:HtmlAgilityPack, Version=1.4.0.0, Culture=neutral, PublicKeyToken=bd319b19eaf3b43a, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
-                    "_7C7907D45350A47F0B1EF6F046EE9865"
+                    "_5B6F069340DE8D827069B24B39F0288D"
                     {
                     "Name" = "8:HtmlAgilityPack.dll"
                     "Attributes" = "3:512"
                     }
                 }
             "SourcePath" = "8:HtmlAgilityPack.dll"
+            "TargetName" = "8:"
+            "Tag" = "8:"
+            "Folder" = "8:_7C9DB022BBCE42118E5A2BD274AFF1BA"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:TRUE"
+            "IsolateTo" = "8:"
+            }
+            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_82A551EF37531662A5F6C78B1B7194FE"
+            {
+            "AssemblyRegister" = "3:1"
+            "AssemblyIsInGAC" = "11:FALSE"
+            "AssemblyAsmDisplayName" = "8:vbulletin, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL"
+                "ScatterAssemblies"
+                {
+                    "_82A551EF37531662A5F6C78B1B7194FE"
+                    {
+                    "Name" = "8:vbulletin.dll"
+                    "Attributes" = "3:512"
+                    }
+                }
+            "SourcePath" = "8:vbulletin.dll"
+            "TargetName" = "8:"
+            "Tag" = "8:"
+            "Folder" = "8:_7C9DB022BBCE42118E5A2BD274AFF1BA"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:TRUE"
+            "IsolateTo" = "8:"
+            }
+            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_944E8E083A2EEDC8E28E258BA5EAD025"
+            {
+            "AssemblyRegister" = "3:1"
+            "AssemblyIsInGAC" = "11:FALSE"
+            "AssemblyAsmDisplayName" = "8:pogutils, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL"
+                "ScatterAssemblies"
+                {
+                    "_944E8E083A2EEDC8E28E258BA5EAD025"
+                    {
+                    "Name" = "8:pogutils.dll"
+                    "Attributes" = "3:512"
+                    }
+                }
+            "SourcePath" = "8:pogutils.dll"
+            "TargetName" = "8:"
+            "Tag" = "8:"
+            "Folder" = "8:_7C9DB022BBCE42118E5A2BD274AFF1BA"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:TRUE"
+            "IsolateTo" = "8:"
+            }
+            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_A766E86F936485EAC243B45ED86FE71C"
+            {
+            "AssemblyRegister" = "3:1"
+            "AssemblyIsInGAC" = "11:FALSE"
+            "AssemblyAsmDisplayName" = "8:System.Data.SQLite, Version=1.0.81.0, Culture=neutral, PublicKeyToken=db937bc2d44ff139, processorArchitecture=MSIL"
+                "ScatterAssemblies"
+                {
+                    "_A766E86F936485EAC243B45ED86FE71C"
+                    {
+                    "Name" = "8:System.Data.SQLite.dll"
+                    "Attributes" = "3:512"
+                    }
+                }
+            "SourcePath" = "8:System.Data.SQLite.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_7C9DB022BBCE42118E5A2BD274AFF1BA"
@@ -188,6 +390,39 @@
             "Property" = "8:DesktopFolder"
                 "Folders"
                 {
+                }
+            }
+            "{1525181F-901A-416C-8A58-119130FE478E}:_75295C6ECDAF4CE084F4CB0F8ED1F619"
+            {
+            "Name" = "8:#1915"
+            "AlwaysCreate" = "11:FALSE"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Property" = "8:AppDataFolder"
+                "Folders"
+                {
+                    "{9EF0B969-E518-4E46-987F-47570745A589}:_2FFD93F20A1042038C51302B11F2F7CC"
+                    {
+                    "Name" = "8:POG"
+                    "AlwaysCreate" = "11:FALSE"
+                    "Condition" = "8:"
+                    "Transitive" = "11:FALSE"
+                    "Property" = "8:_03B5C82D97F34F398A3A097B3E304EC1"
+                        "Folders"
+                        {
+                            "{9EF0B969-E518-4E46-987F-47570745A589}:_45DFDEF9AE7B4886BF468D77B1EFB327"
+                            {
+                            "Name" = "8:FennecFox"
+                            "AlwaysCreate" = "11:FALSE"
+                            "Condition" = "8:"
+                            "Transitive" = "11:FALSE"
+                            "Property" = "8:_4A0C53CA629C44269F04DD00FFCD72FA"
+                                "Folders"
+                                {
+                                }
+                            }
+                        }
+                    }
                 }
             }
             "{3C67513D-01DD-4637-8A68-80971EB9504F}:_7C9DB022BBCE42118E5A2BD274AFF1BA"
@@ -240,15 +475,15 @@
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:FennecFox"
-        "ProductCode" = "8:{4A3F6987-96F3-4A13-9536-046E48E89631}"
-        "PackageCode" = "8:{A880418A-787D-4B3C-B768-DB5076AD0D61}"
+        "ProductCode" = "8:{DF7BB9EF-90D2-4FAC-B601-3AD192D9FAE0}"
+        "PackageCode" = "8:{9F591C42-F25F-4454-9C81-9DE06717D3A9}"
         "UpgradeCode" = "8:{6FA378AC-1D8C-4F10-AD8C-831DCAE5C6BF}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:FALSE"
-        "ProductVersion" = "8:1.0.16"
+        "ProductVersion" = "8:1.0.20"
         "Manufacturer" = "8:POG"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:"

@@ -16,16 +16,15 @@ namespace POG.Forum
 	internal class VBulletinSM : StateMachine
 	{
 		#region members
-		VBulletin_3_8_7 _outer;
-		readonly ConnectionSettings _connectionSettings = new ConnectionSettings(BASE_URL);
+		TwoPlusTwoForum _outer;
+		readonly ConnectionSettings _connectionSettings = new ConnectionSettings(TwoPlusTwoForum.BASE_URL);
         Action<Action> _synchronousInvoker;
         private String _username = ""; // if this changes from what user entered previously, need to logout then re-login with new info.
         int _postsPerPage = 50;
 
-		private const String BASE_URL = "http://forumserver.twoplustwo.com/";
 		#endregion
 
-        internal VBulletinSM(VBulletin_3_8_7 outer, StateMachineHost host, Action<Action> synchronousInvoker) :
+        internal VBulletinSM(TwoPlusTwoForum outer, StateMachineHost host, Action<Action> synchronousInvoker) :
 			base("VBulletin", host)
 		{
 			_outer = outer;
@@ -114,11 +113,11 @@ namespace POG.Forum
 		private String DoLogin(String username, String password)
 		{
 			// Get some needed cookies!
-			_connectionSettings.Url = BASE_URL;
+            _connectionSettings.Url = TwoPlusTwoForum.BASE_URL;
 			String page = HtmlHelper.GetUrlResponseString(_connectionSettings);
 			if (page == null)
 			{
-				return "Error loggin in. Could not reach " + BASE_URL;
+				return "Error loggin in. Could not reach " + TwoPlusTwoForum.BASE_URL;
 			}
 			// They are hidden in javascript...
 			Regex reg = new Regex(Regex.Escape("setCookie('") + "([^\']*)\', \'([^\']*)\'");
@@ -135,7 +134,7 @@ namespace POG.Forum
 			_username = null;
 			String hashedPassword = SecurityUtils.md5(password);
 
-			_connectionSettings.Url = String.Format("{0}login.php?do=login", BASE_URL);
+            _connectionSettings.Url = String.Format("{0}login.php?do=login", TwoPlusTwoForum.BASE_URL);
 			_connectionSettings.Data =
 				String.Format("vb_login_username={0}&cookieuser=1&vb_login_password=&s=&securitytoken=guest&do=login&vb_login_md5password={1}&vb_login_md5password_utf={1}", username, hashedPassword);
 			String resp = HtmlHelper.PostToUrl(_connectionSettings);
@@ -153,7 +152,7 @@ namespace POG.Forum
 
 
 			// set posts/page
-			_connectionSettings.Url = String.Format("{0}profile.php?do=editoptions", BASE_URL);
+            _connectionSettings.Url = String.Format("{0}profile.php?do=editoptions", TwoPlusTwoForum.BASE_URL);
 			_username = username;
 			resp = HtmlHelper.GetUrlResponseString(_connectionSettings);
 			if (resp != null)
@@ -194,7 +193,7 @@ namespace POG.Forum
 		private void DoLogout()
 		{
 			// get the page once to find the logout url
-			_connectionSettings.Url = BASE_URL;
+            _connectionSettings.Url = TwoPlusTwoForum.BASE_URL;
 			String resp = HtmlHelper.GetUrlResponseString(_connectionSettings);
 			if (resp != null)
 			{
@@ -334,8 +333,8 @@ loggedinuser 81788
             msg.AppendFormat("{0}={1}&", "p", "who cares");
             msg.AppendFormat("{0}={1}&", "specifiedpost", "0");
             msg.AppendFormat("{0}={1}&", "parseurl", "1");
-            msg.AppendFormat("{0}={1}", "loggedinuser", cs.CC.GetCookies(new System.Uri(BASE_URL))["bbuserid"]);
-            cs.Url = String.Format("{0}newreply.php?do=postreply&t={1}", BASE_URL, threadId);
+            msg.AppendFormat("{0}={1}", "loggedinuser", cs.CC.GetCookies(new System.Uri(TwoPlusTwoForum.BASE_URL))["bbuserid"]);
+            cs.Url = String.Format("{0}newreply.php?do=postreply&t={1}", TwoPlusTwoForum.BASE_URL, threadId);
             cs.Data = msg.ToString();
             Console.WriteLine("Posting: " + cs.Data);
             String resp = HtmlHelper.PostToUrl(cs);
@@ -348,14 +347,15 @@ loggedinuser 81788
         }
 
 	}
-	public class VBulletin_3_8_7
+	public class TwoPlusTwoForum
 	{
 		#region members
 		VBulletinSM _inner;
 		Action<Action> _synchronousInvoker;
+        public static String BASE_URL = "http://forumserver.twoplustwo.com/";
 		#endregion
 		#region constructors
-		public VBulletin_3_8_7(Action<Action> synchronousInvoker)
+		public TwoPlusTwoForum(Action<Action> synchronousInvoker)
 		{
 			_synchronousInvoker = synchronousInvoker;
 			_inner = new VBulletinSM(this, new StateMachineHost("ForumHost"), synchronousInvoker);
@@ -434,7 +434,25 @@ loggedinuser 81788
         {
             return false;
         }
-		#endregion
+        public static Int32 ThreadIdFromUrl(String url)
+        {
+            // Thread: -.../
+            url = url.Trim();
+            if (url.Length == 0)
+            {
+                return 0;
+            }
+            if (url.EndsWith(".html") || url.EndsWith(".htm"))
+            {
+                url = url.Substring(0, url.LastIndexOf("index"));
+            }
+            int ixTidStart = url.LastIndexOf('-') + 1;
+            string tid = url.Substring(ixTidStart, url.Length - (ixTidStart + 1));
+            Int32 threadId = 0;
+            Int32.TryParse(tid, out threadId);
+            return threadId;
+        }
+        #endregion
 	}
 	public class NewStatusEventArgs : EventArgs
 	{
@@ -470,12 +488,18 @@ loggedinuser 81788
             get;
             private set;
         }
-        public PageCompleteEventArgs(String url, Int32 page, Int32 totalPages, DateTime ts)
+        public Posts Posts
+        {
+            get;
+            private set;
+        }
+        public PageCompleteEventArgs(String url, Int32 page, Int32 totalPages, DateTime ts, Posts posts)
         {
             URL = url;
             Page = page;
             TotalPages = totalPages;
             TimeStamp = ts;
+            Posts = posts;
         }
     }
 	public class PostEventArgs : EventArgs
