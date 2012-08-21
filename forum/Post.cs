@@ -120,6 +120,10 @@ namespace POG.Forum
                     {
                         continue;
                     }
+					if (bold.ToLower() == "in")
+					{
+						continue;
+					}
                     if (bold.Length > 0)
                     {
                         System.Console.WriteLine("{0}\t{1}\t{2}", PostNumber, Poster, bold);

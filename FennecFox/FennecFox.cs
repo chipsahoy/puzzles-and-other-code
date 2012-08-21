@@ -165,10 +165,13 @@ namespace POG.FennecFox
 
                 case (Int32)CounterColumn.VotesFor:
                     {
-                        if (((String)e.Value) == _voteCount.ErrorVote)
-                        {
-                            e.CellStyle.BackColor = System.Drawing.Color.Red;
-                        }
+						if (_voteCount != null)
+						{
+							if (((String)e.Value) == _voteCount.ErrorVote)
+							{
+								e.CellStyle.BackColor = System.Drawing.Color.Red;
+							}
+						}
                     }
                     break;
 
@@ -238,16 +241,6 @@ namespace POG.FennecFox
                                 if (URLTextBox.Text != "")
                                 {
                                     btnStartGame_Click(this, EventArgs.Empty);
-                                    if (txtPlayers.Text == "")
-                                    {
-                                        var players = new string[POG.FennecFox.Properties.Settings.Default.Players.Count];
-                                        POG.FennecFox.Properties.Settings.Default.Players.CopyTo(players, 0);
-                                        var list = new List<String>(players);
-                                        list.Sort();
-                                        txtPlayers.Lines = list.ToArray();
-                                    }
-                                    udStartPost.Value = POG.FennecFox.Properties.Settings.Default.firstPost;
-                                    dtEndTime.Value = POG.FennecFox.Properties.Settings.Default.EndOfDay;
                                 }
                             }
                         }
@@ -413,19 +406,9 @@ namespace POG.FennecFox
         
         private void Form_FormClosing(object sender, FormClosingEventArgs e)
         {
-            POG.FennecFox.Properties.Settings.Default.EndOfDay = dtEndTime.Value;
-            POG.FennecFox.Properties.Settings.Default.firstPost = (Int32)udStartPost.Value;
             POG.FennecFox.Properties.Settings.Default.username = txtUsername.Text.Trim();
             POG.FennecFox.Properties.Settings.Default.password = txtPassword.Text.Trim();
             POG.FennecFox.Properties.Settings.Default.threadUrl = URLTextBox.Text.Trim();
-            POG.FennecFox.Properties.Settings.Default.Players = new StringCollection();
-            if (_voteCount != null)
-            {
-                foreach (Voter p in _voteCount.LivePlayers)
-                {
-                    POG.FennecFox.Properties.Settings.Default.Players.Add(p.Name);
-                }
-            }
 
             POG.FennecFox.Properties.Settings.Default.Save();
             
@@ -479,7 +462,10 @@ namespace POG.FennecFox
             txtEndPost.DataBindings.Add("Text", _voteCount, "EndPost", false, DataSourceUpdateMode.OnPropertyChanged);
             dtEndTime.DataBindings.Add("Value", _voteCount, "EndTime", false, DataSourceUpdateMode.OnPropertyChanged);
             dtStartTime.DataBindings.Add("Value", _voteCount, "StartTime", true, DataSourceUpdateMode.OnPropertyChanged);
-        }
+
+			IEnumerable<String> list = _voteCount.GetPlayerList();
+			txtPlayers.Lines = list.ToArray();
+		}
         private void UnbindFromGame()
         {
             txtLastPost.DataBindings.Clear();

@@ -18,7 +18,6 @@ namespace POG.Werewolf
     {
         #region fields
         POG.Forum.ThreadReader _thread;
-        StringDictionary Mappings = new StringDictionary();
         private Dictionary<String, Voter> _lookupPoster = new Dictionary<string, Voter>();
         SortableBindingList<Voter> _livePosters = new SortableBindingList<Voter>();
         List<String> _validVotes;
@@ -31,11 +30,12 @@ namespace POG.Werewolf
         private Int32 _lastPost = 0;
         object _lock = new object();
         String _url = "http://forumserver.twoplustwo.com/59/puzzles-other-games/13-8-your-dreams-vanilla-game-thread-1233539/";
+		String _connect;
+
         String _dbName;
         Int32 _threadId;
-        SQLiteConnection _dbWrite;
-        SQLiteConnection _dbRead;
-        Int32 _postsPerPage = 50;
+		object _dbLock = new object();
+        Int32 _postsPerPage = 100;
         public readonly String ErrorVote = "Error!";
         public readonly String Unvote = "unvote";
         public readonly String NoLynch = "no lynch";
@@ -51,7 +51,9 @@ namespace POG.Werewolf
             _thread = t;
             _thread.PageCompleteEvent += new EventHandler<PageCompleteEventArgs>(_thread_PageCompleteEvent);
             _dbName = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\POG\\pogposts.sqlite";
+			_connect = String.Format("Data Source={0};Version=3;", _dbName);
             ConnectToDB();
+			ReadDayBoundariesDB();
             DoRefresh();
         }
         ~VoteCount()
@@ -92,38 +94,6 @@ namespace POG.Werewolf
             _allPosters.Clear();
 
         }
-        //public void AddPlayer(string name)
-        //{
-
-        //    _synchronousInvoker.Invoke(
-        //        () =>
-        //        {
-        //            Voter p = LookupOrAddPoster(name);
-        //            _livePosters.Add(p);
-        //            BuildValidVotesList();
-        //            RefreshVoteCount();
-        //        }
-        //    );
-        //}
-        //public void KillPlayer(string name)
-        //{
-        //    Voter p = this[name];
-        //    if (p != null)
-        //    {
-        //        _synchronousInvoker.Invoke(
-        //            () =>
-        //            {
-        //                _livePosters.Remove(p);
-        //                _validVotes.Remove(p.Name);
-        //                RefreshVoteCount();
-        //            }
-
-        //        );
-        //    }
-        //}
-        //public void OnNewDay()
-        //{
-        //}
         public void SetPlayerList(string players)
         {
             List<String> rawList = players.Split(
@@ -137,13 +107,83 @@ namespace POG.Werewolf
                 livePlayers.Add(p);
             }
             _livePosters = livePlayers;
+
+			// save player list to db
+			using (SQLiteConnection dbWrite = new SQLiteConnection(_connect))
+			{
+				dbWrite.Open();
+				using (SQLiteTransaction trans = dbWrite.BeginTransaction())
+				{
+					String sqlDelete =
+						@"DELETE 
+							FROM players 
+							where (threadId = @p1);";
+					using (SQLiteCommand cmd = new SQLiteCommand(sqlDelete, dbWrite, trans))
+					{
+						cmd.Parameters.Add(new SQLiteParameter("@p1", _threadId));
+						int e = cmd.ExecuteNonQuery();
+					}
+					String sql =
+
+						@"INSERT OR REPLACE INTO [players] (
+                        threadId,
+                        player,
+						dead)
+                        VALUES (@p1, @p2, @p3);";
+
+					using (SQLiteCommand cmd = new SQLiteCommand(sql, dbWrite, trans))
+					{
+						SQLiteParameter pThreadId = new SQLiteParameter("@p1");
+						SQLiteParameter pPoster = new SQLiteParameter("@p2");
+						SQLiteParameter pDead = new SQLiteParameter("@p3");
+						cmd.Parameters.Add(pThreadId);
+						cmd.Parameters.Add(pPoster);
+						cmd.Parameters.Add(pDead);
+						pThreadId.Value = _threadId;
+
+						foreach (Voter v in livePlayers)
+						{
+							pPoster.Value = v.Name;
+							pDead.Value = 0;
+							int e = cmd.ExecuteNonQuery();
+						}
+					}
+					trans.Commit();
+				}
+
+			}
             DoRefresh();
             OnPropertyChanged("LivePlayers");
         }
+		public IEnumerable<String> GetPlayerList()
+		{
+			List<String> players = new List<string>();
+			String sql = @"SELECT player
+							FROM players 
+							WHERE (threadId = @p1)
+							ORDER BY player ASC;";
+			using (SQLiteConnection dbRead = new SQLiteConnection(_connect))
+			{
+				dbRead.Open();
+				using (SQLiteCommand cmd = new SQLiteCommand(sql, dbRead))
+				{
+					cmd.Parameters.Add(new SQLiteParameter("@p1", _threadId));
+					using (SQLiteDataReader r = cmd.ExecuteReader())
+					{
+						while(r.Read())
+						{
+							String player = r.GetString(0);
+							players.Add(player);
+						}
+					}
+				}
+			}
+			return players;
+		}
         public void AddVoteAlias(string bolded, string votee)
         {
             String vote = PrepBolded(bolded);
-            Mappings[vote] = votee;
+			SaveAliasDB(bolded, votee);
             RefreshVoteCount();
         }
         public string PostableVoteCount
@@ -339,24 +379,28 @@ namespace POG.Werewolf
                             FROM posts
                             WHERE posts.threadId = @p2 AND
                             (posts.number == @p4);";
-                using (SQLiteCommand cmd = new SQLiteCommand(sqlTime, _dbRead))
-                {
-                    cmd.Parameters.Add(new SQLiteParameter("@p2", _threadId));
-                    cmd.Parameters.Add(new SQLiteParameter("@p4", _startPost));
-                    using (SQLiteDataReader r = cmd.ExecuteReader())
-                    {
-                        if (r.Read())
-                        {
-                            Console.WriteLine("VC: Found new start post " + value.ToString());
-                            _startTime = r.GetDateTime(0);
-                        }
-                        else
-                        {
-                            Console.WriteLine("VC: Could not find start post " + value.ToString());
-                            _startTime = null;
-                        }
-                    }
-                }
+				using (SQLiteConnection dbRead = new SQLiteConnection(_connect))
+				{
+					dbRead.Open();
+					using (SQLiteCommand cmd = new SQLiteCommand(sqlTime, dbRead))
+					{
+						cmd.Parameters.Add(new SQLiteParameter("@p2", _threadId));
+						cmd.Parameters.Add(new SQLiteParameter("@p4", _startPost));
+						using (SQLiteDataReader r = cmd.ExecuteReader())
+						{
+							if (r.Read())
+							{
+								Console.WriteLine("VC: Found new start post " + value.ToString());
+								_startTime = r.GetDateTime(0);
+							}
+							else
+							{
+								Console.WriteLine("VC: Could not find start post " + value.ToString());
+								_startTime = null;
+							}
+						}
+					}
+				}
                 OnPropertyChanged("StartTime");
                 OnPropertyChanged("StartPost");
                 DoRefresh();
@@ -373,22 +417,26 @@ namespace POG.Werewolf
                             FROM posts
                             WHERE posts.threadId = @p2 AND (posts.time > @p3)
                             ORDER BY id ASC LIMIT 1";
-                using (SQLiteCommand cmd = new SQLiteCommand(sqlTime, _dbRead))
-                {
-                    cmd.Parameters.Add(new SQLiteParameter("@p2", _threadId));
-                    SQLiteParameter pEndTime = new SQLiteParameter("@p3", System.Data.DbType.DateTime);
-                    pEndTime.Value = _endTime;
-                    cmd.Parameters.Add(pEndTime);
-                    using (SQLiteDataReader r = cmd.ExecuteReader())
-                    {
-                        if (r.Read())
-                        {
-                            Int32 nightPost = r.GetInt32(0);
-                            endPost = nightPost - 1;
-                            Console.WriteLine("VC: first night post: " + nightPost.ToString());
-                        }
-                    }
-                }
+				using (SQLiteConnection dbRead = new SQLiteConnection(_connect))
+				{
+					dbRead.Open();
+					using (SQLiteCommand cmd = new SQLiteCommand(sqlTime, dbRead))
+					{
+						cmd.Parameters.Add(new SQLiteParameter("@p2", _threadId));
+						SQLiteParameter pEndTime = new SQLiteParameter("@p3", System.Data.DbType.DateTime);
+						pEndTime.Value = _endTime;
+						cmd.Parameters.Add(pEndTime);
+						using (SQLiteDataReader r = cmd.ExecuteReader())
+						{
+							if (r.Read())
+							{
+								Int32 nightPost = r.GetInt32(0);
+								endPost = nightPost - 1;
+								Console.WriteLine("VC: first night post: " + nightPost.ToString());
+							}
+						}
+					}
+				}
                 if (endPost != _endPost)
                 {
                     _endPost = endPost;
@@ -538,11 +586,15 @@ namespace POG.Werewolf
         {
             String sql = @"SELECT number FROM posts WHERE threadId=@p1 ORDER BY id DESC LIMIT 1;";
             object o;
-            using (SQLiteCommand cmd = new SQLiteCommand(sql, _dbRead))
-            {
-                cmd.Parameters.Add(new SQLiteParameter("@p1", _threadId));
-                o = cmd.ExecuteScalar();
-            }
+			using (SQLiteConnection dbRead = new SQLiteConnection(_connect))
+			{
+				dbRead.Open();
+				using (SQLiteCommand cmd = new SQLiteCommand(sql, dbRead))
+				{
+					cmd.Parameters.Add(new SQLiteParameter("@p1", _threadId));
+					o = cmd.ExecuteScalar();
+				}
+			}
             long rc;
             if ((o == null) || (o is System.DBNull))
             {
@@ -554,8 +606,115 @@ namespace POG.Werewolf
             }
             return (Int32)rc;
         }
+		void SaveAliasDB(String bolded, String player)
+		{
+			String sql = @"
+					INSERT OR REPLACE INTO [aliases] (
+					threadId,
+                    bolded,
+                    player
+					)
+                    VALUES (@p1, @p2, @p3);
+				";
+			using (SQLiteConnection dbWrite = new SQLiteConnection(_connect))
+			{
+				dbWrite.Open();
+				using (SQLiteCommand cmd = new SQLiteCommand(sql, dbWrite))
+				{
+					cmd.Parameters.Add(new SQLiteParameter("@p1", _threadId));
+					cmd.Parameters.Add(new SQLiteParameter("@p2", bolded));
+					cmd.Parameters.Add(new SQLiteParameter("@p3", player));
+					int e = cmd.ExecuteNonQuery();
+				}
+			}
+		}
+		String GetAliasDB(String bolded)
+		{
+			String rc = string.Empty;
+			// Check our thread.
+			String sql = @"
+					SELECT player FROM [aliases] 
+                    WHERE (threadId = @p1) AND (bolded = @p2)
+                    LIMIT 1;
+				";
+			using (SQLiteConnection dbRead = new SQLiteConnection(_connect))
+			{
+				dbRead.Open();
+				using (SQLiteCommand cmd = new SQLiteCommand(sql, dbRead))
+				{
+					cmd.Parameters.Add(new SQLiteParameter("@p1", _threadId));
+					cmd.Parameters.Add(new SQLiteParameter("@p2", bolded));
+					using (SQLiteDataReader r = cmd.ExecuteReader())
+					{
+						if (r.Read())
+						{
+							rc = r.GetString(0);
+						}
+					}
+				}
+			}
+
+			// Check other threads.
+			return rc;
+		}
+
+		private void SaveDayBoundaries()
+		{
+			String sql = @"
+					INSERT OR REPLACE INTO [threads] (
+                    id,
+                    url,
+					startPost, 
+					endofDay)
+                    VALUES (@p1, @p2, @p3, @p4);
+				";
+			using (SQLiteConnection dbWrite = new SQLiteConnection(_connect))
+			{
+				dbWrite.Open();
+				using (SQLiteCommand cmd = new SQLiteCommand(sql, dbWrite))
+				{
+					cmd.Parameters.Add(new SQLiteParameter("@p1", _threadId));
+					cmd.Parameters.Add(new SQLiteParameter("@p2", _url));
+					cmd.Parameters.Add(new SQLiteParameter("@p3", _startPost));
+					SQLiteParameter pEod = new SQLiteParameter("@p4", System.Data.DbType.DateTime);
+					pEod.Value = _endTime;
+					cmd.Parameters.Add(pEod);
+					int e = cmd.ExecuteNonQuery();
+				}
+			}
+		}
+		private void ReadDayBoundariesDB()
+		{
+			String sql = @"
+					SELECT startPost, endofDay FROM [threads] 
+                    WHERE (id = @p1)
+                    LIMIT 1;
+				";
+			using (SQLiteConnection dbRead = new SQLiteConnection(_connect))
+			{
+				dbRead.Open();
+				Int32 startPost = 0;
+				DateTime endTime = DateTime.Now;
+
+				using (SQLiteCommand cmd = new SQLiteCommand(sql, dbRead))
+				{
+					cmd.Parameters.Add(new SQLiteParameter("@p1", _threadId));
+					using (SQLiteDataReader r = cmd.ExecuteReader())
+					{
+						if (r.Read())
+						{
+							startPost = r.GetInt32(0);
+							endTime = r.GetDateTime(1);
+						}
+					}
+				}
+				StartPost = startPost;
+				EndTime = endTime;
+			}
+		}
         private void DoRefresh()
         {
+			SaveDayBoundaries();
             Int32? maxPost = GetMaxPostDB();
 
             LastPost = maxPost.Value;
@@ -563,71 +722,75 @@ namespace POG.Werewolf
                             FROM posts
                             WHERE (posts.poster = @p1) AND (posts.threadId = @p2) AND
                             (posts.number >= @p4) AND (posts.time <= @p3);";
-            using (SQLiteCommand cmdCount = new SQLiteCommand(sqlPostCount, _dbRead))
-            {
-                SQLiteParameter p1 = new SQLiteParameter("@p1");
-                cmdCount.Parameters.Add(p1);
-                cmdCount.Parameters.Add(new SQLiteParameter("@p2", _threadId));
-                SQLiteParameter pEndTime = new SQLiteParameter("@p3", System.Data.DbType.DateTime);
-                pEndTime.Value = _endTime;
-                cmdCount.Parameters.Add(pEndTime);
-                cmdCount.Parameters.Add(new SQLiteParameter("@p4", _startPost));
-                foreach (Voter p in _livePosters)
-                {
-                    //var playerPosts = from post in qry where (String.Equals(post.Poster, p.Name, StringComparison.InvariantCultureIgnoreCase)) select post;
-                    //p.SetPosts(playerPosts);
-                    p1.Value = p.Name;
-                    object o = cmdCount.ExecuteScalar();
-                    if (!(o is System.DBNull))
-                    {
-                        p.PostCount = (Int32)(long)o;
-                    }
-                    else
-                    {
-                        p.PostCount = 0;
-                    }
-                }
-               
-            }
-            String sql = @"SELECT bolds.bolded, posts.number, posts.time, posts.id, bolds.position
+			using (SQLiteConnection dbRead = new SQLiteConnection(_connect))
+			{
+				dbRead.Open();
+				using (SQLiteCommand cmdCount = new SQLiteCommand(sqlPostCount, dbRead))
+				{
+					SQLiteParameter p1 = new SQLiteParameter("@p1");
+					cmdCount.Parameters.Add(p1);
+					cmdCount.Parameters.Add(new SQLiteParameter("@p2", _threadId));
+					SQLiteParameter pEndTime = new SQLiteParameter("@p3", System.Data.DbType.DateTime);
+					pEndTime.Value = _endTime;
+					cmdCount.Parameters.Add(pEndTime);
+					cmdCount.Parameters.Add(new SQLiteParameter("@p4", _startPost));
+					foreach (Voter p in _livePosters)
+					{
+						//var playerPosts = from post in qry where (String.Equals(post.Poster, p.Name, StringComparison.InvariantCultureIgnoreCase)) select post;
+						//p.SetPosts(playerPosts);
+						p1.Value = p.Name;
+						object o = cmdCount.ExecuteScalar();
+						if (!(o is System.DBNull))
+						{
+							p.PostCount = (Int32)(long)o;
+						}
+						else
+						{
+							p.PostCount = 0;
+						}
+					}
+
+				}
+				String sql = @"SELECT bolds.bolded, posts.number, posts.time, posts.id, bolds.position
                             FROM bolds INNER JOIN posts ON (bolds.postId = posts.id)
                             WHERE (posts.poster = @p1) AND (posts.threadId = @p2) AND
                             (posts.number >= @p4) AND (posts.time <= @p3) AND
                             (bolds.ignore = 0)
                             ORDER BY bolds.postId DESC, bolds.position DESC LIMIT 1";
-            using (SQLiteCommand cmd = new SQLiteCommand(sql, _dbRead))
-            {
-                SQLiteParameter p1 = new SQLiteParameter("@p1");
-                cmd.Parameters.Add(p1);
-                cmd.Parameters.Add(new SQLiteParameter("@p2", _threadId));
-                SQLiteParameter pEndTime = new SQLiteParameter("@p3", System.Data.DbType.DateTime);
-                pEndTime.Value = _endTime;
-                cmd.Parameters.Add(pEndTime);
-                cmd.Parameters.Add(new SQLiteParameter("@p4", _startPost));
-                foreach (Voter p in _livePosters)
-                {
-                    //var playerPosts = from post in qry where (String.Equals(post.Poster, p.Name, StringComparison.InvariantCultureIgnoreCase)) select post;
-                    //p.SetPosts(playerPosts);
-                    p1.Value = p.Name;
-                    using(SQLiteDataReader r = cmd.ExecuteReader())
-                    {
-                        if (r.Read())
-                        {
-                        
-                            String bolded = r.GetString(0);
-                            Int32 postNumber = r.GetInt32(1);
-                            DateTime postTime = r.GetDateTime(2);
-                            Int32 postId = r.GetInt32(3);
-                            Int32 boldPosition = r.GetInt32(4);
-                            p.SetVote(bolded, postNumber, postTime, postId, boldPosition);
-                        }
-                        else
-                        {
-                            p.ClearVote();
-                        }
-                    }
-                }
-            }
+				using (SQLiteCommand cmd = new SQLiteCommand(sql, dbRead))
+				{
+					SQLiteParameter p1 = new SQLiteParameter("@p1");
+					cmd.Parameters.Add(p1);
+					cmd.Parameters.Add(new SQLiteParameter("@p2", _threadId));
+					SQLiteParameter pEndTime = new SQLiteParameter("@p3", System.Data.DbType.DateTime);
+					pEndTime.Value = _endTime;
+					cmd.Parameters.Add(pEndTime);
+					cmd.Parameters.Add(new SQLiteParameter("@p4", _startPost));
+					foreach (Voter p in _livePosters)
+					{
+						//var playerPosts = from post in qry where (String.Equals(post.Poster, p.Name, StringComparison.InvariantCultureIgnoreCase)) select post;
+						//p.SetPosts(playerPosts);
+						p1.Value = p.Name;
+						using (SQLiteDataReader r = cmd.ExecuteReader())
+						{
+							if (r.Read())
+							{
+
+								String bolded = r.GetString(0);
+								Int32 postNumber = r.GetInt32(1);
+								DateTime postTime = r.GetDateTime(2);
+								Int32 postId = r.GetInt32(3);
+								Int32 boldPosition = r.GetInt32(4);
+								p.SetVote(bolded, postNumber, postTime, postId, boldPosition);
+							}
+							else
+							{
+								p.ClearVote();
+							}
+						}
+					}
+				}
+			}
             BuildValidVotesList();
             RefreshVoteCount();
         }
@@ -715,11 +878,12 @@ namespace POG.Werewolf
             if (player == null)
             {
                 // check if there is a mapping defined for this vote => player
-                if (Mappings.ContainsKey(vote))
+				String suggestion = GetAliasDB(bolded);
+                if (suggestion != String.Empty)
                 {
                     player =
                         ValidVotes.FirstOrDefault(
-                            p => p == Mappings[vote]);
+                            p => p == suggestion);
                 }
                 if (player == null)
                 {
@@ -740,14 +904,12 @@ namespace POG.Werewolf
             {
                 SQLiteConnection.CreateFile(_dbName);
             }
-            String connect = String.Format("Data Source={0};Version=3;", _dbName);
-            _dbWrite = new SQLiteConnection(connect);
-            _dbWrite.Open();
-            _dbRead = new SQLiteConnection(connect);
-            _dbRead.Open();
-            using (SQLiteTransaction trans = _dbWrite.BeginTransaction())
-            {
-                String[] tables = 
+			using (SQLiteConnection dbWrite = new SQLiteConnection(_connect))
+			{
+				dbWrite.Open();
+				using (SQLiteTransaction trans = dbWrite.BeginTransaction())
+				{
+					String[] tables = 
                 {
                     @"CREATE TABLE IF NOT EXISTS [posts] (
                         [id] INTEGER NOT NULL PRIMARY KEY,
@@ -761,7 +923,10 @@ namespace POG.Werewolf
                     @"CREATE TABLE IF NOT EXISTS [threads] (
                         [id] INTEGER NOT NULL PRIMARY KEY,
                         [url] TEXT,
-                        [title] TEXT
+                        [title] TEXT,
+						[startPost] INTEGER,
+						[endOfDay] TIMESTAMP,
+						[isTurbo] INTEGER
                     );",
                     @"CREATE TABLE IF NOT EXISTS [bolds] (
                         [postId] INTEGER NOT NULL,
@@ -770,16 +935,35 @@ namespace POG.Werewolf
                         [ignore] INTEGER,
                         PRIMARY KEY(postId, position)
                     );",
+                    @"CREATE TABLE IF NOT EXISTS [players] (
+                        [threadId] INTEGER,
+                        [player] TEXT COLLATE NOCASE,
+						[dead] INTEGER,
+                        [role] TEXT,
+                        [team] TEXT,
+                        [obituaryPost] INTEGER,
+						[birthPost] INTEGER,
+						[causeOfDeath] TEXT,
+                        PRIMARY KEY(threadId, player)
+                    );",
+                    @"CREATE TABLE IF NOT EXISTS [aliases] (
+                        [threadId] INTEGER,
+                        [bolded] TEXT COLLATE NOCASE,
+                        [player] TEXT COLLATE NOCASE,
+                        PRIMARY KEY(threadId, bolded)
+                    );",
                 };
-                foreach (String sql in tables)
-                {
-                    SQLiteCommand cmd = new SQLiteCommand(sql, _dbWrite);
-                    int e = cmd.ExecuteNonQuery();
-                    cmd.Dispose();
-                }
+					foreach (String sql in tables)
+					{
+						using (SQLiteCommand cmd = new SQLiteCommand(sql, dbWrite))
+						{
+							int e = cmd.ExecuteNonQuery();
+						}
+					}
 
-                trans.Commit();
-            }
+					trans.Commit();
+				}
+			}
         }
         void DisconnectFromDB()
         {
@@ -787,13 +971,16 @@ namespace POG.Werewolf
         }
         void AddPostsToDB(Posts posts)
         {
-            lock (_dbWrite)
+            lock (_dbLock)
             {
-                using (SQLiteTransaction trans = _dbWrite.BeginTransaction())
-                {
-                    String sql =
+				using (SQLiteConnection dbWrite = new SQLiteConnection(_connect))
+				{
+					dbWrite.Open();
+					using (SQLiteTransaction trans = dbWrite.BeginTransaction())
+					{
+						String sql =
 
-                        @"INSERT OR REPLACE INTO [posts] (
+							@"INSERT OR REPLACE INTO [posts] (
                         id,
                         threadId,
                         poster,
@@ -803,69 +990,70 @@ namespace POG.Werewolf
                         time)
                         VALUES (@p1, @p2, @p3, @p4, @p5, @p6, @p7);";
 
-                    using(SQLiteCommand cmd = new SQLiteCommand(sql, _dbWrite, trans))
-                    {
-                        SQLiteParameter pPostId = new SQLiteParameter("@p1");
-                        SQLiteParameter pThreadId = new SQLiteParameter("@p2");
-                        SQLiteParameter pPoster = new SQLiteParameter("@p3");
-                        SQLiteParameter pPostNumber = new SQLiteParameter("@p4");
-                        SQLiteParameter pContent = new SQLiteParameter("@p5");
-                        SQLiteParameter pTitle = new SQLiteParameter("@p6");
-                        SQLiteParameter pTime = new SQLiteParameter("@p7", System.Data.DbType.DateTime);
-                        cmd.Parameters.Add(pPostId);
-                        cmd.Parameters.Add(pThreadId);
-                        cmd.Parameters.Add(pPoster);
-                        cmd.Parameters.Add(pPostNumber);
-                        cmd.Parameters.Add(pContent);
-                        cmd.Parameters.Add(pTitle);
-                        cmd.Parameters.Add(pTime);
+						using (SQLiteCommand cmd = new SQLiteCommand(sql, dbWrite, trans))
+						{
+							SQLiteParameter pPostId = new SQLiteParameter("@p1");
+							SQLiteParameter pThreadId = new SQLiteParameter("@p2");
+							SQLiteParameter pPoster = new SQLiteParameter("@p3");
+							SQLiteParameter pPostNumber = new SQLiteParameter("@p4");
+							SQLiteParameter pContent = new SQLiteParameter("@p5");
+							SQLiteParameter pTitle = new SQLiteParameter("@p6");
+							SQLiteParameter pTime = new SQLiteParameter("@p7", System.Data.DbType.DateTime);
+							cmd.Parameters.Add(pPostId);
+							cmd.Parameters.Add(pThreadId);
+							cmd.Parameters.Add(pPoster);
+							cmd.Parameters.Add(pPostNumber);
+							cmd.Parameters.Add(pContent);
+							cmd.Parameters.Add(pTitle);
+							cmd.Parameters.Add(pTime);
 
-                        foreach (Post p in posts)
-                        {
-                            pPostId.Value = p.PostId;
-                            pThreadId.Value = p.ThreadId;
-                            pPoster.Value = p.Poster;
-                            pPostNumber.Value = p.PostNumber;
-                            pContent.Value = p.Content;
-                            pTitle.Value = p.Title;
-                            pTime.Value = p.Time;
-                            int e = cmd.ExecuteNonQuery();
+							foreach (Post p in posts)
+							{
+								pPostId.Value = p.PostId;
+								pThreadId.Value = p.ThreadId;
+								pPoster.Value = p.Poster;
+								pPostNumber.Value = p.PostNumber;
+								pContent.Value = p.Content;
+								pTitle.Value = p.Title;
+								pTime.Value = p.Time;
+								int e = cmd.ExecuteNonQuery();
 
-                            int ix = 0;
-                            String sqlBold =
-                                @"INSERT OR IGNORE INTO [bolds] (
+								int ix = 0;
+								String sqlBold =
+									@"INSERT OR IGNORE INTO [bolds] (
                                     postId,
                                     position,
                                     bolded,
                                     ignore)
                                     VALUES (@p1, @p2, @p3, @p4);";
-                            using (SQLiteCommand cmdBold = new SQLiteCommand(sqlBold, _dbWrite, trans))
-                            {
-                                SQLiteParameter pForeignPostId = new SQLiteParameter("@p1");
-                                SQLiteParameter pIx = new SQLiteParameter("@p2");
-                                SQLiteParameter pBolded = new SQLiteParameter("@p3");
-                                SQLiteParameter pIgnore = new SQLiteParameter("@p4");
-                                cmdBold.Parameters.Add(pForeignPostId);
-                                cmdBold.Parameters.Add(pIx);
-                                cmdBold.Parameters.Add(pBolded);
-                                cmdBold.Parameters.Add(pIgnore);
+								using (SQLiteCommand cmdBold = new SQLiteCommand(sqlBold, dbWrite, trans))
+								{
+									SQLiteParameter pForeignPostId = new SQLiteParameter("@p1");
+									SQLiteParameter pIx = new SQLiteParameter("@p2");
+									SQLiteParameter pBolded = new SQLiteParameter("@p3");
+									SQLiteParameter pIgnore = new SQLiteParameter("@p4");
+									cmdBold.Parameters.Add(pForeignPostId);
+									cmdBold.Parameters.Add(pIx);
+									cmdBold.Parameters.Add(pBolded);
+									cmdBold.Parameters.Add(pIgnore);
 
-                                foreach (Bold b in p.Bolded)
-                                {
-                                    pForeignPostId.Value = p.PostId;
-                                    pIx.Value = ix;
-                                    pBolded.Value = b.Content;
-                                    pIgnore.Value = b.Ignore;
-                                    e = cmdBold.ExecuteNonQuery();
-                                    ix++;
-                                }
-                            }
-                        }
-                    }
+									foreach (Bold b in p.Bolded)
+									{
+										pForeignPostId.Value = p.PostId;
+										pIx.Value = ix;
+										pBolded.Value = b.Content;
+										pIgnore.Value = b.Ignore;
+										e = cmdBold.ExecuteNonQuery();
+										ix++;
+									}
+								}
+							}
+						}
 
- 
-                    trans.Commit();
-                }
+
+						trans.Commit();
+					}
+				}
             }
         }
         #endregion
@@ -873,12 +1061,10 @@ namespace POG.Werewolf
 
         internal void UnhideVote(Voter voter, int postNumber, int boldPosition)
         {
-            throw new NotImplementedException();
         }
 
         internal void HideVote(Voter voter, int postNumber, int boldPosition)
         {
-            throw new NotImplementedException();
         }
     }
 }
