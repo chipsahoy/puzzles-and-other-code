@@ -62,6 +62,8 @@ namespace POG.FennecFox
             colCB.DefaultCellStyle.NullValue = notVoting;
             //colCB.DataSource = bs;
             grdVotes.DataSource = bs;
+            grdVotes.Sort(grdVotes.Columns[(Int32)CounterColumn.PostTime], ListSortDirection.Descending);
+
         }
         private void CreateVoteGridColumns()
         {
@@ -116,7 +118,7 @@ namespace POG.FennecFox
             col.AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
             col.Resizable = DataGridViewTriState.False;
             grdVotes.Columns.Insert((Int32)CounterColumn.PostTime, col);
-
+            
             DataGridViewComboBoxColumn colCB = new DataGridViewComboBoxColumn();
             colCB.DataPropertyName = "Votee";
             colCB.HeaderText = "Votes For";
@@ -411,6 +413,8 @@ namespace POG.FennecFox
             POG.FennecFox.Properties.Settings.Default.threadUrl = URLTextBox.Text.Trim();
 
             POG.FennecFox.Properties.Settings.Default.Save();
+            _forum.LoginEvent -= _forum_LoginEvent;
+
             
         }
 
@@ -464,7 +468,7 @@ namespace POG.FennecFox
             dtStartTime.DataBindings.Add("Value", _voteCount, "StartTime", true, DataSourceUpdateMode.OnPropertyChanged);
 
 			IEnumerable<String> list = _voteCount.GetPlayerList();
-			txtPlayers.Lines = list.ToArray();
+			//txtPlayers.Lines = list.ToArray();
 		}
         private void UnbindFromGame()
         {
@@ -480,7 +484,7 @@ namespace POG.FennecFox
             }
             URLTextBox.ReadOnly = false;
             URLTextBox.Text = "";
-            txtPlayers.Text = "";
+            //txtPlayers.Text = "";
             btnReset.Enabled = false;
         }
 
@@ -488,7 +492,7 @@ namespace POG.FennecFox
         {
             if (_voteCount != null)
             {
-                _voteCount.SetPlayerList(txtPlayers.Text);
+                //_voteCount.SetPlayerList(txtPlayers.Text);
             }
         }
 
@@ -594,7 +598,7 @@ namespace POG.FennecFox
         {
             if (_voteCount != null)
             {
-                _voteCount.Refresh();
+                _voteCount.CheckThread();
             }
         }
         String NormalizeUrl(String url)
@@ -617,6 +621,17 @@ namespace POG.FennecFox
                 }
             }
             return url;
+        }
+
+        private void btnNewPlayerList_Click(object sender, EventArgs e)
+        {
+            PlayerList frmPlayers = new PlayerList();
+            DialogResult dr = frmPlayers.ShowDialog();
+            if (dr == System.Windows.Forms.DialogResult.OK)
+            {
+                IEnumerable<String> players = frmPlayers.Players;
+                _voteCount.SetPlayerList(players);
+            }
         }
 
 

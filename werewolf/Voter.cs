@@ -22,14 +22,17 @@ namespace POG.Werewolf
             Name = name;
             _game = game;
             _synchronousInvoker = synchronousInvoker;
+            Bolded = String.Empty;
+            Votee = String.Empty;
+            PostTime = DateTime.Now;
         }
         public void HideVote()
         {
-            _game.HideVote(this, _postNumber, _boldPosition);
+            _game.HideVote(this, _postId, _boldPosition);
         }
         public void UnhideVote()
         {
-            _game.UnhideVote(this, _postNumber, _boldPosition);
+            _game.UnhideVote(this, _postId, _boldPosition);
         }
         [Browsable(true)]
         public String Name
@@ -170,12 +173,12 @@ namespace POG.Werewolf
         public event PropertyChangedEventHandler PropertyChanged;
         protected virtual void OnPropertyChanged(string propertyName)
         {
-            if (PropertyChanged != null)
-            {
-                _synchronousInvoker.Invoke(
-                    () => PropertyChanged(this, new PropertyChangedEventArgs(propertyName))
-                );
-            }
+            //if (PropertyChanged != null)
+            //{
+            //    _synchronousInvoker.Invoke(
+            //        () => PropertyChanged(this, new PropertyChangedEventArgs(propertyName))
+            //    );
+            //}
         }
     }
 }

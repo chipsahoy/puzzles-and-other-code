@@ -375,8 +375,6 @@ loggedinuser 81788
 			}
 
 		}
-		//public event EventHandler<NewPMEventArgs> NewPMEvent;
-		//public event EventHandler<PMReadEventArgs> PMReadEvent;
 		public event EventHandler FinishedReadingThread;
 		public event EventHandler<NewStatusEventArgs> StatusUpdate;
 		virtual internal void OnStatusUpdate(String status)

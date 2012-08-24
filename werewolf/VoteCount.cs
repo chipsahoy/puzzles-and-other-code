@@ -10,7 +10,8 @@ using POG.Utils;
 using POG.Forum;
 using System.Collections.Specialized;
 using System.Configuration;
-using System.Data.SQLite; 
+using System.Data.SQLite;
+using System.Threading.Tasks; 
 
 namespace POG.Werewolf
 {
@@ -28,6 +29,7 @@ namespace POG.Werewolf
         DateTime _endTime;
         Int32? _endPost;
         private Int32 _lastPost = 0;
+        Int32 _lastPage = 1;
         object _lock = new object();
         String _url = "http://forumserver.twoplustwo.com/59/puzzles-other-games/13-8-your-dreams-vanilla-game-thread-1233539/";
 		String _connect;
@@ -54,7 +56,14 @@ namespace POG.Werewolf
 			_connect = String.Format("Data Source={0};Version=3;", _dbName);
             ConnectToDB();
 			ReadDayBoundariesDB();
-            DoRefresh();
+            Int32? maxPost = GetMaxPostDB();
+            if (maxPost != null)
+            {
+                _lastPage = PageFromNumber(maxPost.Value);
+            }
+            SetPlayerList(GetPlayerList());
+
+            Refresh();
         }
         ~VoteCount()
         {
@@ -63,7 +72,7 @@ namespace POG.Werewolf
 
         #endregion
         #region public methods
-        public void Refresh()
+        public void CheckThread()
         {
             Boolean checking = false;
             Int32 lastPage = 0;
@@ -94,12 +103,8 @@ namespace POG.Werewolf
             _allPosters.Clear();
 
         }
-        public void SetPlayerList(string players)
+        public void SetPlayerList(IEnumerable<String> rawList)
         {
-            List<String> rawList = players.Split(
-                new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries)
-                .Select(p => p.Trim())
-                .Distinct().ToList();
             SortableBindingList<Voter> livePlayers = new SortableBindingList<Voter>();
             foreach (String name in rawList)
             {
@@ -152,8 +157,7 @@ namespace POG.Werewolf
 				}
 
 			}
-            DoRefresh();
-            OnPropertyChanged("LivePlayers");
+            Refresh();
         }
 		public IEnumerable<String> GetPlayerList()
 		{
@@ -208,9 +212,35 @@ namespace POG.Werewolf
                     .AppendLine();
 
                 TimeSpan ts = TimeUntilNight;
-                if (ts >= TimeSpan.FromSeconds(0))
+                Boolean almostNight = false;
+                if (ts > TimeSpan.FromSeconds(0))
                 {
-                    sb.AppendFormat("Night in {0}", ts.ToString("g"));
+                    String days;
+                    switch (ts.Days)
+                    {
+                        case 0:
+                            {
+                                days = "";
+                                if (ts.TotalMinutes <= 30)
+                                {
+                                    almostNight = true;
+                                }
+                            }
+                            break;
+
+                        case 1:
+                            {
+                                days = "1 day ";
+                            }
+                            break;
+
+                        default:
+                            {
+                                days = ts.Days.ToString() + " days ";
+                            }
+                            break;
+                    }
+                    sb.AppendFormat("Night in {0}{1}", days, ts.ToString(@"hh\:mm\:ss"));
                 }
                 else
                 {
@@ -232,12 +262,17 @@ namespace POG.Werewolf
                 wagons.Add(Unvote, listUnvote);
                 wagons.Add(sNotVoting, listNotVoting);
                 // for each live player
-                foreach (Voter p in _livePosters)
+                List<Voter> posters;
+                lock (_lock)
+                {
+                     posters = new List<Voter>(_livePosters);
+                }
+                foreach (Voter p in posters)
                 {
                     wagons.Add(p.Name, new List<Voter>());
                 }
                 // find out who they are voting, add vote to that wagon.
-                foreach (Voter p in _livePosters)
+                foreach (Voter p in posters)
                 {
                     String votee = p.Votee;
                     if (votee == ErrorVote)
@@ -302,6 +337,15 @@ namespace POG.Werewolf
                         .AppendLine();
                 }
                 sb.AppendLine("[/table]");
+                if (almostNight)
+                {
+                    DateTime et = EndTime;
+                    int good = et.Minute;
+                    int bad = (good + 1) % 60;
+                    sb.AppendLine();
+                    sb.AppendFormat("[highlight][color=green]:{0} good[/color] [color=red]:{1} bad[/color][/highlight]",
+                            good, bad);
+                }
                 return sb.ToString();
             }
         }
@@ -342,7 +386,12 @@ namespace POG.Werewolf
         {
             get
             {
-                foreach (Voter p in _livePosters)
+                List<Voter> posters;
+                lock (_lock)
+                {
+                    posters = new List<Voter>(_livePosters);
+                }
+                foreach (Voter p in posters)
                 {
                     if (p.Name == name)
                     {
@@ -403,7 +452,7 @@ namespace POG.Werewolf
 				}
                 OnPropertyChanged("StartTime");
                 OnPropertyChanged("StartPost");
-                DoRefresh();
+                Refresh();
             }
         }
         public Int32? EndPost
@@ -472,7 +521,7 @@ namespace POG.Werewolf
                 _endTime = value;
                 Int32? ep = EndPost; // side effects.
                 OnPropertyChanged("EndTime");
-                DoRefresh();
+                Refresh();
             }
         }
         public TimeSpan TimeUntilNight
@@ -481,7 +530,8 @@ namespace POG.Werewolf
             {
                 DateTime now = DateTime.Now;
                 now = now.AddMilliseconds(-500);
-                TimeSpan rc = EndTime - now;
+                DateTime et = EndTime.AddSeconds(60);
+                TimeSpan rc = et - now;
                 rc = new TimeSpan(rc.Days, rc.Hours, rc.Minutes, rc.Seconds);
                 return rc;
             }
@@ -550,7 +600,6 @@ namespace POG.Werewolf
         #endregion
         #region forum event handlers
         HashSet<Int32> _pendingPages = new HashSet<int>();
-        Int32 _lastPage = 1;
         void _thread_PageCompleteEvent(object sender, PageCompleteEventArgs e)
         {
             AddPostsToDB(e.Posts);
@@ -576,8 +625,8 @@ namespace POG.Werewolf
             }
             if (_pendingPages.Count == 0)
             {
-                DoRefresh();
-                Status = "All Posts Read!";
+                Refresh();
+                _readPostsComplete = true;
             }
         }
         #endregion
@@ -712,16 +761,63 @@ namespace POG.Werewolf
 				EndTime = endTime;
 			}
 		}
+        Task _taskRefresh;
+        Boolean _refreshAgain;
+        Boolean newPosts = false;
+        private void RefreshComplete()
+        {
+            Boolean again = false;
+            lock (_lock)
+            {
+                _taskRefresh = null;
+                again = _refreshAgain;
+                _refreshAgain = false;
+                newPosts = _readPostsComplete;
+            }
+            if (again)
+            {
+                Refresh();
+            }
+            RefreshVoteCount();
+            OnPropertyChanged("LivePlayers");
+            if (newPosts)
+            {
+                DateTime now = DateTime.Now;
+                Status = "Finished reading posts at " + now.ToShortTimeString();
+            }
+        }
+        Boolean _readPostsComplete;
+        private void Refresh()
+        {
+            SaveDayBoundaries();
+            lock (_lock)
+            {
+                _readPostsComplete = false;
+                if (_taskRefresh == null)
+                {
+                    _taskRefresh = new Task(() => DoRefresh());
+                    _taskRefresh.ContinueWith((t) => RefreshComplete());
+                    _taskRefresh.Start();
+                }
+                else
+                {
+                    _refreshAgain = true;
+                }
+            }
+        }
         private void DoRefresh()
         {
-			SaveDayBoundaries();
             Int32? maxPost = GetMaxPostDB();
-
-            LastPost = maxPost.Value;
+            lock (_lock)
+            {
+                _lastPost = maxPost.Value;
+            }
             String sqlPostCount = @"SELECT COUNT()
                             FROM posts
                             WHERE (posts.poster = @p1) AND (posts.threadId = @p2) AND
                             (posts.number >= @p4) AND (posts.time <= @p3);";
+            List<Voter> posters;
+
 			using (SQLiteConnection dbRead = new SQLiteConnection(_connect))
 			{
 				dbRead.Open();
@@ -734,7 +830,11 @@ namespace POG.Werewolf
 					pEndTime.Value = _endTime;
 					cmdCount.Parameters.Add(pEndTime);
 					cmdCount.Parameters.Add(new SQLiteParameter("@p4", _startPost));
-					foreach (Voter p in _livePosters)
+                    lock (_lock)
+                    {
+                        posters = new List<Voter>(_livePosters);
+                    }
+                    foreach (Voter p in posters)
 					{
 						//var playerPosts = from post in qry where (String.Equals(post.Poster, p.Name, StringComparison.InvariantCultureIgnoreCase)) select post;
 						//p.SetPosts(playerPosts);
@@ -742,11 +842,17 @@ namespace POG.Werewolf
 						object o = cmdCount.ExecuteScalar();
 						if (!(o is System.DBNull))
 						{
-							p.PostCount = (Int32)(long)o;
+                            lock (_lock)
+                            {
+                                p.PostCount = (Int32)(long)o;
+                            }
 						}
 						else
 						{
-							p.PostCount = 0;
+                            lock (_lock)
+                            {
+                                p.PostCount = 0;
+                            }
 						}
 					}
 
@@ -766,7 +872,7 @@ namespace POG.Werewolf
 					pEndTime.Value = _endTime;
 					cmd.Parameters.Add(pEndTime);
 					cmd.Parameters.Add(new SQLiteParameter("@p4", _startPost));
-					foreach (Voter p in _livePosters)
+                    foreach (Voter p in posters)
 					{
 						//var playerPosts = from post in qry where (String.Equals(post.Poster, p.Name, StringComparison.InvariantCultureIgnoreCase)) select post;
 						//p.SetPosts(playerPosts);
@@ -781,11 +887,17 @@ namespace POG.Werewolf
 								DateTime postTime = r.GetDateTime(2);
 								Int32 postId = r.GetInt32(3);
 								Int32 boldPosition = r.GetInt32(4);
-								p.SetVote(bolded, postNumber, postTime, postId, boldPosition);
+                                lock (_lock)
+                                {
+                                    p.SetVote(bolded, postNumber, postTime, postId, boldPosition);
+                                }
 							}
 							else
 							{
-								p.ClearVote();
+                                lock (_lock)
+                                {
+                                    p.ClearVote();
+                                }
 							}
 						}
 					}
@@ -796,16 +908,18 @@ namespace POG.Werewolf
         }
         private void BuildValidVotesList()
         {
-            List<String> validVotes = new List<string>();
-            foreach (Voter p in _livePosters)
+            lock (_lock)
             {
-                validVotes.Add(p.Name);
+                List<String> validVotes = new List<string>();
+                foreach (Voter p in _livePosters)
+                {
+                    validVotes.Add(p.Name);
+                }
+                validVotes.Sort();
+                validVotes.Add(Unvote);
+                validVotes.Add(NoLynch);
+                _validVotes = validVotes;
             }
-            validVotes.Sort();
-            validVotes.Add(Unvote);
-            validVotes.Add(NoLynch);
-            _validVotes = validVotes;
-            OnPropertyChanged("LivePlayers");
         }
         private void RefreshVoteCount()
         {
@@ -1059,12 +1173,67 @@ namespace POG.Werewolf
         #endregion
         #endregion
 
-        internal void UnhideVote(Voter voter, int postNumber, int boldPosition)
+        internal void UnhideVote(Voter voter, int postId, int boldPosition)
         {
+            // looking for a later post that is ignored.
+            // needs to match: thread, poster, timestamp.
+            String sql = @"SELECT bolds.postId, bolds.position
+                FROM bolds INNER JOIN posts ON (bolds.postId = posts.id)
+                WHERE (posts.poster = @p1) AND (posts.threadId = @p2) AND
+                (bolds.postId >= @p4) AND (posts.time <= @p3) AND
+                (bolds.ignore <> 0)
+                ORDER BY bolds.postId ASC, bolds.position ASC LIMIT 1";
+            Int32 postNewId = -1;
+            Int32 position = -1;
+            using (SQLiteConnection dbRead = new SQLiteConnection(_connect))
+            {
+                dbRead.Open();
+                using (SQLiteCommand cmd = new SQLiteCommand(sql, dbRead))
+                {
+                    cmd.Parameters.Add(new SQLiteParameter("@p1", voter.Name));
+                    cmd.Parameters.Add(new SQLiteParameter("@p2", _threadId));
+                    SQLiteParameter pEndTime = new SQLiteParameter("@p3", System.Data.DbType.DateTime);
+                    pEndTime.Value = _endTime;
+                    cmd.Parameters.Add(pEndTime);
+                    cmd.Parameters.Add(new SQLiteParameter("@p4", postId));
+                    using (SQLiteDataReader r = cmd.ExecuteReader())
+                    {
+                        if (r.Read())
+                        {
+                            postNewId = r.GetInt32(0);
+                            position = r.GetInt32(1);
+                        }
+                    }
+                }
+            }
+            if (postNewId != -1)
+            {
+                SetIgnoreOnBold(postNewId, position, false);
+                Refresh();
+            }
         }
 
-        internal void HideVote(Voter voter, int postNumber, int boldPosition)
+        void SetIgnoreOnBold(Int32 postId, Int32 boldPosition, Boolean ignore)
         {
+            String sql = @"UPDATE OR IGNORE bolds
+                        SET ignore = @p1
+                        WHERE (postId = @p2) AND (position = @p3);";
+            using (SQLiteConnection dbWrite = new SQLiteConnection(_connect))
+            {
+                dbWrite.Open();
+                using (SQLiteCommand cmd = new SQLiteCommand(sql, dbWrite))
+                {
+                    cmd.Parameters.Add(new SQLiteParameter("@p1", ignore));
+                    cmd.Parameters.Add(new SQLiteParameter("@p2", postId));
+                    cmd.Parameters.Add(new SQLiteParameter("@p3", boldPosition));
+                    int e = cmd.ExecuteNonQuery();
+                }
+            }
+        }
+        internal void HideVote(Voter voter, int postId, int boldPosition)
+        {
+            SetIgnoreOnBold(postId, boldPosition, true);
+            Refresh();
         }
     }
 }

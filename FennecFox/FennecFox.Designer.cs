@@ -36,6 +36,13 @@
             this.statusBrowser = new System.Windows.Forms.StatusStrip();
             this.statusText = new System.Windows.Forms.ToolStripStatusLabel();
             this.tabPage5 = new System.Windows.Forms.TabPage();
+            this.btnSetEOD = new System.Windows.Forms.Button();
+            this.label14 = new System.Windows.Forms.Label();
+            this.label13 = new System.Windows.Forms.Label();
+            this.numTurboDayNLength = new System.Windows.Forms.NumericUpDown();
+            this.numTurboDay1Length = new System.Windows.Forms.NumericUpDown();
+            this.chkTurbo = new System.Windows.Forms.CheckBox();
+            this.chkTurboDay1 = new System.Windows.Forms.CheckBox();
             this.checkBox4 = new System.Windows.Forms.CheckBox();
             this.checkBox3 = new System.Windows.Forms.CheckBox();
             this.checkBox2 = new System.Windows.Forms.CheckBox();
@@ -57,24 +64,11 @@
             this.label8 = new System.Windows.Forms.Label();
             this.comboGameTypes = new System.Windows.Forms.ComboBox();
             this.tabPage3 = new System.Windows.Forms.TabPage();
+            this.btnNewPlayerList = new System.Windows.Forms.Button();
             this.btnReset = new System.Windows.Forms.Button();
             this.btnStartGame = new System.Windows.Forms.Button();
             this.URLTextBox = new System.Windows.Forms.TextBox();
-            this.txtDeadPlayers = new System.Windows.Forms.TextBox();
-            this.txtModerator = new System.Windows.Forms.TextBox();
-            this.txtPlayers = new System.Windows.Forms.TextBox();
             this.label4 = new System.Windows.Forms.Label();
-            this.label20 = new System.Windows.Forms.Label();
-            this.label19 = new System.Windows.Forms.Label();
-            this.btnSetEOD = new System.Windows.Forms.Button();
-            this.label14 = new System.Windows.Forms.Label();
-            this.label13 = new System.Windows.Forms.Label();
-            this.numTurboDayNLength = new System.Windows.Forms.NumericUpDown();
-            this.numTurboDay1Length = new System.Windows.Forms.NumericUpDown();
-            this.chkTurbo = new System.Windows.Forms.CheckBox();
-            this.chkTurboDay1 = new System.Windows.Forms.CheckBox();
-            this.label17 = new System.Windows.Forms.Label();
-            this.label3 = new System.Windows.Forms.Label();
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.txtVersion = new System.Windows.Forms.TextBox();
             this.textBox1 = new System.Windows.Forms.TextBox();
@@ -108,6 +102,8 @@
             this.contextMenuStrip1.SuspendLayout();
             this.statusBrowser.SuspendLayout();
             this.tabPage5.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numTurboDayNLength)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numTurboDay1Length)).BeginInit();
             this.tableLayoutPanel4.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.tableLayoutPanel3.SuspendLayout();
@@ -115,8 +111,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.numVanillagers)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numVillageSeers)).BeginInit();
             this.tabPage3.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.numTurboDayNLength)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numTurboDay1Length)).BeginInit();
             this.tabPage1.SuspendLayout();
             this.tabPage2.SuspendLayout();
             this.tableLayoutPanel2.SuspendLayout();
@@ -177,6 +171,13 @@
             // tabPage5
             // 
             this.tabPage5.BackColor = System.Drawing.Color.Gainsboro;
+            this.tabPage5.Controls.Add(this.btnSetEOD);
+            this.tabPage5.Controls.Add(this.label14);
+            this.tabPage5.Controls.Add(this.label13);
+            this.tabPage5.Controls.Add(this.numTurboDayNLength);
+            this.tabPage5.Controls.Add(this.numTurboDay1Length);
+            this.tabPage5.Controls.Add(this.chkTurbo);
+            this.tabPage5.Controls.Add(this.chkTurboDay1);
             this.tabPage5.Controls.Add(this.checkBox4);
             this.tabPage5.Controls.Add(this.checkBox3);
             this.tabPage5.Controls.Add(this.checkBox2);
@@ -191,6 +192,81 @@
             this.tabPage5.Size = new System.Drawing.Size(646, 618);
             this.tabPage5.TabIndex = 7;
             this.tabPage5.Text = "Game Settings";
+            // 
+            // btnSetEOD
+            // 
+            this.btnSetEOD.Location = new System.Drawing.Point(262, 285);
+            this.btnSetEOD.Name = "btnSetEOD";
+            this.btnSetEOD.Size = new System.Drawing.Size(125, 23);
+            this.btnSetEOD.TabIndex = 38;
+            this.btnSetEOD.Text = "Set EOD Time Now!";
+            this.btnSetEOD.UseVisualStyleBackColor = true;
+            // 
+            // label14
+            // 
+            this.label14.AutoSize = true;
+            this.label14.Location = new System.Drawing.Point(259, 362);
+            this.label14.Name = "label14";
+            this.label14.Size = new System.Drawing.Size(77, 13);
+            this.label14.TabIndex = 37;
+            this.label14.Text = "Day 2+ Length";
+            // 
+            // label13
+            // 
+            this.label13.AutoSize = true;
+            this.label13.Location = new System.Drawing.Point(259, 320);
+            this.label13.Name = "label13";
+            this.label13.Size = new System.Drawing.Size(71, 13);
+            this.label13.TabIndex = 36;
+            this.label13.Text = "Day 1 Length";
+            // 
+            // numTurboDayNLength
+            // 
+            this.numTurboDayNLength.Location = new System.Drawing.Point(342, 360);
+            this.numTurboDayNLength.Name = "numTurboDayNLength";
+            this.numTurboDayNLength.Size = new System.Drawing.Size(45, 20);
+            this.numTurboDayNLength.TabIndex = 35;
+            this.numTurboDayNLength.Value = new decimal(new int[] {
+            20,
+            0,
+            0,
+            0});
+            // 
+            // numTurboDay1Length
+            // 
+            this.numTurboDay1Length.Location = new System.Drawing.Point(342, 320);
+            this.numTurboDay1Length.Name = "numTurboDay1Length";
+            this.numTurboDay1Length.Size = new System.Drawing.Size(45, 20);
+            this.numTurboDay1Length.TabIndex = 34;
+            this.numTurboDay1Length.Value = new decimal(new int[] {
+            25,
+            0,
+            0,
+            0});
+            // 
+            // chkTurbo
+            // 
+            this.chkTurbo.AutoSize = true;
+            this.chkTurbo.Checked = true;
+            this.chkTurbo.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.chkTurbo.Location = new System.Drawing.Point(262, 239);
+            this.chkTurbo.Name = "chkTurbo";
+            this.chkTurbo.Size = new System.Drawing.Size(60, 17);
+            this.chkTurbo.TabIndex = 33;
+            this.chkTurbo.Text = "Turbo?";
+            this.chkTurbo.UseVisualStyleBackColor = true;
+            // 
+            // chkTurboDay1
+            // 
+            this.chkTurboDay1.AutoSize = true;
+            this.chkTurboDay1.Checked = true;
+            this.chkTurboDay1.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.chkTurboDay1.Location = new System.Drawing.Point(262, 262);
+            this.chkTurboDay1.Name = "chkTurboDay1";
+            this.chkTurboDay1.Size = new System.Drawing.Size(60, 17);
+            this.chkTurboDay1.TabIndex = 32;
+            this.chkTurboDay1.Text = "Day 1?";
+            this.chkTurboDay1.UseVisualStyleBackColor = true;
             // 
             // checkBox4
             // 
@@ -413,30 +489,27 @@
             // tabPage3
             // 
             this.tabPage3.BackColor = System.Drawing.Color.Gainsboro;
+            this.tabPage3.Controls.Add(this.btnNewPlayerList);
             this.tabPage3.Controls.Add(this.btnReset);
             this.tabPage3.Controls.Add(this.btnStartGame);
             this.tabPage3.Controls.Add(this.URLTextBox);
-            this.tabPage3.Controls.Add(this.txtDeadPlayers);
-            this.tabPage3.Controls.Add(this.txtModerator);
-            this.tabPage3.Controls.Add(this.txtPlayers);
             this.tabPage3.Controls.Add(this.label4);
-            this.tabPage3.Controls.Add(this.label20);
-            this.tabPage3.Controls.Add(this.label19);
-            this.tabPage3.Controls.Add(this.btnSetEOD);
-            this.tabPage3.Controls.Add(this.label14);
-            this.tabPage3.Controls.Add(this.label13);
-            this.tabPage3.Controls.Add(this.numTurboDayNLength);
-            this.tabPage3.Controls.Add(this.numTurboDay1Length);
-            this.tabPage3.Controls.Add(this.chkTurbo);
-            this.tabPage3.Controls.Add(this.chkTurboDay1);
-            this.tabPage3.Controls.Add(this.label17);
-            this.tabPage3.Controls.Add(this.label3);
             this.tabPage3.Location = new System.Drawing.Point(4, 22);
             this.tabPage3.Name = "tabPage3";
             this.tabPage3.Padding = new System.Windows.Forms.Padding(3);
             this.tabPage3.Size = new System.Drawing.Size(646, 618);
             this.tabPage3.TabIndex = 6;
             this.tabPage3.Text = "Players";
+            // 
+            // btnNewPlayerList
+            // 
+            this.btnNewPlayerList.Location = new System.Drawing.Point(304, 56);
+            this.btnNewPlayerList.Name = "btnNewPlayerList";
+            this.btnNewPlayerList.Size = new System.Drawing.Size(156, 23);
+            this.btnNewPlayerList.TabIndex = 40;
+            this.btnNewPlayerList.Text = "New Player List...";
+            this.btnNewPlayerList.UseVisualStyleBackColor = true;
+            this.btnNewPlayerList.Click += new System.EventHandler(this.btnNewPlayerList_Click);
             // 
             // btnReset
             // 
@@ -461,161 +534,20 @@
             // 
             // URLTextBox
             // 
-            this.URLTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
             this.URLTextBox.Location = new System.Drawing.Point(113, 4);
             this.URLTextBox.Name = "URLTextBox";
             this.URLTextBox.Size = new System.Drawing.Size(502, 20);
             this.URLTextBox.TabIndex = 37;
             this.URLTextBox.TextChanged += new System.EventHandler(this.URLTextBox_TextChanged);
             // 
-            // txtDeadPlayers
-            // 
-            this.txtDeadPlayers.Location = new System.Drawing.Point(59, 334);
-            this.txtDeadPlayers.Multiline = true;
-            this.txtDeadPlayers.Name = "txtDeadPlayers";
-            this.txtDeadPlayers.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.txtDeadPlayers.Size = new System.Drawing.Size(148, 108);
-            this.txtDeadPlayers.TabIndex = 33;
-            // 
-            // txtModerator
-            // 
-            this.txtModerator.Location = new System.Drawing.Point(59, 473);
-            this.txtModerator.Name = "txtModerator";
-            this.txtModerator.Size = new System.Drawing.Size(148, 20);
-            this.txtModerator.TabIndex = 3;
-            // 
-            // txtPlayers
-            // 
-            this.txtPlayers.Location = new System.Drawing.Point(59, 61);
-            this.txtPlayers.Multiline = true;
-            this.txtPlayers.Name = "txtPlayers";
-            this.txtPlayers.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.txtPlayers.Size = new System.Drawing.Size(148, 238);
-            this.txtPlayers.TabIndex = 0;
-            this.txtPlayers.TextChanged += new System.EventHandler(this.txtPlayers_TextChanged);
-            // 
             // label4
             // 
-            this.label4.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
             this.label4.AutoSize = true;
             this.label4.Location = new System.Drawing.Point(15, 11);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(92, 13);
             this.label4.TabIndex = 36;
             this.label4.Text = "Main Thread URL";
-            // 
-            // label20
-            // 
-            this.label20.AutoSize = true;
-            this.label20.Location = new System.Drawing.Point(56, 32);
-            this.label20.Name = "label20";
-            this.label20.Size = new System.Drawing.Size(119, 13);
-            this.label20.TabIndex = 35;
-            this.label20.Text = "All Players (live or dead)";
-            // 
-            // label19
-            // 
-            this.label19.AutoSize = true;
-            this.label19.Location = new System.Drawing.Point(56, 318);
-            this.label19.Name = "label19";
-            this.label19.Size = new System.Drawing.Size(70, 13);
-            this.label19.TabIndex = 34;
-            this.label19.Text = "Dead Players";
-            // 
-            // btnSetEOD
-            // 
-            this.btnSetEOD.Location = new System.Drawing.Point(224, 109);
-            this.btnSetEOD.Name = "btnSetEOD";
-            this.btnSetEOD.Size = new System.Drawing.Size(125, 23);
-            this.btnSetEOD.TabIndex = 31;
-            this.btnSetEOD.Text = "Set EOD Time Now!";
-            this.btnSetEOD.UseVisualStyleBackColor = true;
-            this.btnSetEOD.Click += new System.EventHandler(this.btnSetEOD_Click);
-            // 
-            // label14
-            // 
-            this.label14.AutoSize = true;
-            this.label14.Location = new System.Drawing.Point(221, 186);
-            this.label14.Name = "label14";
-            this.label14.Size = new System.Drawing.Size(77, 13);
-            this.label14.TabIndex = 30;
-            this.label14.Text = "Day 2+ Length";
-            // 
-            // label13
-            // 
-            this.label13.AutoSize = true;
-            this.label13.Location = new System.Drawing.Point(221, 144);
-            this.label13.Name = "label13";
-            this.label13.Size = new System.Drawing.Size(71, 13);
-            this.label13.TabIndex = 29;
-            this.label13.Text = "Day 1 Length";
-            // 
-            // numTurboDayNLength
-            // 
-            this.numTurboDayNLength.Location = new System.Drawing.Point(304, 184);
-            this.numTurboDayNLength.Name = "numTurboDayNLength";
-            this.numTurboDayNLength.Size = new System.Drawing.Size(45, 20);
-            this.numTurboDayNLength.TabIndex = 28;
-            this.numTurboDayNLength.Value = new decimal(new int[] {
-            20,
-            0,
-            0,
-            0});
-            // 
-            // numTurboDay1Length
-            // 
-            this.numTurboDay1Length.Location = new System.Drawing.Point(304, 144);
-            this.numTurboDay1Length.Name = "numTurboDay1Length";
-            this.numTurboDay1Length.Size = new System.Drawing.Size(45, 20);
-            this.numTurboDay1Length.TabIndex = 27;
-            this.numTurboDay1Length.Value = new decimal(new int[] {
-            25,
-            0,
-            0,
-            0});
-            // 
-            // chkTurbo
-            // 
-            this.chkTurbo.AutoSize = true;
-            this.chkTurbo.Checked = true;
-            this.chkTurbo.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.chkTurbo.Location = new System.Drawing.Point(224, 63);
-            this.chkTurbo.Name = "chkTurbo";
-            this.chkTurbo.Size = new System.Drawing.Size(60, 17);
-            this.chkTurbo.TabIndex = 26;
-            this.chkTurbo.Text = "Turbo?";
-            this.chkTurbo.UseVisualStyleBackColor = true;
-            this.chkTurbo.CheckStateChanged += new System.EventHandler(this.chkTurbo_CheckedChanged);
-            // 
-            // chkTurboDay1
-            // 
-            this.chkTurboDay1.AutoSize = true;
-            this.chkTurboDay1.Checked = true;
-            this.chkTurboDay1.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.chkTurboDay1.Location = new System.Drawing.Point(224, 86);
-            this.chkTurboDay1.Name = "chkTurboDay1";
-            this.chkTurboDay1.Size = new System.Drawing.Size(60, 17);
-            this.chkTurboDay1.TabIndex = 25;
-            this.chkTurboDay1.Text = "Day 1?";
-            this.chkTurboDay1.UseVisualStyleBackColor = true;
-            // 
-            // label17
-            // 
-            this.label17.AutoSize = true;
-            this.label17.Location = new System.Drawing.Point(56, 457);
-            this.label17.Name = "label17";
-            this.label17.Size = new System.Drawing.Size(55, 13);
-            this.label17.TabIndex = 4;
-            this.label17.Text = "Moderator";
-            // 
-            // label3
-            // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(56, 45);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(145, 13);
-            this.label3.TabIndex = 1;
-            this.label3.Text = "Enter one player on each line";
             // 
             // tabPage1
             // 
@@ -1004,6 +936,7 @@
             this.ClientSize = new System.Drawing.Size(654, 666);
             this.Controls.Add(this.tabVotes);
             this.Controls.Add(this.statusBrowser);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "FormVoteCounter";
             this.Text = "Fennec Fox Vote Counter";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form_FormClosing);
@@ -1012,6 +945,8 @@
             this.statusBrowser.PerformLayout();
             this.tabPage5.ResumeLayout(false);
             this.tabPage5.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numTurboDayNLength)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numTurboDay1Length)).EndInit();
             this.tableLayoutPanel4.ResumeLayout(false);
             this.tableLayoutPanel4.PerformLayout();
             this.groupBox1.ResumeLayout(false);
@@ -1022,8 +957,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.numVillageSeers)).EndInit();
             this.tabPage3.ResumeLayout(false);
             this.tabPage3.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.numTurboDayNLength)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numTurboDay1Length)).EndInit();
             this.tabPage1.ResumeLayout(false);
             this.tabPage1.PerformLayout();
             this.tabPage2.ResumeLayout(false);
@@ -1078,21 +1011,7 @@
         private System.Windows.Forms.Button btnReset;
         private System.Windows.Forms.Button btnStartGame;
         private System.Windows.Forms.TextBox URLTextBox;
-        private System.Windows.Forms.TextBox txtDeadPlayers;
-        private System.Windows.Forms.TextBox txtModerator;
-        private System.Windows.Forms.TextBox txtPlayers;
         private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.Label label20;
-        private System.Windows.Forms.Label label19;
-        private System.Windows.Forms.Button btnSetEOD;
-        private System.Windows.Forms.Label label14;
-        private System.Windows.Forms.Label label13;
-        private System.Windows.Forms.NumericUpDown numTurboDayNLength;
-        private System.Windows.Forms.NumericUpDown numTurboDay1Length;
-        private System.Windows.Forms.CheckBox chkTurbo;
-        private System.Windows.Forms.CheckBox chkTurboDay1;
-        private System.Windows.Forms.Label label17;
-        private System.Windows.Forms.Label label3;
         private System.Windows.Forms.TabPage tabPage1;
         private System.Windows.Forms.TextBox txtVersion;
         private System.Windows.Forms.TextBox textBox1;
@@ -1123,6 +1042,14 @@
         private System.Windows.Forms.TextBox txtEndPost;
         private System.Windows.Forms.Button btnGetPosts;
         private System.Windows.Forms.TabControl tabVotes;
+        private System.Windows.Forms.Button btnSetEOD;
+        private System.Windows.Forms.Label label14;
+        private System.Windows.Forms.Label label13;
+        private System.Windows.Forms.NumericUpDown numTurboDayNLength;
+        private System.Windows.Forms.NumericUpDown numTurboDay1Length;
+        private System.Windows.Forms.CheckBox chkTurbo;
+        private System.Windows.Forms.CheckBox chkTurboDay1;
+        private System.Windows.Forms.Button btnNewPlayerList;
 
 
     }
