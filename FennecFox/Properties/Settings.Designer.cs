@@ -72,7 +72,7 @@ namespace POG.FennecFox.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("oreos")]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
         public string username {
             get {
                 return ((string)(this["username"]));

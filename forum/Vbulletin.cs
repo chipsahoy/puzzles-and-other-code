@@ -37,7 +37,13 @@ namespace POG.Forum
             ThreadReader t = new ThreadReader(_connectionSettings, _synchronousInvoker);
             return t;
         }
-		#endregion
+        public Int32 PostsPerPage {
+            get
+            {
+                return _postsPerPage;
+            }
+        }
+        #endregion
 		#region States
         private State StateTop(Event e)
         {
@@ -346,7 +352,8 @@ loggedinuser 81788
             return false;
         }
 
-	}
+
+    }
 	public class TwoPlusTwoForum
 	{
 		#region members
@@ -409,6 +416,13 @@ loggedinuser 81788
 			}
 		}
 		#endregion
+        public Int32 PostsPerPage
+        {
+            get
+            {
+                return _inner.PostsPerPage;
+            }
+        }
 
         #region public methods
         public ThreadReader Reader()
@@ -451,7 +465,8 @@ loggedinuser 81788
             return threadId;
         }
         #endregion
-	}
+
+    }
 	public class NewStatusEventArgs : EventArgs
 	{
 		public String Status

@@ -43,10 +43,11 @@ namespace POG.Werewolf
         public readonly String NoLynch = "no lynch";
         #endregion
         #region constructors
-        public VoteCount(Action<Action> synchronousInvoker, ThreadReader t, String url) 
+        public VoteCount(Action<Action> synchronousInvoker, ThreadReader t, String url, Int32 postsPerPage) 
         {
             _synchronousInvoker = synchronousInvoker;
             _url = url;
+            _postsPerPage = postsPerPage;
             _threadId = TwoPlusTwoForum.ThreadIdFromUrl(url);
             DateTime now = DateTime.Now;
             _endTime = new DateTime(now.Year, now.Month, now.Day, 18, 0, 0, now.Kind);
@@ -344,7 +345,7 @@ namespace POG.Werewolf
                     int bad = (good + 1) % 60;
                     sb.AppendLine();
                     sb.AppendFormat("[highlight][color=green]:{0} good[/color] [color=red]:{1} bad[/color][/highlight]",
-                            good, bad);
+                            good.ToString("00"), bad.ToString("00"));
                 }
                 return sb.ToString();
             }
@@ -556,7 +557,10 @@ namespace POG.Werewolf
             }
             private set
             {
-                _lastPost = value;
+                lock (_lock)
+                {
+                    _lastPost = value;
+                }
                 OnPropertyChanged("LastPost");
             }
         }
@@ -808,9 +812,13 @@ namespace POG.Werewolf
         private void DoRefresh()
         {
             Int32? maxPost = GetMaxPostDB();
-            lock (_lock)
+            if (maxPost != null)
             {
-                _lastPost = maxPost.Value;
+                LastPost = maxPost.Value;
+            }
+            else
+            {
+                LastPost = 0;
             }
             String sqlPostCount = @"SELECT COUNT()
                             FROM posts

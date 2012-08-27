@@ -15,7 +15,7 @@
       <Value Profile="(Default)">09/29/2011 19:00:00</Value>
     </Setting>
     <Setting Name="username" Type="System.String" Scope="User">
-      <Value Profile="(Default)">oreos</Value>
+      <Value Profile="(Default)" />
     </Setting>
     <Setting Name="password" Type="System.String" Scope="User">
       <Value Profile="(Default)" />

@@ -448,7 +448,7 @@ namespace POG.FennecFox
         private void BindToNewGame()
         {
             ThreadReader t = _forum.Reader();
-            _voteCount = new VoteCount(_synchronousInvoker, t, URLTextBox.Text);
+            _voteCount = new VoteCount(_synchronousInvoker, t, URLTextBox.Text, _forum.PostsPerPage);
             _voteCount.PropertyChanged += new PropertyChangedEventHandler(_voteCount_PropertyChanged);
             
             URLTextBox.ReadOnly = true;
