@@ -13,7 +13,7 @@ namespace POG.FennecFox
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Form f = new FormVoteCounter();
+            Form f = new FoxParent();
             if (f != null)
             {
                 Application.Run(f);
