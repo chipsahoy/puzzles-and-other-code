@@ -187,13 +187,29 @@ namespace POG.Forum
                     Thread.CurrentThread.CurrentCulture = culture;
                 }
             }
+            String postTitle = "";
+            HtmlAgilityPack.HtmlNode titleNode = html.SelectSingleNode("../div[@class='smallfont']/strong");
+            if (titleNode != null)
+            {
+                postTitle = HtmlAgilityPack.HtmlEntity.DeEntitize(titleNode.InnerText);
+                //Console.WriteLine("title[{0}]:{1} ", postNumber, postTitle);
+            }
+
+            String postEdit = "";
+            HtmlAgilityPack.HtmlNode editNode = html.SelectSingleNode("../div[@class='smallfont']/em");
+            if (editNode != null)
+            {
+                postEdit = HtmlAgilityPack.HtmlEntity.DeEntitize(editNode.InnerText);
+                postEdit = postEdit.Trim();
+                Console.WriteLine("edit[{0}]:{1}", postNumber, postEdit);
+            }
 
             HtmlAgilityPack.HtmlNode userNode = html.SelectSingleNode("../../td[1]/div/a[@class='bigusername']");
             if (userNode != null)
             {
                 posterName = HtmlAgilityPack.HtmlEntity.DeEntitize(userNode.InnerText);
             }
-            Post p = new Post(threadId, posterName, postNumber, postTime, postLink, html);
+            Post p = new Post(threadId, posterName, postNumber, postTime, postLink, postTitle, html, postEdit);
             return p;
         }
         private void RemoveComments(HtmlAgilityPack.HtmlNode node)

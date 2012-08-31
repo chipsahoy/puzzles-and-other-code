@@ -211,7 +211,6 @@ namespace POG.FennecFox
         public FormVoteCounter()
         {
             InitializeComponent();
-            tabVotes.TabPages.Remove(tabPage5);
             _synchronousInvoker = a => Invoke(a);
             _forum = new TwoPlusTwoForum(_synchronousInvoker);
             _forum.LoginEvent += new EventHandler<POG.Forum.LoginEventArgs>(_forum_LoginEvent);
@@ -512,25 +511,6 @@ namespace POG.FennecFox
             statusText.Text = "Copied vote count to clipboard.";
         }
 
-        private void btnSetEOD_Click(object sender, EventArgs e)
-        {
-            DateTime now = DateTime.Now;
-            DateTime eod = new DateTime(now.Year, now.Month, now.Day, now.Hour, now.Minute, 0, now.Kind);
-            Int32 duration = 20;
-            if (chkTurboDay1.Checked)
-            {
-                duration = (Int32)numTurboDay1Length.Value;
-                chkTurboDay1.Checked = false;
-                statusText.Text = "Day 1 EOD Set";
-            }
-            else
-            {
-                duration = (Int32)numTurboDayNLength.Value;
-                statusText.Text = "EOD Set";
-            }
-            eod = eod.AddMinutes(duration);
-            dtEndTime.Value = eod;
-        }
 
         private void txtPlayers_KeyDown(object sender, KeyEventArgs e)
         {
@@ -542,23 +522,6 @@ namespace POG.FennecFox
             }
         }
 
-        private void chkTurbo_CheckedChanged(object sender, EventArgs e)
-        {
-            if (chkTurbo.Checked)
-            {
-                btnSetEOD.Enabled = true;
-                chkTurboDay1.Enabled = true;
-                numTurboDay1Length.Enabled = true;
-                numTurboDayNLength.Enabled = true;
-            }
-            else
-            {
-                btnSetEOD.Enabled = false;
-                chkTurboDay1.Enabled = false;
-                numTurboDay1Length.Enabled = false;
-                numTurboDayNLength.Enabled = false;
-            }
-        }
 
         private void URLTextBox_TextChanged(object sender, EventArgs e)
         {
@@ -633,10 +596,6 @@ namespace POG.FennecFox
                 _voteCount.SetPlayerList(players);
             }
         }
-
-
-
-
 
     }
     public static class FlashWindow

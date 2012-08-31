@@ -35,44 +35,13 @@
             this.mnuUnhide = new System.Windows.Forms.ToolStripMenuItem();
             this.statusBrowser = new System.Windows.Forms.StatusStrip();
             this.statusText = new System.Windows.Forms.ToolStripStatusLabel();
-            this.tabPage5 = new System.Windows.Forms.TabPage();
-            this.btnSetEOD = new System.Windows.Forms.Button();
-            this.label14 = new System.Windows.Forms.Label();
-            this.label13 = new System.Windows.Forms.Label();
-            this.numTurboDayNLength = new System.Windows.Forms.NumericUpDown();
-            this.numTurboDay1Length = new System.Windows.Forms.NumericUpDown();
-            this.chkTurbo = new System.Windows.Forms.CheckBox();
-            this.chkTurboDay1 = new System.Windows.Forms.CheckBox();
-            this.checkBox4 = new System.Windows.Forms.CheckBox();
-            this.checkBox3 = new System.Windows.Forms.CheckBox();
-            this.checkBox2 = new System.Windows.Forms.CheckBox();
-            this.label12 = new System.Windows.Forms.Label();
-            this.label11 = new System.Windows.Forms.Label();
-            this.dateTimePicker2 = new System.Windows.Forms.DateTimePicker();
-            this.dateTimePicker1 = new System.Windows.Forms.DateTimePicker();
-            this.tableLayoutPanel4 = new System.Windows.Forms.TableLayoutPanel();
-            this.label10 = new System.Windows.Forms.Label();
-            this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
-            this.label9 = new System.Windows.Forms.Label();
-            this.numVanillaWolves = new System.Windows.Forms.NumericUpDown();
-            this.label6 = new System.Windows.Forms.Label();
-            this.numVanillagers = new System.Windows.Forms.NumericUpDown();
-            this.label7 = new System.Windows.Forms.Label();
-            this.numVillageSeers = new System.Windows.Forms.NumericUpDown();
-            this.label5 = new System.Windows.Forms.Label();
-            this.label8 = new System.Windows.Forms.Label();
-            this.comboGameTypes = new System.Windows.Forms.ComboBox();
-            this.tabPage3 = new System.Windows.Forms.TabPage();
+            this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.txtVersion = new System.Windows.Forms.TextBox();
             this.btnNewPlayerList = new System.Windows.Forms.Button();
             this.btnReset = new System.Windows.Forms.Button();
             this.btnStartGame = new System.Windows.Forms.Button();
             this.URLTextBox = new System.Windows.Forms.TextBox();
             this.label4 = new System.Windows.Forms.Label();
-            this.tabPage1 = new System.Windows.Forms.TabPage();
-            this.txtVersion = new System.Windows.Forms.TextBox();
-            this.textBox1 = new System.Windows.Forms.TextBox();
-            this.tabPage2 = new System.Windows.Forms.TabPage();
             this.btnLogout = new System.Windows.Forms.Button();
             this.btnLogin = new System.Windows.Forms.Button();
             this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
@@ -101,17 +70,6 @@
             this.tabVotes = new System.Windows.Forms.TabControl();
             this.contextMenuStrip1.SuspendLayout();
             this.statusBrowser.SuspendLayout();
-            this.tabPage5.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.numTurboDayNLength)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numTurboDay1Length)).BeginInit();
-            this.tableLayoutPanel4.SuspendLayout();
-            this.groupBox1.SuspendLayout();
-            this.tableLayoutPanel3.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.numVanillaWolves)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numVanillagers)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numVillageSeers)).BeginInit();
-            this.tabPage3.SuspendLayout();
-            this.tabPage1.SuspendLayout();
             this.tabPage2.SuspendLayout();
             this.tableLayoutPanel2.SuspendLayout();
             this.tabPage4.SuspendLayout();
@@ -168,420 +126,15 @@
             this.statusText.Size = new System.Drawing.Size(38, 17);
             this.statusText.Text = "status";
             // 
-            // tabPage5
-            // 
-            this.tabPage5.BackColor = System.Drawing.Color.Gainsboro;
-            this.tabPage5.Controls.Add(this.btnSetEOD);
-            this.tabPage5.Controls.Add(this.label14);
-            this.tabPage5.Controls.Add(this.label13);
-            this.tabPage5.Controls.Add(this.numTurboDayNLength);
-            this.tabPage5.Controls.Add(this.numTurboDay1Length);
-            this.tabPage5.Controls.Add(this.chkTurbo);
-            this.tabPage5.Controls.Add(this.chkTurboDay1);
-            this.tabPage5.Controls.Add(this.checkBox4);
-            this.tabPage5.Controls.Add(this.checkBox3);
-            this.tabPage5.Controls.Add(this.checkBox2);
-            this.tabPage5.Controls.Add(this.label12);
-            this.tabPage5.Controls.Add(this.label11);
-            this.tabPage5.Controls.Add(this.dateTimePicker2);
-            this.tabPage5.Controls.Add(this.dateTimePicker1);
-            this.tabPage5.Controls.Add(this.tableLayoutPanel4);
-            this.tabPage5.Location = new System.Drawing.Point(4, 22);
-            this.tabPage5.Name = "tabPage5";
-            this.tabPage5.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage5.Size = new System.Drawing.Size(646, 618);
-            this.tabPage5.TabIndex = 7;
-            this.tabPage5.Text = "Game Settings";
-            // 
-            // btnSetEOD
-            // 
-            this.btnSetEOD.Location = new System.Drawing.Point(262, 285);
-            this.btnSetEOD.Name = "btnSetEOD";
-            this.btnSetEOD.Size = new System.Drawing.Size(125, 23);
-            this.btnSetEOD.TabIndex = 38;
-            this.btnSetEOD.Text = "Set EOD Time Now!";
-            this.btnSetEOD.UseVisualStyleBackColor = true;
-            // 
-            // label14
-            // 
-            this.label14.AutoSize = true;
-            this.label14.Location = new System.Drawing.Point(259, 362);
-            this.label14.Name = "label14";
-            this.label14.Size = new System.Drawing.Size(77, 13);
-            this.label14.TabIndex = 37;
-            this.label14.Text = "Day 2+ Length";
-            // 
-            // label13
-            // 
-            this.label13.AutoSize = true;
-            this.label13.Location = new System.Drawing.Point(259, 320);
-            this.label13.Name = "label13";
-            this.label13.Size = new System.Drawing.Size(71, 13);
-            this.label13.TabIndex = 36;
-            this.label13.Text = "Day 1 Length";
-            // 
-            // numTurboDayNLength
-            // 
-            this.numTurboDayNLength.Location = new System.Drawing.Point(342, 360);
-            this.numTurboDayNLength.Name = "numTurboDayNLength";
-            this.numTurboDayNLength.Size = new System.Drawing.Size(45, 20);
-            this.numTurboDayNLength.TabIndex = 35;
-            this.numTurboDayNLength.Value = new decimal(new int[] {
-            20,
-            0,
-            0,
-            0});
-            // 
-            // numTurboDay1Length
-            // 
-            this.numTurboDay1Length.Location = new System.Drawing.Point(342, 320);
-            this.numTurboDay1Length.Name = "numTurboDay1Length";
-            this.numTurboDay1Length.Size = new System.Drawing.Size(45, 20);
-            this.numTurboDay1Length.TabIndex = 34;
-            this.numTurboDay1Length.Value = new decimal(new int[] {
-            25,
-            0,
-            0,
-            0});
-            // 
-            // chkTurbo
-            // 
-            this.chkTurbo.AutoSize = true;
-            this.chkTurbo.Checked = true;
-            this.chkTurbo.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.chkTurbo.Location = new System.Drawing.Point(262, 239);
-            this.chkTurbo.Name = "chkTurbo";
-            this.chkTurbo.Size = new System.Drawing.Size(60, 17);
-            this.chkTurbo.TabIndex = 33;
-            this.chkTurbo.Text = "Turbo?";
-            this.chkTurbo.UseVisualStyleBackColor = true;
-            // 
-            // chkTurboDay1
-            // 
-            this.chkTurboDay1.AutoSize = true;
-            this.chkTurboDay1.Checked = true;
-            this.chkTurboDay1.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.chkTurboDay1.Location = new System.Drawing.Point(262, 262);
-            this.chkTurboDay1.Name = "chkTurboDay1";
-            this.chkTurboDay1.Size = new System.Drawing.Size(60, 17);
-            this.chkTurboDay1.TabIndex = 32;
-            this.chkTurboDay1.Text = "Day 1?";
-            this.chkTurboDay1.UseVisualStyleBackColor = true;
-            // 
-            // checkBox4
-            // 
-            this.checkBox4.AutoSize = true;
-            this.checkBox4.Location = new System.Drawing.Point(51, 375);
-            this.checkBox4.Name = "checkBox4";
-            this.checkBox4.Size = new System.Drawing.Size(85, 17);
-            this.checkBox4.TabIndex = 16;
-            this.checkBox4.Text = "Auto-Reveal";
-            this.checkBox4.UseVisualStyleBackColor = true;
-            // 
-            // checkBox3
-            // 
-            this.checkBox3.AutoSize = true;
-            this.checkBox3.Location = new System.Drawing.Point(51, 335);
-            this.checkBox3.Name = "checkBox3";
-            this.checkBox3.Size = new System.Drawing.Size(75, 17);
-            this.checkBox3.TabIndex = 15;
-            this.checkBox3.Text = "Auto-Lock";
-            this.checkBox3.UseVisualStyleBackColor = true;
-            // 
-            // checkBox2
-            // 
-            this.checkBox2.AutoSize = true;
-            this.checkBox2.Location = new System.Drawing.Point(409, 113);
-            this.checkBox2.Name = "checkBox2";
-            this.checkBox2.Size = new System.Drawing.Size(113, 17);
-            this.checkBox2.TabIndex = 14;
-            this.checkBox2.Text = "Weekends 1 day?";
-            this.checkBox2.UseVisualStyleBackColor = true;
-            // 
-            // label12
-            // 
-            this.label12.AutoSize = true;
-            this.label12.Location = new System.Drawing.Point(379, 101);
-            this.label12.Name = "label12";
-            this.label12.Size = new System.Drawing.Size(60, 13);
-            this.label12.TabIndex = 8;
-            this.label12.Text = "End of Day";
-            // 
-            // label11
-            // 
-            this.label11.AutoSize = true;
-            this.label11.Location = new System.Drawing.Point(379, 36);
-            this.label11.Name = "label11";
-            this.label11.Size = new System.Drawing.Size(114, 13);
-            this.label11.TabIndex = 7;
-            this.label11.Text = "Start Date/Day Begins";
-            // 
-            // dateTimePicker2
-            // 
-            this.dateTimePicker2.CustomFormat = "HH:mm";
-            this.dateTimePicker2.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
-            this.dateTimePicker2.Location = new System.Drawing.Point(298, 201);
-            this.dateTimePicker2.Name = "dateTimePicker2";
-            this.dateTimePicker2.Size = new System.Drawing.Size(126, 20);
-            this.dateTimePicker2.TabIndex = 6;
-            // 
-            // dateTimePicker1
-            // 
-            this.dateTimePicker1.CustomFormat = "MM/dd/yyyy HH:mm";
-            this.dateTimePicker1.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
-            this.dateTimePicker1.Location = new System.Drawing.Point(382, 64);
-            this.dateTimePicker1.Name = "dateTimePicker1";
-            this.dateTimePicker1.Size = new System.Drawing.Size(126, 20);
-            this.dateTimePicker1.TabIndex = 5;
-            // 
-            // tableLayoutPanel4
-            // 
-            this.tableLayoutPanel4.ColumnCount = 2;
-            this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel4.Controls.Add(this.label10, 0, 0);
-            this.tableLayoutPanel4.Controls.Add(this.groupBox1, 0, 1);
-            this.tableLayoutPanel4.Controls.Add(this.comboGameTypes, 1, 0);
-            this.tableLayoutPanel4.Location = new System.Drawing.Point(8, 6);
-            this.tableLayoutPanel4.Name = "tableLayoutPanel4";
-            this.tableLayoutPanel4.RowCount = 2;
-            this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel4.Size = new System.Drawing.Size(332, 164);
-            this.tableLayoutPanel4.TabIndex = 3;
-            // 
-            // label10
-            // 
-            this.label10.AutoSize = true;
-            this.label10.Location = new System.Drawing.Point(3, 0);
-            this.label10.Name = "label10";
-            this.label10.Size = new System.Drawing.Size(62, 13);
-            this.label10.TabIndex = 0;
-            this.label10.Text = "Game Type";
-            // 
-            // groupBox1
-            // 
-            this.groupBox1.Controls.Add(this.tableLayoutPanel3);
-            this.groupBox1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.groupBox1.Location = new System.Drawing.Point(3, 30);
-            this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(160, 134);
-            this.groupBox1.TabIndex = 2;
-            this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "Roles";
-            // 
-            // tableLayoutPanel3
-            // 
-            this.tableLayoutPanel3.ColumnCount = 2;
-            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 59.88372F));
-            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 40.11628F));
-            this.tableLayoutPanel3.Controls.Add(this.label9, 0, 4);
-            this.tableLayoutPanel3.Controls.Add(this.numVanillaWolves, 1, 4);
-            this.tableLayoutPanel3.Controls.Add(this.label6, 0, 0);
-            this.tableLayoutPanel3.Controls.Add(this.numVanillagers, 1, 2);
-            this.tableLayoutPanel3.Controls.Add(this.label7, 0, 2);
-            this.tableLayoutPanel3.Controls.Add(this.numVillageSeers, 1, 1);
-            this.tableLayoutPanel3.Controls.Add(this.label5, 0, 1);
-            this.tableLayoutPanel3.Controls.Add(this.label8, 0, 3);
-            this.tableLayoutPanel3.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanel3.Location = new System.Drawing.Point(3, 16);
-            this.tableLayoutPanel3.Name = "tableLayoutPanel3";
-            this.tableLayoutPanel3.RowCount = 6;
-            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-            this.tableLayoutPanel3.Size = new System.Drawing.Size(154, 115);
-            this.tableLayoutPanel3.TabIndex = 0;
-            // 
-            // label9
-            // 
-            this.label9.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-            this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(3, 86);
-            this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(86, 13);
-            this.label9.TabIndex = 11;
-            this.label9.Text = "Vanilla";
-            // 
-            // numVanillaWolves
-            // 
-            this.numVanillaWolves.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-            this.numVanillaWolves.Location = new System.Drawing.Point(95, 83);
-            this.numVanillaWolves.Name = "numVanillaWolves";
-            this.numVanillaWolves.Size = new System.Drawing.Size(56, 20);
-            this.numVanillaWolves.TabIndex = 14;
-            // 
-            // label6
-            // 
-            this.label6.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-            this.label6.AutoSize = true;
-            this.label6.Font = new System.Drawing.Font("Arial", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label6.Location = new System.Drawing.Point(3, 0);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(86, 14);
-            this.label6.TabIndex = 13;
-            this.label6.Text = "Village Team";
-            // 
-            // numVanillagers
-            // 
-            this.numVanillagers.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-            this.numVanillagers.Location = new System.Drawing.Point(95, 43);
-            this.numVanillagers.Name = "numVanillagers";
-            this.numVanillagers.Size = new System.Drawing.Size(56, 20);
-            this.numVanillagers.TabIndex = 13;
-            // 
-            // label7
-            // 
-            this.label7.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-            this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(3, 46);
-            this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(86, 13);
-            this.label7.TabIndex = 9;
-            this.label7.Text = "Vanilla";
-            // 
-            // numVillageSeers
-            // 
-            this.numVillageSeers.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-            this.numVillageSeers.Location = new System.Drawing.Point(95, 17);
-            this.numVillageSeers.Name = "numVillageSeers";
-            this.numVillageSeers.Size = new System.Drawing.Size(56, 20);
-            this.numVillageSeers.TabIndex = 12;
-            // 
-            // label5
-            // 
-            this.label5.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-            this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(3, 20);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(86, 13);
-            this.label5.TabIndex = 7;
-            this.label5.Text = "Seers";
-            // 
-            // label8
-            // 
-            this.label8.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-            this.label8.AutoSize = true;
-            this.label8.Font = new System.Drawing.Font("Arial", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label8.Location = new System.Drawing.Point(3, 66);
-            this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(86, 14);
-            this.label8.TabIndex = 14;
-            this.label8.Text = "Wolf Team";
-            // 
-            // comboGameTypes
-            // 
-            this.comboGameTypes.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.comboGameTypes.FormattingEnabled = true;
-            this.comboGameTypes.Items.AddRange(new object[] {
-            "Turbo - 9 players",
-            "Turbo - 13 players",
-            "Vanilla - 13 players",
-            "Vanilla - 17 players"});
-            this.comboGameTypes.Location = new System.Drawing.Point(169, 3);
-            this.comboGameTypes.Name = "comboGameTypes";
-            this.comboGameTypes.Size = new System.Drawing.Size(121, 21);
-            this.comboGameTypes.TabIndex = 1;
-            // 
-            // tabPage3
-            // 
-            this.tabPage3.BackColor = System.Drawing.Color.Gainsboro;
-            this.tabPage3.Controls.Add(this.btnNewPlayerList);
-            this.tabPage3.Controls.Add(this.btnReset);
-            this.tabPage3.Controls.Add(this.btnStartGame);
-            this.tabPage3.Controls.Add(this.URLTextBox);
-            this.tabPage3.Controls.Add(this.label4);
-            this.tabPage3.Location = new System.Drawing.Point(4, 22);
-            this.tabPage3.Name = "tabPage3";
-            this.tabPage3.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage3.Size = new System.Drawing.Size(646, 618);
-            this.tabPage3.TabIndex = 6;
-            this.tabPage3.Text = "Players";
-            // 
-            // btnNewPlayerList
-            // 
-            this.btnNewPlayerList.Location = new System.Drawing.Point(304, 56);
-            this.btnNewPlayerList.Name = "btnNewPlayerList";
-            this.btnNewPlayerList.Size = new System.Drawing.Size(156, 23);
-            this.btnNewPlayerList.TabIndex = 40;
-            this.btnNewPlayerList.Text = "New Player List...";
-            this.btnNewPlayerList.UseVisualStyleBackColor = true;
-            this.btnNewPlayerList.Click += new System.EventHandler(this.btnNewPlayerList_Click);
-            // 
-            // btnReset
-            // 
-            this.btnReset.Location = new System.Drawing.Point(385, 27);
-            this.btnReset.Name = "btnReset";
-            this.btnReset.Size = new System.Drawing.Size(75, 23);
-            this.btnReset.TabIndex = 39;
-            this.btnReset.Text = "Reset All";
-            this.btnReset.UseVisualStyleBackColor = true;
-            this.btnReset.Click += new System.EventHandler(this.btnReset_Click);
-            // 
-            // btnStartGame
-            // 
-            this.btnStartGame.Enabled = false;
-            this.btnStartGame.Location = new System.Drawing.Point(304, 27);
-            this.btnStartGame.Name = "btnStartGame";
-            this.btnStartGame.Size = new System.Drawing.Size(75, 23);
-            this.btnStartGame.TabIndex = 38;
-            this.btnStartGame.Text = "Start";
-            this.btnStartGame.UseVisualStyleBackColor = true;
-            this.btnStartGame.Click += new System.EventHandler(this.btnStartGame_Click);
-            // 
-            // URLTextBox
-            // 
-            this.URLTextBox.Location = new System.Drawing.Point(113, 4);
-            this.URLTextBox.Name = "URLTextBox";
-            this.URLTextBox.Size = new System.Drawing.Size(502, 20);
-            this.URLTextBox.TabIndex = 37;
-            this.URLTextBox.TextChanged += new System.EventHandler(this.URLTextBox_TextChanged);
-            // 
-            // label4
-            // 
-            this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(15, 11);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(92, 13);
-            this.label4.TabIndex = 36;
-            this.label4.Text = "Main Thread URL";
-            // 
-            // tabPage1
-            // 
-            this.tabPage1.BackColor = System.Drawing.Color.Gainsboro;
-            this.tabPage1.Controls.Add(this.txtVersion);
-            this.tabPage1.Controls.Add(this.textBox1);
-            this.tabPage1.Location = new System.Drawing.Point(4, 22);
-            this.tabPage1.Name = "tabPage1";
-            this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(646, 618);
-            this.tabPage1.TabIndex = 4;
-            this.tabPage1.Text = "Help";
-            // 
-            // txtVersion
-            // 
-            this.txtVersion.Location = new System.Drawing.Point(8, 420);
-            this.txtVersion.Name = "txtVersion";
-            this.txtVersion.ReadOnly = true;
-            this.txtVersion.Size = new System.Drawing.Size(264, 20);
-            this.txtVersion.TabIndex = 1;
-            // 
-            // textBox1
-            // 
-            this.textBox1.Location = new System.Drawing.Point(8, 6);
-            this.textBox1.Multiline = true;
-            this.textBox1.Name = "textBox1";
-            this.textBox1.ReadOnly = true;
-            this.textBox1.Size = new System.Drawing.Size(264, 408);
-            this.textBox1.TabIndex = 0;
-            this.textBox1.Text = resources.GetString("textBox1.Text");
-            // 
             // tabPage2
             // 
             this.tabPage2.BackColor = System.Drawing.Color.Gainsboro;
+            this.tabPage2.Controls.Add(this.txtVersion);
+            this.tabPage2.Controls.Add(this.btnNewPlayerList);
+            this.tabPage2.Controls.Add(this.btnReset);
+            this.tabPage2.Controls.Add(this.btnStartGame);
+            this.tabPage2.Controls.Add(this.URLTextBox);
+            this.tabPage2.Controls.Add(this.label4);
             this.tabPage2.Controls.Add(this.btnLogout);
             this.tabPage2.Controls.Add(this.btnLogin);
             this.tabPage2.Controls.Add(this.tableLayoutPanel2);
@@ -590,7 +143,65 @@
             this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
             this.tabPage2.Size = new System.Drawing.Size(646, 618);
             this.tabPage2.TabIndex = 5;
-            this.tabPage2.Text = "Gimmick Settings";
+            this.tabPage2.Text = "Choose Game";
+            // 
+            // txtVersion
+            // 
+            this.txtVersion.Location = new System.Drawing.Point(183, 114);
+            this.txtVersion.Name = "txtVersion";
+            this.txtVersion.ReadOnly = true;
+            this.txtVersion.Size = new System.Drawing.Size(291, 20);
+            this.txtVersion.TabIndex = 46;
+            // 
+            // btnNewPlayerList
+            // 
+            this.btnNewPlayerList.Location = new System.Drawing.Point(212, 219);
+            this.btnNewPlayerList.Name = "btnNewPlayerList";
+            this.btnNewPlayerList.Size = new System.Drawing.Size(156, 23);
+            this.btnNewPlayerList.TabIndex = 45;
+            this.btnNewPlayerList.Text = "New Player List...";
+            this.btnNewPlayerList.UseVisualStyleBackColor = true;
+            this.btnNewPlayerList.Click += new System.EventHandler(this.btnNewPlayerList_Click);
+            // 
+            // btnReset
+            // 
+            this.btnReset.Location = new System.Drawing.Point(293, 190);
+            this.btnReset.Name = "btnReset";
+            this.btnReset.Size = new System.Drawing.Size(75, 23);
+            this.btnReset.TabIndex = 44;
+            this.btnReset.Text = "Reset All";
+            this.btnReset.UseVisualStyleBackColor = true;
+            this.btnReset.Click += new System.EventHandler(this.btnReset_Click);
+            // 
+            // btnStartGame
+            // 
+            this.btnStartGame.Enabled = false;
+            this.btnStartGame.Location = new System.Drawing.Point(212, 190);
+            this.btnStartGame.Name = "btnStartGame";
+            this.btnStartGame.Size = new System.Drawing.Size(75, 23);
+            this.btnStartGame.TabIndex = 43;
+            this.btnStartGame.Text = "Start";
+            this.btnStartGame.UseVisualStyleBackColor = true;
+            this.btnStartGame.Click += new System.EventHandler(this.btnStartGame_Click);
+            // 
+            // URLTextBox
+            // 
+            this.URLTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.URLTextBox.Location = new System.Drawing.Point(21, 167);
+            this.URLTextBox.Name = "URLTextBox";
+            this.URLTextBox.Size = new System.Drawing.Size(599, 20);
+            this.URLTextBox.TabIndex = 42;
+            this.URLTextBox.TextChanged += new System.EventHandler(this.URLTextBox_TextChanged);
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(18, 151);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(92, 13);
+            this.label4.TabIndex = 41;
+            this.label4.Text = "Main Thread URL";
             // 
             // btnLogout
             // 
@@ -919,9 +530,6 @@
             // 
             this.tabVotes.Controls.Add(this.tabPage4);
             this.tabVotes.Controls.Add(this.tabPage2);
-            this.tabVotes.Controls.Add(this.tabPage1);
-            this.tabVotes.Controls.Add(this.tabPage3);
-            this.tabVotes.Controls.Add(this.tabPage5);
             this.tabVotes.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tabVotes.Location = new System.Drawing.Point(0, 0);
             this.tabVotes.Name = "tabVotes";
@@ -943,23 +551,8 @@
             this.contextMenuStrip1.ResumeLayout(false);
             this.statusBrowser.ResumeLayout(false);
             this.statusBrowser.PerformLayout();
-            this.tabPage5.ResumeLayout(false);
-            this.tabPage5.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.numTurboDayNLength)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numTurboDay1Length)).EndInit();
-            this.tableLayoutPanel4.ResumeLayout(false);
-            this.tableLayoutPanel4.PerformLayout();
-            this.groupBox1.ResumeLayout(false);
-            this.tableLayoutPanel3.ResumeLayout(false);
-            this.tableLayoutPanel3.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.numVanillaWolves)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numVanillagers)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numVillageSeers)).EndInit();
-            this.tabPage3.ResumeLayout(false);
-            this.tabPage3.PerformLayout();
-            this.tabPage1.ResumeLayout(false);
-            this.tabPage1.PerformLayout();
             this.tabPage2.ResumeLayout(false);
+            this.tabPage2.PerformLayout();
             this.tableLayoutPanel2.ResumeLayout(false);
             this.tableLayoutPanel2.PerformLayout();
             this.tabPage4.ResumeLayout(false);
@@ -986,36 +579,12 @@
         private System.Windows.Forms.ToolStripMenuItem mnuUnhide;
         private System.Windows.Forms.StatusStrip statusBrowser;
         private System.Windows.Forms.ToolStripStatusLabel statusText;
-        private System.Windows.Forms.TabPage tabPage5;
-        private System.Windows.Forms.CheckBox checkBox4;
-        private System.Windows.Forms.CheckBox checkBox3;
-        private System.Windows.Forms.CheckBox checkBox2;
-        private System.Windows.Forms.Label label12;
-        private System.Windows.Forms.Label label11;
-        private System.Windows.Forms.DateTimePicker dateTimePicker2;
-        private System.Windows.Forms.DateTimePicker dateTimePicker1;
-        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel4;
-        private System.Windows.Forms.Label label10;
-        private System.Windows.Forms.GroupBox groupBox1;
-        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel3;
-        private System.Windows.Forms.Label label9;
-        private System.Windows.Forms.NumericUpDown numVanillaWolves;
-        private System.Windows.Forms.Label label6;
-        private System.Windows.Forms.NumericUpDown numVanillagers;
-        private System.Windows.Forms.Label label7;
-        private System.Windows.Forms.NumericUpDown numVillageSeers;
-        private System.Windows.Forms.Label label5;
-        private System.Windows.Forms.Label label8;
-        private System.Windows.Forms.ComboBox comboGameTypes;
-        private System.Windows.Forms.TabPage tabPage3;
+        private System.Windows.Forms.TabPage tabPage2;
+        private System.Windows.Forms.Button btnNewPlayerList;
         private System.Windows.Forms.Button btnReset;
         private System.Windows.Forms.Button btnStartGame;
         private System.Windows.Forms.TextBox URLTextBox;
         private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.TabPage tabPage1;
-        private System.Windows.Forms.TextBox txtVersion;
-        private System.Windows.Forms.TextBox textBox1;
-        private System.Windows.Forms.TabPage tabPage2;
         private System.Windows.Forms.Button btnLogout;
         private System.Windows.Forms.Button btnLogin;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
@@ -1042,14 +611,7 @@
         private System.Windows.Forms.TextBox txtEndPost;
         private System.Windows.Forms.Button btnGetPosts;
         private System.Windows.Forms.TabControl tabVotes;
-        private System.Windows.Forms.Button btnSetEOD;
-        private System.Windows.Forms.Label label14;
-        private System.Windows.Forms.Label label13;
-        private System.Windows.Forms.NumericUpDown numTurboDayNLength;
-        private System.Windows.Forms.NumericUpDown numTurboDay1Length;
-        private System.Windows.Forms.CheckBox chkTurbo;
-        private System.Windows.Forms.CheckBox chkTurboDay1;
-        private System.Windows.Forms.Button btnNewPlayerList;
+        private System.Windows.Forms.TextBox txtVersion;
 
 
     }

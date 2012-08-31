@@ -123,28 +123,6 @@
   <metadata name="statusBrowser.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>353, 3</value>
   </metadata>
-  <data name="textBox1.Text" xml:space="preserve">
-    <value>If nothing works, switch to the default 2+2 skin.
-
---- How to Use It ---
-
-0. Enter login info on Gimmick Settings tab.
-1. Enter the player list on the players tab. Take players off the list when they die.
-2. Paste a link to the game thread in "Main Thread URL" on the Get Votes tab.
-3. Set the first post # on the Get Votes tab if this isn't day 1.
-4. Set the End of day time on the Get Votes tab.
-5. Click "Get Em" and it will go get the votes. When it's done, copy paste the vote count from the bottom.
-6. Keep clicking "Get Em" to update the count.
-7. At the start of a new day, update "First Post" and click clear.
-
---- Extra Info ---
-
-When you mod a turbo, clicking the "Set EOD Time Now!" button right at day will update the end of day clock on the votes page.
-
-If someone's vote text is not actually a vote, use the hide button to go back to what they bolded previously.  Highlight the person's name, then click Hide. The unhide button undoes this.
-
-</value>
-  </data>
   <metadata name="$this.TrayHeight" type="System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>25</value>
   </metadata>

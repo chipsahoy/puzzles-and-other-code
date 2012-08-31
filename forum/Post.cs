@@ -28,12 +28,15 @@ namespace POG.Forum
         HtmlAgilityPack.HtmlNode _content;
         List<Bold> _bolded;
 
-        public Post(Int32 threadId, String poster, Int32 postNumber, DateTime ts, String postLink, HtmlAgilityPack.HtmlNode content)
+        public Post(Int32 threadId, String poster, Int32 postNumber, DateTime ts, String postLink, 
+            String postTitle, HtmlAgilityPack.HtmlNode content, String postEdit)
         {
             Poster = poster;
             PostNumber = postNumber;
             Time = ts;
             PostLink = postLink;
+            Title = postTitle;
+            Edit = postEdit;
             _content = content;
             ThreadId = threadId;
             ParseBolded();
@@ -68,6 +71,11 @@ namespace POG.Forum
             }
         }
         public String Title
+        {
+            get;
+            private set;
+        }
+        public String Edit
         {
             get;
             private set;
@@ -126,7 +134,7 @@ namespace POG.Forum
 					}
                     if (bold.Length > 0)
                     {
-                        System.Console.WriteLine("{0}\t{1}\t{2}", PostNumber, Poster, bold);
+                        //System.Console.WriteLine("{0}\t{1}\t{2}", PostNumber, Poster, bold);
                         _bolded.Add(new Bold(bold));
                     }
                 }
