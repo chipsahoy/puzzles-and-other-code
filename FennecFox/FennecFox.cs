@@ -533,7 +533,7 @@ namespace POG.FennecFox
 
         private void btnStartGame_Click(object sender, EventArgs e)
         {
-            String url = NormalizeUrl(URLTextBox.Text);
+            String url = pogutils.Utils.NormalizeUrl(URLTextBox.Text);
             if (url != URLTextBox.Text)
             {
                 URLTextBox.Text = url;
@@ -563,27 +563,6 @@ namespace POG.FennecFox
             {
                 _voteCount.CheckThread();
             }
-        }
-        String NormalizeUrl(String url)
-        {
-            if (url == null)
-            {
-                url = String.Empty;
-            }
-            url = url.Trim();
-            if (url.Length > 0)
-            {
-                if (url.EndsWith(".html") || url.EndsWith(".htm"))
-                {
-                    url = url.Substring(0, url.LastIndexOf("index"));
-                }
-
-                if (!url.EndsWith("/"))
-                {
-                    url += "/";
-                }
-            }
-            return url;
         }
 
         private void btnNewPlayerList_Click(object sender, EventArgs e)

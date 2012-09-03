@@ -66,6 +66,7 @@
     <Compile Include="PropertyComparer.cs" />
     <Compile Include="SortableBindingList.cs" />
     <Compile Include="StateMachine.cs" />
+    <Compile Include="Utils.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

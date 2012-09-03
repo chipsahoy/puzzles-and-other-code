@@ -37,6 +37,12 @@ namespace POG.Forum
             ThreadReader t = new ThreadReader(_connectionSettings, _synchronousInvoker);
             return t;
         }
+        internal LobbyReader Lobby()
+        {
+            LobbyReader lr = new LobbyReader(_connectionSettings, _synchronousInvoker);
+            return lr;
+        }
+
         public Int32 PostsPerPage {
             get
             {
@@ -353,6 +359,7 @@ loggedinuser 81788
         }
 
 
+
     }
 	public class TwoPlusTwoForum
 	{
@@ -382,7 +389,6 @@ loggedinuser 81788
 			}
 
 		}
-		public event EventHandler FinishedReadingThread;
 		public event EventHandler<NewStatusEventArgs> StatusUpdate;
 		virtual internal void OnStatusUpdate(String status)
 		{
@@ -394,27 +400,7 @@ loggedinuser 81788
 				);
 			}
 		}
-		virtual internal void OnFinishedReadingThread()
-		{
-			var handler = FinishedReadingThread;
-			if (handler != null)
-			{
-				_synchronousInvoker.Invoke(
-					() => handler(this, EventArgs.Empty)
-				);
-			}
-		}
 		
-		public event PropertyChangedEventHandler PropertyChanged;
-		internal virtual void OnPropertyChanged(string propertyName)
-		{
-			if (PropertyChanged != null)
-			{
-				_synchronousInvoker.Invoke(
-					() => PropertyChanged(this, new PropertyChangedEventArgs(propertyName))
-				);
-			}
-		}
 		#endregion
         public Int32 PostsPerPage
         {
@@ -430,7 +416,12 @@ loggedinuser 81788
             ThreadReader t = _inner.Reader();
             return t;
         }
-		public void Login(string user, string password)
+        public LobbyReader Lobby()
+        {
+            LobbyReader lr = _inner.Lobby();
+            return lr;
+        }
+        public void Login(string user, string password)
 		{
 			_inner.Login(user, password);
 		}
@@ -466,7 +457,8 @@ loggedinuser 81788
         }
         #endregion
 
-    }
+
+     }
 	public class NewStatusEventArgs : EventArgs
 	{
 		public String Status

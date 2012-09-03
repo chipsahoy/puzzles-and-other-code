@@ -7,7 +7,7 @@ using POG.Forum;
 
 namespace POG.Werewolf
 {
-    public class Voter : INotifyPropertyChanged
+    public class Voter 
     {
         VoteCount _game;
         Action<Action> _synchronousInvoker;
@@ -170,15 +170,8 @@ namespace POG.Werewolf
             OnPropertyChanged("PostNumber");
             OnPropertyChanged("PostTime");
         }
-        public event PropertyChangedEventHandler PropertyChanged;
         protected virtual void OnPropertyChanged(string propertyName)
         {
-            //if (PropertyChanged != null)
-            //{
-            //    _synchronousInvoker.Invoke(
-            //        () => PropertyChanged(this, new PropertyChangedEventArgs(propertyName))
-            //    );
-            //}
         }
     }
 }

@@ -19,6 +19,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{3206B3
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ThreadMonitor", "ThreadMonitor\ThreadMonitor.csproj", "{948D97EE-B6AF-4C67-B32B-BBD72D3CF9F7}"
+	ProjectSection(ProjectDependencies) = postProject
+		{C1C1B5FD-7C05-467A-BE22-F6670E013D05} = {C1C1B5FD-7C05-467A-BE22-F6670E013D05}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "checkmywwstats", "checkmywwstats\checkmywwstats.csproj", "{C1C1B5FD-7C05-467A-BE22-F6670E013D05}"
 EndProject

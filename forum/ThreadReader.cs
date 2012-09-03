@@ -30,6 +30,13 @@ namespace POG.Forum
         {
         }
         #endregion
+        #region public properties
+        public object Tag
+        {
+            get;
+            set;
+        }
+        #endregion
         #region public methods
         public void ReadPosts(String url, Int32 pageStart, Int32 pageEnd)
         {
@@ -80,15 +87,16 @@ namespace POG.Forum
         }
         void GetPage(String url, Int32 pageNumber)
         {
+            String local = url;
             if (pageNumber > 1)
             {
-                url += "index" + pageNumber + ".html";
+                local += "index" + pageNumber + ".html";
             }
             string doc = null;
             for (int i = 0; i < 10; i++)
             {
                 ConnectionSettings cs = _connectionSettings.Clone();
-                cs.Url = url;
+                cs.Url = local;
                 doc = HtmlHelper.GetUrlResponseString(cs);
                 if (doc != null)
                 {
@@ -102,13 +110,13 @@ namespace POG.Forum
             Posts posts = new Posts();
             if (doc == null)
             {
-                OnPageComplete(url, pageNumber, pageNumber - 1, DateTime.Now, posts);
+                OnPageComplete(local, pageNumber, pageNumber - 1, DateTime.Now, posts);
                 return;
             }
             Int32 totalPages;
             DateTime ts;
-            ParseThreadPage(url, doc, out totalPages, out ts, ref posts);
-            OnPageComplete(url, pageNumber, totalPages, ts, posts);
+            ParseThreadPage(local, doc, out totalPages, out ts, ref posts);
+            OnPageComplete(local, pageNumber, totalPages, ts, posts);
         }
         private void ParseThreadPage(String url, String doc, out Int32 lastPageNumber, out DateTime ts, ref Posts postList)
         {

@@ -75,7 +75,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ConnectionSettings.cs" />
-    <Compile Include="Thread.cs" />
+    <Compile Include="ForumThread.cs" />
+    <Compile Include="LobbyReader.cs" />
+    <Compile Include="ThreadReader.cs" />
     <Compile Include="Vbulletin.cs" />
     <Compile Include="HtmlHelper.cs" />
     <Compile Include="PrivateMessage.cs" />
