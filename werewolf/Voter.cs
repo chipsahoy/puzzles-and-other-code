@@ -89,11 +89,18 @@ namespace POG.Werewolf
                 return _postNumber;
             }
         }
+        DateTimeOffset _postTime;
         [Browsable(true)]
-        public virtual DateTime PostTime
+        public virtual DateTimeOffset PostTime
         {
-            get;
-            internal set;
+            get
+            {
+                return _postTime.ToLocalTime();
+            }
+            internal set
+            {
+                _postTime = value;
+            }
         }
         [Browsable(true)]
         public virtual String PostLink
@@ -142,7 +149,7 @@ namespace POG.Werewolf
                 }
             }
         }
-        internal void SetVote(String bolded, Int32 postNumber, DateTime time, Int32 id, Int32 position)
+        internal void SetVote(String bolded, Int32 postNumber, DateTimeOffset time, Int32 id, Int32 position)
         {
             _postNumber = postNumber;
             _postId = id;

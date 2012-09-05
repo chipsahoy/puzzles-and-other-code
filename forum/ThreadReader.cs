@@ -49,7 +49,7 @@ namespace POG.Forum
         public event EventHandler<PostEventArgs> PostEvent;
         #endregion
         #region event helpers
-        virtual internal void OnPageComplete(String url, Int32 page, Int32 totalPages, DateTime ts, Posts posts)
+        virtual internal void OnPageComplete(String url, Int32 page, Int32 totalPages, DateTimeOffset ts, Posts posts)
         {
             try
             {
@@ -114,18 +114,30 @@ namespace POG.Forum
                 return;
             }
             Int32 totalPages;
-            DateTime ts;
-            ParseThreadPage(local, doc, out totalPages, out ts, ref posts);
-            OnPageComplete(local, pageNumber, totalPages, ts, posts);
+            DateTimeOffset serverTime;
+            ParseThreadPage(local, doc, out totalPages, out serverTime, ref posts);
+            OnPageComplete(local, pageNumber, totalPages, serverTime, posts);
         }
-        private void ParseThreadPage(String url, String doc, out Int32 lastPageNumber, out DateTime ts, ref Posts postList)
+        private void ParseThreadPage(String url, String doc, out Int32 lastPageNumber, out DateTimeOffset serverTime, ref Posts postList)
         {
-            ts = DateTime.Now;
             Int32 threadId = TwoPlusTwoForum.ThreadIdFromUrl(url);
             lastPageNumber = 0;
             var html = new HtmlAgilityPack.HtmlDocument();
             html.LoadHtml(doc);
             HtmlAgilityPack.HtmlNode root = html.DocumentNode;
+
+            serverTime = DateTime.Now;
+            //(//div[class="smallfont", align="center'])[last()] All times are GMT ... The time is now <span class="time">time</span>"."
+
+            HtmlAgilityPack.HtmlNode timeNode = root.SelectNodes("//div[@class='smallfont'][@align='center']").Last();
+            if (timeNode != null)
+            {
+                String timeText = timeNode.InnerText;
+                serverTime = Utils.Misc.ParsePageTime(timeText, DateTime.UtcNow);
+                
+            }
+
+            
             // find total posts: /table/tr[1]/td[2]/div[@class="pagenav"]/table[1]/tr[1]/td[1] -- Page 106 of 106
             HtmlAgilityPack.HtmlNode pageNode = root.SelectSingleNode("//div[@class='pagenav']/table/tr/td");
             if (pageNode != null)
@@ -152,20 +164,20 @@ namespace POG.Forum
             postList = new Posts();
             foreach (HtmlAgilityPack.HtmlNode post in posts)
             {
-                Post p = HtmlToPost(threadId, post);
+                Post p = HtmlToPost(threadId, post, serverTime);
                 if (p != null)
                 {
                     postList.Add(p);
                 }
             }
         }
-        private Post HtmlToPost(Int32 threadId, HtmlAgilityPack.HtmlNode html)
+        private Post HtmlToPost(Int32 threadId, HtmlAgilityPack.HtmlNode html, DateTimeOffset pageTime)
         {
 
             string posterName = "";
             Int32 postNumber = 0;
             String postLink = null;
-            DateTime postTime = DateTime.Now;
+            DateTimeOffset postTime = DateTime.Now;
             HtmlAgilityPack.HtmlNode postNumberNode = html.SelectSingleNode("../../../tr[1]/td[2]/a");
 
             if (postNumberNode != null)
@@ -178,22 +190,8 @@ namespace POG.Forum
             if (postTimeNode != null)
             {
                 string time = postTimeNode.InnerText.Trim();
-                DateTime dtNow = DateTime.Now;
-                string today = dtNow.ToString("MM-dd-yyyy");
-                time = time.Replace("Today", today);
-                DateTime dtYesterday = dtNow - new TimeSpan(1, 0, 0, 0);
-                string yesterday = dtYesterday.ToString("MM-dd-yyyy");
-                time = time.Replace("Yesterday", yesterday);
-                var culture = Thread.CurrentThread.CurrentCulture;
-                try
-                {
-                    Thread.CurrentThread.CurrentCulture = CultureInfo.CreateSpecificCulture("en-US");
-                    postTime = DateTime.ParseExact(time, "MM-dd-yyyy, hh:mm tt", null);
-                }
-                finally
-                {
-                    Thread.CurrentThread.CurrentCulture = culture;
-                }
+                postTime = Misc.ParseItemTime(pageTime, time);
+                Console.WriteLine("Post time: {0}", postTime.DateTime.ToShortTimeString());
             }
             String postTitle = "";
             HtmlAgilityPack.HtmlNode titleNode = html.SelectSingleNode("../div[@class='smallfont']/strong");
@@ -217,12 +215,70 @@ namespace POG.Forum
             {
                 posterName = HtmlAgilityPack.HtmlEntity.DeEntitize(userNode.InnerText);
             }
-            Post p = new Post(threadId, posterName, postNumber, postTime, postLink, postTitle, html, postEdit);
+            List<Bold> bolded = ParseBolded(html);
+            Post p = new Post(threadId, posterName, postNumber, postTime, postLink, postTitle, 
+                    html.OuterHtml, postEdit, bolded);
             return p;
         }
         private void RemoveComments(HtmlAgilityPack.HtmlNode node)
         {
             foreach (var n in node.SelectNodes("//comment()") ?? new HtmlAgilityPack.HtmlNodeCollection(node))
+            {
+                n.Remove();
+            }
+        }
+        private List<Bold> ParseBolded(HtmlAgilityPack.HtmlNode original)
+        {
+            List<Bold> bolded = new List<Bold>();
+            HtmlAgilityPack.HtmlNode content = original.CloneNode("Votes", true);
+            RemoveQuotes(content); // strip out quotes
+            RemoveColors(content); // strip out colors
+            RemoveNewlines(content); // strip out newlines
+
+            HtmlAgilityPack.HtmlNodeCollection bolds = content.SelectNodes("child::b");
+
+            if (bolds != null)
+            {
+                foreach (HtmlAgilityPack.HtmlNode c in bolds)
+                {
+                    string bold = HtmlAgilityPack.HtmlEntity.DeEntitize(c.InnerText.Trim());
+                    if (bold.StartsWith("Votes as of post"))
+                    {
+                        continue;
+                    }
+                    if (bold.ToLower() == "in")
+                    {
+                        continue;
+                    }
+                    if (bold.Length > 0)
+                    {
+                        //System.Console.WriteLine("{0}\t{1}\t{2}", PostNumber, Poster, bold);
+                        bolded.Add(new Bold(bold));
+                    }
+                }
+            }
+            return bolded;
+        }
+        static void RemoveQuotes(HtmlAgilityPack.HtmlNode node)
+        {
+            foreach (var n in node.SelectNodes("div/table/tbody/tr/td[@class='alt2']") ?? new HtmlAgilityPack.HtmlNodeCollection(node))
+            {
+                HtmlAgilityPack.HtmlNode div = n.ParentNode.ParentNode.ParentNode.ParentNode;
+                div.Remove();
+            }
+        }
+
+        static void RemoveColors(HtmlAgilityPack.HtmlNode node)
+        {
+            foreach (var n in node.SelectNodes("//font") ?? new HtmlAgilityPack.HtmlNodeCollection(node))
+            {
+                n.Remove();
+            }
+        }
+
+        static void RemoveNewlines(HtmlAgilityPack.HtmlNode node)
+        {
+            foreach (var n in node.SelectNodes("//br") ?? new HtmlAgilityPack.HtmlNodeCollection(node))
             {
                 n.Remove();
             }

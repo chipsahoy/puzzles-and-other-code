@@ -441,7 +441,8 @@ namespace POG.Werewolf
 							if (r.Read())
 							{
 								//Console.WriteLine("VC: Found new start post " + value.ToString());
-								_startTime = r.GetDateTime(0);
+                                DateTime start = r.GetDateTime(0);
+                                _startTime = start;
 							}
 							else
 							{
@@ -475,7 +476,7 @@ namespace POG.Werewolf
 					{
 						cmd.Parameters.Add(new SQLiteParameter("@p2", _threadId));
 						SQLiteParameter pEndTime = new SQLiteParameter("@p3", System.Data.DbType.DateTime);
-						pEndTime.Value = _endTime;
+						pEndTime.Value = _endTime.ToUniversalTime();
 						cmd.Parameters.Add(pEndTime);
 						using (SQLiteDataReader r = cmd.ExecuteReader())
 						{
@@ -501,7 +502,8 @@ namespace POG.Werewolf
         {
             get
             {
-                return _startTime;
+                DateTime? rc = _startTime;
+                return rc;
             }
         }
         public DateTime EndTime
@@ -736,7 +738,7 @@ namespace POG.Werewolf
 					cmd.Parameters.Add(new SQLiteParameter("@p2", _url));
 					cmd.Parameters.Add(new SQLiteParameter("@p3", _startPost));
 					SQLiteParameter pEod = new SQLiteParameter("@p4", System.Data.DbType.DateTime);
-					pEod.Value = _endTime;
+					pEod.Value = _endTime.ToUniversalTime();
 					cmd.Parameters.Add(pEod);
 					int e = cmd.ExecuteNonQuery();
 				}
@@ -766,7 +768,7 @@ namespace POG.Werewolf
 						if (r.Read())
 						{
 							startPost = r.GetInt32(0);
-							endTime = r.GetDateTime(1);
+                            endTime = r.GetDateTime(1);
 						}
 					}
 				}
@@ -845,7 +847,7 @@ namespace POG.Werewolf
 					cmdCount.Parameters.Add(p1);
 					cmdCount.Parameters.Add(new SQLiteParameter("@p2", _threadId));
 					SQLiteParameter pEndTime = new SQLiteParameter("@p3", System.Data.DbType.DateTime);
-					pEndTime.Value = _endTime;
+					pEndTime.Value = _endTime.ToUniversalTime();
 					cmdCount.Parameters.Add(pEndTime);
 					cmdCount.Parameters.Add(new SQLiteParameter("@p4", _startPost));
                     lock (_lock)
@@ -887,7 +889,7 @@ namespace POG.Werewolf
 					cmd.Parameters.Add(p1);
 					cmd.Parameters.Add(new SQLiteParameter("@p2", _threadId));
 					SQLiteParameter pEndTime = new SQLiteParameter("@p3", System.Data.DbType.DateTime);
-					pEndTime.Value = _endTime;
+					pEndTime.Value = _endTime.ToUniversalTime();
 					cmd.Parameters.Add(pEndTime);
 					cmd.Parameters.Add(new SQLiteParameter("@p4", _startPost));
                     foreach (Voter p in posters)
@@ -902,7 +904,7 @@ namespace POG.Werewolf
 
 								String bolded = r.GetString(0);
 								Int32 postNumber = r.GetInt32(1);
-								DateTime postTime = r.GetDateTime(2);
+                                DateTime postTime = r.GetDateTime(2);
 								Int32 postId = r.GetInt32(3);
 								Int32 boldPosition = r.GetInt32(4);
                                 lock (_lock)
@@ -1147,7 +1149,7 @@ namespace POG.Werewolf
                             pPostNumber.Value = p.PostNumber;
                             pContent.Value = p.Content;
                             pTitle.Value = p.Title;
-                            pTime.Value = p.Time;
+                            pTime.Value = p.Time.UtcDateTime;
                             int e = cmd.ExecuteNonQuery();
 
                             int ix = 0;
@@ -1210,7 +1212,7 @@ namespace POG.Werewolf
                     cmd.Parameters.Add(new SQLiteParameter("@p1", voter.Name));
                     cmd.Parameters.Add(new SQLiteParameter("@p2", _threadId));
                     SQLiteParameter pEndTime = new SQLiteParameter("@p3", System.Data.DbType.DateTime);
-                    pEndTime.Value = _endTime;
+                    pEndTime.Value = _endTime.ToUniversalTime();
                     cmd.Parameters.Add(pEndTime);
                     cmd.Parameters.Add(new SQLiteParameter("@p4", postId));
                     using (SQLiteDataReader r = cmd.ExecuteReader())

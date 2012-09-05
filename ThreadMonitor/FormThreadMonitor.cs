@@ -91,8 +91,7 @@ namespace ThreadMonitor
             {
                 if ((p.PostNumber >= readArgs.StartPost) && (p.PostNumber <= readArgs.EndPost))
                 {
-                    _cms.PublishPost(readArgs.URL, "0", p.Poster, p.PostNumber, p.Time, p.PostLink, p.Content,
-                        p.Title, p.Edit);
+                    _cms.PublishPost(readArgs.URL, "0", p);
                 }
             }
         }
@@ -117,8 +116,7 @@ namespace ThreadMonitor
             Console.WriteLine("Done Page {0} of {1}", e.Page, e.URL);
             foreach (ForumThread t in e.Threads)
             {
-                _cms.PublishLobbyPage("0", t.URL, t.Title, t.ThreadIconText, 
-                        t.OP, t.LastPoster, t.LastPostTime, t.ReplyCount, t.Views);
+                _cms.PublishLobbyPage("0", t);
             }
         }
 

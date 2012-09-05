@@ -6,6 +6,8 @@ using System.Threading;
 using Apache.NMS;
 using Apache.NMS.ActiveMQ;
 using Apache.NMS.Util;
+using POG.Utils;
+using POG.Forum;
 
 namespace POG.Database
 {
@@ -70,25 +72,24 @@ namespace POG.Database
             Int32.TryParse(tid, out rc);
             return rc;
         }
-        public void PublishLobbyPage(String requestId, String url, String title, String threadIconText,
-            String op, String lastPoster, DateTime lastPostTime, Int32 replies, Int32 views)
+        public void PublishLobbyPage(String requestId, ForumThread t)
         {
             // Send a message
             ITextMessage request = _session.CreateTextMessage("lobby thread");
             //request.NMSReplyTo = _readQueue;
             request.NMSCorrelationID = requestId;
             request.Properties["Type"] = "lobbyThread";
-            request.Properties["URL"] = url;
-            request.Properties["Title"] = title;
-            request.Properties["IconText"] = threadIconText;
-            request.Properties["OP"] = op;
-            request.Properties["LastPoster"] = lastPoster;
-            request.Properties["LastPostTime"] = lastPostTime.ToString("yyyy-MM-dd HH:mm:ss");
-            request.Properties["Replies"] = replies.ToString();
-            request.Properties["Views"] = views.ToString();
-            Int32 tid = TidFromURL(url);
+            request.Properties["URL"] = t.URL;
+            request.Properties["Title"] = t.Title;
+            request.Properties["IconText"] = t.ThreadIconText;
+            request.Properties["OP"] = t.OP;
+            request.Properties["LastPoster"] = t.LastPoster;
+            request.Properties["LastPostTime"] = t.LastPostTime.ToString("yyyy-MM-dd HH:mm:ss");
+            request.Properties["Replies"] = t.ReplyCount.ToString();
+            request.Properties["Views"] = t.Views.ToString();
+            Int32 tid = TidFromURL(t.URL);
             request.Properties["Thread"] = tid;
-            Console.WriteLine("Sending Thread #{0} '{1}'", tid, title);
+            Console.WriteLine("Sending Thread #{0} '{1}'", tid, t.Title);
             try
             {
                 _lobbyQueue.Send(request);
@@ -98,24 +99,23 @@ namespace POG.Database
                 Console.WriteLine("Timeout sending tid '{0}'", tid);
             }
         }
-        public void PublishPost(String threadURL, String ID, String posterName, Int32 postNumber, 
-            DateTime postTime, String postLink, String html, String title, String edit)
+        public void PublishPost(String threadURL, String ID, Post p)
 		{
 			// Send a message
-			ITextMessage request = _session.CreateTextMessage(html);
+			ITextMessage request = _session.CreateTextMessage(p.Content);
             //request.NMSReplyTo = _readQueue;
 			request.NMSCorrelationID = ID;
             request.Properties["Type"] = "post";
             request.Properties["URL"] = threadURL;
-            request.Properties["Title"] = title;
-            request.Properties["Edit"] = edit;
-			request.Properties["Poster"] = posterName;
-			request.Properties["Number"] = postNumber.ToString();
-			request.Properties["Time"] = postTime.ToUniversalTime().ToString("yyyy-MM-dd HH:mm:ss");
-			request.Properties["Link"] = postLink;
+            request.Properties["Title"] = p.Title;
+            request.Properties["Edit"] = p.Edit;
+			request.Properties["Poster"] = p.Poster;
+			request.Properties["Number"] = p.PostNumber.ToString();
+			request.Properties["Time"] = p.Time.ToString("yyyy-MM-dd HH:mm:ss");
+			request.Properties["Link"] = p.PostLink;
 			// Link: ?p=....&
-			int ixPostStart = postLink.LastIndexOf("?p=") + 3;
-			string sPost = postLink.Substring(ixPostStart);
+            int ixPostStart = p.PostLink.LastIndexOf("?p=") + 3;
+            string sPost = p.PostLink.Substring(ixPostStart);
 			int ixPostLast = sPost.IndexOf('&');
 			sPost = sPost.Substring(0, ixPostLast);
 			request.Properties["PostId"] = sPost;
@@ -123,14 +123,14 @@ namespace POG.Database
 			int ixTidStart = threadURL.LastIndexOf('-') + 1;
 			string tid = threadURL.Substring(ixTidStart, threadURL.Length - (ixTidStart + 1));
 			request.Properties["Thread"] = tid;
-			Console.WriteLine("Sending post #{0} by {1}", postNumber.ToString(), posterName);
+			Console.WriteLine("Sending post #{0} by {1}", p.PostNumber.ToString(), p.Poster);
 			try
 			{
 				_postsQueue.Send(request);
 			}
 			catch (RequestTimedOutException e)
 			{
-				Console.WriteLine("Timeout sending post " + postNumber.ToString() + " " + e.ToString());
+				Console.WriteLine("Timeout sending post " + p.PostNumber.ToString() + " " + e.ToString());
 			}
 
 		}
@@ -230,7 +230,7 @@ namespace POG.Database
             else
             {
                 String url = (String)message.Properties["URL"];
-                url = pogutils.Utils.NormalizeUrl(url);
+                url = Misc.NormalizeUrl(url);
                 Int32 startPost = Convert.ToInt32(message.Properties["startPost"]);
                 Int32 endPost = Int32.MaxValue;
                 Object o = message.Properties["endPost"];

@@ -25,6 +25,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ThreadMonitor", "ThreadMoni
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "checkmywwstats", "checkmywwstats\checkmywwstats.csproj", "{C1C1B5FD-7C05-467A-BE22-F6670E013D05}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ForumTypes", "ForumTypes\ForumTypes.csproj", "{3A512A72-44FC-458A-A6FB-36147D6C0CF6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -110,6 +112,16 @@ Global
 		{C1C1B5FD-7C05-467A-BE22-F6670E013D05}.Release|Mixed Platforms.Build.0 = Release|x86
 		{C1C1B5FD-7C05-467A-BE22-F6670E013D05}.Release|x86.ActiveCfg = Release|x86
 		{C1C1B5FD-7C05-467A-BE22-F6670E013D05}.Release|x86.Build.0 = Release|x86
+		{3A512A72-44FC-458A-A6FB-36147D6C0CF6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3A512A72-44FC-458A-A6FB-36147D6C0CF6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3A512A72-44FC-458A-A6FB-36147D6C0CF6}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{3A512A72-44FC-458A-A6FB-36147D6C0CF6}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{3A512A72-44FC-458A-A6FB-36147D6C0CF6}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{3A512A72-44FC-458A-A6FB-36147D6C0CF6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3A512A72-44FC-458A-A6FB-36147D6C0CF6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3A512A72-44FC-458A-A6FB-36147D6C0CF6}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{3A512A72-44FC-458A-A6FB-36147D6C0CF6}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{3A512A72-44FC-458A-A6FB-36147D6C0CF6}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -75,17 +75,18 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ConnectionSettings.cs" />
-    <Compile Include="ForumThread.cs" />
     <Compile Include="LobbyReader.cs" />
     <Compile Include="ThreadReader.cs" />
     <Compile Include="Vbulletin.cs" />
     <Compile Include="HtmlHelper.cs" />
-    <Compile Include="PrivateMessage.cs" />
-    <Compile Include="Post.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SecurityUtils.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\ForumTypes\ForumTypes.csproj">
+      <Project>{3A512A72-44FC-458A-A6FB-36147D6C0CF6}</Project>
+      <Name>ForumTypes</Name>
+    </ProjectReference>
     <ProjectReference Include="..\pogutils\pogutils.csproj">
       <Project>{D1549E8C-BAB5-4E3B-AE03-DC9895752D31}</Project>
       <Name>pogutils</Name>

@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Text.RegularExpressions;
 using System.Globalization;
+using POG.Utils;
 
 namespace POG.Forum
 {
@@ -35,7 +36,7 @@ namespace POG.Forum
         public event EventHandler<LobbyPageCompleteEventArgs> LobbyPageCompleteEvent;
         #endregion
         #region event helpers
-        virtual internal void OnLobbyPageComplete(String url, Int32 page, DateTime ts, Boolean recentFirst,  
+        virtual internal void OnLobbyPageComplete(String url, Int32 page, DateTimeOffset ts, Boolean recentFirst,  
                 List<ForumThread> threads)
         {
             try
@@ -96,38 +97,26 @@ namespace POG.Forum
                 OnLobbyPageComplete(url, pageNumber, DateTime.Now, recentFirst, threadList);
                 return;
             }
-            DateTime ts;
+            DateTimeOffset ts;
             ParseLobbyPage(url, doc, out ts, ref threadList);
             OnLobbyPageComplete(url, pageNumber, ts, recentFirst, threadList);
         }
 
-        private void ParseLobbyPage(string url, string doc, out DateTime ts, ref List<ForumThread> threadList)
+        private void ParseLobbyPage(string url, string doc, out DateTimeOffset serverTime, ref List<ForumThread> threadList)
         {
-            ts = DateTime.Now;
-            TimeSpan offset = new TimeSpan();
             Int32 threadId = TwoPlusTwoForum.ThreadIdFromUrl(url);
             var html = new HtmlAgilityPack.HtmlDocument();
             html.LoadHtml(doc);
             HtmlAgilityPack.HtmlNode root = html.DocumentNode;
+
+            serverTime = DateTime.Now;
             //(//div[class="smallfont", align="center'])[last()] All times are GMT ... The time is now <span class="time">time</span>"."
 
             HtmlAgilityPack.HtmlNode timeNode = root.SelectNodes("//div[@class='smallfont'][@align='center']").Last();
             if (timeNode != null)
             {
                 String timeText = timeNode.InnerText;
-                Match m = Regex.Match(timeText, @"All times are GMT ([\+\-]\d*)\. The time now is (\d\d:\d\d\s[A-Z]*)");
-                if (m.Success)
-                {
-                    Int32 tzOffset = Int32.Parse(m.Groups[1].Value);
-                    String timeServer = m.Groups[2].Value;
-                    Console.WriteLine("{0}/{1}", m.Groups[1].Value, m.Groups[2].Value);
-                    DateTime rawTime = DateTime.Parse(timeServer);
-                    offset = new TimeSpan(tzOffset, 0, 0);
-                    DateTimeOffset serverTime = new DateTimeOffset(rawTime, offset);
-                    ts = serverTime.UtcDateTime;
-
-                    DateTime dtNow = DateTime.Now;
-                }
+                serverTime = Utils.Misc.ParsePageTime(timeText, DateTime.UtcNow);
             }
 
             HtmlAgilityPack.HtmlNodeCollection threads = root.SelectNodes("//tbody[contains(@id, 'threadbits_forum_')]/tr[contains(@id, 'vbpostrow_')]");
@@ -137,7 +126,7 @@ namespace POG.Forum
             }
             foreach (HtmlAgilityPack.HtmlNode thread in threads)
             {
-                ForumThread t = HtmlToThread(threadId, thread, offset, ts);
+                ForumThread t = HtmlToThread(threadId, thread, serverTime);
                 if (t != null)
                 {
                     threadList.Add(t);
@@ -146,7 +135,7 @@ namespace POG.Forum
         }
 
         private ForumThread HtmlToThread(int threadId, HtmlAgilityPack.HtmlNode thread,
-            TimeSpan offset, DateTime ts)
+            DateTimeOffset pageTime)
         {
             ForumThread ft = new ForumThread();
             // td[1] = thread status icon
@@ -192,19 +181,7 @@ namespace POG.Forum
                 if (lines.Count() >= 2)
                 {
                     LastPostTime = lines[0].Trim();
-                    if (LastPostTime.StartsWith("Today"))
-                    {
-                        String today = ts.ToLocalTime().ToShortDateString();
-                        LastPostTime = LastPostTime.Replace("Today", today);
-                    }
-                    if (LastPostTime.StartsWith("Yesterday"))
-                    {
-                        DateTime yesterday = ts.AddDays(-1);
-                        String date = yesterday.ToLocalTime().ToShortDateString();
-                        LastPostTime = LastPostTime.Replace("Yesterday", date); 
-                    }
-                    DateTime dtRaw = DateTime.Parse(LastPostTime);
-                    DateTimeOffset dtLastPost = new DateTimeOffset(dtRaw, offset);
+                    DateTimeOffset dtLastPost = Misc.ParseItemTime(pageTime, LastPostTime);
                     LastPoster = lines[1].Trim().Substring(3);
                     ft.LastPostTime = dtLastPost.UtcDateTime;
                     ft.LastPoster = LastPoster;
@@ -254,7 +231,7 @@ namespace POG.Forum
             get;
             private set;
         }
-        public DateTime TimeStamp
+        public DateTimeOffset TimeStamp
         {
             get;
             private set;
@@ -264,7 +241,7 @@ namespace POG.Forum
             get;
             private set;
         }
-        public LobbyPageCompleteEventArgs(String url, Int32 page, DateTime ts, Boolean recentFirst, 
+        public LobbyPageCompleteEventArgs(String url, Int32 page, DateTimeOffset ts, Boolean recentFirst, 
                 List<ForumThread> threads)
         {
             URL = url;

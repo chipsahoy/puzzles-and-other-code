@@ -13,6 +13,7 @@ using System.Runtime.InteropServices;
 using System.Threading;
 using POG.Werewolf;
 using POG.Forum;
+using POG.Utils;
 
 
 namespace POG.FennecFox
@@ -113,7 +114,7 @@ namespace POG.FennecFox
             col = new DataGridViewTextBoxColumn();
             col.DataPropertyName = "PostTime";
             col.HeaderText = "Time";
-            col.DefaultCellStyle.Format = "hh:mm tt";
+            col.DefaultCellStyle.Format = "HH:mm";
             col.ReadOnly = true;
             col.AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
             col.Resizable = DataGridViewTriState.False;
@@ -158,7 +159,7 @@ namespace POG.FennecFox
 
                 case (Int32)CounterColumn.PostTime:
                     {
-                        if (((DateTime)e.Value) == DateTime.MinValue)
+                        if (((DateTimeOffset)e.Value) == DateTime.MinValue)
                         {
                             e.Value = "";
                         }
@@ -533,7 +534,7 @@ namespace POG.FennecFox
 
         private void btnStartGame_Click(object sender, EventArgs e)
         {
-            String url = pogutils.Utils.NormalizeUrl(URLTextBox.Text);
+            String url = Misc.NormalizeUrl(URLTextBox.Text);
             if (url != URLTextBox.Text)
             {
                 URLTextBox.Text = url;

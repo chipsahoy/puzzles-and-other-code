@@ -25,11 +25,11 @@ namespace POG.Forum
     }
     public class Post
     {
-        HtmlAgilityPack.HtmlNode _content;
+        String _content;
         List<Bold> _bolded;
 
-        public Post(Int32 threadId, String poster, Int32 postNumber, DateTime ts, String postLink, 
-            String postTitle, HtmlAgilityPack.HtmlNode content, String postEdit)
+        public Post(Int32 threadId, String poster, Int32 postNumber, DateTimeOffset ts, String postLink, 
+            String postTitle, String content, String postEdit, List<Bold> bolded)
         {
             Poster = poster;
             PostNumber = postNumber;
@@ -39,7 +39,7 @@ namespace POG.Forum
             Edit = postEdit;
             _content = content;
             ThreadId = threadId;
-            ParseBolded();
+            _bolded = bolded;
             int ixPostStart = postLink.LastIndexOf("?p=") + 3;
             string sPost = postLink.Substring(ixPostStart);
             int ixPostLast = sPost.IndexOf('&');
@@ -67,7 +67,7 @@ namespace POG.Forum
         {
             get
             {
-                return _content.OuterHtml;
+                return _content;
             }
         }
         public String Title
@@ -91,7 +91,7 @@ namespace POG.Forum
             get;
             private set;
         }
-        public DateTime Time
+        public DateTimeOffset Time
         {
             get;
             private set;
@@ -100,70 +100,10 @@ namespace POG.Forum
         {
             get
             {
-                ParseBolded();
                 return _bolded;
             }
         }
 
-        private void ParseBolded()
-        {
-            if (_bolded != null)
-            {
-                return;
-            }
-            _bolded = new List<Bold>();
-            HtmlAgilityPack.HtmlNode content = _content.CloneNode("Votes", true);
-            RemoveQuotes(content); // strip out quotes
-            RemoveColors(content); // strip out colors
-            RemoveNewlines(content); // strip out newlines
-
-            HtmlAgilityPack.HtmlNodeCollection bolds = content.SelectNodes("child::b");
-
-            if (bolds != null)
-            {
-                foreach (HtmlAgilityPack.HtmlNode c in bolds)
-                {
-                    string bold = HtmlAgilityPack.HtmlEntity.DeEntitize(c.InnerText.Trim());
-                    if(bold.StartsWith("Votes as of post"))
-                    {
-                        continue;
-                    }
-					if (bold.ToLower() == "in")
-					{
-						continue;
-					}
-                    if (bold.Length > 0)
-                    {
-                        //System.Console.WriteLine("{0}\t{1}\t{2}", PostNumber, Poster, bold);
-                        _bolded.Add(new Bold(bold));
-                    }
-                }
-            }
-        }
-        static void RemoveQuotes(HtmlAgilityPack.HtmlNode node)
-        {
-            foreach (var n in node.SelectNodes("div/table/tbody/tr/td[@class='alt2']") ?? new HtmlAgilityPack.HtmlNodeCollection(node))
-            {
-                HtmlAgilityPack.HtmlNode div = n.ParentNode.ParentNode.ParentNode.ParentNode;
-                div.Remove();
-            }
-        }
-
-        static void RemoveColors(HtmlAgilityPack.HtmlNode node)
-        {
-            foreach (var n in node.SelectNodes("//font") ?? new HtmlAgilityPack.HtmlNodeCollection(node))
-            {
-                n.Remove();
-            }
-        }
-
-        static void RemoveNewlines(HtmlAgilityPack.HtmlNode node)
-        {
-            foreach (var n in node.SelectNodes("//br") ?? new HtmlAgilityPack.HtmlNodeCollection(node))
-            {
-                n.Remove();
-            }
-        }
     }
     public class Posts : KeyedCollection<int, Post>
     {

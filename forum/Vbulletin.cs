@@ -488,7 +488,7 @@ loggedinuser 81788
             get;
             private set;
         }
-        public DateTime TimeStamp
+        public DateTimeOffset TimeStamp
         {
             get;
             private set;
@@ -498,7 +498,7 @@ loggedinuser 81788
             get;
             private set;
         }
-        public PageCompleteEventArgs(String url, Int32 page, Int32 totalPages, DateTime ts, Posts posts)
+        public PageCompleteEventArgs(String url, Int32 page, Int32 totalPages, DateTimeOffset ts, Posts posts)
         {
             URL = url;
             Page = page;
