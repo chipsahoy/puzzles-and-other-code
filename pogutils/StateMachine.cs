@@ -213,7 +213,7 @@ namespace POG.Utils
 				Queue<Event> q = m_EventQueues.Peek();
 				if (q != null)
 				{
-					//System.Console.WriteLine("Queue event: " + evt.Name);
+					//System.Trace.TraceInformation("Queue event: " + evt.Name);
 					q.Enqueue(evt);
 					m_host.WakeUp();
 				}
@@ -227,7 +227,7 @@ namespace POG.Utils
 				Queue<Event> q = m_EventQueueMap[queueType];
 				if (q != null)
 				{
-					//System.Console.WriteLine("Queue event: " + evt.Name);
+					//System.Trace.TraceInformation("Queue event: " + evt.Name);
 					q.Enqueue(evt);
 					m_host.WakeUp();
 				}
@@ -335,7 +335,7 @@ namespace POG.Utils
 					if (evtCount > 0)
 					{
 						evt = q.Dequeue();
-						//System.Console.WriteLine("Dequeue event " + evt.Name);
+						//System.Trace.TraceInformation("Dequeue event " + evt.Name);
 						break;
 					}
 				}

@@ -10,6 +10,7 @@ using System.ComponentModel;
 using System.Windows.Forms;
 using POG.Utils;
 using Newtonsoft;
+using System.Diagnostics;
 
 namespace POG.Forum
 {
@@ -236,7 +237,7 @@ namespace POG.Forum
 			// "submitter=oreos"
 			//cs.Data = "x=oreos";
 			cs.Message = cs.Data;
-			Console.WriteLine("Posting: " + cs.Data);
+			Trace.TraceInformation("Posting: " + cs.Data);
 			String resp = HtmlHelper.PostToUrl(cs);
 			if (resp == null)
 			{
@@ -348,7 +349,7 @@ loggedinuser 81788
             msg.AppendFormat("{0}={1}", "loggedinuser", cs.CC.GetCookies(new System.Uri(TwoPlusTwoForum.BASE_URL))["bbuserid"]);
             cs.Url = String.Format("{0}newreply.php?do=postreply&t={1}", TwoPlusTwoForum.BASE_URL, threadId);
             cs.Data = msg.ToString();
-            Console.WriteLine("Posting: " + cs.Data);
+            Trace.TraceInformation("Posting: " + cs.Data);
             String resp = HtmlHelper.PostToUrl(cs);
             if (resp == null)
             {
@@ -498,13 +499,19 @@ loggedinuser 81788
             get;
             private set;
         }
-        public PageCompleteEventArgs(String url, Int32 page, Int32 totalPages, DateTimeOffset ts, Posts posts)
+        public object Cookie
+        {
+            get;
+            private set;
+        }
+        public PageCompleteEventArgs(String url, Int32 page, Int32 totalPages, DateTimeOffset ts, Posts posts, object o)
         {
             URL = url;
             Page = page;
             TotalPages = totalPages;
             TimeStamp = ts;
             Posts = posts;
+            Cookie = o;
         }
     }
 	public class PostEventArgs : EventArgs

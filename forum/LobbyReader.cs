@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Text.RegularExpressions;
 using System.Globalization;
+using System.Diagnostics;
 using POG.Utils;
 
 namespace POG.Forum
@@ -88,7 +89,7 @@ namespace POG.Forum
                 }
                 else
                 {
-                    Console.WriteLine("*** Error fetching page " + pageNumber.ToString());
+                    Trace.TraceInformation("*** Error fetching page " + pageNumber.ToString());
                 }
             }
             List<ForumThread> threadList = new List<ForumThread>();
@@ -139,7 +140,19 @@ namespace POG.Forum
         {
             ForumThread ft = new ForumThread();
             // td[1] = thread status icon
-            HtmlAgilityPack.HtmlNode node = thread.SelectSingleNode("td[1]");
+            HtmlAgilityPack.HtmlNode node = thread.SelectSingleNode("td[1]/img");
+            Boolean locked = false;
+            if (node != null)
+            {
+                String img = node.Attributes["src"].Value;
+                if(img.Contains("lock.gif"))
+                {
+                    locked = true;
+                }
+
+            }
+            ft.Locked = locked;
+
             // td[2]/img = thread icon
             node = thread.SelectSingleNode("td[2]/img");
             String threadIcon = String.Empty;
@@ -159,6 +172,7 @@ namespace POG.Forum
                 threadURL = HtmlAgilityPack.HtmlEntity.DeEntitize(node.Attributes["href"].Value);
                 ft.Title = threadTitle;
                 ft.URL = threadURL;
+                ft.ThreadId = Misc.TidFromURL(ft.URL);
             }
             //      div[2]/span OP name
             String threadOP = String.Empty;
@@ -170,8 +184,8 @@ namespace POG.Forum
             }
             // td[4] = last post area
             //   title=Replies: x, Views: Y
-            String LastPostTime = String.Empty;
-            String LastPoster = String.Empty;
+            String lastPostTime = String.Empty;
+            String lastPoster = String.Empty;
 
             node = thread.SelectSingleNode("td[4]/div");
             if (node != null)
@@ -180,11 +194,11 @@ namespace POG.Forum
                 String[] lines = lastInfo.Split(new string[] { "\r\n", "\n" }, StringSplitOptions.None);
                 if (lines.Count() >= 2)
                 {
-                    LastPostTime = lines[0].Trim();
-                    DateTimeOffset dtLastPost = Misc.ParseItemTime(pageTime, LastPostTime);
-                    LastPoster = lines[1].Trim().Substring(3);
-                    ft.LastPostTime = dtLastPost.UtcDateTime;
-                    ft.LastPoster = LastPoster;
+                    lastPostTime = lines[0].Trim();
+                    DateTimeOffset dtLastPost = Misc.ParseItemTime(pageTime, lastPostTime);
+                    lastPoster = lines[1].Trim().Substring(3);
+                    ft.LastPostTime = dtLastPost;
+                    ft.LastPoster = lastPoster;
                 }
             }
 

@@ -11,7 +11,8 @@ using POG.Forum;
 using System.Collections.Specialized;
 using System.Configuration;
 using System.Data.SQLite;
-using System.Threading.Tasks; 
+using System.Threading.Tasks;
+using System.Diagnostics; 
 
 namespace POG.Werewolf
 {
@@ -52,6 +53,7 @@ namespace POG.Werewolf
             _endTime = new DateTime(now.Year, now.Month, now.Day, 18, 0, 0, now.Kind);
             _thread = t;
             _thread.PageCompleteEvent += new EventHandler<PageCompleteEventArgs>(_thread_PageCompleteEvent);
+            _thread.ReadCompleteEvent += new EventHandler<ReadCompleteEventArgs>(_thread_ReadCompleteEvent);
             _dbName = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\POG\\pogposts.sqlite";
 			_connect = String.Format("Data Source={0};Version=3;", _dbName);
             ConnectToDB();
@@ -65,6 +67,13 @@ namespace POG.Werewolf
 
             Refresh();
         }
+
+        void _thread_ReadCompleteEvent(object sender, ReadCompleteEventArgs e)
+        {
+            _readPostsComplete = true;
+            _checkingThread = false;
+            Refresh();
+        }
         ~VoteCount()
         {
             DisconnectFromDB();
@@ -72,23 +81,20 @@ namespace POG.Werewolf
 
         #endregion
         #region public methods
+        Boolean _checkingThread;
+
         public void CheckThread()
         {
-            Boolean checking = false;
             Int32 lastPage = 0;
             lock (_lock)
             {
                 lastPage = PageFromNumber(_lastPost);
-                if(!_pendingPages.Contains(lastPage))
-                {
-                    _pendingPages.Add(lastPage);
-                    checking = true;
-                }
             }
-            if (checking)
+            if (!_checkingThread)
             {
+                _checkingThread = true;
                 Status = "Checking for new posts...";
-                _thread.ReadPosts(_url, lastPage, lastPage);
+                _thread.ReadPages(_url, lastPage, lastPage, null);
             }
             else
             {
@@ -156,7 +162,7 @@ namespace POG.Werewolf
 					trans.Commit();
 				}
 			}
-            Console.WriteLine("after SetPlayerList");
+            Trace.TraceInformation("after SetPlayerList");
             Refresh();
         }
 		public IEnumerable<String> GetPlayerList()
@@ -182,7 +188,7 @@ namespace POG.Werewolf
 					}
 				}
 			}
-            Console.WriteLine("after GetPlayerList");
+            Trace.TraceInformation("after GetPlayerList");
             return players;
 		}
         public void AddVoteAlias(string bolded, string votee)
@@ -420,7 +426,7 @@ namespace POG.Werewolf
             {
                 if (value == _startPost)
                 {
-                    //Console.WriteLine("VC: Start post unchanged.");
+                    //Trace.TraceInformation("VC: Start post unchanged.");
                     return;
                 }
                 _startPost = value;
@@ -440,18 +446,18 @@ namespace POG.Werewolf
 						{
 							if (r.Read())
 							{
-								//Console.WriteLine("VC: Found new start post " + value.ToString());
+								//Trace.TraceInformation("VC: Found new start post " + value.ToString());
                                 DateTime start = r.GetDateTime(0);
                                 _startTime = start;
 							}
 							else
 							{
-								//Console.WriteLine("VC: Could not find start post " + value.ToString());
+								//Trace.TraceInformation("VC: Could not find start post " + value.ToString());
 								_startTime = null;
 							}
 						}
 					}
-                    Console.WriteLine("after Get StartPost");
+                    Trace.TraceInformation("after Get StartPost");
                 }
                 OnPropertyChanged("StartTime");
                 OnPropertyChanged("StartPost");
@@ -484,12 +490,12 @@ namespace POG.Werewolf
 							{
 								Int32 nightPost = r.GetInt32(0);
 								endPost = nightPost - 1;
-								//Console.WriteLine("VC: first night post: " + nightPost.ToString());
+								//Trace.TraceInformation("VC: first night post: " + nightPost.ToString());
 							}
 						}
 					}
 				}
-                Console.WriteLine("after get EndPost");
+                Trace.TraceInformation("after get EndPost");
                 if (endPost != _endPost)
                 {
                     _endPost = endPost;
@@ -578,7 +584,7 @@ namespace POG.Werewolf
             private set
             {
                 _status = value;
-                //Console.WriteLine("VC Status: " + value);
+                //Trace.TraceInformation("VC Status: " + value);
                 OnPropertyChanged("Status");
             } 
         }
@@ -607,7 +613,6 @@ namespace POG.Werewolf
         }
         #endregion
         #region forum event handlers
-        HashSet<Int32> _pendingPages = new HashSet<int>();
         void _thread_PageCompleteEvent(object sender, PageCompleteEventArgs e)
         {
             AddPostsToDB(e.Posts);
@@ -616,25 +621,15 @@ namespace POG.Werewolf
             Int32 lastPage = havePage;
             lock (_lock)
             {
-                _pendingPages.Remove(e.Page);
                 Status = "Finished Page " + e.Page.ToString();
                 if (e.TotalPages > _lastPage)
                 {
                     _lastPage = e.TotalPages;
                 }
-                for(Int32 i = havePage + 1; i <= e.TotalPages; i++)
-                {
-                    _pendingPages.Add(i);
-                }
             }
             if(e.TotalPages > havePage)
             {
-                _thread.ReadPosts(_url, havePage + 1, e.TotalPages); // release lock before calling random code.
-            }
-            if (_pendingPages.Count == 0)
-            {
-                Refresh();
-                _readPostsComplete = true;
+                _thread.ReadPages(_url, havePage + 1, e.TotalPages, null); // release lock before calling random code.
             }
         }
         #endregion
@@ -652,7 +647,7 @@ namespace POG.Werewolf
 					o = cmd.ExecuteScalar();
 				}
 			}
-            Console.WriteLine("after get max post #");
+            Trace.TraceInformation("after get max post #");
             long rc;
             if ((o == null) || (o is System.DBNull))
             {
@@ -685,7 +680,7 @@ namespace POG.Werewolf
 					int e = cmd.ExecuteNonQuery();
 				}
 			}
-            Console.WriteLine("after SaveAliasDB");
+            Trace.TraceInformation("after SaveAliasDB");
 
 		}
 		String GetAliasDB(String bolded)
@@ -713,7 +708,7 @@ namespace POG.Werewolf
 					}
 				}
 			}
-            Console.WriteLine("after GetAliasDB");
+            Trace.TraceInformation("after GetAliasDB");
 
 			// Check other threads.
 			return rc;
@@ -743,7 +738,7 @@ namespace POG.Werewolf
 					int e = cmd.ExecuteNonQuery();
 				}
 			}
-            Console.WriteLine("after SaveDayBoundaries");
+            Trace.TraceInformation("after SaveDayBoundaries");
 
 		}
 		private void ReadDayBoundariesDB()
@@ -773,7 +768,7 @@ namespace POG.Werewolf
 					}
 				}
 			}
-            Console.WriteLine("after ReadDayBoundaries");
+            Trace.TraceInformation("after ReadDayBoundaries");
             StartPost = startPost;
             EndTime = endTime;
         }
@@ -923,7 +918,7 @@ namespace POG.Werewolf
 					}
 				}
 			}
-            Console.WriteLine("after DoRefresh vote list");
+            Trace.TraceInformation("after DoRefresh vote list");
             BuildValidVotesList();
             RefreshVoteCount();
         }
@@ -1099,7 +1094,7 @@ namespace POG.Werewolf
 					trans.Commit();
                 }
 			}
-            Console.WriteLine("after create tables");
+            Trace.TraceInformation("after create tables");
         }
         void DisconnectFromDB()
         {
@@ -1187,7 +1182,7 @@ namespace POG.Werewolf
                 }
             }
 
-            Console.WriteLine("after AddPostsToDB");
+            Trace.TraceInformation("after AddPostsToDB");
         }
         #endregion
         #endregion
@@ -1225,7 +1220,7 @@ namespace POG.Werewolf
                     }
                 }
             }
-            Console.WriteLine("After unhide");
+            Trace.TraceInformation("After unhide");
             if (postNewId != -1)
             {
                 SetIgnoreOnBold(postNewId, position, false);
@@ -1249,7 +1244,7 @@ namespace POG.Werewolf
                     int e = cmd.ExecuteNonQuery();
                 }
             }
-            Console.WriteLine("after ignore vote");
+            Trace.TraceInformation("after ignore vote");
         }
         internal void HideVote(Voter voter, int postId, int boldPosition)
         {

@@ -76,6 +76,7 @@
   <ItemGroup>
     <Compile Include="ConnectionSettings.cs" />
     <Compile Include="LobbyReader.cs" />
+    <Compile Include="ReadCompleteEventArgs.cs" />
     <Compile Include="ThreadReader.cs" />
     <Compile Include="Vbulletin.cs" />
     <Compile Include="HtmlHelper.cs" />

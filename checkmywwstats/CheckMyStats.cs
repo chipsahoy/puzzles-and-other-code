@@ -8,6 +8,9 @@ using Apache.NMS.ActiveMQ;
 using Apache.NMS.Util;
 using POG.Utils;
 using POG.Forum;
+using System.Diagnostics;
+using Apache.NMS.ActiveMQ.Commands;
+using Newtonsoft.Json;
 
 namespace POG.Database
 {
@@ -27,7 +30,7 @@ namespace POG.Database
             ITextMessage request = _session.CreateTextMessage("login");
             //request.NMSReplyTo = _readQueue;
             request.Properties["Name"] = name;
-            Console.WriteLine("Sending login for '{0}'", name);
+            Trace.TraceInformation("Sending login for '{0}'", name);
             IDestination destination = SessionUtil.GetDestination(_session, "topic://fennecfox.listeners");
             using (IMessageProducer loginTopic = _session.CreateProducer(destination))
             {
@@ -37,7 +40,7 @@ namespace POG.Database
                 }
                 catch (RequestTimedOutException)
                 {
-                    Console.WriteLine("*** Timeout sending login for '{0}'", name);
+                    Trace.TraceInformation("*** Timeout sending login for '{0}'", name);
                     return false;
                 }
             }
@@ -48,7 +51,7 @@ namespace POG.Database
             ITextMessage request = _session.CreateTextMessage("logout");
             //request.NMSReplyTo = _readQueue;
             request.Properties["Name"] = name;
-            Console.WriteLine("Sending logout for '{0}'", name);
+            Trace.TraceInformation("Sending logout for '{0}'", name);
             IDestination destination = SessionUtil.GetDestination(_session, "topic://fennecfox.listeners");
             using (IMessageProducer loginTopic = _session.CreateProducer(destination))
             {
@@ -58,79 +61,46 @@ namespace POG.Database
                 }
                 catch (RequestTimedOutException)
                 {
-                    Console.WriteLine("*** Timeout sending login for '{0}'", name);
+                    Trace.TraceInformation("*** Timeout sending login for '{0}'", name);
                     return false;
                 }
             }
             return true;
         }
-        public static Int32 TidFromURL(String url)
-        {
-            int ixTidStart = url.LastIndexOf('-') + 1;
-            string tid = url.Substring(ixTidStart, url.Length - (ixTidStart + 1));
-            Int32 rc = 0;
-            Int32.TryParse(tid, out rc);
-            return rc;
-        }
         public void PublishLobbyPage(String requestId, ForumThread t)
         {
             // Send a message
-            ITextMessage request = _session.CreateTextMessage("lobby thread");
-            //request.NMSReplyTo = _readQueue;
+            String msg = JsonConvert.SerializeObject(t, Formatting.Indented);
+            ITextMessage request = _session.CreateTextMessage(msg);
             request.NMSCorrelationID = requestId;
             request.Properties["Type"] = "lobbyThread";
-            request.Properties["URL"] = t.URL;
-            request.Properties["Title"] = t.Title;
-            request.Properties["IconText"] = t.ThreadIconText;
-            request.Properties["OP"] = t.OP;
-            request.Properties["LastPoster"] = t.LastPoster;
-            request.Properties["LastPostTime"] = t.LastPostTime.ToString("yyyy-MM-dd HH:mm:ss");
-            request.Properties["Replies"] = t.ReplyCount.ToString();
-            request.Properties["Views"] = t.Views.ToString();
-            Int32 tid = TidFromURL(t.URL);
-            request.Properties["Thread"] = tid;
-            Console.WriteLine("Sending Thread #{0} '{1}'", tid, t.Title);
+            Trace.TraceInformation("Sending Thread #{0} '{1}'", t.ThreadId, t.Title);
             try
             {
                 _lobbyQueue.Send(request);
             }
             catch (RequestTimedOutException)
             {
-                Console.WriteLine("Timeout sending tid '{0}'", tid);
+                Trace.TraceInformation("Timeout sending tid '{0}'", t.ThreadId);
             }
         }
         public void PublishPost(String threadURL, String ID, Post p)
 		{
 			// Send a message
-			ITextMessage request = _session.CreateTextMessage(p.Content);
-            //request.NMSReplyTo = _readQueue;
-			request.NMSCorrelationID = ID;
+            String msg = JsonConvert.SerializeObject(p, Formatting.Indented);
+			ITextMessage request = _session.CreateTextMessage(msg);
+            request.NMSCorrelationID = ID;
             request.Properties["Type"] = "post";
-            request.Properties["URL"] = threadURL;
-            request.Properties["Title"] = p.Title;
-            request.Properties["Edit"] = p.Edit;
-			request.Properties["Poster"] = p.Poster;
-			request.Properties["Number"] = p.PostNumber.ToString();
-			request.Properties["Time"] = p.Time.ToString("yyyy-MM-dd HH:mm:ss");
-			request.Properties["Link"] = p.PostLink;
-			// Link: ?p=....&
-            int ixPostStart = p.PostLink.LastIndexOf("?p=") + 3;
-            string sPost = p.PostLink.Substring(ixPostStart);
-			int ixPostLast = sPost.IndexOf('&');
-			sPost = sPost.Substring(0, ixPostLast);
-			request.Properties["PostId"] = sPost;
-			// Thread: -.../
-			int ixTidStart = threadURL.LastIndexOf('-') + 1;
-			string tid = threadURL.Substring(ixTidStart, threadURL.Length - (ixTidStart + 1));
-			request.Properties["Thread"] = tid;
-			Console.WriteLine("Sending post #{0} by {1}", p.PostNumber.ToString(), p.Poster);
+			request.Properties["PostId"] = p.PostId;
+			request.Properties["Thread"] = p.ThreadId;
+			Trace.TraceInformation("Sending post #{0} by {1}", p.PostNumber.ToString(), p.Poster);
 			try
 			{
 				_postsQueue.Send(request);
 			}
 			catch (RequestTimedOutException e)
 			{
-				Console.WriteLine("Timeout sending post " + p.PostNumber.ToString() + " " + e.ToString());
+				Trace.TraceInformation("Timeout sending post " + p.PostNumber.ToString() + " " + e.ToString());
 			}
 
 		}
@@ -155,7 +125,7 @@ namespace POG.Database
             }
             catch (RequestTimedOutException)
             {
-                Console.WriteLine("Timeout sending Done reading msg. ");
+                Trace.TraceInformation("Timeout sending Done reading msg. ");
             }
 
         }
@@ -165,7 +135,7 @@ namespace POG.Database
         public void Login(String name)
 		{
 			Uri connecturi = new Uri("failover:tcp://mq.checkmywwstats.com:61616");
-			Console.WriteLine("About to connect to " + connecturi);
+			Trace.TraceInformation("About to connect to " + connecturi);
 			// NOTE: ensure the nmsprovider-activemq.config file exists in the executable folder.
 			IConnectionFactory factory = new Apache.NMS.ActiveMQ.ConnectionFactory(connecturi);
 			_connection = factory.CreateConnection();
@@ -196,7 +166,7 @@ namespace POG.Database
             //_readQueue = _session.CreateTemporaryQueue();
             DoLogin(name);
 			IDestination destination = SessionUtil.GetDestination(_session, "queue://fennecfox.pleasereadlobby");
-			Console.WriteLine("Using destination: " + destination);
+			Trace.TraceInformation("Using destination: " + destination);
 			_lobbyRequestsQueue = _session.CreateConsumer(destination);
 
             destination = SessionUtil.GetDestination(_session, "queue://fennecfox.pleasereadthread");
@@ -207,12 +177,13 @@ namespace POG.Database
 
             destination = SessionUtil.GetDestination(_session, "queue://fennecfox.lobby");
             _lobbyQueue = _session.CreateProducer(destination);
+            _lobbyQueue.DeliveryMode = MsgDeliveryMode.NonPersistent;
 
 			// Start the connection so that messages will be processed.
 			_connection.Start();
-			_postsQueue.DeliveryMode = MsgDeliveryMode.Persistent;
+			_postsQueue.DeliveryMode = MsgDeliveryMode.NonPersistent;
 			_postsQueue.RequestTimeout = receiveTimeout;
-            _lobbyQueue.DeliveryMode = MsgDeliveryMode.Persistent;
+            _lobbyQueue.DeliveryMode = MsgDeliveryMode.NonPersistent;
             _lobbyQueue.RequestTimeout = receiveTimeout;
 
 			_lobbyRequestsQueue.Listener += new MessageListener(OnLobbyMessage);
@@ -225,10 +196,11 @@ namespace POG.Database
             message = receivedMsg as ITextMessage;
             if (message == null)
             {
-                Console.WriteLine("No message received!");
+                Trace.TraceInformation("No message received!");
             }
             else
             {
+                String id = message.NMSCorrelationID;
                 String url = (String)message.Properties["URL"];
                 url = Misc.NormalizeUrl(url);
                 Int32 startPost = Convert.ToInt32(message.Properties["startPost"]);
@@ -238,8 +210,8 @@ namespace POG.Database
                 {
                     endPost = Convert.ToInt32(o);
                 }
-                Console.WriteLine(receivedMsg.ToString());
-                OnThreadReadEvent(new ThreadReadEventArgs(url, startPost, endPost));
+                Trace.TraceInformation(receivedMsg.ToString());
+                OnThreadReadEvent(new ThreadReadEventArgs(url, startPost, endPost, id));
             }
         }
 		protected void OnLobbyMessage(IMessage receivedMsg)
@@ -248,14 +220,14 @@ namespace POG.Database
 			message = receivedMsg as ITextMessage;
 			if (message == null)
 			{
-				Console.WriteLine("No message received!");
+				Trace.TraceInformation("No message received!");
 			}
 			else
 			{
                 Boolean recentFirst = Convert.ToBoolean((String)message.Properties["recentFirst"]);
                 Int32 startPage = Convert.ToInt32(message.Properties["startPage"]);
                 Int32 endPage = Convert.ToInt32(message.Properties["endPage"]);
-                Console.WriteLine(receivedMsg.ToString());
+                Trace.TraceInformation(receivedMsg.ToString());
                 String url = "http://forumserver.twoplustwo.com/59/puzzles-other-games/";
                 OnLobbyReadEvent(new LobbyReadEventArgs(url, startPage, endPage, recentFirst));
                 //OnMessage(receivedMsg);

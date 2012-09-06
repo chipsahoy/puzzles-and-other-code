@@ -8,6 +8,7 @@ using System.Security.Cryptography.X509Certificates;
 using System.Security.Policy;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Diagnostics;
 
 namespace POG.Forum
 {
@@ -154,7 +155,7 @@ namespace POG.Forum
             {
                 if (!settings.IgnoreErrors)
                 {
-                    Console.WriteLine(e.ToString());
+                    Trace.TraceInformation(e.ToString());
                 }
 
                 settings.Message = e.Message;
@@ -272,7 +273,7 @@ namespace POG.Forum
             }
             catch (Exception excep)
             {
-                Console.WriteLine(excep.ToString());
+                Trace.TraceInformation(excep.ToString());
 
                 settings.Message = excep.Message;
                 return null;

@@ -156,7 +156,7 @@ namespace POG.Werewolf
             _boldPosition = position;
             Bolded = bolded;
             PostTime = time;
-            //Console.WriteLine("My vote[{0}]: '{1}'", postNumber, bolded);
+            //Trace.TraceInformation("My vote[{0}]: '{1}'", postNumber, bolded);
             CurrentVoteChanged();
         }
         internal void ClearVote()

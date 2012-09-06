@@ -11,6 +11,7 @@ using System.ComponentModel;
 using System.Windows.Forms;
 using Newtonsoft;
 using System.Threading.Tasks;
+using System.Diagnostics;
 
 namespace POG.Forum
 {
@@ -31,25 +32,32 @@ namespace POG.Forum
         }
         #endregion
         #region public properties
-        public object Tag
-        {
-            get;
-            set;
-        }
         #endregion
         #region public methods
-        public void ReadPosts(String url, Int32 pageStart, Int32 pageEnd)
+        public void ReadPages(String url, Int32 pageStart, Int32 pageEnd, object o)
         {
-            Task t = new Task(() => GetPages(url, pageStart, pageEnd));
+            Task t = new Task(() => GetPages(url, pageStart, pageEnd, o));
             t.Start();
         }
         #endregion
         #region public events
         public event EventHandler<PageCompleteEventArgs> PageCompleteEvent;
         public event EventHandler<PostEventArgs> PostEvent;
+        public event EventHandler<ReadCompleteEventArgs> ReadCompleteEvent;
         #endregion
         #region event helpers
-        virtual internal void OnPageComplete(String url, Int32 page, Int32 totalPages, DateTimeOffset ts, Posts posts)
+        void OnReadComplete(String url, Int32 pageStart, Int32 pageEnd, object o)
+        {
+            var handler = ReadCompleteEvent;
+            if (handler != null)
+            {
+                _synchronousInvoker.Invoke(
+                    () => handler(this, new ReadCompleteEventArgs(url, pageStart, pageEnd, o))
+                );
+            }
+        }
+        virtual internal void OnPageComplete(String url, Int32 page, Int32 totalPages, DateTimeOffset ts, 
+                Posts posts, object o)
         {
             try
             {
@@ -57,7 +65,7 @@ namespace POG.Forum
                 if (handler != null)
                 {
                     _synchronousInvoker.Invoke(
-                        () => handler(this, new PageCompleteEventArgs(url, page, totalPages, ts, posts))
+                        () => handler(this, new PageCompleteEventArgs(url, page, totalPages, ts, posts, o))
                     );
                 }
             }
@@ -81,12 +89,25 @@ namespace POG.Forum
         }
         #endregion
         #region private methods
-        void GetPages(String url, Int32 pageStart, Int32 pageEnd)
+        void GetPages(String url, Int32 pageStart, Int32 pageEnd, object o)
         {
-            Parallel.For(pageStart, pageEnd + 1, (Int32 page) => { GetPage(url, page); }); 
+            if (pageStart <= pageEnd)
+            {
+                Int32 totalPages;
+                GetPage(url, pageStart, o, out totalPages);
+                pageEnd = Math.Min(totalPages, pageEnd);
+                
+                Parallel.For(pageStart + 1, pageEnd + 1, (Int32 page) => {
+                    Int32 outPages;
+                    GetPage(url, page, o, out outPages);
+                });
+
+            } 
+            OnReadComplete(url, pageStart, pageEnd, o);
         }
-        void GetPage(String url, Int32 pageNumber)
+        void GetPage(String url, Int32 pageNumber, object o, out Int32 outPages)
         {
+            outPages = 0;
             String local = url;
             if (pageNumber > 1)
             {
@@ -104,19 +125,20 @@ namespace POG.Forum
                 }
                 else
                 {
-                    Console.WriteLine("*** Error fetching page " + pageNumber.ToString());
+                    Trace.TraceInformation("*** Error fetching page " + pageNumber.ToString());
                 }
             }
             Posts posts = new Posts();
             if (doc == null)
             {
-                OnPageComplete(local, pageNumber, pageNumber - 1, DateTime.Now, posts);
+                OnPageComplete(local, pageNumber, pageNumber - 1, DateTime.Now, posts, o);
                 return;
             }
             Int32 totalPages;
             DateTimeOffset serverTime;
             ParseThreadPage(local, doc, out totalPages, out serverTime, ref posts);
-            OnPageComplete(local, pageNumber, totalPages, serverTime, posts);
+            outPages = totalPages;
+            OnPageComplete(local, pageNumber, totalPages, serverTime, posts, o);
         }
         private void ParseThreadPage(String url, String doc, out Int32 lastPageNumber, out DateTimeOffset serverTime, ref Posts postList)
         {
@@ -146,7 +168,7 @@ namespace POG.Forum
                 Match m = Regex.Match(pages, @"Page (\d+) of (\d+)");
                 if (m.Success)
                 {
-                    //Console.WriteLine("{0}/{1}", m.Groups[1].Value, m.Groups[2].Value);
+                    //Trace.TraceInformation("{0}/{1}", m.Groups[1].Value, m.Groups[2].Value);
                     lastPageNumber = Convert.ToInt32(m.Groups[2].Value);
                 }
             }
@@ -183,7 +205,7 @@ namespace POG.Forum
             if (postNumberNode != null)
             {
                 postNumber = Int32.Parse(postNumberNode.InnerText);
-                postLink = postNumberNode.Attributes["href"].Value;
+                postLink = HtmlAgilityPack.HtmlEntity.DeEntitize(postNumberNode.Attributes["href"].Value);
             }
             RemoveComments(html);
             HtmlAgilityPack.HtmlNode postTimeNode = html.SelectSingleNode("../../../tr[1]/td[1]");
@@ -191,23 +213,37 @@ namespace POG.Forum
             {
                 string time = postTimeNode.InnerText.Trim();
                 postTime = Misc.ParseItemTime(pageTime, time);
-                Console.WriteLine("Post time: {0}", postTime.DateTime.ToShortTimeString());
+                //Trace.TraceInformation("Post time: {0}", postTime.DateTime.ToShortTimeString());
             }
             String postTitle = "";
             HtmlAgilityPack.HtmlNode titleNode = html.SelectSingleNode("../div[@class='smallfont']/strong");
             if (titleNode != null)
             {
                 postTitle = HtmlAgilityPack.HtmlEntity.DeEntitize(titleNode.InnerText);
-                //Console.WriteLine("title[{0}]:{1} ", postNumber, postTitle);
+                //Trace.TraceInformation("title[{0}]:{1} ", postNumber, postTitle);
             }
 
-            String postEdit = "";
             HtmlAgilityPack.HtmlNode editNode = html.SelectSingleNode("../div[@class='smallfont']/em");
+            PostEdit edit = null;
             if (editNode != null)
             {
-                postEdit = HtmlAgilityPack.HtmlEntity.DeEntitize(editNode.InnerText);
+                String postEdit = HtmlAgilityPack.HtmlEntity.DeEntitize(editNode.InnerText);
                 postEdit = postEdit.Trim();
-                Console.WriteLine("edit[{0}]:{1}", postNumber, postEdit);
+                // Last edited by well named; 09-03-2012 at 08:50 PM. Reason: people who are out will receive the special ******* role
+                String regex = @"Last edited by (.*); (.*)\.(?:\s*Reason: (.*))?";
+                Match m = Regex.Match(postEdit, regex);
+                if (m.Success)
+                {
+                    String editor = m.Groups[1].Value;
+                    String when = m.Groups[2].Value;
+                    DateTimeOffset editTime = Misc.ParseItemTime(pageTime, when);
+                    String editText = null;
+                    if (m.Groups.Count > 2)
+                    {
+                        editText = m.Groups[3].Value.Trim();
+                    }
+                    edit = new PostEdit(editor, editTime, editText);
+                }
             }
 
             HtmlAgilityPack.HtmlNode userNode = html.SelectSingleNode("../../td[1]/div/a[@class='bigusername']");
@@ -217,7 +253,7 @@ namespace POG.Forum
             }
             List<Bold> bolded = ParseBolded(html);
             Post p = new Post(threadId, posterName, postNumber, postTime, postLink, postTitle, 
-                    html.OuterHtml, postEdit, bolded);
+                    html.OuterHtml, bolded, edit);
             return p;
         }
         private void RemoveComments(HtmlAgilityPack.HtmlNode node)
@@ -252,7 +288,7 @@ namespace POG.Forum
                     }
                     if (bold.Length > 0)
                     {
-                        //System.Console.WriteLine("{0}\t{1}\t{2}", PostNumber, Poster, bold);
+                        //System.Trace.TraceInformation("{0}\t{1}\t{2}", PostNumber, Poster, bold);
                         bolded.Add(new Bold(bold));
                     }
                 }

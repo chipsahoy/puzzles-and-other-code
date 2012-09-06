@@ -8,6 +8,7 @@ using System.Text;
 using System.Windows.Forms;
 using POG.Forum;
 using POG.Database;
+using System.Diagnostics;
 
 namespace ThreadMonitor
 {
@@ -75,35 +76,52 @@ namespace ThreadMonitor
         void thread_PageCompleteEvent(object sender, PageCompleteEventArgs e)
         {
             ThreadReader tr = sender as ThreadReader;
-            object o = tr.Tag;
-            ThreadReadEventArgs readArgs = o as ThreadReadEventArgs;
-            if(!readArgs.FoundLastPage)
-            {
-                readArgs.FoundLastPage = true;
-                Int32 requestedLastPage = (readArgs.EndPost - 1) / _forum.PostsPerPage;
-                Int32 last = Math.Min(e.TotalPages, requestedLastPage);
-                if (last != e.Page)
-                {
-                    tr.ReadPosts(readArgs.URL, e.Page + 1, last);
-                }
-            }
+            ThreadReadEventArgs readArgs = e.Cookie as ThreadReadEventArgs;
             foreach (Post p in e.Posts)
             {
                 if ((p.PostNumber >= readArgs.StartPost) && (p.PostNumber <= readArgs.EndPost))
                 {
-                    _cms.PublishPost(readArgs.URL, "0", p);
+                    _cms.PublishPost(readArgs.URL, readArgs.ID, p);
+                }
+            }
+        }
+        void RunThreadRequest(ThreadReadEventArgs e)
+        {
+            _currentThreadReadRequest = e;
+            Trace.TraceInformation("Request to read {0}", e.URL);
+            Int32 pageStart = (e.StartPost - 1) / _forum.PostsPerPage;
+            Int32 pageEnd = (e.EndPost - 1) / _forum.PostsPerPage;
+            ThreadReader thread = _forum.Reader();
+            thread.PageCompleteEvent += new EventHandler<PageCompleteEventArgs>(thread_PageCompleteEvent);
+            thread.ReadCompleteEvent += new EventHandler<ReadCompleteEventArgs>(thread_ReadCompleteEvent);
+            thread.ReadPages(e.URL, pageStart, pageEnd, e);
+        }
+
+        void thread_ReadCompleteEvent(object sender, ReadCompleteEventArgs e)
+        {
+            _currentThreadReadRequest = null;
+            if (_threadReadRequests.Count > 0)
+            {
+                ThreadReadEventArgs next = _threadReadRequests.Dequeue();
+                if (next != null)
+                {
+                    RunThreadRequest(next);
                 }
             }
         }
 
+        ThreadReadEventArgs _currentThreadReadRequest;
+        Queue<ThreadReadEventArgs> _threadReadRequests = new Queue<ThreadReadEventArgs>();
         void _cms_ThreadReadEvent(object sender, ThreadReadEventArgs e)
         {
-            Console.WriteLine("Request to read {0}", e.URL);
-            Int32 pageStart = (e.StartPost - 1) / _forum.PostsPerPage;
-            ThreadReader thread = _forum.Reader();
-            thread.Tag = e;
-            thread.PageCompleteEvent += new EventHandler<PageCompleteEventArgs>(thread_PageCompleteEvent);
-            thread.ReadPosts(e.URL, pageStart, pageStart);
+            if (_currentThreadReadRequest == null)
+            {
+                RunThreadRequest(e);
+            }
+            else
+            {
+                _threadReadRequests.Enqueue(e);
+            }
         }
 
         void _cms_LobbyReadEvent(object sender, LobbyReadEventArgs e)
@@ -113,7 +131,7 @@ namespace ThreadMonitor
 
         void _lobby_LobbyPageCompleteEvent(object sender, LobbyPageCompleteEventArgs e)
         {
-            Console.WriteLine("Done Page {0} of {1}", e.Page, e.URL);
+            Trace.TraceInformation("Done Page {0} of {1}", e.Page, e.URL);
             foreach (ForumThread t in e.Threads)
             {
                 _cms.PublishLobbyPage("0", t);
@@ -145,7 +163,13 @@ namespace ThreadMonitor
 
         private void button1_Click(object sender, EventArgs e)
         {
-            ReadForum("http://forumserver.twoplustwo.com/59/puzzles-other-games/");
+            //ReadForum("http://forumserver.twoplustwo.com/59/puzzles-other-games/");
+            ReadThread("http://forumserver.twoplustwo.com/59/puzzles-other-games/9-6-vanilla-werewolf-signup-1242009/");
+        }
+        private void ReadThread(String url)
+        {
+            ThreadReadEventArgs e = new ThreadReadEventArgs(url, 1, 100, "chips");
+            _cms_ThreadReadEvent(this, e);
         }
 
     }

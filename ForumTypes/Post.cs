@@ -3,40 +3,47 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
+using System.Runtime.Serialization;
+
 
 namespace POG.Forum
 {
+    [DataContract()]
     public class Bold
     {
         public Bold(String content)
         {
             Content = content;
         }
+        [DataMember]
         public String Content
         {
             get;
             private set;
         }
+        [DataMember]
         public Boolean Ignore
         {
             get;
             set;
         }
     }
+    [DataContract()]
     public class Post
     {
         String _content;
         List<Bold> _bolded;
 
         public Post(Int32 threadId, String poster, Int32 postNumber, DateTimeOffset ts, String postLink, 
-            String postTitle, String content, String postEdit, List<Bold> bolded)
+            String postTitle, String content, List<Bold> bolded, 
+            PostEdit edit)
         {
             Poster = poster;
             PostNumber = postNumber;
             Time = ts;
             PostLink = postLink;
             Title = postTitle;
-            Edit = postEdit;
+            Edit = edit;
             _content = content;
             ThreadId = threadId;
             _bolded = bolded;
@@ -48,21 +55,25 @@ namespace POG.Forum
             Int32.TryParse(sPost, out postId);
             PostId = postId;
         }
+        [DataMember]
         public string Poster
         {
             get;
             private set;
         }
+        [DataMember]
         public Int32 PostId
         {
             get;
             private set;
         }
+        [DataMember]
         public Int32 ThreadId
         {
             get;
             private set;
         }
+        [DataMember]
         public String Content
         {
             get
@@ -70,32 +81,37 @@ namespace POG.Forum
                 return _content;
             }
         }
+        [DataMember]
         public String Title
         {
             get;
             private set;
         }
-        public String Edit
+        [DataMember]
+        public PostEdit Edit
         {
             get;
             private set;
         }
-
+        [DataMember]
         public Int32 PostNumber
         {
             get;
             private set;
         }
+        [DataMember]
         public string PostLink
         {
             get;
             private set;
         }
+        [DataMember]
         public DateTimeOffset Time
         {
             get;
             private set;
         }
+        [DataMember]
         public IEnumerable<Bold> Bolded
         {
             get

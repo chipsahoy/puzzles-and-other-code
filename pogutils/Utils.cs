@@ -5,11 +5,21 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Globalization;
+using System.Diagnostics;
 
 namespace POG.Utils
 {
     public class Misc
     {
+        public static Int32 TidFromURL(String url)
+        {
+            int ixTidStart = url.LastIndexOf('-') + 1;
+            string tid = url.Substring(ixTidStart, url.Length - (ixTidStart + 1));
+            Int32 rc = 0;
+            Int32.TryParse(tid, out rc);
+            return rc;
+        }
+
         public static String NormalizeUrl(String url)
         {
             if (url == null)
@@ -40,8 +50,19 @@ namespace POG.Utils
             {
                 tzOffset = Int32.Parse(m.Groups[1].Value);
                 String timeServer = m.Groups[2].Value;
-                Console.WriteLine("{0}/{1}", m.Groups[1].Value, m.Groups[2].Value);
-                DateTime rawTime = DateTime.SpecifyKind(DateTime.Parse(timeServer), DateTimeKind.Unspecified);
+                Trace.TraceInformation("{0}/{1}", m.Groups[1].Value, m.Groups[2].Value);
+                DateTime rawTime; 
+                var culture = Thread.CurrentThread.CurrentCulture;
+                try
+                {
+                    Thread.CurrentThread.CurrentCulture = CultureInfo.CreateSpecificCulture("en-US");
+                    rawTime = DateTime.SpecifyKind(DateTime.ParseExact(timeServer, "hh:mm tt", null), 
+                         DateTimeKind.Unspecified);
+                }
+                finally
+                {
+                    Thread.CurrentThread.CurrentCulture = culture;
+                }
                 TimeSpan tzTime = new TimeSpan(tzOffset, 0, 0);
                 DateTimeOffset guess = new DateTimeOffset(rawTime, tzTime);
                 DateTime utcMidnight = new DateTime(utcNow.Year, utcNow.Month, utcNow.Day, 0, 0, 0);
@@ -56,11 +77,15 @@ namespace POG.Utils
                     rc = guess.AddDays(-1);
                 }
             }
-            Console.WriteLine("Server Time: {0}", rc.DateTime.ToShortTimeString());
+            Trace.TraceInformation("Server Time: {0}", rc.DateTime.ToShortTimeString());
             return rc;
         }
         public static DateTimeOffset ParseItemTime(DateTimeOffset pageTime, String time)
         {
+            // 09-04-2012 at 11:03 AM
+            // 04-12-2012 07:02 PM
+            // 04-12-2012, 02:10 PM
+
             DateTimeOffset rc;
             string today = pageTime.ToString("MM-dd-yyyy");
             time = time.Replace("Today", today);
@@ -68,6 +93,7 @@ namespace POG.Utils
             string yesterday = dtYesterday.ToString("MM-dd-yyyy");
             time = time.Replace("Yesterday", yesterday);
             time = time.Replace(",", String.Empty);
+            time = time.Replace("at ", String.Empty);
             var culture = Thread.CurrentThread.CurrentCulture;
             try
             {

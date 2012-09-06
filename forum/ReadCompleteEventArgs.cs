@@ -3,42 +3,37 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace POG.Database
+namespace POG.Forum
 {
-    public class ThreadReadEventArgs : EventArgs
+    public class ReadCompleteEventArgs : EventArgs
     {
         public string URL
         {
             get;
             private set;
         }
-        public int StartPost
+        public int pageStart
         {
             get;
             private set;
         }
-        public int EndPost
+        public int pageEnd
         {
             get;
             private set;
         }
-        public Boolean FoundLastPage
-        {
-            get;
-            set;
-        }
-        public String ID
+        public object Cookie
         {
             get;
             private set;
         }
 
-        public ThreadReadEventArgs(string url, int startPost, int endPost, String id)
+        public ReadCompleteEventArgs(string url, int pageStart, int pageEnd, object o)
         {
             this.URL = url;
-            this.StartPost = startPost;
-            this.EndPost = endPost;
-            ID = id;
+            this.pageStart = pageStart;
+            this.pageEnd = pageEnd;
+            this.Cookie = o;
         }
     }
 }
