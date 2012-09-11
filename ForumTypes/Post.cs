@@ -34,13 +34,12 @@ namespace POG.Forum
         String _content;
         List<Bold> _bolded;
 
-        public Post(Int32 threadId, String poster, Int32 postNumber, DateTimeOffset ts, String postLink, 
-            String postTitle, String content, List<Bold> bolded, 
-            PostEdit edit)
+        public Post(Int32 threadId, String poster, Int32 posterId, Int32 postNumber, DateTimeOffset ts, 
+            String postLink, String postTitle, String content, List<Bold> bolded, PostEdit edit)
         {
-            Poster = poster;
+            Poster = new Poster(poster, posterId);
             PostNumber = postNumber;
-            Time = ts;
+            Time = ts.ToUniversalTime();
             PostLink = postLink;
             Title = postTitle;
             Edit = edit;
@@ -56,7 +55,7 @@ namespace POG.Forum
             PostId = postId;
         }
         [DataMember]
-        public string Poster
+        public Poster Poster
         {
             get;
             private set;
@@ -99,7 +98,6 @@ namespace POG.Forum
             get;
             private set;
         }
-        [DataMember]
         public string PostLink
         {
             get;

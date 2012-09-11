@@ -514,24 +514,6 @@ loggedinuser 81788
             Cookie = o;
         }
     }
-	public class PostEventArgs : EventArgs
-	{
-        public String URL
-        {
-            get;
-            private set;
-        }
-        public Post Post
-		{
-			get;
-			private set;
-		}
-		public PostEventArgs(String url, Post post)
-		{
-            URL = url;
-			Post = post;
-		}
-	}
 	public class NewPMEventArgs : EventArgs
 	{
 		public PrivateMessage PM

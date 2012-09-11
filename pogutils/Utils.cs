@@ -6,6 +6,7 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Globalization;
 using System.Diagnostics;
+using System.Runtime.InteropServices;
 
 namespace POG.Utils
 {
@@ -104,7 +105,23 @@ namespace POG.Utils
             {
                 Thread.CurrentThread.CurrentCulture = culture;
             }
+            rc = rc.ToUniversalTime();
             return rc;
         }
+        public static Int32 ParseMemberId(String profileUrl)
+        {
+            Int32 posterId = -1;
+            Match m = Regex.Match(profileUrl, @".*/members/(\d*)/");
+            if (m.Success)
+            {
+                String sId = m.Groups[1].Value;
+                if (sId != String.Empty)
+                {
+                    posterId = Int32.Parse(sId);
+                }
+            }
+            return posterId;
+        }
     }
+
 }

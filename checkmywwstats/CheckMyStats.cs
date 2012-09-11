@@ -12,6 +12,7 @@ using System.Diagnostics;
 using Apache.NMS.ActiveMQ.Commands;
 using Newtonsoft.Json;
 
+
 namespace POG.Database
 {
 	public class CheckMyStats
@@ -67,13 +68,14 @@ namespace POG.Database
             }
             return true;
         }
-        public void PublishLobbyPage(String requestId, ForumThread t)
+        public void PublishLobbyPage(String requestId, ForumThread t, DateTimeOffset pageTimestamp)
         {
             // Send a message
             String msg = JsonConvert.SerializeObject(t, Formatting.Indented);
             ITextMessage request = _session.CreateTextMessage(msg);
             request.NMSCorrelationID = requestId;
             request.Properties["Type"] = "lobbyThread";
+            request.Properties["ForumTime"] = ToUTCString(pageTimestamp);
             Trace.TraceInformation("Sending Thread #{0} '{1}'", t.ThreadId, t.Title);
             try
             {
@@ -84,15 +86,22 @@ namespace POG.Database
                 Trace.TraceInformation("Timeout sending tid '{0}'", t.ThreadId);
             }
         }
-        public void PublishPost(String threadURL, String ID, Post p)
+        private String ToUTCString(DateTimeOffset dto)
+        {
+            DateTime utc = dto.ToUniversalTime().DateTime;
+            String rc = System.Xml.XmlConvert.ToString(utc, 
+                System.Xml.XmlDateTimeSerializationMode.RoundtripKind);
+            return rc;
+        }
+        public void PublishPost(String threadURL, String ID, Post p, DateTimeOffset pageTimestamp)
 		{
 			// Send a message
             String msg = JsonConvert.SerializeObject(p, Formatting.Indented);
 			ITextMessage request = _session.CreateTextMessage(msg);
             request.NMSCorrelationID = ID;
             request.Properties["Type"] = "post";
-			request.Properties["PostId"] = p.PostId;
-			request.Properties["Thread"] = p.ThreadId;
+            request.Properties["ForumTime"] = ToUTCString(pageTimestamp);
+            request.Properties["Thread"] = p.ThreadId;
 			Trace.TraceInformation("Sending post #{0} by {1}", p.PostNumber.ToString(), p.Poster);
 			try
 			{
@@ -104,31 +113,6 @@ namespace POG.Database
 			}
 
 		}
-        public void PublishDoneReading(String threadURL, String ID, Int32 StartPost, Int32 EndPost, DateTime serverTime)
-        {
-            // Send a message
-            ITextMessage request = _session.CreateTextMessage("Finished Reading");
-            //request.NMSReplyTo = _readQueue;
-            request.NMSCorrelationID = ID;
-            request.Properties["Type"] = "End of set";
-            request.Properties["URL"] = threadURL;
-            request.Properties["StartPost"] = StartPost.ToString();
-            request.Properties["EndPost"] = StartPost.ToString();
-            request.Properties["Time"] = serverTime.ToUniversalTime().ToString("yyyy-MM-dd HH:mm:ss");
-            // Thread: -.../
-            int ixTidStart = threadURL.LastIndexOf('-') + 1;
-            string tid = threadURL.Substring(ixTidStart, threadURL.Length - (ixTidStart + 1));
-            request.Properties["Thread"] = tid;
-            try
-            {
-                _postsQueue.Send(request);
-            }
-            catch (RequestTimedOutException)
-            {
-                Trace.TraceInformation("Timeout sending Done reading msg. ");
-            }
-
-        }
         public CheckMyStats()
         {
         }

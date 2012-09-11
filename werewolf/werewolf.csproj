@@ -8,7 +8,7 @@
     <ProjectGuid>{9082AFAD-DF54-4B4C-B274-FD399FA8D6E2}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>werewolf</RootNamespace>
+    <RootNamespace>POG.Werewolf</RootNamespace>
     <AssemblyName>werewolf</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -52,6 +52,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="PogSqlite.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="VoteCount.cs" />
     <Compile Include="Voter.cs" />

@@ -81,7 +81,7 @@ namespace ThreadMonitor
             {
                 if ((p.PostNumber >= readArgs.StartPost) && (p.PostNumber <= readArgs.EndPost))
                 {
-                    _cms.PublishPost(readArgs.URL, readArgs.ID, p);
+                    _cms.PublishPost(readArgs.URL, readArgs.ID, p, e.TimeStamp);
                 }
             }
         }
@@ -134,7 +134,7 @@ namespace ThreadMonitor
             Trace.TraceInformation("Done Page {0} of {1}", e.Page, e.URL);
             foreach (ForumThread t in e.Threads)
             {
-                _cms.PublishLobbyPage("0", t);
+                _cms.PublishLobbyPage("0", t, e.TimeStamp);
             }
         }
 
@@ -163,7 +163,7 @@ namespace ThreadMonitor
 
         private void button1_Click(object sender, EventArgs e)
         {
-            //ReadForum("http://forumserver.twoplustwo.com/59/puzzles-other-games/");
+            ReadForum("http://forumserver.twoplustwo.com/59/puzzles-other-games/");
             ReadThread("http://forumserver.twoplustwo.com/59/puzzles-other-games/9-6-vanilla-werewolf-signup-1242009/");
         }
         private void ReadThread(String url)

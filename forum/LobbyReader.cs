@@ -145,7 +145,7 @@ namespace POG.Forum
             if (node != null)
             {
                 String img = node.Attributes["src"].Value;
-                if(img.Contains("lock.gif"))
+                if(img.Contains("lock"))
                 {
                     locked = true;
                 }
@@ -175,12 +175,17 @@ namespace POG.Forum
                 ft.ThreadId = Misc.TidFromURL(ft.URL);
             }
             //      div[2]/span OP name
-            String threadOP = String.Empty;
-            node = thread.SelectSingleNode("td[3]/div[2]/span[1]");
+            node = thread.SelectSingleNode("td[3]/div[2]/span[@style='cursor:pointer']");
             if (node != null)
             {
-                threadOP = HtmlAgilityPack.HtmlEntity.DeEntitize(node.InnerText);
-                ft.OP = threadOP;
+                Int32 opId = -1;
+                String threadOP = HtmlAgilityPack.HtmlEntity.DeEntitize(node.InnerText);
+                String profile = node.Attributes["onclick"].Value;
+                if (profile != string.Empty)
+                {
+                    opId = Misc.ParseMemberId(profile);
+                }
+                ft.OP = new Poster(threadOP, opId);
             }
             // td[4] = last post area
             //   title=Replies: x, Views: Y
@@ -197,9 +202,16 @@ namespace POG.Forum
                     lastPostTime = lines[0].Trim();
                     DateTimeOffset dtLastPost = Misc.ParseItemTime(pageTime, lastPostTime);
                     lastPoster = lines[1].Trim().Substring(3);
-                    ft.LastPostTime = dtLastPost;
-                    ft.LastPoster = lastPoster;
+                    ft.LastPostTime = dtLastPost.ToUniversalTime();
                 }
+                Int32 lastId = -1;
+                node = node.SelectSingleNode("a[1]");
+                if (node != null)
+                {
+                    String profile = node.Attributes["href"].Value;
+                    lastId = Misc.ParseMemberId(profile);
+                }
+                ft.LastPoster = new Poster(lastPoster, lastId);
             }
 
             String sReplies = String.Empty;

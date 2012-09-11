@@ -7,31 +7,24 @@ using System.Runtime.Serialization;
 namespace POG.Forum
 {
     [DataContract()]
-    public class PostEdit
+    public class Poster
     {
         [DataMember]
-        public String Who
+        public String Name
         {
             get;
             private set;
         }
         [DataMember]
-        public DateTimeOffset When
+        public Int32 Id
         {
             get;
             private set;
         }
-        [DataMember]
-        public String Reason
+        public Poster(String name, Int32 id)
         {
-            get;
-            private set;
-        }
-        public PostEdit(String who, DateTimeOffset when, String reason)
-        {
-            Who = who;
-            When = when.ToUniversalTime();
-            Reason = reason;
+            Name = name;
+            Id = id;
         }
     }
 }

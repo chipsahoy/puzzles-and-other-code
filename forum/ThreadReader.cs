@@ -42,7 +42,7 @@ namespace POG.Forum
         #endregion
         #region public events
         public event EventHandler<PageCompleteEventArgs> PageCompleteEvent;
-        public event EventHandler<PostEventArgs> PostEvent;
+        public event EventHandler<PageErrorEventArgs> PageErrorEvent;
         public event EventHandler<ReadCompleteEventArgs> ReadCompleteEvent;
         #endregion
         #region event helpers
@@ -56,6 +56,24 @@ namespace POG.Forum
                 );
             }
         }
+
+        private void OnPageError(String url, int pageNumber, object o)
+        {
+            try
+            {
+                var handler = PageErrorEvent;
+                if (handler != null)
+                {
+                    _synchronousInvoker.Invoke(
+                        () => handler(this, new PageErrorEventArgs(url, pageNumber, o))
+                    );
+                }
+            }
+            catch
+            {
+            }
+        }
+
         virtual internal void OnPageComplete(String url, Int32 page, Int32 totalPages, DateTimeOffset ts, 
                 Posts posts, object o)
         {
@@ -73,39 +91,51 @@ namespace POG.Forum
             {
             }
         }
-        virtual internal void OnPostEvent(String url, Post post)
-        {
-            try
-            {
-                var handler = PostEvent;
-                if (handler != null)
-                {
-                    handler(this, new PostEventArgs(url, post));
-                }
-            }
-            catch
-            {
-            }
-        }
         #endregion
         #region private methods
         void GetPages(String url, Int32 pageStart, Int32 pageEnd, object o)
         {
+            object lockOutput = new object();
+            Int32? errorPage = null;
             if (pageStart <= pageEnd)
             {
                 Int32 totalPages;
-                GetPage(url, pageStart, o, out totalPages);
-                pageEnd = Math.Min(totalPages, pageEnd);
-                
-                Parallel.For(pageStart + 1, pageEnd + 1, (Int32 page) => {
-                    Int32 outPages;
-                    GetPage(url, page, o, out outPages);
-                });
+                Boolean ok = GetPage(url, pageStart, o, out totalPages);
+                if (ok)
+                {
+                    pageEnd = Math.Min(totalPages, pageEnd);
+
+                    Parallel.For(pageStart + 1, pageEnd + 1, (page, loopState) =>
+                    {
+                        Int32 outPages;
+                        Boolean gotPage = GetPage(url, page, o, out outPages);
+                        if (!gotPage)
+                        {
+                            loopState.Break();
+                            lock (lockOutput)
+                            {
+                                if (errorPage == null)
+                                {
+                                    errorPage = page;
+                                }
+                                errorPage = Math.Min(errorPage.Value, page);
+                            }
+                        }
+                    });
+                    if (errorPage != null)
+                    {
+                        pageEnd = errorPage.Value;
+                    }
+                }
+                else
+                {
+                    pageEnd = pageStart;
+                }
 
             } 
             OnReadComplete(url, pageStart, pageEnd, o);
         }
-        void GetPage(String url, Int32 pageNumber, object o, out Int32 outPages)
+        Boolean GetPage(String url, Int32 pageNumber, object o, out Int32 outPages)
         {
             outPages = 0;
             String local = url;
@@ -128,18 +158,20 @@ namespace POG.Forum
                     Trace.TraceInformation("*** Error fetching page " + pageNumber.ToString());
                 }
             }
-            Posts posts = new Posts();
             if (doc == null)
             {
-                OnPageComplete(local, pageNumber, pageNumber - 1, DateTime.Now, posts, o);
-                return;
+                OnPageError(url, pageNumber, o);
+                return false;
             }
+            Posts posts = new Posts();
             Int32 totalPages;
             DateTimeOffset serverTime;
             ParseThreadPage(local, doc, out totalPages, out serverTime, ref posts);
             outPages = totalPages;
             OnPageComplete(local, pageNumber, totalPages, serverTime, posts, o);
+            return true;
         }
+
         private void ParseThreadPage(String url, String doc, out Int32 lastPageNumber, out DateTimeOffset serverTime, ref Posts postList)
         {
             Int32 threadId = TwoPlusTwoForum.ThreadIdFromUrl(url);
@@ -246,13 +278,16 @@ namespace POG.Forum
                 }
             }
 
+            Int32 posterId = -1;
             HtmlAgilityPack.HtmlNode userNode = html.SelectSingleNode("../../td[1]/div/a[@class='bigusername']");
             if (userNode != null)
             {
                 posterName = HtmlAgilityPack.HtmlEntity.DeEntitize(userNode.InnerText);
+                String profile = userNode.Attributes["href"].Value;
+                posterId = Misc.ParseMemberId(profile);
             }
             List<Bold> bolded = ParseBolded(html);
-            Post p = new Post(threadId, posterName, postNumber, postTime, postLink, postTitle, 
+            Post p = new Post(threadId, posterName, posterId, postNumber, postTime, postLink, postTitle, 
                     html.OuterHtml, bolded, edit);
             return p;
         }

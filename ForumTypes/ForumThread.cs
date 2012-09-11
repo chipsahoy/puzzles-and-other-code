@@ -17,9 +17,9 @@ namespace POG.Forum
         [DataMember]
         public string Title { get; set; }
         [DataMember]
-        public string OP { get; set; }
+        public Poster OP { get; set; }
         [DataMember]
-        public string LastPoster { get; set; }
+        public Poster LastPoster { get; set; }
         [DataMember]
         public DateTimeOffset LastPostTime { get; set; }
         [DataMember]

@@ -26,14 +26,6 @@ namespace POG.Werewolf
             Votee = String.Empty;
             PostTime = DateTime.Now;
         }
-        public void HideVote()
-        {
-            _game.HideVote(this, _postId, _boldPosition);
-        }
-        public void UnhideVote()
-        {
-            _game.UnhideVote(this, _postId, _boldPosition);
-        }
         [Browsable(true)]
         public String Name
         {
@@ -87,6 +79,20 @@ namespace POG.Werewolf
             get
             {
                 return _postNumber;
+            }
+        }
+        internal Int32 PostId
+        {
+            get
+            {
+                return _postId;
+            }
+        }
+        internal Int32 BoldPosition
+        {
+            get
+            {
+                return _boldPosition;
             }
         }
         DateTimeOffset _postTime;

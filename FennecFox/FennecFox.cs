@@ -4,24 +4,19 @@ using System.Collections.Specialized;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
-using System.Net;
-using System.Text;
-using System.Windows.Forms;
-using System.Text.RegularExpressions;
 using System.Reflection;
 using System.Runtime.InteropServices;
-using System.Threading;
-using POG.Werewolf;
+using System.Text;
+using System.Windows.Forms;
 using POG.Forum;
 using POG.Utils;
-
+using POG.Werewolf;
 
 namespace POG.FennecFox
 {
-
     public partial class FormVoteCounter : Form
     {
-        enum CounterColumn
+        private enum CounterColumn
         {
             Player = 0,
             VoteCount,
@@ -32,13 +27,11 @@ namespace POG.FennecFox
             VotesFor,
             Bolded,
         };
+
         private VoteCount _voteCount;
-        TwoPlusTwoForum _forum;
-        Action<Action> _synchronousInvoker;
-        System.Windows.Forms.Timer _timerEODCountdown = new System.Windows.Forms.Timer();
-
-
-
+        private TwoPlusTwoForum _forum;
+        private Action<Action> _synchronousInvoker;
+        private System.Windows.Forms.Timer _timerEODCountdown = new System.Windows.Forms.Timer();
 
         private void SetupVoteGrid()
         {
@@ -61,11 +54,12 @@ namespace POG.FennecFox
             DataGridViewComboBoxColumn colCB = (DataGridViewComboBoxColumn)grdVotes.Columns[(Int32)CounterColumn.VotesFor];
             colCB.DataSource = validVotes.ToArray();
             colCB.DefaultCellStyle.NullValue = notVoting;
+
             //colCB.DataSource = bs;
             grdVotes.DataSource = bs;
             grdVotes.Sort(grdVotes.Columns[(Int32)CounterColumn.PostTime], ListSortDirection.Descending);
-
         }
+
         private void CreateVoteGridColumns()
         {
             grdVotes.AutoGenerateColumns = false;
@@ -77,7 +71,7 @@ namespace POG.FennecFox
             col.ReadOnly = true;
             col.AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
             col.Resizable = DataGridViewTriState.False;
-            grdVotes.Columns.Insert((Int32)CounterColumn.Player , col);
+            grdVotes.Columns.Insert((Int32)CounterColumn.Player, col);
 
             col = new DataGridViewTextBoxColumn();
             col.DataPropertyName = "VoteCount";
@@ -119,14 +113,14 @@ namespace POG.FennecFox
             col.AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
             col.Resizable = DataGridViewTriState.False;
             grdVotes.Columns.Insert((Int32)CounterColumn.PostTime, col);
-            
+
             DataGridViewComboBoxColumn colCB = new DataGridViewComboBoxColumn();
             colCB.DataPropertyName = "Votee";
             colCB.HeaderText = "Votes For";
             colCB.DisplayStyleForCurrentCellOnly = true;
             colCB.AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
             colCB.Resizable = DataGridViewTriState.False;
-            
+
             grdVotes.Columns.Insert((Int32)CounterColumn.VotesFor, colCB);
 
             col = new DataGridViewTextBoxColumn();
@@ -137,10 +131,9 @@ namespace POG.FennecFox
 
             grdVotes.CellContentClick += new DataGridViewCellEventHandler(grdVotes_CellContentClick);
             grdVotes.CellFormatting += new DataGridViewCellFormattingEventHandler(grdVotes_CellFormatting);
-
         }
 
-        void grdVotes_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
+        private void grdVotes_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
         {
             if (e.RowIndex < 0)
             {
@@ -168,21 +161,19 @@ namespace POG.FennecFox
 
                 case (Int32)CounterColumn.VotesFor:
                     {
-						if (_voteCount != null)
-						{
-							if (((String)e.Value) == _voteCount.ErrorVote)
-							{
-								e.CellStyle.BackColor = System.Drawing.Color.Red;
-							}
-						}
+                        if (_voteCount != null)
+                        {
+                            if (((String)e.Value) == _voteCount.ErrorVote)
+                            {
+                                e.CellStyle.BackColor = System.Drawing.Color.Red;
+                            }
+                        }
                     }
                     break;
-
             }
         }
 
-
-        void grdVotes_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        private void grdVotes_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
             if (e.RowIndex < 0)
             {
@@ -207,18 +198,15 @@ namespace POG.FennecFox
             }
         }
 
-
-
         public FormVoteCounter()
         {
             InitializeComponent();
             _synchronousInvoker = a => Invoke(a);
             _forum = new TwoPlusTwoForum(_synchronousInvoker);
             _forum.LoginEvent += new EventHandler<POG.Forum.LoginEventArgs>(_forum_LoginEvent);
-
         }
 
-        void _forum_LoginEvent(object sender, POG.Forum.LoginEventArgs e)
+        private void _forum_LoginEvent(object sender, POG.Forum.LoginEventArgs e)
         {
             switch (e.LoginEventType)
             {
@@ -263,12 +251,26 @@ namespace POG.FennecFox
             }
         }
 
-
-        void _voteCount_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        private void _voteCount_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             if (e.PropertyName == "LivePlayers")
             {
                 SetupVoteGrid();
+            }
+            if (e.PropertyName == "StartTime")
+            {
+                String time = String.Empty;
+                if (_voteCount.StartTime != null)
+                {
+                    time = _voteCount.StartTime.Value.ToString("g");
+                }
+                dtStartTime.Text = time;
+            }
+            if (e.PropertyName == "EndTime")
+            {
+                String time = String.Empty;
+                time = _voteCount.EndTime.ToString("g");
+                dtEndTime.Text = time;
             }
             if (e.PropertyName == "Status")
             {
@@ -276,7 +278,7 @@ namespace POG.FennecFox
             }
         }
 
-        void _timerEODCountdown_Tick(object sender, EventArgs e)
+        private void _timerEODCountdown_Tick(object sender, EventArgs e)
         {
             DateTime now = DateTime.Now;
             _timerEODCountdown.Interval = 1000 - now.Millisecond;
@@ -292,8 +294,8 @@ namespace POG.FennecFox
                 txtCountDown.Text = "Night!";
                 return;
             }
-                
-            txtCountDown.Text = String.Format("EOD in {0:00}:{1:00}:{2:00}", 
+
+            txtCountDown.Text = String.Format("EOD in {0:00}:{1:00}:{2:00}",
                     tsRemaining.Hours, tsRemaining.Minutes, tsRemaining.Seconds);
             if (tsRemaining.TotalSeconds == 120)
             {
@@ -301,8 +303,8 @@ namespace POG.FennecFox
             }
         }
 
-
         private delegate void ErrorDelegate(Exception e);
+
         private void HandleError(Exception e)
         {
             if (InvokeRequired)
@@ -318,11 +320,6 @@ namespace POG.FennecFox
                                 "An error has occurred and a crashdump was created at \n\n{0}\n\nPlease send the log file to the developer.  The message was:\n\n{1}",
                                 file, e.Message), "Critical Error");
         }
-
-
-
-
-
 
         private void SetComboRange(DataGridViewComboBoxCell cell)
         {
@@ -341,20 +338,12 @@ namespace POG.FennecFox
 
         public void HideVote(string player)
         {
-            var tPlayer = _voteCount[player];
-            if (tPlayer != null)
-            {
-                tPlayer.HideVote();
-            }
+            _voteCount.IgnoreVote(player);
         }
 
         public void UnhideVote(string player)
         {
-            var tPlayer = _voteCount[player];
-            if (tPlayer != null)
-            {
-                tPlayer.UnhideVote();
-            }
+            _voteCount.UnIgnoreVote(player);
         }
 
         private void btnIgnore_Click(object sender, EventArgs e)
@@ -386,8 +375,6 @@ namespace POG.FennecFox
             }
         }
 
-
-
         private void tabControl_Selecting(object sender, TabControlCancelEventArgs e)
         {
             if (/*e.TabPageIndex == 3 || */e.TabPageIndex == 4)
@@ -405,7 +392,7 @@ namespace POG.FennecFox
         {
             btnUnignore_Click(sender, e);
         }
-        
+
         private void Form_FormClosing(object sender, FormClosingEventArgs e)
         {
             POG.FennecFox.Properties.Settings.Default.username = txtUsername.Text.Trim();
@@ -414,8 +401,6 @@ namespace POG.FennecFox
 
             POG.FennecFox.Properties.Settings.Default.Save();
             _forum.LoginEvent -= _forum_LoginEvent;
-
-            
         }
 
         protected override void OnLoad(EventArgs e)
@@ -432,8 +417,6 @@ namespace POG.FennecFox
                 POG.FennecFox.Properties.Settings.Default.Players = new StringCollection();
             }
             DateTime now = DateTime.Now;
-            dtEndTime.Value = new DateTime(now.Year, now.Month, now.Day, 20, 0, 0, now.Kind);
-
             CreateVoteGridColumns();
             SetupVoteGrid();
 
@@ -441,16 +424,16 @@ namespace POG.FennecFox
             txtPassword.Text = POG.FennecFox.Properties.Settings.Default.password;
             btnLogin_Click(btnLogin, EventArgs.Empty);
             _timerEODCountdown.Interval = 1000;
-            _timerEODCountdown.Tick+= new EventHandler(_timerEODCountdown_Tick);
+            _timerEODCountdown.Tick += new EventHandler(_timerEODCountdown_Tick);
             _timerEODCountdown.Start();
-            
         }
+
         private void BindToNewGame()
         {
             ThreadReader t = _forum.Reader();
             _voteCount = new VoteCount(_synchronousInvoker, t, URLTextBox.Text, _forum.PostsPerPage);
             _voteCount.PropertyChanged += new PropertyChangedEventHandler(_voteCount_PropertyChanged);
-            
+
             URLTextBox.ReadOnly = true;
             btnReset.Enabled = true;
             btnStartGame.Enabled = false;
@@ -460,16 +443,13 @@ namespace POG.FennecFox
             txtEndPost.DataBindings.Clear();
             dtEndTime.DataBindings.Clear();
             dtStartTime.DataBindings.Clear();
-
+            
             txtLastPost.DataBindings.Add("Text", _voteCount, "LastPost", false, DataSourceUpdateMode.OnPropertyChanged);
-            udStartPost.DataBindings.Add("Value", _voteCount, "StartPost", true, DataSourceUpdateMode.OnPropertyChanged);
+            udStartPost.DataBindings.Add("Text", _voteCount, "StartPost", false, DataSourceUpdateMode.OnPropertyChanged);
             txtEndPost.DataBindings.Add("Text", _voteCount, "EndPost", false, DataSourceUpdateMode.OnPropertyChanged);
-            dtEndTime.DataBindings.Add("Value", _voteCount, "EndTime", false, DataSourceUpdateMode.OnPropertyChanged);
-            dtStartTime.DataBindings.Add("Value", _voteCount, "StartTime", true, DataSourceUpdateMode.OnPropertyChanged);
+            _voteCount.Refresh();
+        }
 
-			IEnumerable<String> list = _voteCount.GetPlayerList();
-			//txtPlayers.Lines = list.ToArray();
-		}
         private void UnbindFromGame()
         {
             txtLastPost.DataBindings.Clear();
@@ -484,6 +464,7 @@ namespace POG.FennecFox
             }
             URLTextBox.ReadOnly = false;
             URLTextBox.Text = "";
+
             //txtPlayers.Text = "";
             btnReset.Enabled = false;
         }
@@ -496,9 +477,8 @@ namespace POG.FennecFox
             }
         }
 
-
-
         private delegate void PostTableDelegate(StringBuilder sb);
+
         private void PostTable(StringBuilder sb)
         {
             txtPostTable.Text = sb.ToString();
@@ -506,12 +486,11 @@ namespace POG.FennecFox
 
         private void txtPostTable_Click(object sender, EventArgs e)
         {
-            txtPostTable.Text = _voteCount.PostableVoteCount;
+            txtPostTable.Text = _voteCount.GetPostableVoteCount();
             txtPostTable.SelectAll();
             Clipboard.SetDataObject(txtPostTable.Text, false);
             statusText.Text = "Copied vote count to clipboard.";
         }
-
 
         private void txtPlayers_KeyDown(object sender, KeyEventArgs e)
         {
@@ -522,7 +501,6 @@ namespace POG.FennecFox
                 e.SuppressKeyPress = true;
             }
         }
-
 
         private void URLTextBox_TextChanged(object sender, EventArgs e)
         {
@@ -577,149 +555,21 @@ namespace POG.FennecFox
             }
         }
 
-    }
-    public static class FlashWindow
-    {
-        [DllImport("user32.dll")]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        private static extern bool FlashWindowEx(ref FLASHWINFO pwfi);
-
-        [StructLayout(LayoutKind.Sequential)]
-        private struct FLASHWINFO
+        private void btnEditDay_Click(object sender, EventArgs e)
         {
-            /// <summary>
-            /// The size of the structure in bytes.
-            /// </summary>
-            public uint cbSize;
-            /// <summary>
-            /// A Handle to the Window to be Flashed. The window can be either opened or minimized.
-            /// </summary>
-            public IntPtr hwnd;
-            /// <summary>
-            /// The Flash Status.
-            /// </summary>
-            public uint dwFlags;
-            /// <summary>
-            /// The number of times to Flash the window.
-            /// </summary>
-            public uint uCount;
-            /// <summary>
-            /// The rate at which the Window is to be flashed, in milliseconds. If Zero, the function uses the default cursor blink rate.
-            /// </summary>
-            public uint dwTimeout;
-        }
-
-        /// <summary>
-        /// Stop flashing. The system restores the window to its original stae.
-        /// </summary>
-        public const uint FLASHW_STOP = 0;
-
-        /// <summary>
-        /// Flash the window caption.
-        /// </summary>
-        public const uint FLASHW_CAPTION = 1;
-
-        /// <summary>
-        /// Flash the taskbar button.
-        /// </summary>
-        public const uint FLASHW_TRAY = 2;
-
-        /// <summary>
-        /// Flash both the window caption and taskbar button.
-        /// This is equivalent to setting the FLASHW_CAPTION | FLASHW_TRAY flags.
-        /// </summary>
-        public const uint FLASHW_ALL = 3;
-
-        /// <summary>
-        /// Flash continuously, until the FLASHW_STOP flag is set.
-        /// </summary>
-        public const uint FLASHW_TIMER = 4;
-
-        /// <summary>
-        /// Flash continuously until the window comes to the foreground.
-        /// </summary>
-        public const uint FLASHW_TIMERNOFG = 12;
-
-
-        /// <summary>
-        /// Flash the spacified Window (Form) until it recieves focus.
-        /// </summary>
-        /// <param name="form">The Form (Window) to Flash.</param>
-        /// <returns></returns>
-        public static bool Flash(System.Windows.Forms.Form form)
-        {
-            // Make sure we're running under Windows 2000 or later
-            if (Win2000OrLater)
+            DayEditor frm = new DayEditor(_voteCount);
+            DialogResult result = frm.ShowDialog();
+            if (result == System.Windows.Forms.DialogResult.OK)
             {
-                FLASHWINFO fi = Create_FLASHWINFO(form.Handle, FLASHW_ALL | FLASHW_TIMERNOFG, uint.MaxValue, 0);
-                return FlashWindowEx(ref fi);
+                Int32 day;
+                Int32 startPost;
+                DateTime endTime;
+                frm.GetDayBoundaries(out day, out startPost, out endTime);
+                _voteCount.SetDayBoundaries(day, startPost, endTime);
+                _voteCount.ChangeDay(day);
+                Console.WriteLine("OK");
             }
-            return false;
-        }
-
-        private static FLASHWINFO Create_FLASHWINFO(IntPtr handle, uint flags, uint count, uint timeout)
-        {
-            FLASHWINFO fi = new FLASHWINFO();
-            fi.cbSize = Convert.ToUInt32(Marshal.SizeOf(fi));
-            fi.hwnd = handle;
-            fi.dwFlags = flags;
-            fi.uCount = count;
-            fi.dwTimeout = timeout;
-            return fi;
-        }
-
-        /// <summary>
-        /// Flash the specified Window (form) for the specified number of times
-        /// </summary>
-        /// <param name="form">The Form (Window) to Flash.</param>
-        /// <param name="count">The number of times to Flash.</param>
-        /// <returns></returns>
-        public static bool Flash(System.Windows.Forms.Form form, uint count)
-        {
-            if (Win2000OrLater)
-            {
-                FLASHWINFO fi = Create_FLASHWINFO(form.Handle, FLASHW_ALL, count, 0);
-                return FlashWindowEx(ref fi);
-            }
-            return false;
-        }
-
-        /// <summary>
-        /// Start Flashing the specified Window (form)
-        /// </summary>
-        /// <param name="form">The Form (Window) to Flash.</param>
-        /// <returns></returns>
-        public static bool Start(System.Windows.Forms.Form form)
-        {
-            if (Win2000OrLater)
-            {
-                FLASHWINFO fi = Create_FLASHWINFO(form.Handle, FLASHW_ALL, uint.MaxValue, 0);
-                return FlashWindowEx(ref fi);
-            }
-            return false;
-        }
-
-        /// <summary>
-        /// Stop Flashing the specified Window (form)
-        /// </summary>
-        /// <param name="form"></param>
-        /// <returns></returns>
-        public static bool Stop(System.Windows.Forms.Form form)
-        {
-            if (Win2000OrLater)
-            {
-                FLASHWINFO fi = Create_FLASHWINFO(form.Handle, FLASHW_STOP, uint.MaxValue, 0);
-                return FlashWindowEx(ref fi);
-            }
-            return false;
-        }
-
-        /// <summary>
-        /// A boolean value indicating whether the application is running on Windows 2000 or later.
-        /// </summary>
-        private static bool Win2000OrLater
-        {
-            get { return System.Environment.OSVersion.Version.Major >= 5; }
         }
     }
+
 }
