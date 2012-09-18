@@ -25,18 +25,6 @@ namespace POG.FennecFox.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("1")]
-        public int firstPost {
-            get {
-                return ((int)(this["firstPost"]));
-            }
-            set {
-                this["firstPost"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("")]
         public string threadUrl {
             get {
@@ -44,29 +32,6 @@ namespace POG.FennecFox.Properties {
             }
             set {
                 this["threadUrl"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        public global::System.Collections.Specialized.StringCollection Players {
-            get {
-                return ((global::System.Collections.Specialized.StringCollection)(this["Players"]));
-            }
-            set {
-                this["Players"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("09/29/2011 19:00:00")]
-        public global::System.DateTime EndOfDay {
-            get {
-                return ((global::System.DateTime)(this["EndOfDay"]));
-            }
-            set {
-                this["EndOfDay"] = value;
             }
         }
         
@@ -103,6 +68,18 @@ namespace POG.FennecFox.Properties {
             }
             set {
                 this["updateSettings"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("1")]
+        public int day {
+            get {
+                return ((int)(this["day"]));
+            }
+            set {
+                this["day"] = value;
             }
         }
     }

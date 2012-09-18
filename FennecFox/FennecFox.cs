@@ -32,6 +32,47 @@ namespace POG.FennecFox
         private TwoPlusTwoForum _forum;
         private Action<Action> _synchronousInvoker;
         private System.Windows.Forms.Timer _timerEODCountdown = new System.Windows.Forms.Timer();
+        private Int32 _day = 1;
+
+        #region initialization
+        public FormVoteCounter()
+        {
+            InitializeComponent();
+            _synchronousInvoker = a => Invoke(a);
+            _forum = new TwoPlusTwoForum(_synchronousInvoker);
+            _forum.LoginEvent += new EventHandler<POG.Forum.LoginEventArgs>(_forum_LoginEvent);
+        }
+        private void Form_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            POG.FennecFox.Properties.Settings.Default.username = txtUsername.Text.Trim();
+            POG.FennecFox.Properties.Settings.Default.password = txtPassword.Text.Trim();
+            POG.FennecFox.Properties.Settings.Default.threadUrl = URLTextBox.Text.Trim();
+
+            POG.FennecFox.Properties.Settings.Default.Save();
+            _forum.LoginEvent -= _forum_LoginEvent;
+        }
+
+        protected override void OnLoad(EventArgs e)
+        {
+            txtVersion.Text = String.Format("Fennic Fox Vote Counter Version " + Assembly.GetExecutingAssembly().GetName().Version.ToString());
+            if (POG.FennecFox.Properties.Settings.Default.updateSettings)
+            {
+                POG.FennecFox.Properties.Settings.Default.Upgrade();
+                POG.FennecFox.Properties.Settings.Default.updateSettings = false;
+                POG.FennecFox.Properties.Settings.Default.Save();
+            }
+            DateTime now = DateTime.Now;
+            CreateVoteGridColumns();
+            SetupVoteGrid();
+            
+            txtUsername.Text = POG.FennecFox.Properties.Settings.Default.username;
+            txtPassword.Text = POG.FennecFox.Properties.Settings.Default.password;
+            btnLogin_Click(btnLogin, EventArgs.Empty);
+            _timerEODCountdown.Interval = 1000;
+            _timerEODCountdown.Tick += new EventHandler(_timerEODCountdown_Tick);
+            _timerEODCountdown.Start();
+        }
+        #endregion
 
         private void SetupVoteGrid()
         {
@@ -198,13 +239,6 @@ namespace POG.FennecFox
             }
         }
 
-        public FormVoteCounter()
-        {
-            InitializeComponent();
-            _synchronousInvoker = a => Invoke(a);
-            _forum = new TwoPlusTwoForum(_synchronousInvoker);
-            _forum.LoginEvent += new EventHandler<POG.Forum.LoginEventArgs>(_forum_LoginEvent);
-        }
 
         private void _forum_LoginEvent(object sender, POG.Forum.LoginEventArgs e)
         {
@@ -230,6 +264,7 @@ namespace POG.FennecFox
                                 URLTextBox.Text = POG.FennecFox.Properties.Settings.Default.threadUrl;
                                 if (URLTextBox.Text != "")
                                 {
+                                    _day = POG.FennecFox.Properties.Settings.Default.day;
                                     btnStartGame_Click(this, EventArgs.Empty);
                                 }
                             }
@@ -393,40 +428,6 @@ namespace POG.FennecFox
             btnUnignore_Click(sender, e);
         }
 
-        private void Form_FormClosing(object sender, FormClosingEventArgs e)
-        {
-            POG.FennecFox.Properties.Settings.Default.username = txtUsername.Text.Trim();
-            POG.FennecFox.Properties.Settings.Default.password = txtPassword.Text.Trim();
-            POG.FennecFox.Properties.Settings.Default.threadUrl = URLTextBox.Text.Trim();
-
-            POG.FennecFox.Properties.Settings.Default.Save();
-            _forum.LoginEvent -= _forum_LoginEvent;
-        }
-
-        protected override void OnLoad(EventArgs e)
-        {
-            txtVersion.Text = String.Format("Fennic Fox Vote Counter Version " + Assembly.GetExecutingAssembly().GetName().Version.ToString());
-            if (POG.FennecFox.Properties.Settings.Default.updateSettings)
-            {
-                POG.FennecFox.Properties.Settings.Default.Upgrade();
-                POG.FennecFox.Properties.Settings.Default.updateSettings = false;
-                POG.FennecFox.Properties.Settings.Default.Save();
-            }
-            if (POG.FennecFox.Properties.Settings.Default.Players == null)
-            {
-                POG.FennecFox.Properties.Settings.Default.Players = new StringCollection();
-            }
-            DateTime now = DateTime.Now;
-            CreateVoteGridColumns();
-            SetupVoteGrid();
-
-            txtUsername.Text = POG.FennecFox.Properties.Settings.Default.username;
-            txtPassword.Text = POG.FennecFox.Properties.Settings.Default.password;
-            btnLogin_Click(btnLogin, EventArgs.Empty);
-            _timerEODCountdown.Interval = 1000;
-            _timerEODCountdown.Tick += new EventHandler(_timerEODCountdown_Tick);
-            _timerEODCountdown.Start();
-        }
 
         private void BindToNewGame()
         {
@@ -555,6 +556,10 @@ namespace POG.FennecFox
             }
         }
 
+        private void btnRoster_Click(object sender, EventArgs e)
+        {
+
+        }
         private void btnEditDay_Click(object sender, EventArgs e)
         {
             DayEditor frm = new DayEditor(_voteCount);
@@ -565,11 +570,34 @@ namespace POG.FennecFox
                 Int32 startPost;
                 DateTime endTime;
                 frm.GetDayBoundaries(out day, out startPost, out endTime);
+                _day = day;
                 _voteCount.SetDayBoundaries(day, startPost, endTime);
                 _voteCount.ChangeDay(day);
                 Console.WriteLine("OK");
             }
         }
+
+        private void udDay_ValueChanged(object sender, EventArgs e)
+        {
+            Int32 day = (Int32)udDay.Value;
+            Int32 startPost;
+            DateTime endTime;
+            Int32 endPost;
+            if (_voteCount.GetDayBoundaries(day, out startPost, out endTime, out endPost))
+            {
+                _day = day;
+                _voteCount.ChangeDay(day);
+            }
+            else
+            {
+                if (_voteCount.GetDayBoundaries(_day, out startPost, out endTime, out endPost))
+                {
+                    udDay.Value = _day;
+                }
+                this.statusText.Text = "Not a valid day! Use edit day button to add it first.";               
+            }
+        }
+
     }
 
 }

@@ -18,7 +18,7 @@ namespace POG.Werewolf
     public class VoteCount : INotifyPropertyChanged
     {
         #region fields
-        PogSqlite _db;
+        IPogDb _db;
         Action<Action> _synchronousInvoker;
 
         String _url = String.Empty;
@@ -29,10 +29,11 @@ namespace POG.Werewolf
         private Int32 _lastPost = 0;
 
         SortableBindingList<Voter> _livePlayers = new SortableBindingList<Voter>();
-        Int32 _startPost = 0;
+        Int32 _startPost = 1;
         DateTime? _startTime = null;
         DateTime _endTime;
         Int32? _endPost;
+        Int32 _day = 1;
 
         public readonly String ErrorVote = "Error!";
         public readonly String Unvote = "unvote";
@@ -46,14 +47,15 @@ namespace POG.Werewolf
             _url = url;
             _postsPerPage = postsPerPage;
             _threadId = TwoPlusTwoForum.ThreadIdFromUrl(url);
-            Day = 1;
+            _day = 1;
             DateTime now = DateTime.Now;
             _endTime = new DateTime(now.Year, now.Month, now.Day, 18, 0, 0, now.Kind);
             _thread = t;
             _thread.PageCompleteEvent += new EventHandler<PageCompleteEventArgs>(_thread_PageCompleteEvent);
             _thread.ReadCompleteEvent += new EventHandler<ReadCompleteEventArgs>(_thread_ReadCompleteEvent);
             String dbName = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\POG\\pogposts.sqlite";
-            _db = new PogSqlite(dbName);
+            _db = new PogSqlite();
+            _db.Connect(dbName);
         }
 
         ~VoteCount()
@@ -64,15 +66,21 @@ namespace POG.Werewolf
         #region public methods
         public void SetDayBoundaries(int day, int startPost, DateTime endTime)
         {
-            _db.WriteDayBoundaries(_threadId, _url, day, startPost, endTime);
-            ReadAllFromDB();
+            _db.WriteDayBoundaries(_threadId, _url, false, day, startPost, endTime);
+            if (day == _day)
+            {
+                ReadAllFromDB();
+            }
         }
-
         public void ChangeDay(int day)
         {
-            
+            Day = day;
         }
-
+        public Boolean GetDayBoundaries(int day, out Int32 startPost, out DateTime endTime, out Int32 endPost)
+        {
+            Boolean rc = _db.GetDayBoundaries(_threadId, day, out startPost, out endTime, out endPost);
+            return rc;
+        }
         public void IgnoreVote(string player)
         {
             foreach (Voter v in _livePlayers)
@@ -312,9 +320,21 @@ namespace POG.Werewolf
         #endregion
         #region public properties
         public Int32 Day 
-        { 
-            get; 
-            set; 
+        {
+            get
+            {
+                return _day;
+            }
+            private set
+            {
+                if (value == _day)
+                {
+                    return;
+                }
+                _day = value;
+                OnPropertyChanged("Day");
+                ReadAllFromDB();
+            } 
         }
 
         public SortableBindingList<Voter> LivePlayers
@@ -469,40 +489,8 @@ namespace POG.Werewolf
         #region forum event handlers
         void _thread_PageCompleteEvent(object sender, PageCompleteEventArgs e)
         {
-            _db.AddPostsToDB(e.Posts);
+            _db.AddPosts(e.Posts);
             Status = "Finished Page " + e.Page.ToString();
-        }
-        void ReadAllFromDB()
-        {
-            Int32 day;
-            Int32 startPost;
-            DateTime endTime;
-            Int32 endPost;
-            _db.GetDayBoundaries(_threadId, out day, out startPost, out endTime, out endPost);
-            StartPost = startPost;
-            EndTime = endTime;
-            EndPost = endPost;
-            SortableBindingList<Voter> voters = new SortableBindingList<Voter>();
-            List<String> names = _db.GetLivePlayers(_threadId, startPost);
-            foreach (String name in names)
-            {
-                Voter v = new Voter(name, this, _synchronousInvoker);
-                voters.Add(v);
-            }
-            _db.GetVotes(_threadId, _startPost, _endTime.ToUniversalTime(), voters);
-            LivePlayers = voters;
-
-            Int32? maxPost = _db.GetMaxPostDB(_threadId);
-            if (maxPost != null)
-            {
-                LastPost = maxPost.Value;
-                _lastPage = PageFromNumber(maxPost.Value);
-            }
-            else
-            {
-                LastPost = 0;
-            }
-
         }
         void _thread_ReadCompleteEvent(object sender, ReadCompleteEventArgs e)
         {
@@ -514,6 +502,31 @@ namespace POG.Werewolf
 
         #endregion
         #region private methods
+        void ReadAllFromDB()
+        {
+            Int32 startPost;
+            DateTime endTime;
+            Int32 endPost;
+            _db.GetDayBoundaries(_threadId, _day, out startPost, out endTime, out endPost);
+            StartPost = startPost;
+            EndTime = endTime;
+            EndPost = endPost;
+            LivePlayers = _db.GetVotes(_threadId, _startPost, _endTime.ToUniversalTime(), this);
+
+            Int32? maxPost = _db.GetMaxPost(_threadId);
+            if (maxPost != null)
+            {
+                LastPost = maxPost.Value;
+                _lastPage = PageFromNumber(maxPost.Value);
+            }
+            else
+            {
+                LastPost = 0;
+            }
+            GetPostableVoteCount(); // updates counts.
+
+        }
+
         private List<String> GetValidVotesList()
         {
             List<String> validVotes = new List<string>();
@@ -602,5 +615,15 @@ namespace POG.Werewolf
         #region internal methods
         #endregion
 
+
+        public bool Turbo { get; set; }
+
+        public Action<Action> SynchronousInvoker
+        {
+            get
+            {
+                return _synchronousInvoker;
+            }
+        }
     }
 }

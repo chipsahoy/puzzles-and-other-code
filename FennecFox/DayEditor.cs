@@ -42,5 +42,49 @@ namespace POG.FennecFox
             endTime = new DateTime(eodDate.Year, eodDate.Month, eodDate.Day, 
                     eodTime.Hour, eodTime.Minute, 0, DateTimeKind.Local);
         }
+
+        private void udDay_ValueChanged(object sender, EventArgs e)
+        {
+            if (_voteCount != null)
+            {
+                Int32 day = (Int32)udDay.Value;
+                Int32 startPost;
+                DateTime endTime;
+                Int32 endPost;
+                if (_voteCount.GetDayBoundaries(day, out startPost, out endTime, out endPost))
+                {
+                    udStartPost.Value = startPost;
+                    dtEodDate.Value = endTime;
+                    dtEodTime.Value = endTime;
+                }
+                else
+                {
+                    // try to load previous day
+                    if ((day > 1) && _voteCount.GetDayBoundaries(day - 1, out startPost, out endTime, out endPost))
+                    {
+                        udStartPost.Value = endPost + 1;
+                        DateTime eod;
+                        if (_voteCount.Turbo)
+                        {
+                            eod = endTime.AddMinutes(25);
+                        }
+                        else
+                        {
+                            eod = endTime.AddDays(1);
+                        }
+                        dtEodDate.Value = eod;
+                        dtEodTime.Value = eod;
+                    }
+                    else
+                    {
+                        udStartPost.Value = 1;
+                        DateTime now = DateTime.Now;
+                        DateTime eod = new DateTime(now.Year, now.Month, now.Day, 18, 0, 0);
+                        dtEodDate.Value = eod;
+                        dtEodTime.Value = eod;
+                    }
+                }
+            }
+        }
     }
 }

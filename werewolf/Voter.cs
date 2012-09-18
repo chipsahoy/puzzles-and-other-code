@@ -17,11 +17,11 @@ namespace POG.Werewolf
         Int32 _postNumber;
         Int32 _boldPosition;
 
-        public Voter(string name, VoteCount game, Action<Action> synchronousInvoker)
+        public Voter(object o, Int32 roleId, Int32 playerId, string name)
         {
             Name = name;
-            _game = game;
-            _synchronousInvoker = synchronousInvoker;
+            _game = o as VoteCount;
+            _synchronousInvoker = _game.SynchronousInvoker;
             Bolded = String.Empty;
             Votee = String.Empty;
             PostTime = DateTime.Now;
@@ -86,6 +86,10 @@ namespace POG.Werewolf
             get
             {
                 return _postId;
+            }
+            set
+            {
+                _postId = value;
             }
         }
         internal Int32 BoldPosition

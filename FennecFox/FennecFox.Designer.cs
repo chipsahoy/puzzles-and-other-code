@@ -64,11 +64,14 @@
             this.txtLastPost = new System.Windows.Forms.TextBox();
             this.txtEndPost = new System.Windows.Forms.TextBox();
             this.btnGetPosts = new System.Windows.Forms.Button();
-            this.tabVotes = new System.Windows.Forms.TabControl();
             this.udStartPost = new System.Windows.Forms.TextBox();
             this.dtStartTime = new System.Windows.Forms.TextBox();
             this.dtEndTime = new System.Windows.Forms.TextBox();
             this.btnEditDay = new System.Windows.Forms.Button();
+            this.tabVotes = new System.Windows.Forms.TabControl();
+            this.btnRoster = new System.Windows.Forms.Button();
+            this.udDay = new System.Windows.Forms.NumericUpDown();
+            this.label3 = new System.Windows.Forms.Label();
             this.contextMenuStrip1.SuspendLayout();
             this.statusBrowser.SuspendLayout();
             this.tabPage2.SuspendLayout();
@@ -82,6 +85,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.grdVotes)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.grdVotes2)).BeginInit();
             this.tabVotes.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.udDay)).BeginInit();
             this.SuspendLayout();
             // 
             // contextMenuStrip1
@@ -310,11 +314,14 @@
             this.tableLayoutPanel1.Controls.Add(this.label2, 6, 2);
             this.tableLayoutPanel1.Controls.Add(this.txtLastPost, 7, 2);
             this.tableLayoutPanel1.Controls.Add(this.txtEndPost, 1, 2);
-            this.tableLayoutPanel1.Controls.Add(this.btnGetPosts, 6, 1);
             this.tableLayoutPanel1.Controls.Add(this.udStartPost, 1, 1);
             this.tableLayoutPanel1.Controls.Add(this.dtStartTime, 2, 1);
             this.tableLayoutPanel1.Controls.Add(this.dtEndTime, 2, 2);
-            this.tableLayoutPanel1.Controls.Add(this.btnEditDay, 4, 1);
+            this.tableLayoutPanel1.Controls.Add(this.btnGetPosts, 7, 1);
+            this.tableLayoutPanel1.Controls.Add(this.btnEditDay, 3, 1);
+            this.tableLayoutPanel1.Controls.Add(this.btnRoster, 3, 2);
+            this.tableLayoutPanel1.Controls.Add(this.udDay, 5, 1);
+            this.tableLayoutPanel1.Controls.Add(this.label3, 4, 1);
             this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel1.Location = new System.Drawing.Point(3, 3);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
@@ -337,6 +344,7 @@
             this.label1.Size = new System.Drawing.Size(47, 13);
             this.label1.TabIndex = 7;
             this.label1.Text = "Start";
+            this.label1.TextAlign = System.Drawing.ContentAlignment.TopRight;
             // 
             // btnUnignore
             // 
@@ -362,17 +370,18 @@
             // 
             this.label18.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
             this.label18.AutoSize = true;
-            this.label18.Location = new System.Drawing.Point(3, 35);
+            this.label18.Location = new System.Drawing.Point(3, 37);
             this.label18.Name = "label18";
             this.label18.Size = new System.Drawing.Size(47, 13);
             this.label18.TabIndex = 21;
             this.label18.Text = "End";
+            this.label18.TextAlign = System.Drawing.ContentAlignment.TopRight;
             // 
             // splitContainer1
             // 
             this.tableLayoutPanel1.SetColumnSpan(this.splitContainer1, 12);
             this.splitContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.splitContainer1.Location = new System.Drawing.Point(3, 58);
+            this.splitContainer1.Location = new System.Drawing.Point(3, 61);
             this.splitContainer1.Name = "splitContainer1";
             this.splitContainer1.Orientation = System.Windows.Forms.Orientation.Horizontal;
             // 
@@ -385,8 +394,8 @@
             // 
             this.splitContainer1.Panel2.Controls.Add(this.txtPostTable);
             this.tableLayoutPanel1.SetRowSpan(this.splitContainer1, 2);
-            this.splitContainer1.Size = new System.Drawing.Size(637, 521);
-            this.splitContainer1.SplitterDistance = 254;
+            this.splitContainer1.Size = new System.Drawing.Size(637, 518);
+            this.splitContainer1.SplitterDistance = 252;
             this.splitContainer1.TabIndex = 22;
             // 
             // grdVotes
@@ -406,7 +415,7 @@
             this.grdVotes.RowHeadersVisible = false;
             this.grdVotes.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.grdVotes.ShowEditingIcon = false;
-            this.grdVotes.Size = new System.Drawing.Size(637, 254);
+            this.grdVotes.Size = new System.Drawing.Size(637, 252);
             this.grdVotes.TabIndex = 19;
             // 
             // grdVotes2
@@ -426,7 +435,7 @@
             this.grdVotes2.RowHeadersVisible = false;
             this.grdVotes2.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.grdVotes2.ShowEditingIcon = false;
-            this.grdVotes2.Size = new System.Drawing.Size(637, 254);
+            this.grdVotes2.Size = new System.Drawing.Size(637, 252);
             this.grdVotes2.TabIndex = 18;
             this.grdVotes2.Visible = false;
             // 
@@ -437,13 +446,13 @@
             this.txtPostTable.Multiline = true;
             this.txtPostTable.Name = "txtPostTable";
             this.txtPostTable.ReadOnly = true;
-            this.txtPostTable.Size = new System.Drawing.Size(637, 263);
+            this.txtPostTable.Size = new System.Drawing.Size(637, 262);
             this.txtPostTable.TabIndex = 19;
             this.txtPostTable.Click += new System.EventHandler(this.txtPostTable_Click);
             // 
             // txtCountDown
             // 
-            this.txtCountDown.Location = new System.Drawing.Point(454, 585);
+            this.txtCountDown.Location = new System.Drawing.Point(427, 585);
             this.txtCountDown.Name = "txtCountDown";
             this.txtCountDown.ReadOnly = true;
             this.txtCountDown.Size = new System.Drawing.Size(100, 20);
@@ -453,19 +462,20 @@
             // 
             this.label2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(454, 35);
+            this.label2.Location = new System.Drawing.Point(427, 37);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(100, 13);
             this.label2.TabIndex = 8;
             this.label2.Text = "Last Post";
+            this.label2.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
             // txtLastPost
             // 
             this.txtLastPost.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtLastPost.Location = new System.Drawing.Point(560, 32);
+            this.txtLastPost.Location = new System.Drawing.Point(533, 33);
             this.txtLastPost.Name = "txtLastPost";
             this.txtLastPost.ReadOnly = true;
-            this.txtLastPost.Size = new System.Drawing.Size(80, 20);
+            this.txtLastPost.Size = new System.Drawing.Size(107, 20);
             this.txtLastPost.TabIndex = 3;
             this.txtLastPost.TabStop = false;
             this.txtLastPost.Text = "0";
@@ -480,25 +490,15 @@
             // 
             // btnGetPosts
             // 
-            this.btnGetPosts.Location = new System.Drawing.Point(454, 2);
+            this.btnGetPosts.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.btnGetPosts.Location = new System.Drawing.Point(533, 2);
             this.btnGetPosts.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.btnGetPosts.Name = "btnGetPosts";
-            this.btnGetPosts.Size = new System.Drawing.Size(64, 19);
+            this.btnGetPosts.Size = new System.Drawing.Size(107, 25);
             this.btnGetPosts.TabIndex = 33;
             this.btnGetPosts.Text = "Get Posts";
             this.btnGetPosts.UseVisualStyleBackColor = true;
             this.btnGetPosts.Click += new System.EventHandler(this.btnGetPosts_Click);
-            // 
-            // tabVotes
-            // 
-            this.tabVotes.Controls.Add(this.tabPage4);
-            this.tabVotes.Controls.Add(this.tabPage2);
-            this.tabVotes.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tabVotes.Location = new System.Drawing.Point(0, 0);
-            this.tabVotes.Name = "tabVotes";
-            this.tabVotes.SelectedIndex = 0;
-            this.tabVotes.Size = new System.Drawing.Size(654, 644);
-            this.tabVotes.TabIndex = 15;
             // 
             // udStartPost
             // 
@@ -526,13 +526,69 @@
             // 
             // btnEditDay
             // 
-            this.btnEditDay.Location = new System.Drawing.Point(320, 3);
+            this.btnEditDay.Location = new System.Drawing.Point(268, 3);
             this.btnEditDay.Name = "btnEditDay";
             this.btnEditDay.Size = new System.Drawing.Size(75, 23);
             this.btnEditDay.TabIndex = 37;
             this.btnEditDay.Text = "Edit Day...";
             this.btnEditDay.UseVisualStyleBackColor = true;
             this.btnEditDay.Click += new System.EventHandler(this.btnEditDay_Click);
+            // 
+            // tabVotes
+            // 
+            this.tabVotes.Controls.Add(this.tabPage4);
+            this.tabVotes.Controls.Add(this.tabPage2);
+            this.tabVotes.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tabVotes.Location = new System.Drawing.Point(0, 0);
+            this.tabVotes.Name = "tabVotes";
+            this.tabVotes.SelectedIndex = 0;
+            this.tabVotes.Size = new System.Drawing.Size(654, 644);
+            this.tabVotes.TabIndex = 15;
+            // 
+            // btnRoster
+            // 
+            this.btnRoster.Location = new System.Drawing.Point(268, 32);
+            this.btnRoster.Name = "btnRoster";
+            this.btnRoster.Size = new System.Drawing.Size(75, 23);
+            this.btnRoster.TabIndex = 38;
+            this.btnRoster.Text = "Kill/Sub...";
+            this.btnRoster.UseVisualStyleBackColor = true;
+            this.btnRoster.Click += new System.EventHandler(this.btnRoster_Click);
+            // 
+            // udDay
+            // 
+            this.udDay.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.udDay.Location = new System.Drawing.Point(384, 4);
+            this.udDay.Maximum = new decimal(new int[] {
+            20,
+            0,
+            0,
+            0});
+            this.udDay.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.udDay.Name = "udDay";
+            this.udDay.Size = new System.Drawing.Size(37, 20);
+            this.udDay.TabIndex = 39;
+            this.udDay.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.udDay.ValueChanged += new System.EventHandler(this.udDay_ValueChanged);
+            // 
+            // label3
+            // 
+            this.label3.Anchor = System.Windows.Forms.AnchorStyles.Right;
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(349, 8);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(29, 13);
+            this.label3.TabIndex = 40;
+            this.label3.Text = "Day:";
+            this.label3.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
             // FormVoteCounter
             // 
@@ -563,6 +619,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.grdVotes)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.grdVotes2)).EndInit();
             this.tabVotes.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.udDay)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -609,6 +666,9 @@
         private System.Windows.Forms.TextBox dtStartTime;
         private System.Windows.Forms.TextBox dtEndTime;
         private System.Windows.Forms.Button btnEditDay;
+        private System.Windows.Forms.Button btnRoster;
+        private System.Windows.Forms.NumericUpDown udDay;
+        private System.Windows.Forms.Label label3;
 
 
     }

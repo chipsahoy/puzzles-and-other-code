@@ -79,6 +79,7 @@
             0,
             0,
             0});
+            this.udDay.ValueChanged += new System.EventHandler(this.udDay_ValueChanged);
             // 
             // label1
             // 
