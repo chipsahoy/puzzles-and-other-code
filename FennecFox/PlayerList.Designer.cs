@@ -30,98 +30,96 @@
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(PlayerList));
             this.btnSubmitPlayers = new System.Windows.Forms.Button();
-            this.txtNewPlayers = new System.Windows.Forms.TextBox();
-            this.dataGridView1 = new System.Windows.Forms.DataGridView();
-            this.Player = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Removed = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Joined = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Team = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Role = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.PM = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
+            this.grdRoster = new System.Windows.Forms.DataGridView();
+            this.btnDelete = new System.Windows.Forms.Button();
+            this.btnPaste = new System.Windows.Forms.Button();
+            this.btnCopyLive = new System.Windows.Forms.Button();
+            this.label2 = new System.Windows.Forms.Label();
+            ((System.ComponentModel.ISupportInitialize)(this.grdRoster)).BeginInit();
             this.SuspendLayout();
             // 
             // btnSubmitPlayers
             // 
             this.btnSubmitPlayers.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnSubmitPlayers.Location = new System.Drawing.Point(756, 12);
+            this.btnSubmitPlayers.DialogResult = System.Windows.Forms.DialogResult.OK;
+            this.btnSubmitPlayers.Location = new System.Drawing.Point(369, 28);
             this.btnSubmitPlayers.Name = "btnSubmitPlayers";
             this.btnSubmitPlayers.Size = new System.Drawing.Size(75, 23);
             this.btnSubmitPlayers.TabIndex = 0;
-            this.btnSubmitPlayers.Text = "OK";
+            this.btnSubmitPlayers.Text = "Close";
             this.btnSubmitPlayers.UseVisualStyleBackColor = true;
-            this.btnSubmitPlayers.Click += new System.EventHandler(this.btnSubmitPlayers_Click);
             // 
-            // txtNewPlayers
+            // grdRoster
             // 
-            this.txtNewPlayers.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left)));
-            this.txtNewPlayers.Location = new System.Drawing.Point(12, 12);
-            this.txtNewPlayers.Multiline = true;
-            this.txtNewPlayers.Name = "txtNewPlayers";
-            this.txtNewPlayers.Size = new System.Drawing.Size(110, 416);
-            this.txtNewPlayers.TabIndex = 1;
+            this.grdRoster.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.grdRoster.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.grdRoster.Location = new System.Drawing.Point(12, 28);
+            this.grdRoster.Name = "grdRoster";
+            this.grdRoster.Size = new System.Drawing.Size(351, 389);
+            this.grdRoster.TabIndex = 2;
             // 
-            // dataGridView1
+            // btnDelete
             // 
-            this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataGridView1.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
-            this.Player,
-            this.Removed,
-            this.Joined,
-            this.Team,
-            this.Role,
-            this.PM});
-            this.dataGridView1.Location = new System.Drawing.Point(139, 12);
-            this.dataGridView1.Name = "dataGridView1";
-            this.dataGridView1.Size = new System.Drawing.Size(611, 301);
-            this.dataGridView1.TabIndex = 2;
+            this.btnDelete.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnDelete.Location = new System.Drawing.Point(370, 241);
+            this.btnDelete.Name = "btnDelete";
+            this.btnDelete.Size = new System.Drawing.Size(75, 46);
+            this.btnDelete.TabIndex = 4;
+            this.btnDelete.Text = "Erase Player";
+            this.btnDelete.UseVisualStyleBackColor = true;
+            this.btnDelete.Click += new System.EventHandler(this.btnOneLeft_Click);
             // 
-            // Player
+            // btnPaste
             // 
-            this.Player.HeaderText = "Player";
-            this.Player.Name = "Player";
+            this.btnPaste.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnPaste.Location = new System.Drawing.Point(369, 142);
+            this.btnPaste.Name = "btnPaste";
+            this.btnPaste.Size = new System.Drawing.Size(75, 46);
+            this.btnPaste.TabIndex = 9;
+            this.btnPaste.Text = "Paste a list";
+            this.btnPaste.UseVisualStyleBackColor = true;
+            this.btnPaste.Click += new System.EventHandler(this.btnPaste_Click);
             // 
-            // Removed
+            // btnCopyLive
             // 
-            this.Removed.HeaderText = "Removed";
-            this.Removed.Name = "Removed";
-            this.Removed.Width = 60;
+            this.btnCopyLive.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnCopyLive.Location = new System.Drawing.Point(369, 90);
+            this.btnCopyLive.Name = "btnCopyLive";
+            this.btnCopyLive.Size = new System.Drawing.Size(75, 46);
+            this.btnCopyLive.TabIndex = 10;
+            this.btnCopyLive.Text = "Copy live players";
+            this.btnCopyLive.UseVisualStyleBackColor = true;
+            this.btnCopyLive.Click += new System.EventHandler(this.btnCopyLive_Click);
             // 
-            // Joined
+            // label2
             // 
-            this.Joined.HeaderText = "Joined";
-            this.Joined.Name = "Joined";
-            this.Joined.Width = 60;
-            // 
-            // Team
-            // 
-            this.Team.HeaderText = "Team";
-            this.Team.Name = "Team";
-            // 
-            // Role
-            // 
-            this.Role.HeaderText = "Role";
-            this.Role.Name = "Role";
-            // 
-            // PM
-            // 
-            this.PM.HeaderText = "PM";
-            this.PM.Name = "PM";
-            this.PM.Width = 150;
+            this.label2.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.label2.AutoSize = true;
+            this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label2.Location = new System.Drawing.Point(150, 9);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(85, 16);
+            this.label2.TabIndex = 12;
+            this.label2.Text = "The Roster";
             // 
             // PlayerList
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(843, 440);
-            this.Controls.Add(this.dataGridView1);
-            this.Controls.Add(this.txtNewPlayers);
+            this.ClientSize = new System.Drawing.Size(455, 442);
+            this.Controls.Add(this.label2);
+            this.Controls.Add(this.btnCopyLive);
+            this.Controls.Add(this.btnPaste);
+            this.Controls.Add(this.btnDelete);
+            this.Controls.Add(this.grdRoster);
             this.Controls.Add(this.btnSubmitPlayers);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "PlayerList";
-            this.Text = "PlayerList";
-            ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
+            this.Text = "Add / Remove Players";
+            ((System.ComponentModel.ISupportInitialize)(this.grdRoster)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -130,13 +128,10 @@
         #endregion
 
         private System.Windows.Forms.Button btnSubmitPlayers;
-        private System.Windows.Forms.TextBox txtNewPlayers;
-        private System.Windows.Forms.DataGridView dataGridView1;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Player;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Removed;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Joined;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Team;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Role;
-        private System.Windows.Forms.DataGridViewTextBoxColumn PM;
+        private System.Windows.Forms.DataGridView grdRoster;
+        private System.Windows.Forms.Button btnDelete;
+        private System.Windows.Forms.Button btnPaste;
+        private System.Windows.Forms.Button btnCopyLive;
+        private System.Windows.Forms.Label label2;
     }
 }

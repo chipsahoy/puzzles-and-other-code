@@ -53,6 +53,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="IPogDb.cs" />
+    <Compile Include="AutoComplete.cs" />
+    <Compile Include="NameCompletionEventHandler.cs" />
     <Compile Include="PogSqlite.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="VoteCount.cs" />

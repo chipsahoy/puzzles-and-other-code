@@ -13,6 +13,7 @@ using System.Configuration;
 using System.Threading.Tasks;
 using System.Diagnostics; 
 
+
 namespace POG.Werewolf
 {
     public class VoteCount : INotifyPropertyChanged
@@ -56,6 +57,7 @@ namespace POG.Werewolf
             String dbName = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\POG\\pogposts.sqlite";
             _db = new PogSqlite();
             _db.Connect(dbName);
+            _db.WriteThreadDefinition(_threadId, url, false);
         }
 
         ~VoteCount()
@@ -64,13 +66,22 @@ namespace POG.Werewolf
 
         #endregion
         #region public methods
+        public void CommitRosterChanges()
+        {
+            _db.WriteRoster(_threadId, _census);
+        }
         public void SetDayBoundaries(int day, int startPost, DateTime endTime)
         {
-            _db.WriteDayBoundaries(_threadId, _url, false, day, startPost, endTime);
+            _db.WriteDayBoundaries(_threadId, day, startPost, endTime);
             if (day == _day)
             {
                 ReadAllFromDB();
             }
+        }
+        public Int32 GetPlayerId(String name)
+        {
+            Int32 id = _db.GetPlayerId(name);
+            return id;
         }
         public void ChangeDay(int day)
         {
@@ -128,7 +139,7 @@ namespace POG.Werewolf
         }
         public void SetPlayerList(IEnumerable<String> rawList)
         {
-            _db.ReplacePlayerList(_threadId, rawList);
+            //_db.ReplacePlayerList(_threadId, rawList);
             ReadAllFromDB();
         }
 		public void KillPlayer(String player, String cause, Int32? post, String team)
@@ -317,6 +328,9 @@ namespace POG.Werewolf
             }
             return null;
         }
+        public void WriteCensus(IEnumerable<CensusEntry> censusEntries)
+        {
+        }
         #endregion
         #region public properties
         public Int32 Day 
@@ -347,6 +361,13 @@ namespace POG.Werewolf
             {
                 _livePlayers = value;
                 OnPropertyChanged("LivePlayers");
+            }
+        }
+        public Int32 ThreadId
+        {
+            get
+            {
+                return _threadId;
             }
         }
         public Int32 StartPost
@@ -472,6 +493,18 @@ namespace POG.Werewolf
                 //Trace.TraceInformation("VC Status: " + value);
                 OnPropertyChanged("Status");
             } 
+        }
+        SortableBindingList<CensusEntry> _census = null;
+        public SortableBindingList<CensusEntry> Census
+        {
+            get
+            {
+                if (_census == null)
+                {
+                    _census = _db.ReadRoster(_threadId);
+                }
+                return _census;
+            }
         }
         #endregion
         #region Events
@@ -625,5 +658,7 @@ namespace POG.Werewolf
                 return _synchronousInvoker;
             }
         }
+
+
     }
 }

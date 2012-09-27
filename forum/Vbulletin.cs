@@ -11,6 +11,8 @@ using System.Windows.Forms;
 using POG.Utils;
 using Newtonsoft;
 using System.Diagnostics;
+using System.Xml;
+using System.Web;
 
 namespace POG.Forum
 {
@@ -246,7 +248,7 @@ namespace POG.Forum
 
 		}
 		#endregion
-        internal Boolean MakePost(Int32 ThreadId, String content, Int32 icon = 0)
+        internal Boolean MakePost(Int32 threadId, String content, Int32 icon = 0)
         {
             /* headers
                 POST /newreply.php?do=postreply&t=1198532 HTTP/1.1
@@ -284,7 +286,7 @@ loggedinuser 81788
              * openclose 1 <-- lock thread
              * */
             ConnectionSettings cs = _connectionSettings.Clone();
-            cs.Url = ThreadId.ToString();
+            cs.Url = "http://forumserver.twoplustwo.com/private.php";
             String doc = HtmlHelper.GetUrlResponseString(cs);
             if (doc == null)
             {
@@ -306,13 +308,6 @@ loggedinuser 81788
             {
                 ajaxLastPost = match.Groups[1].Value;
             }
-            String threadId = "";
-            reg = new Regex("<input type=\"hidden\" name=\"t\" value=\"(.+)\" id=\"qr_threadid\" />");
-            match = reg.Match(doc);
-            if (match.Success)
-            {
-                threadId = match.Groups[1].Value;
-            }
             /*				<input type="hidden" name="fromquickreply" value="1" />
                 <input type="hidden" name="s" value="" />
                 <input type="hidden" name="securitytoken" value="1338251187-cd0e85748ac090ba7cb5281011b49332c0ba455a" />
@@ -332,17 +327,18 @@ loggedinuser 81788
              * do=openclosethread&s=&securitytoken=1338253981-5657f92aed9e901b4292a60cab0e9efaac4be1fe&t=1204368&pollid=
 */
             StringBuilder msg = new StringBuilder();
+            
             msg.AppendFormat("{0}={1}&", "securitytoken", securityToken);
             msg.AppendFormat("{0}={1}&", "ajax", "1");
             msg.AppendFormat("{0}={1}&", "ajax_lastpost", ajaxLastPost);
-            msg.AppendFormat("{0}={1}&", "message", content + " " + DateTime.Now.Millisecond);
+            content = content.Replace("\r\n", "\r");
+            msg.AppendFormat("{0}={1}&", "message", HttpUtility.UrlEncode(content));
             msg.AppendFormat("{0}={1}&", "wysiwyg", "0");
             msg.AppendFormat("{0}={1}&", "styleid", "0");
             msg.AppendFormat("{0}={1}&", "fromquickreply", "1");
             msg.AppendFormat("{0}={1}&", "s", "");
-            msg.AppendFormat("{0}={1}&", "securitytoken", securityToken);
             msg.AppendFormat("{0}={1}&", "do", "postreply");
-            msg.AppendFormat("{0}={1}&", "t", threadId);
+            msg.AppendFormat("{0}={1}&", "t", threadId.ToString());
             msg.AppendFormat("{0}={1}&", "p", "who cares");
             msg.AppendFormat("{0}={1}&", "specifiedpost", "0");
             msg.AppendFormat("{0}={1}&", "parseurl", "1");
@@ -354,13 +350,116 @@ loggedinuser 81788
             if (resp == null)
             {
                 // failure
+                return false;
             }
 
-            return false;
+            return true;
         }
 
 
 
+
+        internal List<Poster> GetPostersLike(string name)
+        {
+            /* headers
+                POST /ajax.php?do=usersearch
+                Origin: http://forumserver.twoplustwo.com
+                Referer: http://forumserver.twoplustwo.com/private.php?do=newpm
+                X-Requested-With: XMLHttpRequest
+
+            request:
+                securitytoken=1348471374-888f10c7477666008f130e5b77b9f6958b5c73f1&do=usersearch&fragment=aks
+securitytoken	blah
+do	usersearch
+fragment	name
+
+             * */
+            List<Poster> posters = new List<Poster>();
+            ConnectionSettings cs = _connectionSettings.Clone();
+            cs.Url = "http://forumserver.twoplustwo.com/private.php";
+            String doc = HtmlHelper.GetUrlResponseString(cs);
+            if (doc == null)
+            {
+                return posters;
+            }
+            // parse out securitytoken
+            Regex reg = new Regex("var SECURITYTOKEN = \"(.+)\"");
+            String securityToken = "";
+            Match match = reg.Match(doc);
+            if (match.Success)
+            {
+                securityToken = match.Groups[1].Value;
+            }
+            //			var ajax_last_post = 1338251071;
+            String ajaxLastPost = "";
+            reg = new Regex("var ajax_last_post = (.+);");
+            match = reg.Match(doc);
+            if (match.Success)
+            {
+                ajaxLastPost = match.Groups[1].Value;
+            }
+            /*
+securitytoken	blah
+do	usersearch
+fragment	name
+*/
+            StringBuilder msg = new StringBuilder();
+            msg.AppendFormat("{0}={1}&", "securitytoken", securityToken);
+            msg.AppendFormat("{0}={1}&", "do", "usersearch");
+            msg.AppendFormat("{0}={1}&", "fragment", name);
+            cs.Url = String.Format("{0}/ajax.php?do=usersearch", TwoPlusTwoForum.BASE_URL);
+            cs.Data = msg.ToString();
+            Trace.TraceInformation("Posting: " + cs.Data);
+            String resp = HtmlHelper.PostToUrl(cs);
+            if (resp == null)
+            {
+                // failure
+                return posters;
+            }
+            Trace.TraceInformation(resp);
+            /*
+<?xml version="1.0" encoding="windows-1252"?>
+<users>
+	<user userid="124403">chi</user>
+	<user userid="115734">chi psi 3</user>
+	<user userid="144528">chi-town-playa</user>
+	<user userid="335619">CHI23</user>
+	<user userid="46484">chi23town</user>
+	<user userid="227335">Chi2Tex</user>
+	<user userid="324970">chi939</user>
+	<user userid="12379">chiachu</user>
+	<user userid="158696">chiagopoker666</user>
+	<user userid="239621">Chiangsman</user>
+	<user userid="339854">chiaog</user>
+	<user userid="89930">chiapoker</user>
+	<user userid="215389">chiapom28</user>
+	<user userid="329156">chiaradiapoker</user>
+	<user userid="33302">chiaroscuro</user>
+</users>
+*/
+            XmlDocument xml = new XmlDocument();
+            xml.LoadXml(resp);
+            XmlNodeList list = xml.SelectNodes("//user");
+            if (list != null)
+            {
+                foreach (XmlNode node in list)
+                {
+                    String sid = node.Attributes["userid"].Value;
+                    if (sid != null)
+                    {
+                        Int32 id = Int32.Parse(sid);
+                        String poster = node.InnerText;
+                        if (poster.Contains("amp"))
+                        {
+                            poster = HtmlAgilityPack.HtmlEntity.DeEntitize(poster);
+                        }
+                        Poster p = new Poster(poster, id);
+                        posters.Add(p);
+                    }
+                }
+            }
+            return posters;
+        }
     }
 	public class TwoPlusTwoForum
 	{
@@ -434,9 +533,15 @@ loggedinuser 81788
 		{
 			return false;
 		}
-        public Boolean MakePost(Int32 ThreadId, String title, String message, Int32 PostIcon, Boolean LockThread)
+        public Boolean MakePost(Int32 threadId, String title, String message, Int32 PostIcon, Boolean LockThread)
         {
-            return false;
+            Boolean rc = _inner.MakePost(threadId, message);
+            return rc;
+        }
+        public IEnumerable<Poster> GetPostersLike(string name)
+        {
+            List<Poster> posters = _inner.GetPostersLike(name);
+            return posters;
         }
         public static Int32 ThreadIdFromUrl(String url)
         {
@@ -459,7 +564,10 @@ loggedinuser 81788
         #endregion
 
 
-     }
+
+
+        public object LoginStatus { get; set; }
+    }
 	public class NewStatusEventArgs : EventArgs
 	{
 		public String Status

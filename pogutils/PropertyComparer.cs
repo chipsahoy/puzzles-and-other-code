@@ -49,22 +49,34 @@ namespace POG.Utils
     #endregion
 
     // Compare two property values of any type
-    private int CompareAscending(object xValue, object yValue) {
-      int result;
+    private int CompareAscending(object xValue, object yValue)
+    {
+        int result;
 
-      // If values implement IComparer
-      if( xValue is IComparable ) {
-        result = ((IComparable)xValue).CompareTo(yValue);
-      }
-      // If values don't implement IComparer but are equivalent
-      else if( xValue.Equals(yValue) ) {
-        result = 0;
-      }
-      // Values don't implement IComparer and are not equivalent, so compare as string values
-      else result = xValue.ToString().CompareTo(yValue.ToString());
+        // If values implement IComparer
+        if (xValue is IComparable)
+        {
+            result = ((IComparable)xValue).CompareTo(yValue);
+            return result;
+        }
+        if (xValue == null)
+        {
+            if (yValue == null)
+            {
+                return 0;
+            }
+            return -1;
+        }
+        // If values don't implement IComparer but are equivalent
+        if (xValue.Equals(yValue))
+        {
+            result = 0;
+        }
+        // Values don't implement IComparer and are not equivalent, so compare as string values
+        else result = xValue.ToString().CompareTo(yValue.ToString());
 
-      // Return result
-      return result;
+        // Return result
+        return result;
     }
 
     private int CompareDescending(object xValue, object yValue) {

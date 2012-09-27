@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using System.Runtime.InteropServices;
+using POG.Forum;
 
 namespace POG.FennecFox
 {
@@ -17,30 +18,63 @@ namespace POG.FennecFox
         [DllImport("user32.dll")]
         public static extern int SendMessage(IntPtr hWnd, Int32 wMsg, bool wParam, Int32 lParam); private int childFormNumber = 0;
 
+        private TwoPlusTwoForum _forum;
+        private Action<Action> _synchronousInvoker;
+
         public FoxParent()
         {
             InitializeComponent();
+            if (POG.FennecFox.Properties.Settings.Default.updateSettings)
+            {
+                POG.FennecFox.Properties.Settings.Default.Upgrade();
+                POG.FennecFox.Properties.Settings.Default.updateSettings = false;
+                POG.FennecFox.Properties.Settings.Default.Save();
+            }
+        }
+        void FoxParent_Load(object sender, EventArgs e)
+        {
+            _synchronousInvoker = a => Invoke(a);
+            _forum = new TwoPlusTwoForum(_synchronousInvoker);
+            _forum.LoginEvent += new EventHandler<LoginEventArgs>(_forum_LoginEvent);
+
+            String username = POG.FennecFox.Properties.Settings.Default.username;
+            String password = POG.FennecFox.Properties.Settings.Default.password;
+            if ((username != String.Empty) && (password != String.Empty))
+            {
+                _forum.Login(username, password);
+            }
+            else
+            {
+                ShowLogin();
+            }
         }
 
         private void ShowNewForm(object sender, EventArgs e)
         {
-            Form childForm = new FormVoteCounter();
+        }
+        private void ShowCounter(String url, Boolean turbo)
+        {
+            Form childForm = new FormVoteCounter(_forum, _synchronousInvoker, url, turbo);
             childForm.MdiParent = this;
             childForm.Text = "Window " + childFormNumber++;
             childForm.Show();
         }
 
+        #region generated
         private void OpenFile(object sender, EventArgs e)
         {
-            OpenFileDialog openFileDialog = new OpenFileDialog();
-            openFileDialog.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.Personal);
-            openFileDialog.Filter = "Text Files (*.txt)|*.txt|All Files (*.*)|*.*";
-            if (openFileDialog.ShowDialog(this) == DialogResult.OK)
+            OpenGame frm = new OpenGame(_forum);
+            DialogResult dr = frm.ShowDialog();
+            if (dr == System.Windows.Forms.DialogResult.OK)
             {
-                string FileName = openFileDialog.FileName;
+                Boolean turbo;
+                String url = frm.GetURL(out turbo);
+                if (url.Length > 0)
+                {
+                    ShowCounter(url, turbo);
+                }
             }
         }
-
         private void SaveAsToolStripMenuItem_Click(object sender, EventArgs e)
         {
             SaveFileDialog saveFileDialog = new SaveFileDialog();
@@ -167,5 +201,83 @@ namespace POG.FennecFox
                 this.Refresh();
             }
         }
+#endregion
+
+        private void FoxParent_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            _forum.LoginEvent -= _forum_LoginEvent;
+
+        }
+        Boolean _inLoginDialog = false;
+        Boolean _loggedIn = false;
+
+        private void ShowLogin()
+        {
+            if (!_inLoginDialog)
+            {
+                _inLoginDialog = true;
+                LoginDialog dlg = new LoginDialog(_forum);
+                DialogResult dr = dlg.ShowDialog();
+                if (!_loggedIn)
+                {
+                    Application.Exit();
+                }
+                else
+                {
+                    statusStrip.Text = "Logged in to forum";
+                }
+                _inLoginDialog = false;
+            }
+        }
+        private void _forum_LoginEvent(object sender, POG.Forum.LoginEventArgs e)
+        {
+            switch (e.LoginEventType)
+            {
+                case Forum.LoginEventType.LoginFailure:
+                    {
+                        ShowLogin();
+                    }
+                    break;
+
+                case Forum.LoginEventType.LoginSuccess:
+                    {
+                        _loggedIn = true;
+                        openToolStripButton.Enabled = true;
+                        tsBtnLogout.Enabled = true;
+                        {
+                            //if (URLTextBox.Text == "")
+                            //{
+                            //    URLTextBox.Text = POG.FennecFox.Properties.Settings.Default.threadUrl;
+                            //    if (URLTextBox.Text != "")
+                            //    {
+                            //        _day = POG.FennecFox.Properties.Settings.Default.day;
+                            //        btnStartGame_Click(this, EventArgs.Empty);
+                            //    }
+                            //}
+                        }
+                    }
+                    break;
+
+                case Forum.LoginEventType.LogoutSuccess:
+                    {
+                        _loggedIn = false;
+                        openToolStripButton.Enabled = false;
+                    }
+                    break;
+            }
+        }
+
+        private void tsBtnLogout_Click(object sender, EventArgs e)
+        {
+            _forum.Logout();
+            ShowLogin();
+        }
+
+        private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Form frm = new AboutFennec();
+            frm.ShowDialog();
+        }
+
     }
 }

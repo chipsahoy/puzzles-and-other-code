@@ -20,6 +20,7 @@ namespace POG.Forum
             UseAuthentication = false;
             IgnoreErrors = false;
             Headers = new Dictionary<string, string>();
+            PostData = new Dictionary<string, string>();
             UseUnsafeAuthenticatedConnectionSharing = false;
         }
         public ConnectionSettings Clone()
@@ -38,6 +39,7 @@ namespace POG.Forum
         public bool IgnoreErrors { get; set; }
         public bool UseUnsafeAuthenticatedConnectionSharing { get; set; }
         public Dictionary<String, String> Headers { get; set; }
+        public Dictionary<String, String> PostData { get; private set; }
         public CookieContainer CC 
         {
             get
