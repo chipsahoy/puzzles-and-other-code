@@ -43,7 +43,7 @@
             // 
             this.btnSubmitPlayers.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.btnSubmitPlayers.DialogResult = System.Windows.Forms.DialogResult.OK;
-            this.btnSubmitPlayers.Location = new System.Drawing.Point(369, 28);
+            this.btnSubmitPlayers.Location = new System.Drawing.Point(448, 28);
             this.btnSubmitPlayers.Name = "btnSubmitPlayers";
             this.btnSubmitPlayers.Size = new System.Drawing.Size(75, 23);
             this.btnSubmitPlayers.TabIndex = 0;
@@ -53,7 +53,7 @@
             // btnDelete
             // 
             this.btnDelete.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnDelete.Location = new System.Drawing.Point(370, 241);
+            this.btnDelete.Location = new System.Drawing.Point(449, 241);
             this.btnDelete.Name = "btnDelete";
             this.btnDelete.Size = new System.Drawing.Size(75, 46);
             this.btnDelete.TabIndex = 4;
@@ -64,7 +64,7 @@
             // btnPaste
             // 
             this.btnPaste.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnPaste.Location = new System.Drawing.Point(369, 142);
+            this.btnPaste.Location = new System.Drawing.Point(448, 142);
             this.btnPaste.Name = "btnPaste";
             this.btnPaste.Size = new System.Drawing.Size(75, 46);
             this.btnPaste.TabIndex = 9;
@@ -75,7 +75,7 @@
             // btnCopyLive
             // 
             this.btnCopyLive.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnCopyLive.Location = new System.Drawing.Point(369, 90);
+            this.btnCopyLive.Location = new System.Drawing.Point(448, 90);
             this.btnCopyLive.Name = "btnCopyLive";
             this.btnCopyLive.Size = new System.Drawing.Size(75, 46);
             this.btnCopyLive.TabIndex = 10;
@@ -115,15 +115,16 @@
             this.grdRoster.DisableArrowNavigationMode = false;
             this.grdRoster.Location = new System.Drawing.Point(12, 28);
             this.grdRoster.Name = "grdRoster";
-            this.grdRoster.Size = new System.Drawing.Size(351, 389);
+            this.grdRoster.Size = new System.Drawing.Size(430, 389);
             this.grdRoster.TabIndex = 2;
             this.grdRoster.CellEndEdit += new System.Windows.Forms.DataGridViewCellEventHandler(this.grdRoster_CellEndEdit);
+            this.grdRoster.RowValidating += new System.Windows.Forms.DataGridViewCellCancelEventHandler(this.grdRoster_RowValidating);
             // 
             // PlayerList
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(455, 442);
+            this.ClientSize = new System.Drawing.Size(534, 442);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.btnCopyLive);
             this.Controls.Add(this.btnPaste);

@@ -752,6 +752,8 @@ INSERT OR IGNORE INTO [posts] (
                         INNER JOIN players ON (posters.id = players.playerId)
                         INNER JOIN [roles] ON (players.roleId = roles.id)
 						WHERE (roles.threadId = @p1)
+                        AND ((players.endPostNumber IS NULL)
+                        OR (players.endPostNumber > postNumber))
 						ORDER BY posters.Name ASC;";
             Stopwatch watch = new Stopwatch();
             watch.Start();
@@ -782,6 +784,7 @@ SELECT [roles].id, players.playerId, posters.name,
 (SELECT COUNT(*)  
     FROM posts WHERE
     ([roles].threadId = @p2)
+    AND ([roles].deathPostNumber IS NULL)
     AND (posts.threadId = roles.threadId)
     AND (posts.posterId = players.playerId)
     AND (posts.number >= @p4) 
@@ -790,6 +793,7 @@ SELECT [roles].id, players.playerId, posters.name,
 (SELECT MAX(postId)
     FROM bolds, posts WHERE
     ([roles].threadId = @p2)
+    AND ([roles].deathPostNumber IS NULL)
     AND (posts.threadId = roles.threadId)
     AND (bolds.postId = posts.id)
     AND (posts.posterId = players.playerId)
@@ -801,6 +805,7 @@ FROM [roles]
 JOIN [players] ON ([roles].id = players.roleId)
 JOIN [posters] ON (posters.id = players.playerId)
 WHERE ([roles].threadId = @p2)
+    AND ([roles].deathPostNumber IS NULL)
 GROUP BY [posters].name
 ;
 ";
@@ -1003,7 +1008,7 @@ SELECT bolds.bolded, bolds.position, posts.number, posts.time
                 dbRead.Open();
                 using (SQLiteCommand cmd = new SQLiteCommand(sql, dbRead))
                 {
-                    String search = "%" + name + "%";
+                    String search = name + "%";
                     cmd.Parameters.Add(new SQLiteParameter("@p1", search));
                     using (SQLiteDataReader r = cmd.ExecuteReader())
                     {

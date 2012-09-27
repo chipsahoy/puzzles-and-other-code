@@ -15,6 +15,7 @@ namespace POG.FennecFox
     {
         private Werewolf.VoteCount _voteCount;
         Werewolf.AutoComplete _autoComplete;
+        Boolean _acOpen;
 
         public IEnumerable<String> Players
         {
@@ -39,10 +40,12 @@ namespace POG.FennecFox
         void acMenu_Closed(object sender, EventArgs e)
         {
             grdRoster.DisableArrowNavigationMode = false;
+            _acOpen = false;
         }
 
         void acMenu_Opening(object sender, CancelEventArgs e)
         {
+            _acOpen = true;
             grdRoster.DisableArrowNavigationMode = true;
         }
 
@@ -58,20 +61,26 @@ namespace POG.FennecFox
 
         void _autoComplete_CompletionList(object sender, NameCompletionEventArgs e)
         {
+            if (grdRoster.CurrentCell == null)
+            {
+                return;
+            }
             if (grdRoster.CurrentCell.ColumnIndex == (Int32)CounterColumn.Player)
             {
                 TextBox txt = grdRoster.EditingControl as TextBox;
                 if (txt != null)
                 {
-                    if (e.Fragment == _autoCompleteFragment)
+                    List<String> names = new List<string>();
+                    foreach (Poster p in e.Names)
                     {
-                        List<String> names = new List<string>();
-                        foreach (Poster p in e.Names)
-                        {
-                            names.Add(p.Name);
-                        }
-                        Trace.TraceInformation("Fragment: {0}", e.Fragment);
-                        acMenu.SetAutocompleteItems(names);
+                        names.Add(p.Name);
+                    }
+                    Trace.TraceInformation("Fragment: {0}", e.Fragment);
+                    Boolean open = _acOpen;
+                    acMenu.SetAutocompleteItems(names);
+                    if (!open && (names.Count > 1))
+                    {
+                        acMenu.Show(_editControl, false);
                     }
                 }
             }
@@ -85,7 +94,12 @@ namespace POG.FennecFox
 
         private void AddToRoster(String name)
         {
+            name = name.Split('\t')[0];
             name = name.Trim();
+            if (_voteCount.GetPlayerId(name) < 0)
+            {
+                return;
+            }
             foreach (CensusEntry e in _voteCount.Census)
             {
                 if (e.Name == name)
@@ -225,7 +239,7 @@ namespace POG.FennecFox
                 }
             }
         }
-
+        
         void grdRoster_CellValidating(object sender, DataGridViewCellValidatingEventArgs e)
         {
             e.Cancel = false;
@@ -335,6 +349,30 @@ namespace POG.FennecFox
         {
             acMenu.TargetControlWrapper = null;
             acMenu.SetAutocompleteMenu(_editControl, null);
+        }
+
+        private void grdRoster_RowValidating(object sender, DataGridViewCellCancelEventArgs e)
+        {
+            DataGridViewRow r = grdRoster.Rows[e.RowIndex];
+            object oValue = r.Cells[(Int32)CounterColumn.Player].FormattedValue;
+            if ((oValue != null) && (oValue as String != String.Empty))
+            {
+                r.Cells[(Int32)CounterColumn.Player].ReadOnly = false;
+                String name = oValue as String;
+                if (_voteCount.GetPlayerId(name) < 0)
+                {
+                    // never heard of this guy.
+                    r.Cells[(Int32)CounterColumn.Player].ErrorText = "Unknown name";
+                }
+                else
+                {
+                    r.Cells[(Int32)CounterColumn.Player].ErrorText = null;
+                }
+            }
+            else
+            {
+                r.Cells[(Int32)CounterColumn.Alive].ReadOnly = true;
+            }
         }
 
     }

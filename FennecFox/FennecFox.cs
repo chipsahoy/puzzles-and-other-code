@@ -437,6 +437,7 @@ namespace POG.FennecFox
 
         private void btnRoster_Click(object sender, EventArgs e)
         {
+            statusText.Text = String.Empty;
             AutoComplete autoComplete = new AutoComplete(_forum, _synchronousInvoker);
             PlayerList frmPlayers = new PlayerList(_voteCount, autoComplete);
             DialogResult dr = frmPlayers.ShowDialog();
@@ -449,6 +450,7 @@ namespace POG.FennecFox
         }
         private void btnEditDay_Click(object sender, EventArgs e)
         {
+            statusText.Text = String.Empty;
             DayEditor frm = new DayEditor(_voteCount);
             DialogResult result = frm.ShowDialog();
             if (result == System.Windows.Forms.DialogResult.OK)
