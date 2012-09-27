@@ -14,21 +14,27 @@ namespace POG.Werewolf
         public AutoComplete(TwoPlusTwoForum forum, Action<Action> synchronousInvoker)
         {
             _forum = forum;
+            _forum.NameCompletionEvent += new EventHandler<NameCompletionEventArgs>(_forum_NameCompletionEvent);
             _synchronousInvoker = synchronousInvoker;
             String dbName = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\POG\\pogposts.sqlite";
             _db = new PogSqlite();
             _db.Connect(dbName);
         }
 
+        void _forum_NameCompletionEvent(object sender, NameCompletionEventArgs e)
+        {
+            IEnumerable<Poster> posters = e.Names;
+            _db.AddPosters(posters);
+            IEnumerable<Poster> names = _db.GetPostersLike(e.Fragment);
+            OnCompletionList(e.Fragment, names);
+        }
+
         public void SetNameFragment(string name)
         {
-            IEnumerable<Poster> posters = _forum.GetPostersLike(name);
-            _db.AddPosters(posters);
-            IEnumerable<String> names = _db.GetPostersLike(name);
-            OnCompletionList(name, names);
+            _forum.GetPostersLike(name);
         }
         public event EventHandler<NameCompletionEventArgs> CompletionList;
-        private void OnCompletionList(String fragment, IEnumerable<String> names)
+        private void OnCompletionList(String fragment, IEnumerable<Poster> names)
         {
             var handler = CompletionList;
             if (handler != null)

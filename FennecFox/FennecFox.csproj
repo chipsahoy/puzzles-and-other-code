@@ -111,6 +111,9 @@
     <Compile Include="LoginDialog.Designer.cs">
       <DependentUpon>LoginDialog.cs</DependentUpon>
     </Compile>
+    <Compile Include="NoArrowNavigateDataGridView.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="OpenGame.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -197,6 +200,10 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\AutocompleteMenu\AutocompleteMenu.csproj">
+      <Project>{43CBC9AA-6A8E-463F-83A9-AFF3124AFDB6}</Project>
+      <Name>AutocompleteMenu</Name>
+    </ProjectReference>
     <ProjectReference Include="..\ForumTypes\ForumTypes.csproj">
       <Project>{3A512A72-44FC-458A-A6FB-36147D6C0CF6}</Project>
       <Name>ForumTypes</Name>

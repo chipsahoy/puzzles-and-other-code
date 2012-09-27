@@ -24,7 +24,7 @@ namespace POG.Werewolf
 
         void WriteRoster(int _threadId, SortableBindingList<Forum.CensusEntry> _census);
 
-        System.Collections.Generic.IEnumerable<string> GetPostersLike(string name);
+        System.Collections.Generic.IEnumerable<Poster> GetPostersLike(string name);
 
         void AddPosters(System.Collections.Generic.IEnumerable<Poster> posters);
     }

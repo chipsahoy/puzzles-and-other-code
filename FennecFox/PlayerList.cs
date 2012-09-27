@@ -32,19 +32,31 @@ namespace POG.FennecFox
         public PlayerList()
         {
             InitializeComponent();
+            acMenu.Opening += new EventHandler<CancelEventArgs>(acMenu_Opening);
+            acMenu.Closed += new EventHandler(acMenu_Closed);
+        }
+
+        void acMenu_Closed(object sender, EventArgs e)
+        {
+            grdRoster.DisableArrowNavigationMode = false;
+        }
+
+        void acMenu_Opening(object sender, CancelEventArgs e)
+        {
+            grdRoster.DisableArrowNavigationMode = true;
         }
 
         public PlayerList(Werewolf.VoteCount voteCount, Werewolf.AutoComplete autoComplete) : this()
         {
             _voteCount = voteCount;
             _autoComplete = autoComplete;
-            _autoComplete.CompletionList += new EventHandler<Werewolf.NameCompletionEventArgs>(_autoComplete_CompletionList);
+            _autoComplete.CompletionList += new EventHandler<NameCompletionEventArgs>(_autoComplete_CompletionList);
             CreateGridColumns();
             SetupGrid();
         }
 
 
-        void _autoComplete_CompletionList(object sender, Werewolf.NameCompletionEventArgs e)
+        void _autoComplete_CompletionList(object sender, NameCompletionEventArgs e)
         {
             if (grdRoster.CurrentCell.ColumnIndex == (Int32)CounterColumn.Player)
             {
@@ -53,13 +65,13 @@ namespace POG.FennecFox
                 {
                     if (e.Fragment == _autoCompleteFragment)
                     {
+                        List<String> names = new List<string>();
+                        foreach (Poster p in e.Names)
+                        {
+                            names.Add(p.Name);
+                        }
                         Trace.TraceInformation("Fragment: {0}", e.Fragment);
-                        AutoCompleteStringCollection names = new AutoCompleteStringCollection();
-                        names.AddRange(e.Names.ToArray());
-                        txt.AutoCompleteMode = AutoCompleteMode.None;
-                        txt.AutoCompleteCustomSource = names;
-                        txt.AutoCompleteSource = AutoCompleteSource.CustomSource;
-                        txt.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
+                        acMenu.SetAutocompleteItems(names);
                     }
                 }
             }
@@ -174,7 +186,7 @@ namespace POG.FennecFox
             grdRoster.EditingControlShowing += new DataGridViewEditingControlShowingEventHandler(grdRoster_EditingControlShowing);
             
         }
-
+        TextBox _editControl;
         void grdRoster_EditingControlShowing(object sender, DataGridViewEditingControlShowingEventArgs e)
         {
             switch (grdRoster.CurrentCell.ColumnIndex)
@@ -186,6 +198,8 @@ namespace POG.FennecFox
                         {
                             txt.TextChanged -= txt_TextChanged;
                             txt.TextChanged += new EventHandler(txt_TextChanged);
+                            acMenu.SetAutocompleteMenu(txt, acMenu);
+                            _editControl = txt;
                         }
                     }
                     break;
@@ -207,13 +221,7 @@ namespace POG.FennecFox
                         _autoCompleteFragment = name;
                         Trace.TraceInformation("text is '{0}'", txt.Text);
                         _autoComplete.SetNameFragment(name);
-                        txt.AutoCompleteMode = AutoCompleteMode.Suggest;
                     }
-                }
-                else
-                {
-                    txt.AutoCompleteMode = AutoCompleteMode.None;
-                    txt.AutoCompleteCustomSource = null;
                 }
             }
         }
@@ -323,6 +331,11 @@ namespace POG.FennecFox
             }
         }
 
+        private void grdRoster_CellEndEdit(object sender, DataGridViewCellEventArgs e)
+        {
+            acMenu.TargetControlWrapper = null;
+            acMenu.SetAutocompleteMenu(_editControl, null);
+        }
 
     }
 }

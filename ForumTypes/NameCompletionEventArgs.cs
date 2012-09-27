@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace POG.Werewolf
+namespace POG.Forum
 {
     public class NameCompletionEventArgs : EventArgs
     {
@@ -12,13 +12,13 @@ namespace POG.Werewolf
             get;
             private set;
         }
-        public IEnumerable<string> Names
+        public IEnumerable<Poster> Names
         {
             get;
             private set;
         }
 
-        public NameCompletionEventArgs(String fragment, IEnumerable<string> names)
+        public NameCompletionEventArgs(String fragment, IEnumerable<Poster> names)
         {
             Fragment = fragment;
             Names = names;

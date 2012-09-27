@@ -46,6 +46,7 @@
   <ItemGroup>
     <Compile Include="CensusEntry.cs" />
     <Compile Include="ForumThread.cs" />
+    <Compile Include="NameCompletionEventArgs.cs" />
     <Compile Include="Post.cs" />
     <Compile Include="PostEdit.cs" />
     <Compile Include="Poster.cs" />

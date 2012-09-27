@@ -30,11 +30,12 @@
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(PlayerList));
             this.btnSubmitPlayers = new System.Windows.Forms.Button();
-            this.grdRoster = new System.Windows.Forms.DataGridView();
             this.btnDelete = new System.Windows.Forms.Button();
             this.btnPaste = new System.Windows.Forms.Button();
             this.btnCopyLive = new System.Windows.Forms.Button();
             this.label2 = new System.Windows.Forms.Label();
+            this.acMenu = new AutocompleteMenuNS.AutocompleteMenu();
+            this.grdRoster = new POG.FennecFox.NoArrowNavigateDataGridView();
             ((System.ComponentModel.ISupportInitialize)(this.grdRoster)).BeginInit();
             this.SuspendLayout();
             // 
@@ -48,17 +49,6 @@
             this.btnSubmitPlayers.TabIndex = 0;
             this.btnSubmitPlayers.Text = "Close";
             this.btnSubmitPlayers.UseVisualStyleBackColor = true;
-            // 
-            // grdRoster
-            // 
-            this.grdRoster.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.grdRoster.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.grdRoster.Location = new System.Drawing.Point(12, 28);
-            this.grdRoster.Name = "grdRoster";
-            this.grdRoster.Size = new System.Drawing.Size(351, 389);
-            this.grdRoster.TabIndex = 2;
             // 
             // btnDelete
             // 
@@ -105,6 +95,30 @@
             this.label2.TabIndex = 12;
             this.label2.Text = "The Roster";
             // 
+            // acMenu
+            // 
+            this.acMenu.AllowsTabKey = true;
+            this.acMenu.AppearInterval = 100;
+            this.acMenu.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F);
+            this.acMenu.ImageList = null;
+            this.acMenu.Items = new string[0];
+            this.acMenu.MinFragmentLength = 3;
+            this.acMenu.SearchPattern = ".";
+            this.acMenu.TargetControlWrapper = null;
+            // 
+            // grdRoster
+            // 
+            this.grdRoster.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.grdRoster.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.grdRoster.DisableArrowNavigationMode = false;
+            this.grdRoster.Location = new System.Drawing.Point(12, 28);
+            this.grdRoster.Name = "grdRoster";
+            this.grdRoster.Size = new System.Drawing.Size(351, 389);
+            this.grdRoster.TabIndex = 2;
+            this.grdRoster.CellEndEdit += new System.Windows.Forms.DataGridViewCellEventHandler(this.grdRoster_CellEndEdit);
+            // 
             // PlayerList
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -128,10 +142,11 @@
         #endregion
 
         private System.Windows.Forms.Button btnSubmitPlayers;
-        private System.Windows.Forms.DataGridView grdRoster;
+        private NoArrowNavigateDataGridView grdRoster;
         private System.Windows.Forms.Button btnDelete;
         private System.Windows.Forms.Button btnPaste;
         private System.Windows.Forms.Button btnCopyLive;
         private System.Windows.Forms.Label label2;
+        private AutocompleteMenuNS.AutocompleteMenu acMenu;
     }
 }

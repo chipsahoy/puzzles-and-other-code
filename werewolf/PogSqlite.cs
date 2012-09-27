@@ -32,6 +32,11 @@ namespace POG.Werewolf
                 url,
                 isTurbo)
                 VALUES (@p1, @p2, @p3);
+				UPDATE [threads] SET
+                url = @p2,
+                isTurbo = @p3
+                WHERE
+                (id = @p1);
 			";
             Stopwatch watch = new Stopwatch();
             watch.Start();
@@ -216,7 +221,7 @@ players.endPostNumber ASC
 
             foreach (CensusEntry ce in census)
             {
-                if (ce.Name == String.Empty)
+                if ((ce.Name == null) || (ce.Name == String.Empty))
                 {
                     continue;
                 }
@@ -592,7 +597,7 @@ ON
 
                         @"INSERT OR IGNORE INTO [posters] (id, name) VALUES (@p3, @p8);
 
-INSERT OR REPLACE INTO [posts] (
+INSERT OR IGNORE INTO [posts] (
                     id,
                     threadId,
                     posterId,
@@ -980,12 +985,12 @@ SELECT bolds.bolded, bolds.position, posts.number, posts.time
 
 
 
-        public IEnumerable<string> GetPostersLike(string name)
+        public IEnumerable<Poster> GetPostersLike(string name)
         {
             name = name.Replace("%", ";%");
-            List<String> posters = new List<string>();
+            List<Poster> posters = new List<Poster>();
             String sql = @"
-				SELECT posters.name, COUNT(*) AS gamesplayed FROM [posters]
+				SELECT posters.name, posters.id, COUNT(*) AS gamesplayed FROM [posters]
                 LEFT OUTER JOIN players ON (posters.id = players.playerId) 
                 WHERE (name LIKE @p1 ESCAPE ';')
                 GROUP BY posters.name
@@ -1005,7 +1010,9 @@ SELECT bolds.bolded, bolds.position, posts.number, posts.time
                         while (r.Read())
                         {
                             String suggestion = r.GetString(0);
-                            posters.Add(suggestion);
+                            Int32 id = r.GetInt32(1);
+                            Poster p = new Poster(suggestion, id);
+                            posters.Add(p);
                         }
                     }
                 }

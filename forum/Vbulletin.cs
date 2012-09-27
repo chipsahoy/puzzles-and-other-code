@@ -114,6 +114,13 @@ namespace POG.Forum
 						ChangeState(StateLoggedOut);
 					}
 					return null;
+
+                case "GetPostersLike":
+                    {
+                        Event<String> evt = e as Event<String>;
+                        DoGetPostersLike(evt.Param);
+                    }
+                    return null;
 			}
 			return StateTop;
 		}
@@ -250,6 +257,11 @@ namespace POG.Forum
 		#endregion
         internal Boolean MakePost(Int32 threadId, String content, Int32 icon = 0)
         {
+            Boolean rc = DoMakePost(threadId, content, icon);
+            return rc;
+        }
+        Boolean DoMakePost(Int32 threadId, String content, Int32 icon = 0)
+        {
             /* headers
                 POST /newreply.php?do=postreply&t=1198532 HTTP/1.1
                 Host: forumserver.twoplustwo.com
@@ -357,9 +369,14 @@ loggedinuser 81788
         }
 
 
+        internal void GetPostersLike(String name)
+        {
+            Event<String> evt = new Event<string>("GetPostersLike", name);
+            PostEvent(evt);
+        }
+        
 
-
-        internal List<Poster> GetPostersLike(string name)
+        void DoGetPostersLike(string name)
         {
             /* headers
                 POST /ajax.php?do=usersearch
@@ -380,7 +397,7 @@ fragment	name
             String doc = HtmlHelper.GetUrlResponseString(cs);
             if (doc == null)
             {
-                return posters;
+                return;
             }
             // parse out securitytoken
             Regex reg = new Regex("var SECURITYTOKEN = \"(.+)\"");
@@ -414,7 +431,7 @@ fragment	name
             if (resp == null)
             {
                 // failure
-                return posters;
+                return;
             }
             Trace.TraceInformation(resp);
             /*
@@ -458,7 +475,7 @@ fragment	name
                     }
                 }
             }
-            return posters;
+            _outer.OnNameCompletion(name, posters);   
         }
     }
 	public class TwoPlusTwoForum
@@ -476,6 +493,18 @@ fragment	name
 		}
 		#endregion
 		#region events
+        public event EventHandler<NameCompletionEventArgs> NameCompletionEvent;
+        internal void OnNameCompletion(String fragment, IEnumerable<Poster> names)
+        {
+            var handler = NameCompletionEvent;
+            if (handler != null)
+            {
+                NameCompletionEventArgs e = new NameCompletionEventArgs(fragment, names);
+                _synchronousInvoker.Invoke(
+                    () => handler(this, e)
+                );
+            }
+        }
 		public event EventHandler<LoginEventArgs> LoginEvent;
 		virtual internal void OnLoginEvent(String username, LoginEventType let)
 		{
@@ -538,10 +567,9 @@ fragment	name
             Boolean rc = _inner.MakePost(threadId, message);
             return rc;
         }
-        public IEnumerable<Poster> GetPostersLike(string name)
+        public void GetPostersLike(string name)
         {
-            List<Poster> posters = _inner.GetPostersLike(name);
-            return posters;
+            _inner.GetPostersLike(name);
         }
         public static Int32 ThreadIdFromUrl(String url)
         {
