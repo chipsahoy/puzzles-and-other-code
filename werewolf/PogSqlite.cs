@@ -27,16 +27,16 @@ namespace POG.Werewolf
         public void WriteThreadDefinition(Int32 threadId, String url, Boolean turbo)
         {
             String sql = @"
-				INSERT OR IGNORE INTO [threads] (
-                id,
+				INSERT OR IGNORE INTO [Thread] (
+                threadid,
                 url,
-                isTurbo)
+                turbo)
                 VALUES (@p1, @p2, @p3);
-				UPDATE [threads] SET
+				UPDATE [Thread] SET
                 url = @p2,
-                isTurbo = @p3
+                turbo = @p3
                 WHERE
-                (id = @p1);
+                (threadid = @p1);
 			";
             Stopwatch watch = new Stopwatch();
             watch.Start();
@@ -61,11 +61,11 @@ namespace POG.Werewolf
             using (SQLiteConnection dbWrite = new SQLiteConnection(_connect))
             {
                 dbWrite.Open();
-                String sql = @"INSERT OR REPLACE INTO [days] (
-                threadId,
+                String sql = @"INSERT OR REPLACE INTO [Day] (
+                threadid,
                 day,
-				startPost, 
-				endTime)
+				startpost, 
+				endtime)
                 VALUES (@p1, @p2, @p3, @p4);";
                 using (SQLiteCommand cmd = new SQLiteCommand(sql, dbWrite))
                 {
@@ -93,8 +93,8 @@ namespace POG.Werewolf
 
                     String sqlDelete =
                         @"DELETE 
-						FROM roles 
-						where (threadId = @p1);";
+						FROM GameRole 
+						where (threadid = @p1);";
                     using (SQLiteCommand cmd = new SQLiteCommand(sqlDelete, dbWrite, trans))
                     {
                         cmd.Parameters.Add(new SQLiteParameter("@p1", threadId));
@@ -102,13 +102,13 @@ namespace POG.Werewolf
                     }
                     String sql =
 
-                        @"INSERT INTO [roles] (
-                    threadId)
+                        @"INSERT INTO GameRole (
+                    threadid)
                     VALUES (@p1);
                     SELECT last_insert_rowid();";
 
                     string sqlPlayer =
-                        @"INSERT INTO [players] (roleId, playerId) VALUES(@p1, @p2);";
+                        @"INSERT INTO [Player] (roleid, posterid) VALUES(@p1, @p2);";
 
                     using (SQLiteCommand cmd = new SQLiteCommand(sql, dbWrite, trans))
                     {
@@ -154,15 +154,15 @@ namespace POG.Werewolf
         {
             SortableBindingList<CensusEntry> census = new SortableBindingList<CensusEntry>();
             String sql = @"
-SELECT players.roleId, [roles].deathPostNumber, players.playerId, players.endPostNumber, posters.name
-FROM [roles], players, posters
+SELECT Player.roleid, GameRole.deathpostid, Player.posterid, Player.endpost, Poster.postername
+FROM GameRole, Player, Poster
 WHERE
-([roles].threadId = @p1)
-AND (players.roleId = [roles].id)
-AND (players.playerId = posters.id)
-ORDER BY [roles].id ASC, 
-(CASE WHEN players.endPostNumber IS NULL THEN 0 ELSE 1 END),
-players.endPostNumber ASC
+(GameRole.threadid = @p1)
+AND (Player.roleid = GameRole.roleid)
+AND (Player.posterid = Poster.posterid)
+ORDER BY GameRole.roleid ASC, 
+(CASE WHEN Player.endpost IS NULL THEN 0 ELSE 1 END),
+Player.endpost ASC
 ;
 ";
             Stopwatch watch = new Stopwatch();
@@ -264,8 +264,8 @@ players.endPostNumber ASC
 
                     String sqlDelete =
                         @"DELETE 
-						FROM roles 
-						where (threadId = @p1);";
+						FROM GameRole 
+						where (threadid = @p1);";
                     using (SQLiteCommand cmd = new SQLiteCommand(sqlDelete, dbWrite, trans))
                     {
                         cmd.Parameters.Add(new SQLiteParameter("@p1", threadId));
@@ -273,8 +273,8 @@ players.endPostNumber ASC
                     }
                     String sql =
 
-                        @"INSERT INTO [roles] (
-                    threadId, deathPostNumber)
+                        @"INSERT INTO GameRole (
+                    threadid, deathpostid)
                     VALUES (@p1, @p2);
                     SELECT last_insert_rowid();";
                     using (SQLiteCommand cmd = new SQLiteCommand(sql, dbWrite, trans))
@@ -308,8 +308,8 @@ players.endPostNumber ASC
                             }
 
                             string sqlPlayer =
-@"INSERT INTO [players] 
-(roleId, playerId, startPostNumber, endPostNumber) 
+@"INSERT INTO [Player] 
+(roleid, posterid, startpost, endpost) 
 VALUES(@p1, @p2, @p3, @p4);";
                             using (SQLiteCommand cmdPlayer = new SQLiteCommand(sqlPlayer, dbWrite, trans))
                             {
@@ -358,9 +358,9 @@ VALUES(@p1, @p2, @p3, @p4);";
 
         public Int32 GetPlayerId(string player)
         {
-            String sql = @"SELECT id
-            FROM posters
-            WHERE (name = @p1)
+            String sql = @"SELECT posterid
+            FROM Poster
+            WHERE (postername = @p1)
             LIMIT 1";
             Int32 id = -1;
             Stopwatch watch = new Stopwatch();
@@ -384,13 +384,13 @@ VALUES(@p1, @p2, @p3, @p4);";
             Trace.TraceInformation("After GetPlayerId {0}", watch.Elapsed.ToString());
             return id;
         }
-        public void WriteAlias(Int32 threadId, String bolded, String player)
+        public void WriteAlias(Int32 threadId, String bolded, Int32 playerId)
         {
             String sql = @"
-				INSERT OR REPLACE INTO [aliases] (
-				threadId,
+				INSERT OR REPLACE INTO [Alias] (
+				threadid,
                 bolded,
-                player
+                posterid
 				)
                 VALUES (@p1, @p2, @p3);
 			";
@@ -403,7 +403,7 @@ VALUES(@p1, @p2, @p3, @p4);";
                 {
                     cmd.Parameters.Add(new SQLiteParameter("@p1", threadId));
                     cmd.Parameters.Add(new SQLiteParameter("@p2", bolded));
-                    cmd.Parameters.Add(new SQLiteParameter("@p3", player));
+                    cmd.Parameters.Add(new SQLiteParameter("@p3", playerId));
                     int e = cmd.ExecuteNonQuery();
                 }
             }
@@ -412,9 +412,9 @@ VALUES(@p1, @p2, @p3, @p4);";
         }
         public void SetIgnoreOnBold(Int32 postId, Int32 boldPosition, Boolean ignore)
         {
-            String sql = @"UPDATE OR IGNORE bolds
+            String sql = @"UPDATE OR IGNORE Bolded
                     SET ignore = @p1
-                    WHERE (postId = @p2) AND (position = @p3);";
+                    WHERE (postid = @p2) AND (position = @p3);";
             Stopwatch watch = new Stopwatch();
             watch.Start();
             using (SQLiteConnection dbWrite = new SQLiteConnection(_connect))
@@ -433,13 +433,13 @@ VALUES(@p1, @p2, @p3, @p4);";
         }
         public void WriteUnhide(Int32 threadId, String player, Int32 startPostId, DateTimeOffset endTime)
         {
-            String sql = @"SELECT bolds.postId, bolds.position
-            FROM bolds INNER JOIN posts ON (bolds.postId = posts.id)
-            INNER JOIN posters ON (posts.posterId = posters.id)
-            WHERE (posters.name = @p1) AND (posts.threadId = @p2) AND
-            (bolds.postId >= @p4) AND (posts.time <= @p3) AND
-            (bolds.ignore <> 0)
-            ORDER BY bolds.postId ASC, bolds.position ASC LIMIT 1";
+            String sql = @"SELECT Bolded.postid, Bolded.position
+            FROM Bolded INNER JOIN Post ON (Bolded.postid = Post.postid)
+            INNER JOIN Poster ON (Post.posterid = Poster.posterid)
+            WHERE (Poster.postername = @p1) AND (Post.threadid = @p2) AND
+            (Bolded.postid >= @p4) AND (Post.posttime <= @p3) AND
+            (Bolded.ignore <> 0)
+            ORDER BY Bolded.postid ASC, Bolded.position ASC LIMIT 1";
             Int32 postNewId = -1;
             Int32 position = -1;
             Stopwatch watch = new Stopwatch();
@@ -487,88 +487,94 @@ VALUES(@p1, @p2, @p3, @p4);";
                 {
                     String[] tables = 
             {
-@"CREATE TABLE IF NOT EXISTS [meta] (
-    [version] INTEGER DEFAULT " + _schemaVersion.ToString() + @" PRIMARY KEY
+@"CREATE TABLE IF NOT EXISTS [Version] (
+    [versionid] INTEGER PRIMARY KEY,
+    [version] INTEGER DEFAULT " + _schemaVersion.ToString() + @" 
 );",
-
-@"CREATE TABLE IF NOT EXISTS [threads] (
-    [id] INTEGER NOT NULL PRIMARY KEY,
+@"INSERT OR IGNORE INTO Version (versionid) VALUES (1);",
+@"CREATE TABLE IF NOT EXISTS [Thread] (
+    [threadid] INTEGER NOT NULL PRIMARY KEY,
     [url] TEXT,
-    [title] TEXT,
-    [isTurbo] INTEGER,
-    [isActive] INTEGER DEFAULT 1
+    [turbo] INTEGER,
+    [active] INTEGER DEFAULT 1
 );",
-@"CREATE TABLE IF NOT EXISTS [days] (
-    [threadId] INTEGER REFERENCES threads(id) ON DELETE CASCADE,
+@"CREATE TABLE IF NOT EXISTS [Day] (
+    [threadid] INTEGER REFERENCES Thread(threadid) ON DELETE CASCADE,
     [day] INTEGER,
-    [startPost] INTEGER,
-    [endTime] TIMESTAMP,
-    PRIMARY KEY(threadId, day)
+    [startpost] INTEGER,
+    [endtime] TIMESTAMP,
+    PRIMARY KEY(threadid, day)
 );",
 
-@"CREATE TABLE IF NOT EXISTS [posters] (
-    [id] INTEGER NOT NULL PRIMARY KEY,
-    [name] TEXT COLLATE NOCASE
+@"CREATE TABLE IF NOT EXISTS [Poster] (
+    [posterid] INTEGER NOT NULL PRIMARY KEY,
+    [postername] TEXT COLLATE NOCASE
 );",
 @"CREATE INDEX IF NOT EXISTS 
 postersname
 ON
-[posters] (name)
+[Poster] (postername)
 ;",
 
-@"CREATE TABLE IF NOT EXISTS [roles] (
-    [id] INTEGER PRIMARY KEY,
-    [threadId] INTEGER REFERENCES threads(id) ON DELETE CASCADE,
-    [birthPostNumber] INTEGER DEFAULT 1,
-    [deathPostNumber] INTEGER,
-    [team] TEXT,
-    [role] TEXT,
-    [pm] TEXT
+@"CREATE TABLE IF NOT EXISTS GameRole (
+    [roleid] INTEGER PRIMARY KEY AUTOINCREMENT,
+    [threadid] INTEGER REFERENCES Thread(threadid) ON DELETE CASCADE,
+    [birthpostid] INTEGER DEFAULT 1,
+    [deathpostid] INTEGER
 );",
 @"CREATE INDEX IF NOT EXISTS 
 rolesthread
 ON
-[roles] (threadId)
+GameRole (threadid)
 ;",
-@"CREATE TABLE IF NOT EXISTS [posts] (
-    [id] INTEGER NOT NULL PRIMARY KEY,
-    [threadId] INTEGER REFERENCES threads(id) ON DELETE CASCADE,
-    [posterId] INTEGER REFERENCES posters(id) ON DELETE CASCADE,
-    [number] INTEGER,
-    [content] TEXT,
-    [title] TEXT,
-    [time] TIMESTAMP
+@"CREATE TABLE IF NOT EXISTS [Post] (
+    [postid] INTEGER NOT NULL PRIMARY KEY,
+    [threadid] INTEGER REFERENCES Thread(threadid) ON DELETE CASCADE,
+    [posterid] INTEGER REFERENCES Poster(posterid) ON DELETE CASCADE,
+    [postnumber] INTEGER,
+    [posttime] TIMESTAMP
 );",
 @"CREATE INDEX IF NOT EXISTS 
 poststhreadposter
 ON
-posts (threadId, posterId)
+Post (threadid, posterid)
 ;",
-
-@"CREATE TABLE IF NOT EXISTS [bolds] (
-    [postId] INTEGER NOT NULL REFERENCES posts(id) ON DELETE CASCADE,
+@"CREATE VIRTUAL TABLE IF NOT EXISTS [PostContent] USING FTS4 (
+    [title] TEXT,
+    [content] TEXT,
+    [editreason] TEXT
+);",
+@"CREATE TABLE IF NOT EXISTS [PostMeta] (
+    [postid] INTEGER NOT NULL REFERENCES Post(postid) ON DELETE CASCADE,
+    [contentid] INTEGER NOT NULL REFERENCES PostContent(ROWID) ON DELETE CASCADE,
+    [editorid] INTEGER,
+    [edittime] TIMESTAMP,
+    PRIMARY KEY(postid, contentid)
+);",
+@"CREATE TABLE IF NOT EXISTS [Bolded] (
+    [postid] INTEGER NOT NULL REFERENCES Post(postid) ON DELETE CASCADE,
     [position] INTEGER,
     [bolded] TEXT,
     [ignore] INTEGER,
-    PRIMARY KEY(postId, position)
+    PRIMARY KEY(postid, position)
 );",
-@"CREATE TABLE IF NOT EXISTS [players] (
-    [roleId] INTEGER REFERENCES roles(id) ON DELETE CASCADE,
-    [playerId] INTEGER REFERENCES posters(id) ON DELETE CASCADE,
-    [startPostNumber] INTEGER DEFAULT 1,
-    [endPostNumber] INTEGER,
-    PRIMARY KEY(roleId, playerId)
+@"CREATE TABLE IF NOT EXISTS [Player] (
+    [roleid] INTEGER REFERENCES GameRole(roleid) ON DELETE CASCADE,
+    [posterid] INTEGER REFERENCES Poster(posterid) ON DELETE CASCADE,
+    [startpost] INTEGER DEFAULT 1,
+    [endpost] INTEGER,
+    PRIMARY KEY(roleid, posterid)
 );",
-@"CREATE TABLE IF NOT EXISTS [aliases] (
-    [threadId] INTEGER REFERENCES threads(id) ON DELETE CASCADE,
+@"CREATE TABLE IF NOT EXISTS [Alias] (
+    [threadid] INTEGER REFERENCES Thread(threadid) ON DELETE CASCADE,
     [bolded] TEXT COLLATE NOCASE,
-    [player] TEXT COLLATE NOCASE,
-    PRIMARY KEY(threadId, bolded)
+    [posterid] TEXT COLLATE NOCASE,
+    PRIMARY KEY(threadid, bolded)
 );",
 @"CREATE INDEX IF NOT EXISTS 
 aliasesthread
 ON
-[aliases] (threadId)
+[Alias] (threadid)
 ;",
             };
                     foreach (String sql in tables)
@@ -595,17 +601,15 @@ ON
                 {
                     String sql =
 
-                        @"INSERT OR IGNORE INTO [posters] (id, name) VALUES (@p3, @p8);
+                        @"INSERT OR IGNORE INTO [Poster] (posterid, postername) VALUES (@p3, @p8);
 
-INSERT OR IGNORE INTO [posts] (
-                    id,
-                    threadId,
-                    posterId,
-                    number,
-                    content,
-                    title,
-                    time)
-                    VALUES (@p1, @p2, @p3, @p4, @p5, @p6, @p7);";
+INSERT OR IGNORE INTO [Post] (
+                    postid,
+                    threadid,
+                    posterid,
+                    postnumber,
+                    posttime)
+                    VALUES (@p1, @p2, @p3, @p4, @p7);";
 
                     using (SQLiteCommand cmd = new SQLiteCommand(sql, dbWrite, trans))
                     {
@@ -622,8 +626,6 @@ INSERT OR IGNORE INTO [posts] (
                         cmd.Parameters.Add(pPosterName);
                         cmd.Parameters.Add(pPosterId);
                         cmd.Parameters.Add(pPostNumber);
-                        cmd.Parameters.Add(pContent);
-                        cmd.Parameters.Add(pTitle);
                         cmd.Parameters.Add(pTime);
 
                         foreach (Post p in posts)
@@ -640,8 +642,8 @@ INSERT OR IGNORE INTO [posts] (
 
                             int ix = 0;
                             String sqlBold =
-                                @"INSERT OR IGNORE INTO [bolds] (
-                                postId,
+                                @"INSERT OR IGNORE INTO [Bolded] (
+                                postid,
                                 position,
                                 bolded,
                                 ignore)
@@ -684,10 +686,10 @@ INSERT OR IGNORE INTO [posts] (
         public DateTime? GetPostTime(Int32 threadId, Int32 postNumber)
         {
             DateTime? rc = null;
-            String sqlTime = @"SELECT time
-                        FROM posts
-                        WHERE posts.threadId = @p2 AND
-                        (posts.number == @p4);";
+            String sqlTime = @"SELECT posttime
+                        FROM Post
+                        WHERE Post.threadid = @p2 AND
+                        (Post.postnumber == @p4);";
             Stopwatch watch = new Stopwatch();
             watch.Start();
             using (SQLiteConnection dbRead = new SQLiteConnection(_connect))
@@ -717,7 +719,7 @@ INSERT OR IGNORE INTO [posts] (
         }
         public Int32? GetMaxPost(Int32 threadId)
         {
-            String sql = @"SELECT number FROM posts WHERE threadId=@p1 ORDER BY id DESC LIMIT 1;";
+            String sql = @"SELECT postnumber FROM Post WHERE threadid=@p1 ORDER BY postid DESC LIMIT 1;";
             object o;
             Stopwatch watch = new Stopwatch();
             watch.Start();
@@ -747,14 +749,14 @@ INSERT OR IGNORE INTO [posts] (
         public List<String> GetLivePlayers(Int32 threadId, Int32 postNumber)
         {
             List<String> players = new List<string>();
-            String sql = @"SELECT posters.Name
-						FROM posters
-                        INNER JOIN players ON (posters.id = players.playerId)
-                        INNER JOIN [roles] ON (players.roleId = roles.id)
-						WHERE (roles.threadId = @p1)
-                        AND ((players.endPostNumber IS NULL)
-                        OR (players.endPostNumber > postNumber))
-						ORDER BY posters.Name ASC;";
+            String sql = @"SELECT Poster.Name
+						FROM Poster
+                        INNER JOIN Player ON (Poster.posterid = Player.posterid)
+                        INNER JOIN GameRole ON (Player.roleid = GameRole.roleid)
+						WHERE (GameRole.threadid = @p1)
+                        AND ((Player.endpost IS NULL)
+                        OR (Player.endpost > @p2))
+						ORDER BY Poster.Name ASC;";
             Stopwatch watch = new Stopwatch();
             watch.Start();
             using (SQLiteConnection dbRead = new SQLiteConnection(_connect))
@@ -763,6 +765,7 @@ INSERT OR IGNORE INTO [posts] (
                 using (SQLiteCommand cmd = new SQLiteCommand(sql, dbRead))
                 {
                     cmd.Parameters.Add(new SQLiteParameter("@p1", threadId));
+                    cmd.Parameters.Add(new SQLiteParameter("@p2", postNumber));
                     using (SQLiteDataReader r = cmd.ExecuteReader())
                     {
                         while (r.Read())
@@ -780,33 +783,33 @@ INSERT OR IGNORE INTO [posts] (
         public SortableBindingList<Voter> GetVotes(Int32 threadId, Int32 startPost, DateTime endTime, object game)
         {
             String sql = @"
-SELECT [roles].id, players.playerId, posters.name, 
+SELECT GameRole.roleid, Player.posterid, Poster.postername, 
 (SELECT COUNT(*)  
-    FROM posts WHERE
-    ([roles].threadId = @p2)
-    AND ([roles].deathPostNumber IS NULL)
-    AND (posts.threadId = roles.threadId)
-    AND (posts.posterId = players.playerId)
-    AND (posts.number >= @p4) 
-    AND (posts.time <= @p3)
+    FROM Post WHERE
+    (GameRole.threadid = @p2)
+    AND (GameRole.deathpostid IS NULL)
+    AND (Post.threadid = GameRole.threadid)
+    AND (Post.posterid = Player.posterid)
+    AND (Post.postnumber >= @p4) 
+    AND (Post.posttime <= @p3)
 ) AS postcount,
-(SELECT MAX(postId)
-    FROM bolds, posts WHERE
-    ([roles].threadId = @p2)
-    AND ([roles].deathPostNumber IS NULL)
-    AND (posts.threadId = roles.threadId)
-    AND (bolds.postId = posts.id)
-    AND (posts.posterId = players.playerId)
-    AND (posts.number >= @p4) 
-    AND (posts.time <= @p3)
-    AND (bolds.ignore = 0)
+(SELECT MAX(Post.postid)
+    FROM Bolded, Post WHERE
+    (GameRole.threadid = @p2)
+    AND (GameRole.deathpostid IS NULL)
+    AND (Post.threadid = GameRole.threadid)
+    AND (Bolded.postid = Post.postid)
+    AND (Post.posterid = Player.posterid)
+    AND (Post.postnumber >= @p4) 
+    AND (Post.posttime <= @p3)
+    AND (Bolded.ignore = 0)
 ) AS bolded
-FROM [roles] 
-JOIN [players] ON ([roles].id = players.roleId)
-JOIN [posters] ON (posters.id = players.playerId)
-WHERE ([roles].threadId = @p2)
-    AND ([roles].deathPostNumber IS NULL)
-GROUP BY [posters].name
+FROM GameRole 
+JOIN [Player] ON (GameRole.roleid = Player.roleid)
+JOIN [Poster] ON (Poster.posterid = Player.posterid)
+WHERE (GameRole.threadid = @p2)
+    AND (GameRole.deathpostid IS NULL)
+GROUP BY [Poster].postername
 ;
 ";
             SortableBindingList<Voter> voters = new SortableBindingList<Voter>();
@@ -843,13 +846,13 @@ GROUP BY [posters].name
 
                 }
                 sql = @"
-SELECT bolds.bolded, bolds.position, posts.number, posts.time
-    FROM bolds
-    JOIN posts ON (bolds.postId = posts.id)
+SELECT Bolded.bolded, Bolded.position, Post.postnumber, Post.posttime
+    FROM Bolded
+    JOIN Post ON (Bolded.postid = Post.postid)
     WHERE
-    (bolds.postId = @p1)
-    AND (bolds.ignore = 0)
-    ORDER BY bolds.position DESC
+    (Bolded.postid = @p1)
+    AND (Bolded.ignore = 0)
+    ORDER BY Bolded.position DESC
     LIMIT 1
 ; 
 ";
@@ -892,8 +895,8 @@ SELECT bolds.bolded, bolds.position, posts.number, posts.time
             endPost = 0;
 
             String sql = @"
-				SELECT startPost, endTime FROM [days] 
-                WHERE (threadId = @p1) AND (day = @p2)
+				SELECT startpost, endtime FROM [Day] 
+                WHERE (threadid = @p1) AND (day = @p2)
                 LIMIT 1;
 			";
             Stopwatch watch = new Stopwatch();
@@ -924,10 +927,10 @@ SELECT bolds.bolded, bolds.position, posts.number, posts.time
             watch.Stop();
             Trace.TraceInformation("after ReadDayBoundaries {0}", watch.Elapsed.ToString());
 
-            String sqlTime = @"SELECT number
-                        FROM posts
-                        WHERE (posts.threadId = @p2) AND (posts.time <= @p3) AND (posts.number >= @p1)
-                        ORDER BY id DESC LIMIT 1";
+            String sqlTime = @"SELECT postnumber
+                        FROM Post
+                        WHERE (Post.threadid = @p2) AND (Post.posttime <= @p3) AND (Post.postnumber >= @p1)
+                        ORDER BY postid DESC LIMIT 1";
             watch.Reset();
             watch.Start();
             using (SQLiteConnection dbRead = new SQLiteConnection(_connect))
@@ -958,8 +961,9 @@ SELECT bolds.bolded, bolds.position, posts.number, posts.time
             String rc = String.Empty;
             // Check our thread.
             String sql = @"
-				SELECT player FROM [aliases] 
-                WHERE (threadId = @p1) AND (bolded = @p2)
+				SELECT poster.postername FROM Poster 
+                JOIN [Alias] ON (Poster.posterid = Alias.posterid) 
+                WHERE (threadid = @p1) AND (bolded = @p2)
                 LIMIT 1;
 			";
             Stopwatch watch = new Stopwatch();
@@ -995,11 +999,11 @@ SELECT bolds.bolded, bolds.position, posts.number, posts.time
             name = name.Replace("%", ";%");
             List<Poster> posters = new List<Poster>();
             String sql = @"
-				SELECT posters.name, posters.id, COUNT(*) AS gamesplayed FROM [posters]
-                LEFT OUTER JOIN players ON (posters.id = players.playerId) 
-                WHERE (name LIKE @p1 ESCAPE ';')
-                GROUP BY posters.name
-                ORDER BY gamesplayed DESC, name ASC;
+				SELECT Poster.postername, Poster.posterid, COUNT(*) AS gamesplayed FROM [Poster]
+                LEFT OUTER JOIN Player ON (Poster.posterid = Player.posterid) 
+                WHERE (postername LIKE @p1 ESCAPE ';')
+                GROUP BY Poster.postername
+                ORDER BY gamesplayed DESC, postername ASC;
 			";
             Stopwatch watch = new Stopwatch();
             watch.Start();
@@ -1039,7 +1043,7 @@ SELECT bolds.bolded, bolds.position, posts.number, posts.time
                 {
                     String sql =
 
-                        @"INSERT OR IGNORE INTO [posters] (id, name) VALUES (@p3, @p8);";
+                        @"INSERT OR IGNORE INTO [Poster] (posterid, postername) VALUES (@p3, @p8);";
 
                     using (SQLiteCommand cmd = new SQLiteCommand(sql, dbWrite, trans))
                     {

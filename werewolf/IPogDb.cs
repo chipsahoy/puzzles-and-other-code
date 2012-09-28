@@ -17,7 +17,7 @@ namespace POG.Werewolf
         SortableBindingList<CensusEntry> ReadRoster(Int32 threadId);
 
         void SetIgnoreOnBold(int postId, int boldPosition, bool ignore);
-        void WriteAlias(int threadId, string bolded, string player);
+        void WriteAlias(int threadId, string bolded, int playerId);
         void WriteThreadDefinition(Int32 threadId, String url, Boolean turbo);
         void WriteDayBoundaries(int threadId, int day, int startPost, DateTime endTime);
         void WriteUnhide(int threadId, string player, int startPostId, DateTimeOffset endTime);

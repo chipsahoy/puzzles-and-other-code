@@ -156,7 +156,7 @@ namespace POG.Werewolf
         public void AddVoteAlias(string bolded, string votee)
         {
             String vote = PrepBolded(bolded);
-			_db.WriteAlias(_threadId, bolded, votee);
+			_db.WriteAlias(_threadId, bolded, GetPlayerId(votee));
         }
         public string GetPostableVoteCount()
         {
