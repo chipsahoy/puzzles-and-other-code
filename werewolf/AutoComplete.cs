@@ -14,35 +14,54 @@ namespace POG.Werewolf
         public AutoComplete(TwoPlusTwoForum forum, Action<Action> synchronousInvoker)
         {
             _forum = forum;
-            _forum.NameCompletionEvent += new EventHandler<NameCompletionEventArgs>(_forum_NameCompletionEvent);
             _synchronousInvoker = synchronousInvoker;
             String dbName = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\POG\\pogposts.sqlite";
             _db = new PogSqlite();
             _db.Connect(dbName);
         }
 
-        void _forum_NameCompletionEvent(object sender, NameCompletionEventArgs e)
+        public Int32 GetPosterId(String name, Action<String, Int32> callback)
         {
-            IEnumerable<Poster> posters = e.Names;
-            _db.AddPosters(posters);
-            IEnumerable<Poster> names = _db.GetPostersLike(e.Fragment);
-            OnCompletionList(e.Fragment, names);
-        }
-
-        public void SetNameFragment(string name)
-        {
-            _forum.GetPostersLike(name);
-        }
-        public event EventHandler<NameCompletionEventArgs> CompletionList;
-        private void OnCompletionList(String fragment, IEnumerable<Poster> names)
-        {
-            var handler = CompletionList;
-            if (handler != null)
+            Int32 id = 0;
+            id = _db.GetPlayerId(name);
+            if (id <= 0)
             {
-                _synchronousInvoker.Invoke(
-                    () => handler(this, new NameCompletionEventArgs(fragment, names))
+                _forum.GetPostersLike(name,
+                    (fragment, posters) =>
+                    {
+                        _synchronousInvoker(() =>
+                            {
+                                _db.AddPosters(posters);
+                                foreach (Poster p in posters)
+                                {
+                                    if(p.Name.Equals(name, StringComparison.InvariantCultureIgnoreCase))
+                                    {
+                                        callback(p.Name, p.Id);
+                                        return;
+                                    }
+                                }
+                                callback(name, 0);
+                            }
+                        );
+                    }
                 );
             }
+            return id;
+        }
+        public void LookupNameFragment(string name, Action<String, IEnumerable<Poster>> callback)
+        {
+                _forum.GetPostersLike(name,
+                    (fragment, posters) =>
+                    {
+                        _synchronousInvoker(() =>
+                            {
+                                _db.AddPosters(posters);
+                                IEnumerable<Poster> rc = _db.GetPostersLike(name);
+                                callback(name, rc);
+                            }
+                        );
+                    }
+                );
         }
     }
 }

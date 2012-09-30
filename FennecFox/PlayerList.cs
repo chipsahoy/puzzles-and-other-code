@@ -15,7 +15,7 @@ namespace POG.FennecFox
     {
         private Werewolf.VoteCount _voteCount;
         Werewolf.AutoComplete _autoComplete;
-        Boolean _acOpen;
+        List<String> _acNames = new List<string>();
 
         public IEnumerable<String> Players
         {
@@ -35,17 +35,21 @@ namespace POG.FennecFox
             InitializeComponent();
             acMenu.Opening += new EventHandler<CancelEventArgs>(acMenu_Opening);
             acMenu.Closed += new EventHandler(acMenu_Closed);
+            acMenu.Selected += new EventHandler<AutocompleteMenuNS.SelectedEventArgs>(acMenu_Selected);
+        }
+
+        void acMenu_Selected(object sender, AutocompleteMenuNS.SelectedEventArgs e)
+        {
+            acMenu.Close();
         }
 
         void acMenu_Closed(object sender, EventArgs e)
         {
             grdRoster.DisableArrowNavigationMode = false;
-            _acOpen = false;
         }
 
         void acMenu_Opening(object sender, CancelEventArgs e)
         {
-            _acOpen = true;
             grdRoster.DisableArrowNavigationMode = true;
         }
 
@@ -53,38 +57,11 @@ namespace POG.FennecFox
         {
             _voteCount = voteCount;
             _autoComplete = autoComplete;
-            _autoComplete.CompletionList += new EventHandler<NameCompletionEventArgs>(_autoComplete_CompletionList);
             CreateGridColumns();
             SetupGrid();
         }
 
 
-        void _autoComplete_CompletionList(object sender, NameCompletionEventArgs e)
-        {
-            if (grdRoster.CurrentCell == null)
-            {
-                return;
-            }
-            if (grdRoster.CurrentCell.ColumnIndex == (Int32)CounterColumn.Player)
-            {
-                TextBox txt = grdRoster.EditingControl as TextBox;
-                if (txt != null)
-                {
-                    List<String> names = new List<string>();
-                    foreach (Poster p in e.Names)
-                    {
-                        names.Add(p.Name);
-                    }
-                    Trace.TraceInformation("Fragment: {0}", e.Fragment);
-                    Boolean open = _acOpen;
-                    acMenu.SetAutocompleteItems(names);
-                    if (!open && (names.Count > 1))
-                    {
-                        acMenu.Show(_editControl, false);
-                    }
-                }
-            }
-        }
 
 
         private void btnGetPosterList_Click(object sender, EventArgs e)
@@ -96,10 +73,21 @@ namespace POG.FennecFox
         {
             name = name.Split('\t')[0];
             name = name.Trim();
-            if (_voteCount.GetPlayerId(name) < 0)
+            if (_autoComplete.GetPosterId(name,
+                (poster, id) =>
+                {
+                    if (id > 0)
+                    {
+                        AddConfirmedPoster(poster);
+                    }
+                }
+                ) > 0)
             {
-                return;
+                AddConfirmedPoster(name);
             }
+        }
+        void AddConfirmedPoster(String name)
+        {
             foreach (CensusEntry e in _voteCount.Census)
             {
                 if (e.Name == name)
@@ -113,23 +101,56 @@ namespace POG.FennecFox
             _voteCount.Census.Add(ce);
         }
 
-        private void MoveLeft(DataGridViewRow row)
+        private void ErasePlayer(DataGridViewRow row)
         {
             String name = row.Cells[(Int32)CounterColumn.Player].Value as String;
             grdRoster.Rows.Remove(row);
         }
-        private void btnOneLeft_Click(object sender, EventArgs e)
+        private void btnKillSub_Click(object sender, EventArgs e)
+        {
+            String name = String.Empty;
+            DataGridViewCell current = grdRoster.CurrentCell;
+            DataGridViewRow row = current.OwningRow;
+            if (current != null)
+            {
+                name = row.Cells[(Int32)CounterColumn.Player].Value as String;
+                KillSub frm = new KillSub(name, _voteCount);
+                DialogResult dr = frm.ShowDialog(this);
+                if (dr == DialogResult.OK)
+                {
+                    Boolean isSub;
+                    DateTime when;
+                    String who;
+                    frm.GetKillSub(out isSub, out when, out who);
+                    if (isSub)
+                    {
+                        row.Cells[(Int32)CounterColumn.Alive].Value = "Sub Out";
+                        row.Cells[(Int32)CounterColumn.ExitTime].Value = when;
+                        row.Cells[(Int32)CounterColumn.Replacement].Value = who;
+                    }
+                    else
+                    {
+                        row.Cells[(Int32)CounterColumn.Alive].Value = "Dead";
+                        row.Cells[(Int32)CounterColumn.ExitTime].Value = when;
+                        row.Cells[(Int32)CounterColumn.Replacement].Value = String.Empty;
+                    }
+                }
+            }
+
+        }
+
+        private void btnErase_Click(object sender, EventArgs e)
         {
             DataGridViewCell current =  grdRoster.CurrentCell;
             if (current != null)
             {
-                MoveLeft(current.OwningRow);
+                ErasePlayer(current.OwningRow);
             }
 
             DataGridViewSelectedRowCollection rows = grdRoster.SelectedRows;
             foreach (DataGridViewRow row in rows)
             {
-                MoveLeft(row);
+                ErasePlayer(row);
             }
         }
 
@@ -137,7 +158,7 @@ namespace POG.FennecFox
         {
             Player = 0,
             Alive,
-            PostNumber,
+            ExitTime,
             Replacement,
         };
         
@@ -173,6 +194,7 @@ namespace POG.FennecFox
             colCB = new DataGridViewComboBoxColumn();
             colCB.DataPropertyName = "Alive";
             colCB.HeaderText = "Alive?";
+            colCB.ReadOnly = true;
             colCB.DisplayStyleForCurrentCellOnly = true;
             colCB.AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
             colCB.Resizable = DataGridViewTriState.False;
@@ -181,12 +203,12 @@ namespace POG.FennecFox
             grdRoster.Columns.Insert((Int32)CounterColumn.Alive, colCB);
 
             col = new DataGridViewTextBoxColumn();
-            col.DataPropertyName = "EndPostNumber";
-            col.HeaderText = "Post #";
+            col.DataPropertyName = "EndPostTime";
+            col.HeaderText = "Exit Time";
             col.ReadOnly = true;
             col.AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
             col.Resizable = DataGridViewTriState.False;
-            grdRoster.Columns.Insert((Int32)CounterColumn.PostNumber, col);
+            grdRoster.Columns.Insert((Int32)CounterColumn.ExitTime, col);
 
             col = new DataGridViewTextBoxColumn();
             col.DataPropertyName = "Replacement";
@@ -212,6 +234,8 @@ namespace POG.FennecFox
                         {
                             txt.TextChanged -= txt_TextChanged;
                             txt.TextChanged += new EventHandler(txt_TextChanged);
+                            _acNames.Clear();
+                            acMenu.SetAutocompleteItems(_acNames);
                             acMenu.SetAutocompleteMenu(txt, acMenu);
                             _editControl = txt;
                         }
@@ -219,7 +243,6 @@ namespace POG.FennecFox
                     break;
             }
         }
-        String _autoCompleteFragment = String.Empty;
 
         void txt_TextChanged(object sender, EventArgs e)
         {
@@ -230,12 +253,40 @@ namespace POG.FennecFox
                 String name = txt.Text;
                 if (name.Length >= fragLength)
                 {
-                    if (name != _autoCompleteFragment)
-                    {
-                        _autoCompleteFragment = name;
-                        Trace.TraceInformation("text is '{0}'", txt.Text);
-                        _autoComplete.SetNameFragment(name);
-                    }
+                    //Trace.TraceInformation("text is '{0}'", txt.Text);
+                    _autoComplete.LookupNameFragment(name, 
+                        (fragment, posters) =>
+                        {
+                            if (grdRoster.CurrentCell == null)
+                            {
+                                return;
+                            }
+                            if (grdRoster.CurrentCell.ColumnIndex == (Int32)CounterColumn.Player)
+                            {
+                                TextBox txtCurrent = grdRoster.EditingControl as TextBox;
+                                if (txtCurrent != null)
+                                {
+                                    HashSet<String> oldNames = new HashSet<string>(_acNames);
+                                    HashSet<String> addNames = new HashSet<string>();
+                                    foreach (Poster p in posters)
+                                    {
+                                        addNames.Add(p.Name);
+                                    }
+                                    HashSet<String> deleteNames = new HashSet<string>(oldNames);
+                                    deleteNames.ExceptWith(addNames);
+                                    addNames.ExceptWith(oldNames);
+                                    _acNames.AddRange(addNames);
+                                    _acNames.RemoveAll((item) => 
+                                    {
+                                        Boolean rc = deleteNames.Contains(item);
+                                        return rc; 
+                                    });
+                                    Trace.TraceInformation("Fragment: {0}", fragment);
+                                    acMenu.SetAutocompleteItems(_acNames);
+                                }
+                            }
+                        }
+                    );
                 }
             }
         }
@@ -275,14 +326,14 @@ namespace POG.FennecFox
                         String status = oValue as String;
                         if (status == "Alive")
                         {
-                            r.Cells[(Int32)CounterColumn.PostNumber].ReadOnly = true;
-                            r.Cells[(Int32)CounterColumn.PostNumber].Value = String.Empty;
+                            r.Cells[(Int32)CounterColumn.ExitTime].ReadOnly = true;
+                            r.Cells[(Int32)CounterColumn.ExitTime].Value = String.Empty;
                             r.Cells[(Int32)CounterColumn.Replacement].ReadOnly = true;
                             r.Cells[(Int32)CounterColumn.Replacement].Value = String.Empty;
                         }
                         else
                         {
-                            r.Cells[(Int32)CounterColumn.PostNumber].ReadOnly = false;
+                            r.Cells[(Int32)CounterColumn.ExitTime].ReadOnly = false;
                             if (status != "Dead")
                             {
                                 r.Cells[(Int32)CounterColumn.Replacement].ReadOnly = false;
@@ -291,7 +342,7 @@ namespace POG.FennecFox
                     }
                     break;
 
-                case (Int32)CounterColumn.PostNumber:
+                case (Int32)CounterColumn.ExitTime:
                     {
                     }
                     break;
@@ -374,6 +425,7 @@ namespace POG.FennecFox
                 r.Cells[(Int32)CounterColumn.Alive].ReadOnly = true;
             }
         }
+
 
     }
 }

@@ -70,9 +70,15 @@ namespace POG.Werewolf
         {
             _db.WriteRoster(_threadId, _census);
         }
-        public void SetDayBoundaries(int day, int startPost, DateTime endTime)
+        public void SetDayBoundaries(int day, Int32 startPost, DateTime endTime)
         {
-            _db.WriteDayBoundaries(_threadId, day, startPost, endTime);
+            DateTime? startTimeNull = _db.GetPostTime(_threadId, startPost);
+            if (startTimeNull == null)
+            {
+                startTimeNull = DateTime.MinValue;
+            }
+            DateTime startTime = startTimeNull.Value.ToUniversalTime();
+            _db.WriteDayBoundaries(_threadId, day, startTime, endTime);
             if (day == _day)
             {
                 ReadAllFromDB();
@@ -87,9 +93,9 @@ namespace POG.Werewolf
         {
             Day = day;
         }
-        public Boolean GetDayBoundaries(int day, out Int32 startPost, out DateTime endTime, out Int32 endPost)
+        public Boolean GetDayBoundaries(int day, out DateTime startTime, out DateTime endTime, out Int32 endPost)
         {
-            Boolean rc = _db.GetDayBoundaries(_threadId, day, out startPost, out endTime, out endPost);
+            Boolean rc = _db.GetDayBoundaries(_threadId, day, out startTime, out endTime, out endPost);
             return rc;
         }
         public void IgnoreVote(string player)
@@ -142,10 +148,10 @@ namespace POG.Werewolf
             //_db.ReplacePlayerList(_threadId, rawList);
             ReadAllFromDB();
         }
-		public void KillPlayer(String player, String cause, Int32? post, String team)
+		public void KillPlayer(String player, String cause, DateTimeOffset when, String team)
         {
         }
-        public void SubPlayer(String old, String newPlayer, Int32? post)
+        public void SubPlayer(String old, String newPlayer, DateTimeOffset when)
         {
         }
         public IEnumerable<String> GetPlayerList()
@@ -537,14 +543,14 @@ namespace POG.Werewolf
         #region private methods
         void ReadAllFromDB()
         {
-            Int32 startPost;
+            DateTime startTime;
             DateTime endTime;
             Int32 endPost;
-            _db.GetDayBoundaries(_threadId, _day, out startPost, out endTime, out endPost);
-            StartPost = startPost;
+            _db.GetDayBoundaries(_threadId, _day, out startTime, out endTime, out endPost);
+            StartPost = _db.GetPostBeforeTime(_threadId, startTime.ToUniversalTime()) + 1;
             EndTime = endTime;
             EndPost = endPost;
-            LivePlayers = _db.GetVotes(_threadId, _startPost, _endTime.ToUniversalTime(), this);
+            LivePlayers = _db.GetVotes(_threadId, startTime.ToUniversalTime(), _endTime.ToUniversalTime(), this);
 
             Int32? maxPost = _db.GetMaxPost(_threadId);
             if (maxPost != null)

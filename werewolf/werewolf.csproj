@@ -52,6 +52,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BadSQLiteFileVersionExeption.cs" />
     <Compile Include="IPogDb.cs" />
     <Compile Include="AutoComplete.cs" />
     <Compile Include="PogSqlite.cs" />

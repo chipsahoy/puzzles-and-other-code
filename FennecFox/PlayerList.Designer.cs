@@ -36,6 +36,7 @@
             this.label2 = new System.Windows.Forms.Label();
             this.acMenu = new AutocompleteMenuNS.AutocompleteMenu();
             this.grdRoster = new POG.FennecFox.NoArrowNavigateDataGridView();
+            this.btnKillSub = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.grdRoster)).BeginInit();
             this.SuspendLayout();
             // 
@@ -53,13 +54,13 @@
             // btnDelete
             // 
             this.btnDelete.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnDelete.Location = new System.Drawing.Point(449, 241);
+            this.btnDelete.Location = new System.Drawing.Point(448, 371);
             this.btnDelete.Name = "btnDelete";
             this.btnDelete.Size = new System.Drawing.Size(75, 46);
             this.btnDelete.TabIndex = 4;
             this.btnDelete.Text = "Erase Player";
             this.btnDelete.UseVisualStyleBackColor = true;
-            this.btnDelete.Click += new System.EventHandler(this.btnOneLeft_Click);
+            this.btnDelete.Click += new System.EventHandler(this.btnErase_Click);
             // 
             // btnPaste
             // 
@@ -120,11 +121,23 @@
             this.grdRoster.CellEndEdit += new System.Windows.Forms.DataGridViewCellEventHandler(this.grdRoster_CellEndEdit);
             this.grdRoster.RowValidating += new System.Windows.Forms.DataGridViewCellCancelEventHandler(this.grdRoster_RowValidating);
             // 
+            // btnKillSub
+            // 
+            this.btnKillSub.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnKillSub.Location = new System.Drawing.Point(447, 319);
+            this.btnKillSub.Name = "btnKillSub";
+            this.btnKillSub.Size = new System.Drawing.Size(75, 46);
+            this.btnKillSub.TabIndex = 13;
+            this.btnKillSub.Text = "Kill / Sub";
+            this.btnKillSub.UseVisualStyleBackColor = true;
+            this.btnKillSub.Click += new System.EventHandler(this.btnKillSub_Click);
+            // 
             // PlayerList
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(534, 442);
+            this.Controls.Add(this.btnKillSub);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.btnCopyLive);
             this.Controls.Add(this.btnPaste);
@@ -149,5 +162,6 @@
         private System.Windows.Forms.Button btnCopyLive;
         private System.Windows.Forms.Label label2;
         private AutocompleteMenuNS.AutocompleteMenu acMenu;
+        private System.Windows.Forms.Button btnKillSub;
     }
 }

@@ -62,6 +62,11 @@ namespace POG.FennecFox
             _timerEODCountdown.Tick += new EventHandler(_timerEODCountdown_Tick);
             _timerEODCountdown.Start();
 
+            if (_voteCount.LivePlayers.Count == 0)
+            {
+                btnRoster_Click(btnRoster, EventArgs.Empty);
+            }
+
         }
         #endregion
 
@@ -409,6 +414,7 @@ namespace POG.FennecFox
             udStartPost.DataBindings.Add("Text", _voteCount, "StartPost", false, DataSourceUpdateMode.OnPropertyChanged);
             txtEndPost.DataBindings.Add("Text", _voteCount, "EndPost", false, DataSourceUpdateMode.OnPropertyChanged);
             _voteCount.Refresh();
+            _voteCount.CheckThread();
         }
 
         private void UnbindFromGame()
@@ -469,7 +475,7 @@ namespace POG.FennecFox
         private void udDay_ValueChanged(object sender, EventArgs e)
         {
             Int32 day = (Int32)udDay.Value;
-            Int32 startPost;
+            DateTime startPost;
             DateTime endTime;
             Int32 endPost;
             if (_voteCount.GetDayBoundaries(day, out startPost, out endTime, out endPost))

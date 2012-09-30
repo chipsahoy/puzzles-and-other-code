@@ -11,6 +11,7 @@ namespace POG.Werewolf
 {
     public class PogSqlite : POG.Werewolf.IPogDb
     {
+        static Int32 _schemaVersion = 1;
         String _connect;
         String _dbName;
 
@@ -22,22 +23,188 @@ namespace POG.Werewolf
             _dbName = dbName;
             String connect = String.Format("Data Source={0};Version=3;foreign keys=True;Synchronous=Off", dbName);
             _connect = connect;
-            CreateMissingTables(dbName);
+            CreateOrUpgradeSchema(dbName);
+        }
+        // With each schema change, create a new UpgradeXToY method. 
+        // It should modify a schema of version N to version N + 1.
+        // Preserve data when possible. Leave the db sane no matter what.
+        // Add the delegate to the Upgrades[] below.
+        delegate void UpgradeSchema(SQLiteConnection db);
+        void SetUserVersion(SQLiteConnection db, Int32 version)
+        {
+            String sql = String.Format(@"PRAGMA user_version = {0};", version);
+            using (SQLiteCommand cmd = new SQLiteCommand(sql, db))
+            {
+                cmd.Parameters.Add(new SQLiteParameter("@p1", version));                
+                int e = cmd.ExecuteNonQuery();
+            }
+        }
+        void Upgrade1To2(SQLiteConnection db)
+        {
+        }
+        void CreateTables(SQLiteConnection db)
+        {
+            String[] tables = 
+            {
+@"CREATE TABLE IF NOT EXISTS Thread (
+    threadid INTEGER NOT NULL PRIMARY KEY,
+    url TEXT,
+    turbo INTEGER,
+    active INTEGER DEFAULT 1
+);",
+@"CREATE TABLE IF NOT EXISTS Day (
+    threadid INTEGER REFERENCES Thread(threadid) ON DELETE CASCADE,
+    day INTEGER,
+    starttime TIMESTAMP,
+    endtime TIMESTAMP,
+    PRIMARY KEY(threadid, day)
+);",
+
+@"CREATE TABLE IF NOT EXISTS Poster (
+    posterid INTEGER NOT NULL PRIMARY KEY,
+    postername TEXT COLLATE NOCASE
+);",
+@"CREATE INDEX IF NOT EXISTS 
+postersname
+ON
+Poster (postername)
+;",
+
+@"CREATE TABLE IF NOT EXISTS GameRole (
+    roleid INTEGER PRIMARY KEY AUTOINCREMENT,
+    threadid INTEGER REFERENCES Thread(threadid) ON DELETE CASCADE,
+    birthtime INTEGER DEFAULT 1,
+    deathtime INTEGER
+);",
+@"CREATE INDEX IF NOT EXISTS 
+rolesthread
+ON
+GameRole (threadid)
+;",
+@"CREATE TABLE IF NOT EXISTS Post (
+    postid INTEGER NOT NULL PRIMARY KEY,
+    threadid INTEGER REFERENCES Thread(threadid) ON DELETE CASCADE,
+    posterid INTEGER REFERENCES Poster(posterid) ON DELETE CASCADE,
+    postnumber INTEGER,
+    posttime TIMESTAMP
+);",
+@"CREATE INDEX IF NOT EXISTS 
+poststhreadposter
+ON
+Post (threadid, posterid)
+;",
+@"CREATE VIRTUAL TABLE IF NOT EXISTS PostContent USING FTS4 (
+    title TEXT,
+    content TEXT,
+    editreason TEXT
+);",
+@"CREATE TABLE IF NOT EXISTS PostMeta (
+    postid INTEGER NOT NULL REFERENCES Post(postid) ON DELETE CASCADE,
+    contentid INTEGER NOT NULL REFERENCES PostContent(ROWID) ON DELETE CASCADE,
+    editorid INTEGER,
+    edittime TIMESTAMP,
+    PRIMARY KEY(postid, contentid)
+);",
+@"CREATE TABLE IF NOT EXISTS Bolded (
+    postid INTEGER NOT NULL REFERENCES Post(postid) ON DELETE CASCADE,
+    position INTEGER,
+    bolded TEXT,
+    ignore INTEGER,
+    PRIMARY KEY(postid, position)
+);",
+@"CREATE TABLE IF NOT EXISTS Player (
+    roleid INTEGER REFERENCES GameRole(roleid) ON DELETE CASCADE,
+    posterid INTEGER REFERENCES Poster(posterid) ON DELETE CASCADE,
+    starttime TIMESTAMP,
+    endtime TIMESTAMP,
+    PRIMARY KEY(roleid, posterid)
+);",
+@"CREATE TABLE IF NOT EXISTS Alias (
+    threadid INTEGER REFERENCES Thread(threadid) ON DELETE CASCADE,
+    bolded TEXT COLLATE NOCASE,
+    posterid TEXT COLLATE NOCASE,
+    PRIMARY KEY(threadid, bolded)
+);",
+@"CREATE INDEX IF NOT EXISTS 
+aliasesthread
+ON
+Alias (threadid)
+;",
+            };
+            foreach (String sql in tables)
+            {
+                using (SQLiteCommand cmd = new SQLiteCommand(sql, db))
+                {
+                    int e = cmd.ExecuteNonQuery();
+                }
+            }
+        }
+        private void CreateOrUpgradeSchema(String _dbName)
+        {
+
+            if (!File.Exists(_dbName))
+            {
+                SQLiteConnection.CreateFile(_dbName);
+            }
+            using (SQLiteConnection dbWrite = new SQLiteConnection(_connect))
+            {
+                dbWrite.Open();
+                using (SQLiteTransaction trans = dbWrite.BeginTransaction())
+                {
+                    String sqlVersion = "PRAGMA user_version;";
+                    Int32 dbVersion = 0;
+                    using (SQLiteCommand cmd = new SQLiteCommand(sqlVersion, dbWrite))
+                    {
+                        using (SQLiteDataReader r = cmd.ExecuteReader())
+                        {
+                            if (r.Read())
+                            {
+                                dbVersion = r.GetInt32(0);
+                            }
+                        }
+                    }
+                    if (dbVersion > _schemaVersion)
+                    {
+                        throw new BadSQLiteFileVersionException(dbVersion, _schemaVersion);
+                    }
+                    UpgradeSchema[] upgrades = { null, Upgrade1To2 };
+                    if (dbVersion > 0)
+                    {
+                        for (int i = dbVersion; i < _schemaVersion; i++)
+                        {
+                            UpgradeSchema upgrade = upgrades[i];
+                            if (upgrade != null)
+                            {
+                                upgrade(dbWrite);
+                            }
+                            SetUserVersion(dbWrite, i);
+                        }
+                    }
+                    else
+                    {
+                        CreateTables(dbWrite);
+                        SetUserVersion(dbWrite, _schemaVersion);
+                    }
+                    trans.Commit();
+                }
+            }
+            //Trace.TraceInformation("after create tables");
         }
         public void WriteThreadDefinition(Int32 threadId, String url, Boolean turbo)
         {
-            String sql = @"
-				INSERT OR IGNORE INTO [Thread] (
-                threadid,
-                url,
-                turbo)
-                VALUES (@p1, @p2, @p3);
-				UPDATE [Thread] SET
-                url = @p2,
-                turbo = @p3
-                WHERE
-                (threadid = @p1);
-			";
+            String sql = 
+@"
+INSERT OR IGNORE INTO Thread (
+threadid,
+url,
+turbo)
+VALUES (@p1, @p2, @p3);
+UPDATE Thread SET
+url = @p2,
+turbo = @p3
+WHERE
+(threadid = @p1);
+";
             Stopwatch watch = new Stopwatch();
             watch.Start();
             using (SQLiteConnection dbWrite = new SQLiteConnection(_connect))
@@ -52,26 +219,29 @@ namespace POG.Werewolf
                 }
             }
             watch.Stop();
-            Trace.TraceInformation("after WriteThreadDefinition {0}", watch.Elapsed.ToString());
+            //Trace.TraceInformation("after WriteThreadDefinition {0}", watch.Elapsed.ToString());
         }
-        public void WriteDayBoundaries(Int32 threadId, Int32 day, Int32 startPost, DateTime endTime)
+        public void WriteDayBoundaries(Int32 threadId, Int32 day, DateTime startTime, DateTime endTime)
         {
             Stopwatch watch = new Stopwatch();
             watch.Start();
             using (SQLiteConnection dbWrite = new SQLiteConnection(_connect))
             {
                 dbWrite.Open();
-                String sql = @"INSERT OR REPLACE INTO [Day] (
-                threadid,
-                day,
-				startpost, 
-				endtime)
-                VALUES (@p1, @p2, @p3, @p4);";
+                String sql = 
+@"INSERT OR REPLACE INTO Day (
+threadid,
+day,
+starttime, 
+endtime)
+VALUES (@p1, @p2, @p3, @p4);";
                 using (SQLiteCommand cmd = new SQLiteCommand(sql, dbWrite))
                 {
                     cmd.Parameters.Add(new SQLiteParameter("@p1", threadId));
                     cmd.Parameters.Add(new SQLiteParameter("@p2", day));
-                    cmd.Parameters.Add(new SQLiteParameter("@p3", startPost));
+                    SQLiteParameter pStart = new SQLiteParameter("@p3", System.Data.DbType.DateTime);
+                    pStart.Value = startTime.ToUniversalTime();
+                    cmd.Parameters.Add(pStart);
                     SQLiteParameter pEod = new SQLiteParameter("@p4", System.Data.DbType.DateTime);
                     pEod.Value = endTime.ToUniversalTime();
                     cmd.Parameters.Add(pEod);
@@ -79,7 +249,7 @@ namespace POG.Werewolf
                 }
             }
             watch.Stop();
-            Trace.TraceInformation("after WriteDayInfo {0}", watch.Elapsed.ToString());
+            //Trace.TraceInformation("after WriteDayInfo {0}", watch.Elapsed.ToString());
         }
         public void ReplacePlayerList(Int32 threadId, IEnumerable<String> players)
         {
@@ -92,9 +262,9 @@ namespace POG.Werewolf
                 {
 
                     String sqlDelete =
-                        @"DELETE 
-						FROM GameRole 
-						where (threadid = @p1);";
+@"DELETE 
+FROM GameRole 
+where (threadid = @p1);";
                     using (SQLiteCommand cmd = new SQLiteCommand(sqlDelete, dbWrite, trans))
                     {
                         cmd.Parameters.Add(new SQLiteParameter("@p1", threadId));
@@ -102,13 +272,13 @@ namespace POG.Werewolf
                     }
                     String sql =
 
-                        @"INSERT INTO GameRole (
-                    threadid)
-                    VALUES (@p1);
-                    SELECT last_insert_rowid();";
+@"INSERT INTO GameRole (
+threadid)
+VALUES (@p1);
+SELECT last_insert_rowid();";
 
                     string sqlPlayer =
-                        @"INSERT INTO [Player] (roleid, posterid) VALUES(@p1, @p2);";
+@"INSERT INTO Player (roleid, posterid) VALUES(@p1, @p2);";
 
                     using (SQLiteCommand cmd = new SQLiteCommand(sql, dbWrite, trans))
                     {
@@ -148,21 +318,22 @@ namespace POG.Werewolf
             }
             watch.Stop();
 
-            Trace.TraceInformation("after ReplacePlayerList {0}", watch.Elapsed.ToString());
+            //Trace.TraceInformation("after ReplacePlayerList {0}", watch.Elapsed.ToString());
         }
         public SortableBindingList<CensusEntry> ReadRoster(Int32 threadId)
         {
             SortableBindingList<CensusEntry> census = new SortableBindingList<CensusEntry>();
-            String sql = @"
-SELECT Player.roleid, GameRole.deathpostid, Player.posterid, Player.endpost, Poster.postername
+            String sql = 
+@"
+SELECT Player.roleid, GameRole.deathtime, Player.posterid, Player.endtime, Poster.postername
 FROM GameRole, Player, Poster
 WHERE
 (GameRole.threadid = @p1)
 AND (Player.roleid = GameRole.roleid)
 AND (Player.posterid = Poster.posterid)
 ORDER BY GameRole.roleid ASC, 
-(CASE WHEN Player.endpost IS NULL THEN 0 ELSE 1 END),
-Player.endpost ASC
+(CASE WHEN Player.endtime IS NULL THEN 0 ELSE 1 END),
+Player.endtime ASC
 ;
 ";
             Stopwatch watch = new Stopwatch();
@@ -191,14 +362,14 @@ Player.endpost ASC
                                 currentRole = role;
                                 if (!r.IsDBNull(1))
                                 {
-                                    ce.EndPostNumber = r.GetInt32(1);
+                                    ce.EndPostTime = r.GetDateTime(1);
                                     ce.Alive = "Dead";
                                 }
                             }
                             Int32 playerId = r.GetInt32(2);
                             if (!r.IsDBNull(3))
                             {
-                                ce.EndPostNumber = r.GetInt32(3);
+                                ce.EndPostTime = r.GetDateTime(3);
                             }
                             ce.Name = r.GetString(4);
                             newestName = ce.Name;
@@ -209,7 +380,7 @@ Player.endpost ASC
                 }
             }
             watch.Stop();
-            Trace.TraceInformation("After ReadRoster {0}", watch.Elapsed.ToString());
+            //Trace.TraceInformation("After ReadRoster {0}", watch.Elapsed.ToString());
             return census;
         }
         public void WriteRoster(Int32 threadId, SortableBindingList<CensusEntry> census)
@@ -263,9 +434,9 @@ Player.endpost ASC
                 {
 
                     String sqlDelete =
-                        @"DELETE 
-						FROM GameRole 
-						where (threadid = @p1);";
+@"DELETE 
+FROM GameRole 
+where (threadid = @p1);";
                     using (SQLiteCommand cmd = new SQLiteCommand(sqlDelete, dbWrite, trans))
                     {
                         cmd.Parameters.Add(new SQLiteParameter("@p1", threadId));
@@ -273,10 +444,10 @@ Player.endpost ASC
                     }
                     String sql =
 
-                        @"INSERT INTO GameRole (
-                    threadid, deathpostid)
-                    VALUES (@p1, @p2);
-                    SELECT last_insert_rowid();";
+@"INSERT INTO GameRole (
+threadid, deathtime)
+VALUES (@p1, @p2);
+SELECT last_insert_rowid();";
                     using (SQLiteCommand cmd = new SQLiteCommand(sql, dbWrite, trans))
                     {
                         SQLiteParameter pThreadId = new SQLiteParameter("@p1");
@@ -286,14 +457,14 @@ Player.endpost ASC
                         foreach (List<CensusEntry> role in roleList.Values)
                         {
                             Int32 id = -1;
-                            Int32? deathPost = null;
+                            DateTime? deathTime = null;
                             CensusEntry lastPlayer = role.Last();
                             if (lastPlayer.Alive == "Dead")
                             {
-                                deathPost = lastPlayer.EndPostNumber;
+                                deathTime = lastPlayer.EndPostTime;
                             }
-                            SQLiteParameter pDeath = new SQLiteParameter("@p2");
-                            pDeath.Value = deathPost;
+                            SQLiteParameter pDeath = new SQLiteParameter("@p2", System.Data.DbType.DateTime);
+                            pDeath.Value = deathTime;
                             cmd.Parameters.Add(pDeath);
                             using (SQLiteDataReader r = cmd.ExecuteReader())
                             {
@@ -308,14 +479,14 @@ Player.endpost ASC
                             }
 
                             string sqlPlayer =
-@"INSERT INTO [Player] 
-(roleid, posterid, startpost, endpost) 
+@"INSERT INTO Player 
+(roleid, posterid, starttime, endtime) 
 VALUES(@p1, @p2, @p3, @p4);";
                             using (SQLiteCommand cmdPlayer = new SQLiteCommand(sqlPlayer, dbWrite, trans))
                             {
                                 SQLiteParameter pRoleId = new SQLiteParameter("@p1");
                                 pRoleId.Value = id;
-                                Int32 startPost = 1;
+                                DateTime? startTime = null;
                                 foreach (CensusEntry player in role)
                                 {
                                     SQLiteParameter pPosterId = new SQLiteParameter("@p2");
@@ -327,21 +498,21 @@ VALUES(@p1, @p2, @p3, @p4);";
                                     pPosterId.Value = playerId;
                                     cmdPlayer.Parameters.Add(pRoleId);
                                     cmdPlayer.Parameters.Add(pPosterId);
-                                    SQLiteParameter pStartPost = new SQLiteParameter("@p3");
-                                    pStartPost.Value = startPost;
-                                    cmdPlayer.Parameters.Add(pStartPost);
-                                    SQLiteParameter pEndPost = new SQLiteParameter("@p4");
+                                    SQLiteParameter pStartTime = new SQLiteParameter("@p3", System.Data.DbType.DateTime);
+                                    pStartTime.Value = startTime;
+                                    cmdPlayer.Parameters.Add(pStartTime);
+                                    SQLiteParameter pEndTime = new SQLiteParameter("@p4", System.Data.DbType.DateTime);
                                     if (player.Alive != "Alive")
                                     {
-                                        Int32 endPost = 1;
-                                        if (player.EndPostNumber != null)
+                                        DateTime? endTime = null;
+                                        if (player.EndPostTime != null)
                                         {
-                                            endPost = player.EndPostNumber.Value;
+                                            endTime = player.EndPostTime.Value.ToUniversalTime();
                                         }
-                                        pEndPost.Value = endPost;
-                                        startPost = endPost;
+                                        pEndTime.Value = endTime;
+                                        startTime = endTime;
                                     }
-                                    cmdPlayer.Parameters.Add(pEndPost);
+                                    cmdPlayer.Parameters.Add(pEndTime);
                                     
                                     int e = cmdPlayer.ExecuteNonQuery();
                                 }
@@ -353,15 +524,16 @@ VALUES(@p1, @p2, @p3, @p4);";
             }
             watch.Stop();
 
-            Trace.TraceInformation("after ReplacePlayerList {0}", watch.Elapsed.ToString());
+            //Trace.TraceInformation("after ReplacePlayerList {0}", watch.Elapsed.ToString());
         }
 
         public Int32 GetPlayerId(string player)
         {
-            String sql = @"SELECT posterid
-            FROM Poster
-            WHERE (postername = @p1)
-            LIMIT 1";
+            String sql = 
+@"SELECT posterid
+FROM Poster
+WHERE (postername = @p1)
+LIMIT 1";
             Int32 id = -1;
             Stopwatch watch = new Stopwatch();
             watch.Start();
@@ -381,19 +553,20 @@ VALUES(@p1, @p2, @p3, @p4);";
                 }
             }
             watch.Stop();
-            Trace.TraceInformation("After GetPlayerId {0}", watch.Elapsed.ToString());
+            //Trace.TraceInformation("After GetPlayerId {0}", watch.Elapsed.ToString());
             return id;
         }
         public void WriteAlias(Int32 threadId, String bolded, Int32 playerId)
         {
-            String sql = @"
-				INSERT OR REPLACE INTO [Alias] (
-				threadid,
-                bolded,
-                posterid
-				)
-                VALUES (@p1, @p2, @p3);
-			";
+            String sql = 
+@"
+INSERT OR REPLACE INTO Alias (
+threadid,
+bolded,
+posterid
+)
+VALUES (@p1, @p2, @p3);
+";
             Stopwatch watch = new Stopwatch();
             watch.Start();
             using (SQLiteConnection dbWrite = new SQLiteConnection(_connect))
@@ -408,13 +581,14 @@ VALUES(@p1, @p2, @p3, @p4);";
                 }
             }
             watch.Stop();
-            Trace.TraceInformation("after WriteAlias {0}", watch.Elapsed.ToString());
+            //Trace.TraceInformation("after WriteAlias {0}", watch.Elapsed.ToString());
         }
         public void SetIgnoreOnBold(Int32 postId, Int32 boldPosition, Boolean ignore)
         {
-            String sql = @"UPDATE OR IGNORE Bolded
-                    SET ignore = @p1
-                    WHERE (postid = @p2) AND (position = @p3);";
+            String sql = 
+@"UPDATE OR IGNORE Bolded
+SET ignore = @p1
+WHERE (postid = @p2) AND (position = @p3);";
             Stopwatch watch = new Stopwatch();
             watch.Start();
             using (SQLiteConnection dbWrite = new SQLiteConnection(_connect))
@@ -429,17 +603,18 @@ VALUES(@p1, @p2, @p3, @p4);";
                 }
             }
             watch.Stop();
-            Trace.TraceInformation("after ignore vote {0}", watch.Elapsed.ToString());
+            //Trace.TraceInformation("after ignore vote {0}", watch.Elapsed.ToString());
         }
         public void WriteUnhide(Int32 threadId, String player, Int32 startPostId, DateTimeOffset endTime)
         {
-            String sql = @"SELECT Bolded.postid, Bolded.position
-            FROM Bolded INNER JOIN Post ON (Bolded.postid = Post.postid)
-            INNER JOIN Poster ON (Post.posterid = Poster.posterid)
-            WHERE (Poster.postername = @p1) AND (Post.threadid = @p2) AND
-            (Bolded.postid >= @p4) AND (Post.posttime <= @p3) AND
-            (Bolded.ignore <> 0)
-            ORDER BY Bolded.postid ASC, Bolded.position ASC LIMIT 1";
+            String sql = 
+@"SELECT Bolded.postid, Bolded.position
+FROM Bolded INNER JOIN Post ON (Bolded.postid = Post.postid)
+INNER JOIN Poster ON (Post.posterid = Poster.posterid)
+WHERE (Poster.postername = @p1) AND (Post.threadid = @p2) AND
+(Bolded.postid >= @p4) AND (Post.posttime <= @p3) AND
+(Bolded.ignore <> 0)
+ORDER BY Bolded.postid ASC, Bolded.position ASC LIMIT 1";
             Int32 postNewId = -1;
             Int32 position = -1;
             Stopwatch watch = new Stopwatch();
@@ -466,129 +641,11 @@ VALUES(@p1, @p2, @p3, @p4);";
                 }
             }
             watch.Stop();
-            Trace.TraceInformation("After WriteUnhide {0}", watch.Elapsed.ToString());
+            //Trace.TraceInformation("After WriteUnhide {0}", watch.Elapsed.ToString());
             if (postNewId > 0)
             {
                 SetIgnoreOnBold(postNewId, position, false);
             }
-        }
-        static Int32 _schemaVersion = 1;
-        private void CreateMissingTables(String _dbName)
-        {
-            
-            if (!File.Exists(_dbName))
-            {
-                SQLiteConnection.CreateFile(_dbName);
-            }
-            using (SQLiteConnection dbWrite = new SQLiteConnection(_connect))
-            {
-                dbWrite.Open();
-                using (SQLiteTransaction trans = dbWrite.BeginTransaction())
-                {
-                    String[] tables = 
-            {
-@"CREATE TABLE IF NOT EXISTS [Version] (
-    [versionid] INTEGER PRIMARY KEY,
-    [version] INTEGER DEFAULT " + _schemaVersion.ToString() + @" 
-);",
-@"INSERT OR IGNORE INTO Version (versionid) VALUES (1);",
-@"CREATE TABLE IF NOT EXISTS [Thread] (
-    [threadid] INTEGER NOT NULL PRIMARY KEY,
-    [url] TEXT,
-    [turbo] INTEGER,
-    [active] INTEGER DEFAULT 1
-);",
-@"CREATE TABLE IF NOT EXISTS [Day] (
-    [threadid] INTEGER REFERENCES Thread(threadid) ON DELETE CASCADE,
-    [day] INTEGER,
-    [startpost] INTEGER,
-    [endtime] TIMESTAMP,
-    PRIMARY KEY(threadid, day)
-);",
-
-@"CREATE TABLE IF NOT EXISTS [Poster] (
-    [posterid] INTEGER NOT NULL PRIMARY KEY,
-    [postername] TEXT COLLATE NOCASE
-);",
-@"CREATE INDEX IF NOT EXISTS 
-postersname
-ON
-[Poster] (postername)
-;",
-
-@"CREATE TABLE IF NOT EXISTS GameRole (
-    [roleid] INTEGER PRIMARY KEY AUTOINCREMENT,
-    [threadid] INTEGER REFERENCES Thread(threadid) ON DELETE CASCADE,
-    [birthpostid] INTEGER DEFAULT 1,
-    [deathpostid] INTEGER
-);",
-@"CREATE INDEX IF NOT EXISTS 
-rolesthread
-ON
-GameRole (threadid)
-;",
-@"CREATE TABLE IF NOT EXISTS [Post] (
-    [postid] INTEGER NOT NULL PRIMARY KEY,
-    [threadid] INTEGER REFERENCES Thread(threadid) ON DELETE CASCADE,
-    [posterid] INTEGER REFERENCES Poster(posterid) ON DELETE CASCADE,
-    [postnumber] INTEGER,
-    [posttime] TIMESTAMP
-);",
-@"CREATE INDEX IF NOT EXISTS 
-poststhreadposter
-ON
-Post (threadid, posterid)
-;",
-@"CREATE VIRTUAL TABLE IF NOT EXISTS [PostContent] USING FTS4 (
-    [title] TEXT,
-    [content] TEXT,
-    [editreason] TEXT
-);",
-@"CREATE TABLE IF NOT EXISTS [PostMeta] (
-    [postid] INTEGER NOT NULL REFERENCES Post(postid) ON DELETE CASCADE,
-    [contentid] INTEGER NOT NULL REFERENCES PostContent(ROWID) ON DELETE CASCADE,
-    [editorid] INTEGER,
-    [edittime] TIMESTAMP,
-    PRIMARY KEY(postid, contentid)
-);",
-@"CREATE TABLE IF NOT EXISTS [Bolded] (
-    [postid] INTEGER NOT NULL REFERENCES Post(postid) ON DELETE CASCADE,
-    [position] INTEGER,
-    [bolded] TEXT,
-    [ignore] INTEGER,
-    PRIMARY KEY(postid, position)
-);",
-@"CREATE TABLE IF NOT EXISTS [Player] (
-    [roleid] INTEGER REFERENCES GameRole(roleid) ON DELETE CASCADE,
-    [posterid] INTEGER REFERENCES Poster(posterid) ON DELETE CASCADE,
-    [startpost] INTEGER DEFAULT 1,
-    [endpost] INTEGER,
-    PRIMARY KEY(roleid, posterid)
-);",
-@"CREATE TABLE IF NOT EXISTS [Alias] (
-    [threadid] INTEGER REFERENCES Thread(threadid) ON DELETE CASCADE,
-    [bolded] TEXT COLLATE NOCASE,
-    [posterid] TEXT COLLATE NOCASE,
-    PRIMARY KEY(threadid, bolded)
-);",
-@"CREATE INDEX IF NOT EXISTS 
-aliasesthread
-ON
-[Alias] (threadid)
-;",
-            };
-                    foreach (String sql in tables)
-                    {
-                        using (SQLiteCommand cmd = new SQLiteCommand(sql, dbWrite))
-                        {
-                            int e = cmd.ExecuteNonQuery();
-                        }
-                    }
-
-                    trans.Commit();
-                }
-            }
-            Trace.TraceInformation("after create tables");
         }
         public void AddPosts(Posts posts)
         {
@@ -601,15 +658,15 @@ ON
                 {
                     String sql =
 
-                        @"INSERT OR IGNORE INTO [Poster] (posterid, postername) VALUES (@p3, @p8);
+@"INSERT OR IGNORE INTO Poster (posterid, postername) VALUES (@p3, @p8);
 
-INSERT OR IGNORE INTO [Post] (
-                    postid,
-                    threadid,
-                    posterid,
-                    postnumber,
-                    posttime)
-                    VALUES (@p1, @p2, @p3, @p4, @p7);";
+INSERT OR IGNORE INTO Post (
+postid,
+threadid,
+posterid,
+postnumber,
+posttime)
+VALUES (@p1, @p2, @p3, @p4, @p7);";
 
                     using (SQLiteCommand cmd = new SQLiteCommand(sql, dbWrite, trans))
                     {
@@ -642,12 +699,12 @@ INSERT OR IGNORE INTO [Post] (
 
                             int ix = 0;
                             String sqlBold =
-                                @"INSERT OR IGNORE INTO [Bolded] (
-                                postid,
-                                position,
-                                bolded,
-                                ignore)
-                                VALUES (@p1, @p2, @p3, @p4);";
+@"INSERT OR IGNORE INTO Bolded (
+postid,
+position,
+bolded,
+ignore)
+VALUES (@p1, @p2, @p3, @p4);";
                             if (p.Bolded != null)
                             {
                                 using (SQLiteCommand cmdBold = new SQLiteCommand(sqlBold, dbWrite, trans))
@@ -679,17 +736,18 @@ INSERT OR IGNORE INTO [Post] (
             }
             watch.Stop();
 
-            Trace.TraceInformation("after AddPostsToDB {0}", watch.Elapsed.ToString());
+            //Trace.TraceInformation("after AddPostsToDB {0}", watch.Elapsed.ToString());
         }
 
         //  -- Reads --
         public DateTime? GetPostTime(Int32 threadId, Int32 postNumber)
         {
             DateTime? rc = null;
-            String sqlTime = @"SELECT posttime
-                        FROM Post
-                        WHERE Post.threadid = @p2 AND
-                        (Post.postnumber == @p4);";
+            String sqlTime = 
+@"SELECT posttime
+FROM Post
+WHERE Post.threadid = @p2 AND
+(Post.postnumber == @p4);";
             Stopwatch watch = new Stopwatch();
             watch.Start();
             using (SQLiteConnection dbRead = new SQLiteConnection(_connect))
@@ -703,23 +761,19 @@ INSERT OR IGNORE INTO [Post] (
                     {
                         if (r.Read())
                         {
-                            //Trace.TraceInformation("VC: Found new start post " + value.ToString());
                             rc = DateTime.SpecifyKind(r.GetDateTime(0), DateTimeKind.Local);
-                        }
-                        else
-                        {
-                            //Trace.TraceInformation("VC: Could not find start post " + value.ToString());
                         }
                     }
                 }
             }
             watch.Stop();
-            Trace.TraceInformation("after GetPostTime {0}", watch.Elapsed.ToString());
+            //Trace.TraceInformation("after GetPostTime {0}", watch.Elapsed.ToString());
             return rc;
         }
         public Int32? GetMaxPost(Int32 threadId)
         {
-            String sql = @"SELECT postnumber FROM Post WHERE threadid=@p1 ORDER BY postid DESC LIMIT 1;";
+            String sql = 
+@"SELECT postnumber FROM Post WHERE threadid=@p1 ORDER BY postid DESC LIMIT 1;";
             object o;
             Stopwatch watch = new Stopwatch();
             watch.Start();
@@ -733,7 +787,7 @@ INSERT OR IGNORE INTO [Post] (
                 }
             }
             watch.Stop();
-            Trace.TraceInformation("after get max post # {0}", watch.Elapsed.ToString());
+            //Trace.TraceInformation("after get max post # {0}", watch.Elapsed.ToString());
             long rc;
             if ((o == null) || (o is System.DBNull))
             {
@@ -749,14 +803,15 @@ INSERT OR IGNORE INTO [Post] (
         public List<String> GetLivePlayers(Int32 threadId, Int32 postNumber)
         {
             List<String> players = new List<string>();
-            String sql = @"SELECT Poster.Name
-						FROM Poster
-                        INNER JOIN Player ON (Poster.posterid = Player.posterid)
-                        INNER JOIN GameRole ON (Player.roleid = GameRole.roleid)
-						WHERE (GameRole.threadid = @p1)
-                        AND ((Player.endpost IS NULL)
-                        OR (Player.endpost > @p2))
-						ORDER BY Poster.Name ASC;";
+            String sql = 
+@"SELECT Poster.postername
+FROM Poster
+INNER JOIN Player ON (Poster.posterid = Player.posterid)
+INNER JOIN GameRole ON (Player.roleid = GameRole.roleid)
+WHERE (GameRole.threadid = @p1)
+AND ((Player.endtime IS NULL)
+OR (Player.endtime > @p2))
+ORDER BY Poster.postername ASC;";
             Stopwatch watch = new Stopwatch();
             watch.Start();
             using (SQLiteConnection dbRead = new SQLiteConnection(_connect))
@@ -777,39 +832,40 @@ INSERT OR IGNORE INTO [Post] (
                 }
             }
             watch.Stop();
-            Trace.TraceInformation("after GetPlayerList {0}", watch.Elapsed.ToString());
+            //Trace.TraceInformation("after GetPlayerList {0}", watch.Elapsed.ToString());
             return players;
         }
-        public SortableBindingList<Voter> GetVotes(Int32 threadId, Int32 startPost, DateTime endTime, object game)
+        public SortableBindingList<Voter> GetVotes(Int32 threadId, DateTime startTime, DateTime endTime, object game)
         {
-            String sql = @"
+            String sql = 
+@"
 SELECT GameRole.roleid, Player.posterid, Poster.postername, 
 (SELECT COUNT(*)  
     FROM Post WHERE
     (GameRole.threadid = @p2)
-    AND (GameRole.deathpostid IS NULL)
+    AND ((Player.endtime IS NULL) OR (player.endtime > @p4))
     AND (Post.threadid = GameRole.threadid)
     AND (Post.posterid = Player.posterid)
-    AND (Post.postnumber >= @p4) 
+    AND (Post.posttime >= @p4) 
     AND (Post.posttime <= @p3)
 ) AS postcount,
 (SELECT MAX(Post.postid)
     FROM Bolded, Post WHERE
     (GameRole.threadid = @p2)
-    AND (GameRole.deathpostid IS NULL)
+    AND ((Player.endtime IS NULL) OR (player.endtime > @p4))
     AND (Post.threadid = GameRole.threadid)
     AND (Bolded.postid = Post.postid)
     AND (Post.posterid = Player.posterid)
-    AND (Post.postnumber >= @p4) 
+    AND (Post.posttime >= @p4) 
     AND (Post.posttime <= @p3)
     AND (Bolded.ignore = 0)
 ) AS bolded
 FROM GameRole 
-JOIN [Player] ON (GameRole.roleid = Player.roleid)
-JOIN [Poster] ON (Poster.posterid = Player.posterid)
+JOIN Player ON (GameRole.roleid = Player.roleid)
+JOIN Poster ON (Poster.posterid = Player.posterid)
 WHERE (GameRole.threadid = @p2)
-    AND (GameRole.deathpostid IS NULL)
-GROUP BY [Poster].postername
+    AND ((Player.endtime IS NULL) OR (player.endtime > @p4))
+GROUP BY Poster.postername
 ;
 ";
             SortableBindingList<Voter> voters = new SortableBindingList<Voter>();
@@ -824,7 +880,10 @@ GROUP BY [Poster].postername
                     SQLiteParameter pEndTime = new SQLiteParameter("@p3", System.Data.DbType.DateTime);
                     pEndTime.Value = endTime.ToUniversalTime();
                     cmd.Parameters.Add(pEndTime);
-                    cmd.Parameters.Add(new SQLiteParameter("@p4", startPost));
+                    SQLiteParameter pStartTime = new SQLiteParameter("@p4", System.Data.DbType.DateTime);
+                    pStartTime.Value = startTime.ToUniversalTime();
+                    cmd.Parameters.Add(pStartTime);
+
                     using (SQLiteDataReader r = cmd.ExecuteReader())
                     {
                         while (r.Read())
@@ -845,7 +904,8 @@ GROUP BY [Poster].postername
                     }
 
                 }
-                sql = @"
+                sql = 
+@"
 SELECT Bolded.bolded, Bolded.position, Post.postnumber, Post.posttime
     FROM Bolded
     JOIN Post ON (Bolded.postid = Post.postid)
@@ -883,22 +943,23 @@ SELECT Bolded.bolded, Bolded.position, Post.postnumber, Post.posttime
                 }
             }
             watch.Stop();
-            Trace.TraceInformation("after post counts {0}", watch.Elapsed.ToString());
+            //Trace.TraceInformation("after post counts {0}", watch.Elapsed.ToString());
             return voters;
         }
 
-        public Boolean GetDayBoundaries(Int32 threadId, Int32 day, out Int32 startPost,
+        public Boolean GetDayBoundaries(Int32 threadId, Int32 day, out DateTime startTime,
                 out DateTime endTime, out Int32 endPost)
         {
-            startPost = 0;
+            startTime = DateTime.MinValue;
             endTime = DateTime.Now;
             endPost = 0;
 
-            String sql = @"
-				SELECT startpost, endtime FROM [Day] 
-                WHERE (threadid = @p1) AND (day = @p2)
-                LIMIT 1;
-			";
+            String sql = 
+@"
+SELECT starttime, endtime FROM Day 
+WHERE (threadid = @p1) AND (day = @p2)
+LIMIT 1;
+";
             Stopwatch watch = new Stopwatch();
             watch.Start();
             using (SQLiteConnection dbRead = new SQLiteConnection(_connect))
@@ -914,7 +975,7 @@ SELECT Bolded.bolded, Bolded.position, Post.postnumber, Post.posttime
                     {
                         if (r.Read())
                         {
-                            startPost = r.GetInt32(0);
+                            startTime = DateTime.SpecifyKind(r.GetDateTime(0), DateTimeKind.Local);
                             endTime = DateTime.SpecifyKind(r.GetDateTime(1), DateTimeKind.Local);
                         }
                         else
@@ -925,12 +986,13 @@ SELECT Bolded.bolded, Bolded.position, Post.postnumber, Post.posttime
                 }
             }
             watch.Stop();
-            Trace.TraceInformation("after ReadDayBoundaries {0}", watch.Elapsed.ToString());
+            //Trace.TraceInformation("after ReadDayBoundaries {0}", watch.Elapsed.ToString());
 
-            String sqlTime = @"SELECT postnumber
-                        FROM Post
-                        WHERE (Post.threadid = @p2) AND (Post.posttime <= @p3) AND (Post.postnumber >= @p1)
-                        ORDER BY postid DESC LIMIT 1";
+            String sqlTime = 
+@"SELECT postnumber
+FROM Post
+WHERE (Post.threadid = @p2) AND (Post.posttime <= @p3) AND (Post.posttime >= @p1)
+ORDER BY postid DESC LIMIT 1";
             watch.Reset();
             watch.Start();
             using (SQLiteConnection dbRead = new SQLiteConnection(_connect))
@@ -938,7 +1000,7 @@ SELECT Bolded.bolded, Bolded.position, Post.postnumber, Post.posttime
                 dbRead.Open();
                 using (SQLiteCommand cmd = new SQLiteCommand(sqlTime, dbRead))
                 {
-                    cmd.Parameters.Add(new SQLiteParameter("@p1", startPost));
+                    cmd.Parameters.Add(new SQLiteParameter("@p1", startTime));
                     cmd.Parameters.Add(new SQLiteParameter("@p2", threadId));
                     SQLiteParameter pEndTime = new SQLiteParameter("@p3", System.Data.DbType.DateTime);
                     pEndTime.Value = endTime.ToUniversalTime();
@@ -953,19 +1015,20 @@ SELECT Bolded.bolded, Bolded.position, Post.postnumber, Post.posttime
                 }
             }
             watch.Stop();
-            Trace.TraceInformation("after get EndPost {0}", watch.Elapsed.ToString());
+            //Trace.TraceInformation("after get EndPost {0}", watch.Elapsed.ToString());
             return true;
         }
         public String GetAlias(Int32 threadId, String bolded)
         {
             String rc = String.Empty;
             // Check our thread.
-            String sql = @"
-				SELECT poster.postername FROM Poster 
-                JOIN [Alias] ON (Poster.posterid = Alias.posterid) 
-                WHERE (threadid = @p1) AND (bolded = @p2)
-                LIMIT 1;
-			";
+            String sql = 
+@"
+SELECT poster.postername FROM Poster 
+JOIN Alias ON (Poster.posterid = Alias.posterid) 
+WHERE (threadid = @p1) AND (bolded = @p2)
+LIMIT 1;
+";
             Stopwatch watch = new Stopwatch();
             watch.Start();
             using (SQLiteConnection dbRead = new SQLiteConnection(_connect))
@@ -985,7 +1048,7 @@ SELECT Bolded.bolded, Bolded.position, Post.postnumber, Post.posttime
                 }
             }
             watch.Stop();
-            Trace.TraceInformation("after GetAliasDB {0}", watch.Elapsed.ToString());
+            //Trace.TraceInformation("after GetAliasDB {0}", watch.Elapsed.ToString());
 
             // Check other threads.
             return rc;
@@ -998,13 +1061,14 @@ SELECT Bolded.bolded, Bolded.position, Post.postnumber, Post.posttime
         {
             name = name.Replace("%", ";%");
             List<Poster> posters = new List<Poster>();
-            String sql = @"
-				SELECT Poster.postername, Poster.posterid, COUNT(*) AS gamesplayed FROM [Poster]
-                LEFT OUTER JOIN Player ON (Poster.posterid = Player.posterid) 
-                WHERE (postername LIKE @p1 ESCAPE ';')
-                GROUP BY Poster.postername
-                ORDER BY gamesplayed DESC, postername ASC;
-			";
+            String sql = 
+@"
+SELECT Poster.postername, Poster.posterid, COUNT(*) AS gamesplayed FROM Poster
+LEFT OUTER JOIN Player ON (Poster.posterid = Player.posterid) 
+WHERE (postername LIKE @p1 ESCAPE ';')
+GROUP BY Poster.postername
+ORDER BY gamesplayed DESC, postername ASC;
+";
             Stopwatch watch = new Stopwatch();
             watch.Start();
             using (SQLiteConnection dbRead = new SQLiteConnection(_connect))
@@ -1027,7 +1091,7 @@ SELECT Bolded.bolded, Bolded.position, Post.postnumber, Post.posttime
                 }
             }
             watch.Stop();
-            Trace.TraceInformation("after GetPostersLike {0}", watch.Elapsed.ToString());
+            //Trace.TraceInformation("after GetPostersLike {0}", watch.Elapsed.ToString());
             return posters;
         }
 
@@ -1043,7 +1107,7 @@ SELECT Bolded.bolded, Bolded.position, Post.postnumber, Post.posttime
                 {
                     String sql =
 
-                        @"INSERT OR IGNORE INTO [Poster] (posterid, postername) VALUES (@p3, @p8);";
+@"INSERT OR IGNORE INTO Poster (posterid, postername) VALUES (@p3, @p8);";
 
                     using (SQLiteCommand cmd = new SQLiteCommand(sql, dbWrite, trans))
                     {
@@ -1064,7 +1128,148 @@ SELECT Bolded.bolded, Bolded.position, Post.postnumber, Post.posttime
             }
             watch.Stop();
 
-            Trace.TraceInformation("after AddPosters {0}", watch.Elapsed.ToString());
+            //Trace.TraceInformation("after AddPosters {0}", watch.Elapsed.ToString());
+        }
+        public Int32 GetPostNumber(Int32 threadId, Int32 postId)
+        {
+            Int32 rc = 0;
+            String sql =
+@"SELECT MAX(Post.postnumber)
+FROM Post
+WHERE Post.threadid = @p2 AND
+(Post.postid <= @p4);";
+
+            Stopwatch watch = new Stopwatch();
+            watch.Start();
+            using (SQLiteConnection dbRead = new SQLiteConnection(_connect))
+            {
+                dbRead.Open();
+                using (SQLiteCommand cmd = new SQLiteCommand(sql, dbRead))
+                {
+                    cmd.Parameters.Add(new SQLiteParameter("@p2", threadId));
+                    cmd.Parameters.Add(new SQLiteParameter("@p4", postId));
+                    using (SQLiteDataReader r = cmd.ExecuteReader())
+                    {
+                        if (r.Read())
+                        {
+                            rc = r.GetInt32(0);
+                        }
+                    }
+                }
+            }
+            watch.Stop();
+            //Trace.TraceInformation("after GetPostNumber {0}", watch.Elapsed.ToString());
+            return rc;
+        }
+
+
+        public Int32 GetPostId(Int32 threadId, int postNumber)
+        {
+            Int32 rc = -1;
+            String sql =
+@"SELECT Post.postid
+FROM Post
+WHERE Post.threadid = @p2 AND
+(Post.postnumber == @p4);";
+
+            Stopwatch watch = new Stopwatch();
+            watch.Start();
+            using (SQLiteConnection dbRead = new SQLiteConnection(_connect))
+            {
+                dbRead.Open();
+                using (SQLiteCommand cmd = new SQLiteCommand(sql, dbRead))
+                {
+                    cmd.Parameters.Add(new SQLiteParameter("@p2", threadId));
+                    cmd.Parameters.Add(new SQLiteParameter("@p4", postNumber));
+                    using (SQLiteDataReader r = cmd.ExecuteReader())
+                    {
+                        if (r.Read())
+                        {
+                            rc = r.GetInt32(0);
+                        }
+                    }
+                }
+            }
+            watch.Stop();
+            //Trace.TraceInformation("after GetPostId {0}", watch.Elapsed.ToString());
+            return rc;
+        }
+        public Post GetPost(int threadId, int postNumber)
+        {
+            Post p = null; 
+            //p.Poster; p.PostId; p.Time; 
+            //p.Title; p.Bolded; p.Content; p.Edit; p.PostLink;
+            String sql = 
+@"SELECT Post.postid, Post.posterid, Poster.postername, Post.posttime
+FROM Post
+JOIN Poster ON (Post.posterid = Poster.posterid)        
+WHERE Post.threadid = @p2 AND
+(Post.postnumber == @p4);";
+
+            Stopwatch watch = new Stopwatch();
+            watch.Start();
+            using (SQLiteConnection dbRead = new SQLiteConnection(_connect))
+            {
+                dbRead.Open();
+                using (SQLiteCommand cmd = new SQLiteCommand(sql, dbRead))
+                {
+                    cmd.Parameters.Add(new SQLiteParameter("@p2", threadId));
+                    cmd.Parameters.Add(new SQLiteParameter("@p4", postNumber));
+                    using (SQLiteDataReader r = cmd.ExecuteReader())
+                    {
+                        if (r.Read())
+                        {
+                            Int32 postId = r.GetInt32(0);
+                            Int32 posterId = r.GetInt32(1);
+                            String name = r.GetString(2);
+                            DateTime time = DateTime.SpecifyKind(r.GetDateTime(3), DateTimeKind.Local);
+                            p = new Post(threadId, name, posterId, postNumber, time, String.Empty, String.Empty,
+                                String.Empty, null, null);
+                        }
+                    }
+                }
+            }
+            watch.Stop();
+            //Trace.TraceInformation("after GetPost {0}", watch.Elapsed.ToString());
+            return p;
+        }
+
+
+        public int GetPostBeforeTime(Int32 threadId, DateTime startTime)
+        {
+            String sql =
+@"SELECT Post.postnumber
+FROM Post
+WHERE (Post.threadid = @p2) AND
+(Post.posttime <= @p4)
+ORDER BY Post.postid DESC
+LIMIT 1
+;";
+
+            Stopwatch watch = new Stopwatch();
+            watch.Start();
+            Int32 postNumber = 0;
+            using (SQLiteConnection dbRead = new SQLiteConnection(_connect))
+            {
+                dbRead.Open();
+                using (SQLiteCommand cmd = new SQLiteCommand(sql, dbRead))
+                {
+                    cmd.Parameters.Add(new SQLiteParameter("@p2", threadId));
+                    SQLiteParameter pTime = new SQLiteParameter("@p4", System.Data.DbType.DateTime);
+                    pTime.Value = startTime;
+                    cmd.Parameters.Add(pTime);
+                    using (SQLiteDataReader r = cmd.ExecuteReader())
+                    {
+                        if (r.Read())
+                        {
+                            postNumber = r.GetInt32(0);
+                        }
+                    }
+                }
+            }
+            watch.Stop();
+            //Trace.TraceInformation("after GetPostBeforeTime {0}", watch.Elapsed.ToString());
+            return postNumber;
         }
     }
 }

@@ -21,7 +21,7 @@ namespace POG.FennecFox
             {
                 if (EditingControl != null)
                 {
-                    if (keyData == Keys.Enter)
+                    if (keyData == Keys.Enter) 
                     {
                         return false;
                     }
@@ -37,7 +37,8 @@ namespace POG.FennecFox
             {
                 if (EditingControl != null)
                 {
-                    if (e.KeyCode == Keys.Down || e.KeyCode == Keys.Up || e.KeyCode == Keys.Enter)
+                    if ((e.KeyCode == Keys.Down) || (e.KeyCode == Keys.Up) || (e.KeyCode == Keys.Enter)
+                        || (e.KeyCode == Keys.Escape))
                     {
                         return false;
                     }

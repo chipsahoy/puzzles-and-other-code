@@ -20,7 +20,6 @@ namespace POG.FennecFox
 
         public DayEditor(Werewolf.VoteCount _voteCount)
         {
-            // TODO: Complete member initialization
             this._voteCount = _voteCount;
             InitializeComponent();
             dtEodTime.Format = DateTimePickerFormat.Custom;
@@ -48,12 +47,12 @@ namespace POG.FennecFox
             if (_voteCount != null)
             {
                 Int32 day = (Int32)udDay.Value;
-                Int32 startPost;
+                DateTime startPost;
                 DateTime endTime;
                 Int32 endPost;
                 if (_voteCount.GetDayBoundaries(day, out startPost, out endTime, out endPost))
                 {
-                    udStartPost.Value = startPost;
+                    //udStartPost.Value = startPost;
                     dtEodDate.Value = endTime;
                     dtEodTime.Value = endTime;
                 }

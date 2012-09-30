@@ -23,7 +23,7 @@ namespace POG.Forum
             get;
             set;
         }
-        public Int32? EndPostNumber
+        public DateTime? EndPostTime
         {
             get;
             set;

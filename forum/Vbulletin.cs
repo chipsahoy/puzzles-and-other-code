@@ -117,8 +117,9 @@ namespace POG.Forum
 
                 case "GetPostersLike":
                     {
-                        Event<String> evt = e as Event<String>;
-                        DoGetPostersLike(evt.Param);
+                        Event<String, Action<String, IEnumerable<Poster>>> evt = 
+                            e as Event<String, Action<String, IEnumerable<Poster>>>;
+                        DoGetPostersLike(evt.Param1, evt.Param2);
                     }
                     return null;
 			}
@@ -246,7 +247,7 @@ namespace POG.Forum
 			// "submitter=oreos"
 			//cs.Data = "x=oreos";
 			cs.Message = cs.Data;
-			Trace.TraceInformation("Posting: " + cs.Data);
+			//Trace.TraceInformation("Posting: " + cs.Data);
 			String resp = HtmlHelper.PostToUrl(cs);
 			if (resp == null)
 			{
@@ -357,7 +358,7 @@ loggedinuser 81788
             msg.AppendFormat("{0}={1}", "loggedinuser", cs.CC.GetCookies(new System.Uri(TwoPlusTwoForum.BASE_URL))["bbuserid"]);
             cs.Url = String.Format("{0}newreply.php?do=postreply&t={1}", TwoPlusTwoForum.BASE_URL, threadId);
             cs.Data = msg.ToString();
-            Trace.TraceInformation("Posting: " + cs.Data);
+            //Trace.TraceInformation("Posting: " + cs.Data);
             String resp = HtmlHelper.PostToUrl(cs);
             if (resp == null)
             {
@@ -369,14 +370,14 @@ loggedinuser 81788
         }
 
 
-        internal void GetPostersLike(String name)
+        internal void GetPostersLike(String name, Action<String, IEnumerable<Poster>> callback)
         {
-            Event<String> evt = new Event<string>("GetPostersLike", name);
+            Event<String, Action<String, IEnumerable<Poster>>> evt = new Event<string, Action<String, IEnumerable<Poster>>>("GetPostersLike", name, callback);
             PostEvent(evt);
         }
         
 
-        void DoGetPostersLike(string name)
+        void DoGetPostersLike(string name, Action<String, IEnumerable<Poster> > callback)
         {
             /* headers
                 POST /ajax.php?do=usersearch
@@ -426,14 +427,14 @@ fragment	name
             msg.AppendFormat("{0}={1}&", "fragment", name);
             cs.Url = String.Format("{0}/ajax.php?do=usersearch", TwoPlusTwoForum.BASE_URL);
             cs.Data = msg.ToString();
-            Trace.TraceInformation("Posting: " + cs.Data);
+            //Trace.TraceInformation("Posting: " + cs.Data);
             String resp = HtmlHelper.PostToUrl(cs);
             if (resp == null)
             {
                 // failure
                 return;
             }
-            Trace.TraceInformation(resp);
+            //Trace.TraceInformation(resp);
             /*
 <?xml version="1.0" encoding="windows-1252"?>
 <users>
@@ -475,7 +476,7 @@ fragment	name
                     }
                 }
             }
-            _outer.OnNameCompletion(name, posters);   
+            callback(name, posters);
         }
     }
 	public class TwoPlusTwoForum
@@ -493,18 +494,6 @@ fragment	name
 		}
 		#endregion
 		#region events
-        public event EventHandler<NameCompletionEventArgs> NameCompletionEvent;
-        internal void OnNameCompletion(String fragment, IEnumerable<Poster> names)
-        {
-            var handler = NameCompletionEvent;
-            if (handler != null)
-            {
-                NameCompletionEventArgs e = new NameCompletionEventArgs(fragment, names);
-                _synchronousInvoker.Invoke(
-                    () => handler(this, e)
-                );
-            }
-        }
 		public event EventHandler<LoginEventArgs> LoginEvent;
 		virtual internal void OnLoginEvent(String username, LoginEventType let)
 		{
@@ -567,9 +556,9 @@ fragment	name
             Boolean rc = _inner.MakePost(threadId, message);
             return rc;
         }
-        public void GetPostersLike(string name)
+        public void GetPostersLike(string name, Action<String, IEnumerable<Poster>> callback)
         {
-            _inner.GetPostersLike(name);
+            _inner.GetPostersLike(name, callback);
         }
         public static Int32 ThreadIdFromUrl(String url)
         {

@@ -51,7 +51,7 @@ namespace POG.Utils
             {
                 tzOffset = Int32.Parse(m.Groups[1].Value);
                 String timeServer = m.Groups[2].Value;
-                Trace.TraceInformation("{0}/{1}", m.Groups[1].Value, m.Groups[2].Value);
+                //Trace.TraceInformation("{0}/{1}", m.Groups[1].Value, m.Groups[2].Value);
                 DateTime rawTime; 
                 var culture = Thread.CurrentThread.CurrentCulture;
                 try
@@ -78,7 +78,7 @@ namespace POG.Utils
                     rc = guess.AddDays(-1);
                 }
             }
-            Trace.TraceInformation("Server Time: {0}", rc.DateTime.ToShortTimeString());
+            //Trace.TraceInformation("Server Time: {0}", rc.DateTime.ToShortTimeString());
             return rc;
         }
         public static DateTimeOffset ParseItemTime(DateTimeOffset pageTime, String time)
