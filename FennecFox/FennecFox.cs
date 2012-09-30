@@ -42,12 +42,13 @@ namespace POG.FennecFox
             InitializeComponent();
         }
         public FormVoteCounter(TwoPlusTwoForum forum, Action<Action> synchronousInvoker, 
-            String url, Boolean turbo) : this()
+            String url, Boolean turbo, Int32 day) : this()
         {
             _forum = forum;
             _synchronousInvoker = synchronousInvoker;
             _url = url;
             _turbo = turbo;
+            _day = day;
         }
 
         protected override void OnLoad(EventArgs e)
@@ -413,6 +414,7 @@ namespace POG.FennecFox
             txtLastPost.DataBindings.Add("Text", _voteCount, "LastPost", false, DataSourceUpdateMode.OnPropertyChanged);
             udStartPost.DataBindings.Add("Text", _voteCount, "StartPost", false, DataSourceUpdateMode.OnPropertyChanged);
             txtEndPost.DataBindings.Add("Text", _voteCount, "EndPost", false, DataSourceUpdateMode.OnPropertyChanged);
+            _voteCount.ChangeDay(_day);
             _voteCount.Refresh();
             _voteCount.CheckThread();
         }
@@ -512,6 +514,28 @@ namespace POG.FennecFox
             else
             {
                 statusText.Text = "Failed to post a vote count.";
+            }
+        }
+
+        public string URL
+        {
+            get
+            {
+                return _url;
+            }
+        }
+        public Int32 Day
+        {
+            get
+            {
+                return _day;
+            }
+        }
+        public Boolean Turbo
+        {
+            get
+            {
+                return _turbo;
             }
         }
     }

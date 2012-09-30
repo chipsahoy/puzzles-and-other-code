@@ -137,6 +137,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(534, 442);
+            this.ControlBox = false;
             this.Controls.Add(this.btnKillSub);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.btnCopyLive);
@@ -144,7 +145,10 @@
             this.Controls.Add(this.btnDelete);
             this.Controls.Add(this.grdRoster);
             this.Controls.Add(this.btnSubmitPlayers);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.MaximizeBox = false;
+            this.MinimizeBox = false;
             this.Name = "PlayerList";
             this.Text = "Add / Remove Players";
             ((System.ComponentModel.ISupportInitialize)(this.grdRoster)).EndInit();

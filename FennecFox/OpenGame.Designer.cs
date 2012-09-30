@@ -116,6 +116,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(504, 301);
+            this.ControlBox = false;
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.txtURL);
@@ -123,6 +124,9 @@
             this.Controls.Add(this.chkTurbo);
             this.Controls.Add(this.btnCancel);
             this.Controls.Add(this.btnOK);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
+            this.MaximizeBox = false;
+            this.MinimizeBox = false;
             this.Name = "OpenGame";
             this.Text = "Open Game";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.OpenGame_FormClosing);

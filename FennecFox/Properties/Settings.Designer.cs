@@ -82,5 +82,16 @@ namespace POG.FennecFox.Properties {
                 this["day"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        public global::System.Collections.Specialized.StringCollection games {
+            get {
+                return ((global::System.Collections.Specialized.StringCollection)(this["games"]));
+            }
+            set {
+                this["games"] = value;
+            }
+        }
     }
 }

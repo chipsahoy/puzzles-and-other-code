@@ -8,6 +8,7 @@ using System.Text;
 using System.Windows.Forms;
 using System.Runtime.InteropServices;
 using POG.Forum;
+using System.Collections.Specialized;
 
 namespace POG.FennecFox
 {
@@ -52,9 +53,9 @@ namespace POG.FennecFox
         private void ShowNewForm(object sender, EventArgs e)
         {
         }
-        private void ShowCounter(String url, Boolean turbo)
+        private void ShowCounter(String url, Boolean turbo, Int32 day)
         {
-            Form childForm = new FormVoteCounter(_forum, _synchronousInvoker, url, turbo);
+            Form childForm = new FormVoteCounter(_forum, _synchronousInvoker, url, turbo, day);
             childForm.MdiParent = this;
             childForm.Text = "Window " + childFormNumber++;
             childForm.Show();
@@ -71,7 +72,7 @@ namespace POG.FennecFox
                 String url = frm.GetURL(out turbo);
                 if (url.Length > 0)
                 {
-                    ShowCounter(url, turbo);
+                    ShowCounter(url, turbo, 1);
                 }
             }
         }
@@ -103,15 +104,6 @@ namespace POG.FennecFox
         {
         }
 
-        private void ToolBarToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            toolStrip.Visible = toolBarToolStripMenuItem.Checked;
-        }
-
-        private void StatusBarToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            statusStrip.Visible = statusBarToolStripMenuItem.Checked;
-        }
 
         private void CascadeToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -206,6 +198,19 @@ namespace POG.FennecFox
         private void FoxParent_FormClosing(object sender, FormClosingEventArgs e)
         {
             _forum.LoginEvent -= _forum_LoginEvent;
+            StringCollection games = new StringCollection();
+            foreach (Form child in MdiChildren)
+            {
+                FormVoteCounter counter = child as FormVoteCounter;
+                if (counter != null)
+                {
+                    String gameInfo = String.Format("{0}|{1}|{2}", counter.Turbo, counter.Day, counter.URL);
+                    games.Add(gameInfo);
+                }
+            }
+            POG.FennecFox.Properties.Settings.Default.games = games;
+            POG.FennecFox.Properties.Settings.Default.Save();
+
 
         }
         Boolean _inLoginDialog = false;
@@ -245,6 +250,29 @@ namespace POG.FennecFox
                         openToolStripButton.Enabled = true;
                         tsBtnLogout.Enabled = true;
                         {
+                            StringCollection games = POG.FennecFox.Properties.Settings.Default.games;
+                            if (games == null)
+                            {
+                                games = new StringCollection();
+                                POG.FennecFox.Properties.Settings.Default.games = games;
+                                POG.FennecFox.Properties.Settings.Default.Save();
+                                OpenFile(this, EventArgs.Empty);
+                            }
+                            else
+                            {
+                                foreach (String game in games)
+                                {
+                                    String[] parts = game.Split('|');
+                                    if (parts.Length >= 3)
+                                    {
+                                        Boolean turbo = false;
+                                        Boolean.TryParse(parts[0], out turbo);
+                                        Int32 day = 1;
+                                        Int32.TryParse(parts[1], out day);
+                                        ShowCounter(parts[2], turbo, day);
+                                    }
+                                }
+                            }
                             //if (URLTextBox.Text == "")
                             //{
                             //    URLTextBox.Text = POG.FennecFox.Properties.Settings.Default.threadUrl;
@@ -262,6 +290,7 @@ namespace POG.FennecFox
                     {
                         _loggedIn = false;
                         openToolStripButton.Enabled = false;
+                        CloseAllToolStripMenuItem_Click(this, EventArgs.Empty);
                     }
                     break;
             }

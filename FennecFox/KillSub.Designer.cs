@@ -95,14 +95,18 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(284, 262);
+            this.ControlBox = false;
             this.Controls.Add(this.txtReplacement);
             this.Controls.Add(this.chkSub);
             this.Controls.Add(this.dtExitTime);
             this.Controls.Add(this.dtExitDate);
             this.Controls.Add(this.btnCancel);
             this.Controls.Add(this.btnOK);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
+            this.MaximizeBox = false;
+            this.MinimizeBox = false;
             this.Name = "KillSub";
-            this.Text = "KillSub";
+            this.Text = "Kill / Sub";
             this.ResumeLayout(false);
             this.PerformLayout();
 

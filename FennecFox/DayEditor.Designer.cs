@@ -179,6 +179,7 @@
             this.Controls.Add(this.udDay);
             this.Controls.Add(this.btnCancel);
             this.Controls.Add(this.btnOK);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.Name = "DayEditor";
             this.Text = "DayEditor";
             ((System.ComponentModel.ISupportInitialize)(this.udDay)).EndInit();
