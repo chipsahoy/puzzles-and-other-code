@@ -128,7 +128,7 @@ namespace POG.Werewolf
         }
 
         Boolean _checkingThread;
-        public void CheckThread()
+        public void CheckThread(Action callback)
         {
             Int32 lastPage = 0;
             lastPage = PageFromNumber(_lastPost);
@@ -136,12 +136,16 @@ namespace POG.Werewolf
             {
                 _checkingThread = true;
                 Status = "Checking for new posts...";
-                _thread.ReadPages(_url, lastPage, Int32.MaxValue, null);
+                _thread.ReadPages(_url, lastPage, Int32.MaxValue, callback);
             }
             else
             {
                 Status = "Already looking for posts.";
             }
+        }
+        public void CheckThread()
+        {
+            CheckThread(null);
         }
         public void SetPlayerList(IEnumerable<String> rawList)
         {
@@ -537,6 +541,14 @@ namespace POG.Werewolf
             _checkingThread = false;
             ReadAllFromDB();
             Status = "Finished reading posts at " + DateTime.Now.ToShortTimeString();
+            if (e.Cookie != null)
+            {
+                Action callback = (Action)e.Cookie;
+                if (callback != null)
+                {
+                    callback();
+                }
+            }
         }
 
         #endregion

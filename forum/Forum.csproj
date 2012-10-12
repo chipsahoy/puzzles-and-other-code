@@ -58,6 +58,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\SolutionInfo.cs">
+      <Link>SolutionInfo.cs</Link>
+    </Compile>
     <Compile Include="ConnectionSettings.cs" />
     <Compile Include="LobbyReader.cs" />
     <Compile Include="PageErrorEventArgs.cs" />

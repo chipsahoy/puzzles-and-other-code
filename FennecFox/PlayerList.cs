@@ -80,6 +80,11 @@ namespace POG.FennecFox
                     {
                         AddConfirmedPoster(poster);
                     }
+                    else
+                    {
+                        String msg = String.Format("\"{0}\" is not a poster. Check the spelling.", poster);
+                        MessageBox.Show(msg);
+                    }
                 }
                 ) > 0)
             {
@@ -391,6 +396,7 @@ namespace POG.FennecFox
             }
             if (live.Count > 0)
             {
+                live.Sort();
                 String players = String.Join("\r\n", live) + "\r\n";
                 Clipboard.SetData(DataFormats.StringFormat, players.ToString());
             }

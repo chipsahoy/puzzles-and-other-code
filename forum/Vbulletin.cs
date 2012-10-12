@@ -256,12 +256,12 @@ namespace POG.Forum
 
 		}
 		#endregion
-        internal Boolean MakePost(Int32 threadId, String content, Int32 icon = 0)
+        internal Boolean MakePost(Int32 threadId, String content, Boolean lockit, Int32 icon)
         {
-            Boolean rc = DoMakePost(threadId, content, icon);
+            Boolean rc = DoMakePost(threadId, content, lockit, icon);
             return rc;
         }
-        Boolean DoMakePost(Int32 threadId, String content, Int32 icon = 0)
+        Boolean DoMakePost(Int32 threadId, String content, Boolean lockit, Int32 icon)
         {
             /* headers
                 POST /newreply.php?do=postreply&t=1198532 HTTP/1.1
@@ -355,6 +355,10 @@ loggedinuser 81788
             msg.AppendFormat("{0}={1}&", "p", "who cares");
             msg.AppendFormat("{0}={1}&", "specifiedpost", "0");
             msg.AppendFormat("{0}={1}&", "parseurl", "1");
+            if (lockit)
+            {
+                msg.AppendFormat("{0}={1}&", "openclose", "1");
+            }
             msg.AppendFormat("{0}={1}", "loggedinuser", cs.CC.GetCookies(new System.Uri(TwoPlusTwoForum.BASE_URL))["bbuserid"]);
             cs.Url = String.Format("{0}newreply.php?do=postreply&t={1}", TwoPlusTwoForum.BASE_URL, threadId);
             cs.Data = msg.ToString();
@@ -553,7 +557,7 @@ fragment	name
 		}
         public Boolean MakePost(Int32 threadId, String title, String message, Int32 PostIcon, Boolean LockThread)
         {
-            Boolean rc = _inner.MakePost(threadId, message);
+            Boolean rc = _inner.MakePost(threadId, message, LockThread, PostIcon);
             return rc;
         }
         public void GetPostersLike(string name, Action<String, IEnumerable<Poster>> callback)

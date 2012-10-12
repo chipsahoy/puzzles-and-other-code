@@ -91,47 +91,31 @@ namespace POG.Werewolf
     
     class ModeratorSM : StateMachine
     {
-        VoteCount _game;
-        VBulletin_3_8_7 _forum;
+        VoteCount _voteCount;
+        TwoPlusTwoForum _forum;
         Moderator _outer;
-        Int32 _countNumber = 1;
+        Boolean _postingCounts = false;
 
-        public ModeratorSM(Moderator outer, VoteCount game, VBulletin_3_8_7 forum, StateMachineHost host)
+        public ModeratorSM(Moderator outer, VoteCount game, TwoPlusTwoForum forum, StateMachineHost host)
             : base("Moderator", host)
         {
             _outer = outer;
-            _game = game;
+            _voteCount = game;
             _forum = forum;
             SetInitialState(StateTop);
-        }
-        public void StartGame(string sender, params string[] players)
-        {
-        }
-        public void Peek(string sender, string target)
-        {
-        }
-        public void Kill(string sender, string target)
-        {
-        }
-        public void Sub(string sender, string target)
-        {
-        }
-        public void CancelGame(string sender)
-        {
         }
 
         State StateTop(Event evt)
         {
             switch (evt.EventName)
             {
-                case "PostCount":
+                case "AutoPostOn":
                     {
-                        _game.MakePost("Vote Count #" + _countNumber.ToString());
-                        _countNumber++;
-                        SetVoteCountTimer();
+                        ChangeState(StatePostingCounts);
                     }
-                    break;
+                    return null;
             }
+            
             return null;
         }
         State StateIdle(Event evt)
@@ -145,50 +129,98 @@ namespace POG.Werewolf
             }
             return StateTop;
         }
-        State StatePlaying(Event evt)
-        {
-            return StateTop;
-        }
-        State StateRanding(Event evt)
-        {
-            return StatePlaying;
-        }
-        State StateStartThread(Event evt)
-        {
-            return StatePlaying;
-        }
-        State StatePollingThread(Event evt)
-        {
-            return StatePlaying;
-        }
         State StateNight(Event evt)
         {
-            return StatePollingThread;
+            switch (evt.EventName)
+            {
+                case "EventEnter":
+                    {
+                        Event evtPoll = new Event("PollThread");
+                        StartOneShotTimer(60000, evtPoll);
+                        SetVoteCountTimer();
+                    }
+                    break;
+
+                case "PollThread":
+                    {
+                        if (_voteCount.TimeUntilNight.Ticks > 0)
+                        {
+                            ChangeState(StatePostingCounts);
+                        }
+                        else
+                        {
+                            StartOneShotTimer(60000, evt);
+                        }
+                    }
+                    return null;
+            }
+            return StatePostingCounts;
         }
-        State LynchReveal(Event evt)
+        State StatePostingCounts(Event evt)
         {
-            return StateNight;
-        }
-        State NightReveal(Event evt)
-        {
-            return StateNight;
-        }
-        State StateDay(Event evt)
-        {
-            return StatePollingThread;
-        }
-        internal void StartAutoPost()
-        {
-            SetVoteCountTimer();
+            switch (evt.EventName)
+            {
+                case "EventEnter":
+                    {
+                        _postingCounts = true;
+                        if (!SetVoteCountTimer())
+                        {
+                            ChangeState(StateNight);
+                        }
+                    }
+                    break;
+
+                case "EventExit":
+                    {
+                        _postingCounts = false;
+                    }
+                    break;
+
+                case "AutoPostOn":
+                    {
+                    }
+                    return null;
+
+                case "AutoPostOff":
+                    {
+                        ChangeState(StateIdle);
+                    }
+                    return null;
+
+                case "PostCount":
+                    {
+                        _voteCount.CheckThread(() =>
+                        {
+                            Boolean night = (_voteCount.TimeUntilNight.Ticks < 0);
+                            String count = _voteCount.GetPostableVoteCount();
+                            if (count != String.Empty)
+                            {
+                                Int32 tid = _voteCount.ThreadId;
+                                _forum.MakePost(tid, String.Empty, count, 0, LockThread && night);
+                            }
+                            if (night)
+                            {
+                                ChangeState(StateNight);
+                            }
+                            else
+                            {
+                                SetVoteCountTimer();
+                            }
+                        });
+                    }
+                    return null;
+            }
+            return StateTop;
         }
 
         Boolean SetVoteCountTimer()
         {
-            DateTime eod = _game.EndTime;
+            DateTime eod = _voteCount.EndTime;
+            eod.AddMinutes(1);
             DateTime now = DateTime.Now;
             DateTime alarm = now;
             TimeSpan daylight = eod - now;
-            if (daylight.Milliseconds < 0)
+            if (daylight.TotalMinutes < -1)
             {
                 return false;
             }
@@ -226,14 +258,42 @@ namespace POG.Werewolf
             {
                 alarm = eod - new TimeSpan(0, 1, 0);
             }
-            else if (daylight.Minutes == 0)
+            else
             {
-                alarm = eod - new TimeSpan(0, 15, 0);
+                alarm = now + new TimeSpan(0, 0, 30);
             }
             TimeSpan duration = alarm - now;
             
             StartOneShotTimer((int)duration.TotalMilliseconds, new Event("PostCount"));
             return true;
+        }
+
+        internal bool AutoPostCounts
+        {
+            get
+            {
+                return _postingCounts;
+            }
+            set
+            {
+                if (value)
+                {
+                    Event evt = new Event("AutoPostOn");
+                    PostEvent(evt);
+                }
+                else
+                {
+                    Event evt = new Event("AutoPostOn");
+                    PostEvent(evt);
+                }
+            }
+            
+        }
+
+        internal bool LockThread
+        {
+            get;
+            set;
         }
     }
     public class Moderator
@@ -244,14 +304,32 @@ namespace POG.Werewolf
         #endregion
         #region constructors
 
-        public Moderator(Action<Action> synchronousInvoker, VoteCount voteCount, VBulletin_3_8_7 forum)
+        public Moderator(Action<Action> synchronousInvoker, VoteCount voteCount, TwoPlusTwoForum forum)
         {
             _synchronousInvoker = synchronousInvoker;
             _inner = new ModeratorSM(this, voteCount, forum, new StateMachineHost("ForumHost"));
         }
-        public void StartAutoPost()
+        public Boolean AutoPostCounts
         {
-            _inner.StartAutoPost();
+            get
+            {
+                return _inner.AutoPostCounts;
+            }
+            set
+            {
+                _inner.AutoPostCounts = value;
+            }
+        }
+        public Boolean LockThread
+        {
+            get
+            {
+                return _inner.LockThread;
+            }
+            set
+            {
+                _inner.LockThread = value;
+            }
         }
         #endregion
     }

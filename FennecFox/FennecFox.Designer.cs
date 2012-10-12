@@ -37,30 +37,31 @@
             this.statusText = new System.Windows.Forms.ToolStripStatusLabel();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.label1 = new System.Windows.Forms.Label();
-            this.btnUnignore = new System.Windows.Forms.Button();
-            this.btnIgnore = new System.Windows.Forms.Button();
             this.label18 = new System.Windows.Forms.Label();
-            this.grdVotes = new System.Windows.Forms.DataGridView();
-            this.txtCountDown = new System.Windows.Forms.TextBox();
-            this.label2 = new System.Windows.Forms.Label();
-            this.txtLastPost = new System.Windows.Forms.TextBox();
             this.txtEndPost = new System.Windows.Forms.TextBox();
             this.udStartPost = new System.Windows.Forms.TextBox();
             this.dtStartTime = new System.Windows.Forms.TextBox();
             this.dtEndTime = new System.Windows.Forms.TextBox();
-            this.btnGetPosts = new System.Windows.Forms.Button();
             this.btnEditDay = new System.Windows.Forms.Button();
             this.btnRoster = new System.Windows.Forms.Button();
-            this.udDay = new System.Windows.Forms.NumericUpDown();
             this.label3 = new System.Windows.Forms.Label();
+            this.label2 = new System.Windows.Forms.Label();
+            this.txtLastPost = new System.Windows.Forms.TextBox();
+            this.btnIgnore = new System.Windows.Forms.Button();
+            this.btnUnignore = new System.Windows.Forms.Button();
+            this.udDay = new System.Windows.Forms.NumericUpDown();
+            this.txtCountDown = new System.Windows.Forms.TextBox();
+            this.btnGetPosts = new System.Windows.Forms.Button();
             this.btnPostIt = new System.Windows.Forms.Button();
             this.btnCopyIt = new System.Windows.Forms.Button();
+            this.grdVotes = new System.Windows.Forms.DataGridView();
             this.lblDaysToEOD = new System.Windows.Forms.Label();
+            this.btnMod = new System.Windows.Forms.Button();
             this.contextMenuStrip1.SuspendLayout();
             this.statusBrowser.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.grdVotes)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.udDay)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.grdVotes)).BeginInit();
             this.SuspendLayout();
             // 
             // contextMenuStrip1
@@ -138,6 +139,7 @@
             this.tableLayoutPanel1.Controls.Add(this.btnCopyIt, 8, 2);
             this.tableLayoutPanel1.Controls.Add(this.grdVotes, 0, 3);
             this.tableLayoutPanel1.Controls.Add(this.lblDaysToEOD, 7, 5);
+            this.tableLayoutPanel1.Controls.Add(this.btnMod, 4, 5);
             this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 0);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
@@ -162,27 +164,6 @@
             this.label1.Text = "Start";
             this.label1.TextAlign = System.Drawing.ContentAlignment.TopRight;
             // 
-            // btnUnignore
-            // 
-            this.btnUnignore.Location = new System.Drawing.Point(299, 361);
-            this.btnUnignore.Name = "btnUnignore";
-            this.btnUnignore.Size = new System.Drawing.Size(65, 23);
-            this.btnUnignore.TabIndex = 15;
-            this.btnUnignore.Text = "Unhide";
-            this.btnUnignore.UseVisualStyleBackColor = true;
-            this.btnUnignore.Click += new System.EventHandler(this.btnUnignore_Click);
-            // 
-            // btnIgnore
-            // 
-            this.btnIgnore.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnIgnore.Location = new System.Drawing.Point(228, 361);
-            this.btnIgnore.Name = "btnIgnore";
-            this.btnIgnore.Size = new System.Drawing.Size(65, 23);
-            this.btnIgnore.TabIndex = 10;
-            this.btnIgnore.Text = "Hide";
-            this.btnIgnore.UseVisualStyleBackColor = true;
-            this.btnIgnore.Click += new System.EventHandler(this.btnIgnore_Click);
-            // 
             // label18
             // 
             this.label18.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
@@ -193,57 +174,6 @@
             this.label18.TabIndex = 21;
             this.label18.Text = "End";
             this.label18.TextAlign = System.Drawing.ContentAlignment.TopRight;
-            // 
-            // grdVotes
-            // 
-            this.grdVotes.AllowUserToAddRows = false;
-            this.grdVotes.AllowUserToDeleteRows = false;
-            this.grdVotes.AllowUserToOrderColumns = true;
-            this.grdVotes.AllowUserToResizeRows = false;
-            this.grdVotes.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
-            this.grdVotes.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.tableLayoutPanel1.SetColumnSpan(this.grdVotes, 9);
-            this.grdVotes.ContextMenuStrip = this.contextMenuStrip1;
-            this.grdVotes.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.grdVotes.EditMode = System.Windows.Forms.DataGridViewEditMode.EditOnEnter;
-            this.grdVotes.Location = new System.Drawing.Point(3, 61);
-            this.grdVotes.MultiSelect = false;
-            this.grdVotes.Name = "grdVotes";
-            this.grdVotes.RowHeadersVisible = false;
-            this.grdVotes.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.grdVotes.ShowEditingIcon = false;
-            this.grdVotes.Size = new System.Drawing.Size(648, 293);
-            this.grdVotes.TabIndex = 19;
-            // 
-            // txtCountDown
-            // 
-            this.txtCountDown.Location = new System.Drawing.Point(574, 361);
-            this.txtCountDown.Name = "txtCountDown";
-            this.txtCountDown.ReadOnly = true;
-            this.txtCountDown.Size = new System.Drawing.Size(65, 20);
-            this.txtCountDown.TabIndex = 27;
-            // 
-            // label2
-            // 
-            this.label2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(3, 366);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(51, 13);
-            this.label2.TabIndex = 8;
-            this.label2.Text = "Last Post";
-            this.label2.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-            // 
-            // txtLastPost
-            // 
-            this.txtLastPost.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtLastPost.Location = new System.Drawing.Point(60, 363);
-            this.txtLastPost.Name = "txtLastPost";
-            this.txtLastPost.ReadOnly = true;
-            this.txtLastPost.Size = new System.Drawing.Size(107, 20);
-            this.txtLastPost.TabIndex = 3;
-            this.txtLastPost.TabStop = false;
-            this.txtLastPost.Text = "0";
             // 
             // txtEndPost
             // 
@@ -277,17 +207,6 @@
             this.dtEndTime.Size = new System.Drawing.Size(120, 20);
             this.dtEndTime.TabIndex = 36;
             // 
-            // btnGetPosts
-            // 
-            this.btnGetPosts.Location = new System.Drawing.Point(503, 2);
-            this.btnGetPosts.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.btnGetPosts.Name = "btnGetPosts";
-            this.btnGetPosts.Size = new System.Drawing.Size(65, 23);
-            this.btnGetPosts.TabIndex = 33;
-            this.btnGetPosts.Text = "Get Posts";
-            this.btnGetPosts.UseVisualStyleBackColor = true;
-            this.btnGetPosts.Click += new System.EventHandler(this.btnGetPosts_Click);
-            // 
             // btnEditDay
             // 
             this.btnEditDay.Location = new System.Drawing.Point(299, 3);
@@ -307,6 +226,60 @@
             this.btnRoster.Text = "Players...";
             this.btnRoster.UseVisualStyleBackColor = true;
             this.btnRoster.Click += new System.EventHandler(this.btnRoster_Click);
+            // 
+            // label3
+            // 
+            this.label3.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(370, 16);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(29, 13);
+            this.label3.TabIndex = 40;
+            this.label3.Text = "Day:";
+            this.label3.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            // 
+            // label2
+            // 
+            this.label2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(3, 366);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(51, 13);
+            this.label2.TabIndex = 8;
+            this.label2.Text = "Last Post";
+            this.label2.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            // 
+            // txtLastPost
+            // 
+            this.txtLastPost.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtLastPost.Location = new System.Drawing.Point(60, 363);
+            this.txtLastPost.Name = "txtLastPost";
+            this.txtLastPost.ReadOnly = true;
+            this.txtLastPost.Size = new System.Drawing.Size(107, 20);
+            this.txtLastPost.TabIndex = 3;
+            this.txtLastPost.TabStop = false;
+            this.txtLastPost.Text = "0";
+            // 
+            // btnIgnore
+            // 
+            this.btnIgnore.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnIgnore.Location = new System.Drawing.Point(228, 361);
+            this.btnIgnore.Name = "btnIgnore";
+            this.btnIgnore.Size = new System.Drawing.Size(65, 23);
+            this.btnIgnore.TabIndex = 10;
+            this.btnIgnore.Text = "Hide";
+            this.btnIgnore.UseVisualStyleBackColor = true;
+            this.btnIgnore.Click += new System.EventHandler(this.btnIgnore_Click);
+            // 
+            // btnUnignore
+            // 
+            this.btnUnignore.Location = new System.Drawing.Point(299, 361);
+            this.btnUnignore.Name = "btnUnignore";
+            this.btnUnignore.Size = new System.Drawing.Size(65, 23);
+            this.btnUnignore.TabIndex = 15;
+            this.btnUnignore.Text = "Unhide";
+            this.btnUnignore.UseVisualStyleBackColor = true;
+            this.btnUnignore.Click += new System.EventHandler(this.btnUnignore_Click);
             // 
             // udDay
             // 
@@ -332,20 +305,28 @@
             0});
             this.udDay.ValueChanged += new System.EventHandler(this.udDay_ValueChanged);
             // 
-            // label3
+            // txtCountDown
             // 
-            this.label3.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(370, 16);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(29, 13);
-            this.label3.TabIndex = 40;
-            this.label3.Text = "Day:";
-            this.label3.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.txtCountDown.Location = new System.Drawing.Point(602, 361);
+            this.txtCountDown.Name = "txtCountDown";
+            this.txtCountDown.ReadOnly = true;
+            this.txtCountDown.Size = new System.Drawing.Size(65, 20);
+            this.txtCountDown.TabIndex = 27;
+            // 
+            // btnGetPosts
+            // 
+            this.btnGetPosts.Location = new System.Drawing.Point(531, 2);
+            this.btnGetPosts.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.btnGetPosts.Name = "btnGetPosts";
+            this.btnGetPosts.Size = new System.Drawing.Size(65, 23);
+            this.btnGetPosts.TabIndex = 33;
+            this.btnGetPosts.Text = "Get Posts";
+            this.btnGetPosts.UseVisualStyleBackColor = true;
+            this.btnGetPosts.Click += new System.EventHandler(this.btnGetPosts_Click);
             // 
             // btnPostIt
             // 
-            this.btnPostIt.Location = new System.Drawing.Point(574, 2);
+            this.btnPostIt.Location = new System.Drawing.Point(602, 2);
             this.btnPostIt.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.btnPostIt.Name = "btnPostIt";
             this.btnPostIt.Size = new System.Drawing.Size(65, 23);
@@ -356,7 +337,7 @@
             // 
             // btnCopyIt
             // 
-            this.btnCopyIt.Location = new System.Drawing.Point(574, 31);
+            this.btnCopyIt.Location = new System.Drawing.Point(602, 31);
             this.btnCopyIt.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.btnCopyIt.Name = "btnCopyIt";
             this.btnCopyIt.Size = new System.Drawing.Size(65, 23);
@@ -365,17 +346,48 @@
             this.btnCopyIt.UseVisualStyleBackColor = true;
             this.btnCopyIt.Click += new System.EventHandler(this.btnCopyIt_Click);
             // 
+            // grdVotes
+            // 
+            this.grdVotes.AllowUserToAddRows = false;
+            this.grdVotes.AllowUserToDeleteRows = false;
+            this.grdVotes.AllowUserToOrderColumns = true;
+            this.grdVotes.AllowUserToResizeRows = false;
+            this.grdVotes.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
+            this.grdVotes.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.tableLayoutPanel1.SetColumnSpan(this.grdVotes, 9);
+            this.grdVotes.ContextMenuStrip = this.contextMenuStrip1;
+            this.grdVotes.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.grdVotes.EditMode = System.Windows.Forms.DataGridViewEditMode.EditOnEnter;
+            this.grdVotes.Location = new System.Drawing.Point(3, 61);
+            this.grdVotes.MultiSelect = false;
+            this.grdVotes.Name = "grdVotes";
+            this.grdVotes.RowHeadersVisible = false;
+            this.grdVotes.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
+            this.grdVotes.ShowEditingIcon = false;
+            this.grdVotes.Size = new System.Drawing.Size(664, 293);
+            this.grdVotes.TabIndex = 19;
+            // 
             // lblDaysToEOD
             // 
             this.lblDaysToEOD.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.lblDaysToEOD.AutoSize = true;
-            this.lblDaysToEOD.Location = new System.Drawing.Point(518, 366);
+            this.lblDaysToEOD.Location = new System.Drawing.Point(546, 366);
             this.lblDaysToEOD.Name = "lblDaysToEOD";
             this.lblDaysToEOD.Size = new System.Drawing.Size(50, 13);
             this.lblDaysToEOD.TabIndex = 43;
             this.lblDaysToEOD.Text = "days and";
             this.lblDaysToEOD.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             this.lblDaysToEOD.Visible = false;
+            // 
+            // btnMod
+            // 
+            this.btnMod.Location = new System.Drawing.Point(370, 361);
+            this.btnMod.Name = "btnMod";
+            this.btnMod.Size = new System.Drawing.Size(65, 23);
+            this.btnMod.TabIndex = 44;
+            this.btnMod.Text = "Mod...";
+            this.btnMod.UseVisualStyleBackColor = true;
+            this.btnMod.Click += new System.EventHandler(this.btnMod_Click);
             // 
             // FormVoteCounter
             // 
@@ -392,8 +404,8 @@
             this.statusBrowser.PerformLayout();
             this.tableLayoutPanel1.ResumeLayout(false);
             this.tableLayoutPanel1.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.grdVotes)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.udDay)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.grdVotes)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -427,6 +439,7 @@
         private System.Windows.Forms.Button btnPostIt;
         private System.Windows.Forms.Button btnCopyIt;
         private System.Windows.Forms.Label lblDaysToEOD;
+        private System.Windows.Forms.Button btnMod;
 
 
     }

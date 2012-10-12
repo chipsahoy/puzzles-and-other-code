@@ -30,6 +30,7 @@ namespace POG.FennecFox
 
         private VoteCount _voteCount;
         private TwoPlusTwoForum _forum;
+        Moderator _moderator;
         private Action<Action> _synchronousInvoker;
         private System.Windows.Forms.Timer _timerEODCountdown = new System.Windows.Forms.Timer();
         private Int32 _day = 1;
@@ -238,6 +239,10 @@ namespace POG.FennecFox
 
         private void _voteCount_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
+            if (!Visible)
+            {
+                return;
+            }
             if (e.PropertyName == "LivePlayers")
             {
                 SetupVoteGrid();
@@ -404,6 +409,7 @@ namespace POG.FennecFox
             _voteCount = new VoteCount(_synchronousInvoker, t, url, _forum.PostsPerPage);
             _voteCount.PropertyChanged += new PropertyChangedEventHandler(_voteCount_PropertyChanged);
             _voteCount.Turbo = _turbo;
+            _moderator = new Moderator(_synchronousInvoker, _voteCount, _forum);
 
             txtLastPost.DataBindings.Clear();
             udStartPost.DataBindings.Clear();
@@ -536,6 +542,19 @@ namespace POG.FennecFox
             get
             {
                 return _turbo;
+            }
+        }
+        private void btnMod_Click(object sender, EventArgs e)
+        {
+            Boolean autoPost = _moderator.AutoPostCounts;
+            Boolean autoLock = _moderator.LockThread;
+            Moderate frm = new Moderate(autoPost, autoLock);
+            DialogResult dr = frm.ShowDialog();
+            if (dr == System.Windows.Forms.DialogResult.OK)
+            {
+                frm.GetResults(out autoPost, out autoLock);
+                _moderator.AutoPostCounts = autoPost;
+                _moderator.LockThread = autoLock;
             }
         }
     }
