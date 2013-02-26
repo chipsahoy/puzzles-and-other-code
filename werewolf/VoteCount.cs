@@ -224,7 +224,7 @@ namespace POG.Werewolf
             }
 
             sb.AppendLine("[/b][/color]").AppendLine("---")
-            .AppendLine("[table=head][b]Votes[/b]|[b]Lynch[/b]|[b]Voters[/b]");
+            .AppendLine("[table=head][b]Votes[/b]\t[b]Lynch[/b]\t[b]Voters[/b]");
 
             Dictionary<String, List<Voter>> wagons = new Dictionary<string, List<Voter>>();
             List<Voter> listError = new List<Voter>();
@@ -280,35 +280,35 @@ namespace POG.Werewolf
             foreach (var wagon in sortedWagons)
             {
                 sb
-                    .AppendFormat("{0} | [b]{1}[/b] | {2}", wagon.Value.Count, wagon.Key,
+                    .AppendFormat("{0} \t [b]{1}[/b] \t {2}", wagon.Value.Count, wagon.Key,
                                     VoteLinks(wagon.Value, true))
                     .AppendLine();
             }
             if (listNoLynch.Count > 0)
             {
                 sb
-                    .AppendFormat("{0} | {1} | {2}", listNoLynch.Count, NoLynch,
+                    .AppendFormat("{0} \t {1} \t {2}", listNoLynch.Count, NoLynch,
                                     VoteLinks(listNoLynch, true))
                     .AppendLine();
             }
             if (listUnvote.Count > 0)
             {
                 sb
-                    .AppendFormat("{0} | {1} | {2}", listUnvote.Count, Unvote,
+                    .AppendFormat("{0} \t {1} \t {2}", listUnvote.Count, Unvote,
                                     VoteLinks(listUnvote, true))
                     .AppendLine();
             }
             if (listNotVoting.Count > 0)
             {
                 sb
-                    .AppendFormat("{0} | {1} | {2}", listNotVoting.Count, sNotVoting,
+                    .AppendFormat("{0} \t {1} \t {2}", listNotVoting.Count, sNotVoting,
                                     VoteLinks(listNotVoting, false))
                     .AppendLine();
             }
             if (listError.Count > 0)
             {
                 sb
-                    .AppendFormat("{0} | [color=red][b]{1}[/b][/color] | {2}", listError.Count, sError,
+                    .AppendFormat("{0} \t [color=red][b]{1}[/b][/color] \t {2}", listError.Count, sError,
                                     VoteLinks(listError, true))
                     .AppendLine();
             }
@@ -665,6 +665,8 @@ namespace POG.Werewolf
         #endregion
         #region internal methods
         #endregion
+
+
 
 
         public bool Turbo { get; set; }
