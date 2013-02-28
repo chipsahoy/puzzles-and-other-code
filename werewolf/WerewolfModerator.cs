@@ -196,7 +196,15 @@ namespace POG.Werewolf
                             if (count != String.Empty)
                             {
                                 Int32 tid = _voteCount.ThreadId;
-                                _forum.MakePost(tid, String.Empty, count, 0, LockThread && night);
+                                Int32 first = _voteCount.StartPost;
+                                Int32 last = _voteCount.LastPost;
+                                String title = String.Empty;
+                                if (night)
+                                {
+                                    title = "EOD ";
+                                }
+                                title += String.Format("Vote Count {0} to {1} ", first, last);
+                                _forum.MakePost(tid, title, count, 4, LockThread && night);
                             }
                             if (night)
                             {

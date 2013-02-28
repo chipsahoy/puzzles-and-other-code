@@ -256,12 +256,12 @@ namespace POG.Forum
 
 		}
 		#endregion
-        internal Boolean MakePost(Int32 threadId, String content, Boolean lockit, Int32 icon)
+        internal Boolean MakePost(Int32 threadId, String title, String content, Boolean lockit, Int32 icon)
         {
-            Boolean rc = DoMakePost(threadId, content, lockit, icon);
+            Boolean rc = DoMakePost(threadId, title, content, lockit, icon);
             return rc;
         }
-        Boolean DoMakePost(Int32 threadId, String content, Boolean lockit, Int32 icon)
+        Boolean DoMakePost(Int32 threadId, String title, String content, Boolean lockit, Int32 icon)
         {
             /* headers
                 POST /newreply.php?do=postreply&t=1198532 HTTP/1.1
@@ -342,19 +342,29 @@ loggedinuser 81788
             StringBuilder msg = new StringBuilder();
             
             msg.AppendFormat("{0}={1}&", "securitytoken", securityToken);
-            msg.AppendFormat("{0}={1}&", "ajax", "1");
-            msg.AppendFormat("{0}={1}&", "ajax_lastpost", ajaxLastPost);
             content = content.Replace("\r\n", "\r");
+            if (title != String.Empty)
+            {
+                msg.AppendFormat("{0}={1}&", "title", HttpUtility.UrlEncode(title));
+            }
             msg.AppendFormat("{0}={1}&", "message", HttpUtility.UrlEncode(content));
             msg.AppendFormat("{0}={1}&", "wysiwyg", "0");
-            msg.AppendFormat("{0}={1}&", "styleid", "0");
-            msg.AppendFormat("{0}={1}&", "fromquickreply", "1");
+            if (icon != 0)
+            {
+                msg.AppendFormat("{0}={1}&", "iconid", icon.ToString());
+            }
             msg.AppendFormat("{0}={1}&", "s", "");
             msg.AppendFormat("{0}={1}&", "do", "postreply");
             msg.AppendFormat("{0}={1}&", "t", threadId.ToString());
-            msg.AppendFormat("{0}={1}&", "p", "who cares");
-            msg.AppendFormat("{0}={1}&", "specifiedpost", "0");
+            msg.AppendFormat("{0}={1}&", "p", "");
             msg.AppendFormat("{0}={1}&", "parseurl", "1");
+            msg.AppendFormat("{0}={1}&", "posthash", "invalid posthash");
+            msg.AppendFormat("{0}={1}&", "poststarttime", "0");
+            msg.AppendFormat("{0}={1}&", "multiquoteempty", "");
+            msg.AppendFormat("{0}={1}&", "sbutton", "Submit Reply");
+            msg.AppendFormat("{0}={1}&", "emailupdate", "0");
+            msg.AppendFormat("{0}={1}&", "folderid", "0");
+            msg.AppendFormat("{0}={1}&", "rating", "0");
             if (lockit)
             {
                 msg.AppendFormat("{0}={1}&", "openclose", "1");
@@ -557,7 +567,7 @@ fragment	name
 		}
         public Boolean MakePost(Int32 threadId, String title, String message, Int32 PostIcon, Boolean LockThread)
         {
-            Boolean rc = _inner.MakePost(threadId, message, LockThread, PostIcon);
+            Boolean rc = _inner.MakePost(threadId, title, message, LockThread, PostIcon);
             return rc;
         }
         public void GetPostersLike(string name, Action<String, IEnumerable<Poster>> callback)

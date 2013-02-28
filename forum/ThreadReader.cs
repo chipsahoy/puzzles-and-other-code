@@ -298,16 +298,8 @@ namespace POG.Forum
                 n.Remove();
             }
         }
-        private List<Bold> ParseBolded(HtmlAgilityPack.HtmlNode original)
+        void BoldsFromSet(HtmlAgilityPack.HtmlNodeCollection bolds, List<Bold> bolded)
         {
-            List<Bold> bolded = new List<Bold>();
-            HtmlAgilityPack.HtmlNode content = original.CloneNode("Votes", true);
-            RemoveQuotes(content); // strip out quotes
-            RemoveColors(content); // strip out colors
-            RemoveNewlines(content); // strip out newlines
-
-            HtmlAgilityPack.HtmlNodeCollection bolds = content.SelectNodes("child::b");
-
             if (bolds != null)
             {
                 foreach (HtmlAgilityPack.HtmlNode c in bolds)
@@ -328,28 +320,73 @@ namespace POG.Forum
                     }
                 }
             }
+        }
+        private List<Bold> ParseBolded(HtmlAgilityPack.HtmlNode original)
+        {
+            List<Bold> bolded = new List<Bold>();
+            HtmlAgilityPack.HtmlNode content = original.CloneNode("Votes", true);
+            RemoveQuotes(content); // strip out quotes
+            List<String> goodColors = new List<string>() {
+                //"darkolivegreen", "darkgreen", "yellowgreen", "seagreen", 
+                //"lime", "palegreen", "olive", "green" 
+            };
+            RemoveColors(content, goodColors); // strip out colors
+            RemoveNewlines(content); // strip out newlines
+
+            // look for color,bold.
+            //foreach (var n in content.SelectNodes("descendant::font") ?? new HtmlAgilityPack.HtmlNodeCollection(content))
+            //{
+            //    HtmlAgilityPack.HtmlNodeCollection colorbolds = n.SelectNodes("child::b");
+            //    if (colorbolds != null)
+            //    {
+            //        BoldsFromSet(colorbolds, bolded);
+            //    }
+            //}
+
+            // look for plain bold
+            HtmlAgilityPack.HtmlNodeCollection bolds = content.SelectNodes("descendant::b");
+            if(bolds != null)
+            {
+                BoldsFromSet(bolds, bolded);
+            }
+
+            // look for bold,color.
+            //HtmlAgilityPack.HtmlNodeCollection bolds = content.SelectNodes("descendant::b");
+            //foreach (var n in bolds ?? new HtmlAgilityPack.HtmlNodeCollection(content))
+            //{
+            //    HtmlAgilityPack.HtmlNodeCollection boldcolors = n.SelectNodes("child::font");
+            //    if (boldcolors != null)
+            //    {
+            //        BoldsFromSet(boldcolors, bolded);
+            //    }
+            //}
             return bolded;
         }
         static void RemoveQuotes(HtmlAgilityPack.HtmlNode node)
         {
-            foreach (var n in node.SelectNodes("div/table/tbody/tr/td[@class='alt2']") ?? new HtmlAgilityPack.HtmlNodeCollection(node))
+            foreach (var n in node.SelectNodes("descendant::td[@class='alt2']") ?? new HtmlAgilityPack.HtmlNodeCollection(node))
             {
-                HtmlAgilityPack.HtmlNode div = n.ParentNode.ParentNode.ParentNode.ParentNode;
+                HtmlAgilityPack.HtmlNode div = n.ParentNode.ParentNode.ParentNode;
                 div.Remove();
             }
         }
 
-        static void RemoveColors(HtmlAgilityPack.HtmlNode node)
+        static void RemoveColors(HtmlAgilityPack.HtmlNode node, IEnumerable<String> exemptList)
         {
-            foreach (var n in node.SelectNodes("//font") ?? new HtmlAgilityPack.HtmlNodeCollection(node))
+            foreach (var n in node.SelectNodes("descendant::font") ?? new HtmlAgilityPack.HtmlNodeCollection(node))
             {
-                n.Remove();
+                String color = n.GetAttributeValue("color", "nocolor");
+                color = color.ToLower();
+                if (!exemptList.Contains(color))
+                {
+                    n.Remove();
+                }
             }
         }
 
         static void RemoveNewlines(HtmlAgilityPack.HtmlNode node)
         {
-            foreach (var n in node.SelectNodes("//br") ?? new HtmlAgilityPack.HtmlNodeCollection(node))
+            foreach (var n in node.SelectNodes("descendant::br") ?? new HtmlAgilityPack.HtmlNodeCollection(node))
             {
                 n.Remove();
             }

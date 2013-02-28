@@ -512,7 +512,15 @@ namespace POG.FennecFox
         {
             String count = _voteCount.GetPostableVoteCount();
             Int32 threadId = _voteCount.ThreadId;
-            Boolean ok = _forum.MakePost(threadId, "Posted by Fennec Fox", count, 0, false);
+            Int32 last = _voteCount.LastPost;
+            Int32 first = _voteCount.StartPost;
+            String title = String.Empty;
+            if (_voteCount.TimeUntilNight.Ticks < 0)
+            {
+                title = "EOD ";
+            }
+            title += String.Format("Vote Count {0} to {1} ", first, last);
+            Boolean ok = _forum.MakePost(threadId, title, count, 4, false);
             if (ok)
             {
                 statusText.Text = String.Format("Posted a vote count at {0}.", DateTime.Now.ToShortTimeString());
