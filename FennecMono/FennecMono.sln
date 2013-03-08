@@ -1,0 +1,50 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "pogutils", "..\pogutils\pogutils.csproj", "{D1549E8C-BAB5-4E3B-AE03-DC9895752D31}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ForumTypes", "..\ForumTypes\ForumTypes.csproj", "{3A512A72-44FC-458A-A6FB-36147D6C0CF6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Forum", "..\forum\Forum.csproj", "{DF0D7868-C4C0-4388-BF11-138E1FC9BF87}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "werewolf", "..\werewolf\werewolf.csproj", "{9082AFAD-DF54-4B4C-B274-FD399FA8D6E2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FennecCount", "FennecCount\FennecCount.csproj", "{E12386D0-1C5D-4033-96A4-1067C7522521}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FennecWidget", "FennecWidget\FennecWidget.csproj", "{D94D1D5B-9F61-4093-A8CD-0BCD9407B3A0}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x86 = Debug|x86
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{3A512A72-44FC-458A-A6FB-36147D6C0CF6}.Debug|x86.ActiveCfg = Debug|x86
+		{3A512A72-44FC-458A-A6FB-36147D6C0CF6}.Debug|x86.Build.0 = Debug|x86
+		{3A512A72-44FC-458A-A6FB-36147D6C0CF6}.Release|x86.ActiveCfg = Release|x86
+		{3A512A72-44FC-458A-A6FB-36147D6C0CF6}.Release|x86.Build.0 = Release|x86
+		{9082AFAD-DF54-4B4C-B274-FD399FA8D6E2}.Debug|x86.ActiveCfg = Debug|x86
+		{9082AFAD-DF54-4B4C-B274-FD399FA8D6E2}.Debug|x86.Build.0 = Debug|x86
+		{9082AFAD-DF54-4B4C-B274-FD399FA8D6E2}.Release|x86.ActiveCfg = Release|x86
+		{9082AFAD-DF54-4B4C-B274-FD399FA8D6E2}.Release|x86.Build.0 = Release|x86
+		{D1549E8C-BAB5-4E3B-AE03-DC9895752D31}.Debug|x86.ActiveCfg = Debug|x86
+		{D1549E8C-BAB5-4E3B-AE03-DC9895752D31}.Debug|x86.Build.0 = Debug|x86
+		{D1549E8C-BAB5-4E3B-AE03-DC9895752D31}.Release|x86.ActiveCfg = Release|x86
+		{D1549E8C-BAB5-4E3B-AE03-DC9895752D31}.Release|x86.Build.0 = Release|x86
+		{D94D1D5B-9F61-4093-A8CD-0BCD9407B3A0}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{D94D1D5B-9F61-4093-A8CD-0BCD9407B3A0}.Debug|x86.Build.0 = Debug|Any CPU
+		{D94D1D5B-9F61-4093-A8CD-0BCD9407B3A0}.Release|x86.ActiveCfg = Release|Any CPU
+		{D94D1D5B-9F61-4093-A8CD-0BCD9407B3A0}.Release|x86.Build.0 = Release|Any CPU
+		{DF0D7868-C4C0-4388-BF11-138E1FC9BF87}.Debug|x86.ActiveCfg = Debug|x86
+		{DF0D7868-C4C0-4388-BF11-138E1FC9BF87}.Debug|x86.Build.0 = Debug|x86
+		{DF0D7868-C4C0-4388-BF11-138E1FC9BF87}.Release|x86.ActiveCfg = Release|x86
+		{DF0D7868-C4C0-4388-BF11-138E1FC9BF87}.Release|x86.Build.0 = Release|x86
+		{E12386D0-1C5D-4033-96A4-1067C7522521}.Debug|x86.ActiveCfg = Debug|x86
+		{E12386D0-1C5D-4033-96A4-1067C7522521}.Debug|x86.Build.0 = Debug|x86
+		{E12386D0-1C5D-4033-96A4-1067C7522521}.Release|x86.ActiveCfg = Release|x86
+		{E12386D0-1C5D-4033-96A4-1067C7522521}.Release|x86.Build.0 = Release|x86
+	EndGlobalSection
+	GlobalSection(MonoDevelopProperties) = preSolution
+		StartupItem = FennecCount\FennecCount.csproj
+	EndGlobalSection
+EndGlobal
