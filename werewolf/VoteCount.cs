@@ -244,9 +244,16 @@ namespace POG.Werewolf
             {
                 wagons.Add(p.Name, new List<Voter>());
             }
+            List<String> legalVoters = new List<string>()
+            {
+            };
             // find out who they are voting, add vote to that wagon.
             foreach (Voter p in posters)
             {
+                if (!(legalVoters.Contains(p.Name)))
+                {
+//                    continue;
+                }
                 String votee = p.Votee;
                 if (votee == ErrorVote)
                 {
@@ -261,7 +268,7 @@ namespace POG.Werewolf
                     wagons[votee].Add(p);
                 }
             }
-
+            
             // sort wagons by count
             wagons.Remove(NoLynch);
             wagons.Remove(Unvote);

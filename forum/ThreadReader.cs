@@ -333,7 +333,7 @@ namespace POG.Forum
             RemoveColors(content, goodColors); // strip out colors
             RemoveNewlines(content); // strip out newlines
 
-            // look for color,bold.
+            //// look for color,bold.
             //foreach (var n in content.SelectNodes("descendant::font") ?? new HtmlAgilityPack.HtmlNodeCollection(content))
             //{
             //    HtmlAgilityPack.HtmlNodeCollection colorbolds = n.SelectNodes("child::b");
@@ -344,13 +344,13 @@ namespace POG.Forum
             //}
 
             // look for plain bold
-            HtmlAgilityPack.HtmlNodeCollection bolds = content.SelectNodes("descendant::b");
-            if(bolds != null)
+            HtmlAgilityPack.HtmlNodeCollection bolds = content.SelectNodes("child::b");
+            if (bolds != null)
             {
                 BoldsFromSet(bolds, bolded);
             }
 
-            // look for bold,color.
+            //// look for bold,color.
             //HtmlAgilityPack.HtmlNodeCollection bolds = content.SelectNodes("descendant::b");
             //foreach (var n in bolds ?? new HtmlAgilityPack.HtmlNodeCollection(content))
             //{
