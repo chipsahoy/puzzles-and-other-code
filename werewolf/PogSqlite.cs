@@ -1241,7 +1241,7 @@ WHERE Post.threadid = @p2 AND
 @"SELECT Post.postnumber
 FROM Post
 WHERE (Post.threadid = @p2) AND
-(Post.posttime <= @p4)
+(Post.posttime < @p4)
 ORDER BY Post.postid DESC
 LIMIT 1
 ;";
