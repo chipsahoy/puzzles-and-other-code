@@ -32,6 +32,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FennecViewer", "FennecViewe
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AutocompleteMenu", "AutocompleteMenu\AutocompleteMenu.csproj", "{43CBC9AA-6A8E-463F-83A9-AFF3124AFDB6}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WerewolfTypes", "WerewolfTypes\WerewolfTypes.csproj", "{F60529CB-2D09-41BA-9EBA-700568E2ED6C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x86 = Debug|x86
@@ -76,6 +78,10 @@ Global
 		{43CBC9AA-6A8E-463F-83A9-AFF3124AFDB6}.Debug|x86.Build.0 = Debug|x86
 		{43CBC9AA-6A8E-463F-83A9-AFF3124AFDB6}.Release|x86.ActiveCfg = Release|x86
 		{43CBC9AA-6A8E-463F-83A9-AFF3124AFDB6}.Release|x86.Build.0 = Release|x86
+		{F60529CB-2D09-41BA-9EBA-700568E2ED6C}.Debug|x86.ActiveCfg = Debug|x86
+		{F60529CB-2D09-41BA-9EBA-700568E2ED6C}.Debug|x86.Build.0 = Debug|x86
+		{F60529CB-2D09-41BA-9EBA-700568E2ED6C}.Release|x86.ActiveCfg = Release|x86
+		{F60529CB-2D09-41BA-9EBA-700568E2ED6C}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

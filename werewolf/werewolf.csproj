@@ -77,6 +77,10 @@
       <Project>{D1549E8C-BAB5-4E3B-AE03-DC9895752D31}</Project>
       <Name>pogutils</Name>
     </ProjectReference>
+    <ProjectReference Include="..\WerewolfTypes\WerewolfTypes.csproj">
+      <Project>{F60529CB-2D09-41BA-9EBA-700568E2ED6C}</Project>
+      <Name>WerewolfTypes</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
