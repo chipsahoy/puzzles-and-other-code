@@ -1,11 +1,10 @@
 ﻿using System;
-using POG.Utils;
 using POG.Forum;
 using System.Collections.Generic;
 
 namespace POG.Werewolf
 {
-    interface IPogDb
+    public interface IPogDb
     {
         void Connect(string dbName);
 

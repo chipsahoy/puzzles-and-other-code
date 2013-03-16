@@ -34,6 +34,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AutocompleteMenu", "Autocom
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WerewolfTypes", "WerewolfTypes\WerewolfTypes.csproj", "{F60529CB-2D09-41BA-9EBA-700568E2ED6C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PogDbSqlite", "PogDbSqlite\PogDbSqlite.csproj", "{F8D0D146-0D91-49E4-AEA1-24E5A1241F96}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x86 = Debug|x86
@@ -82,6 +84,10 @@ Global
 		{F60529CB-2D09-41BA-9EBA-700568E2ED6C}.Debug|x86.Build.0 = Debug|x86
 		{F60529CB-2D09-41BA-9EBA-700568E2ED6C}.Release|x86.ActiveCfg = Release|x86
 		{F60529CB-2D09-41BA-9EBA-700568E2ED6C}.Release|x86.Build.0 = Release|x86
+		{F8D0D146-0D91-49E4-AEA1-24E5A1241F96}.Debug|x86.ActiveCfg = Debug|x86
+		{F8D0D146-0D91-49E4-AEA1-24E5A1241F96}.Debug|x86.Build.0 = Debug|x86
+		{F8D0D146-0D91-49E4-AEA1-24E5A1241F96}.Release|x86.ActiveCfg = Release|x86
+		{F8D0D146-0D91-49E4-AEA1-24E5A1241F96}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

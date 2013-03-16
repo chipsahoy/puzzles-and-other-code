@@ -5,17 +5,15 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{9082AFAD-DF54-4B4C-B274-FD399FA8D6E2}</ProjectGuid>
+    <ProjectGuid>{F8D0D146-0D91-49E4-AEA1-24E5A1241F96}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>POG.Werewolf</RootNamespace>
-    <AssemblyName>werewolf</AssemblyName>
+    <RootNamespace>PogDbSqlite</RootNamespace>
+    <AssemblyName>PogDbSqlite</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
     <RestorePackages>true</RestorePackages>
-    <TargetFrameworkProfile>
-    </TargetFrameworkProfile>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
     <DebugSymbols>true</DebugSymbols>
@@ -24,9 +22,6 @@
     <DebugType>full</DebugType>
     <PlatformTarget>x86</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisIgnoreBuiltInRuleSets>true</CodeAnalysisIgnoreBuiltInRuleSets>
-    <CodeAnalysisIgnoreBuiltInRules>true</CodeAnalysisIgnoreBuiltInRules>
-    <CodeAnalysisFailOnMissingRules>true</CodeAnalysisFailOnMissingRules>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
     <OutputPath>bin\x86\Release\</OutputPath>
@@ -37,11 +32,16 @@
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisIgnoreBuiltInRuleSets>true</CodeAnalysisIgnoreBuiltInRuleSets>
     <CodeAnalysisIgnoreBuiltInRules>true</CodeAnalysisIgnoreBuiltInRules>
-    <CodeAnalysisFailOnMissingRules>true</CodeAnalysisFailOnMissingRules>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Data.SQLite">
+      <HintPath>..\packages\System.Data.SQLite.x86.1.0.84.0\lib\net40\System.Data.SQLite.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Data.SQLite.Linq">
+      <HintPath>..\packages\System.Data.SQLite.x86.1.0.84.0\lib\net40\System.Data.SQLite.Linq.dll</HintPath>
+    </Reference>
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -49,27 +49,17 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\SolutionInfo.cs">
-      <Link>SolutionInfo.cs</Link>
-    </Compile>
-    <Compile Include="AutoComplete.cs" />
+    <Compile Include="BadSQLiteFileVersionExeption.cs" />
+    <Compile Include="PogSqlite.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="VoteCount.cs" />
-    <Compile Include="Voter.cs" />
-    <Compile Include="WerewolfModerator.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ForumTypes\ForumTypes.csproj">
       <Project>{3A512A72-44FC-458A-A6FB-36147D6C0CF6}</Project>
       <Name>ForumTypes</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\forum\Forum.csproj">
-      <Project>{DF0D7868-C4C0-4388-BF11-138E1FC9BF87}</Project>
-      <Name>Forum</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\PogDbSqlite\PogDbSqlite.csproj">
-      <Project>{F8D0D146-0D91-49E4-AEA1-24E5A1241F96}</Project>
-      <Name>PogDbSqlite</Name>
     </ProjectReference>
     <ProjectReference Include="..\pogutils\pogutils.csproj">
       <Project>{D1549E8C-BAB5-4E3B-AE03-DC9895752D31}</Project>

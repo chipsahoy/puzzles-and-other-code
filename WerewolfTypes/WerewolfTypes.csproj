@@ -42,8 +42,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="IPogDb.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="VoterInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ForumTypes\ForumTypes.csproj">
+      <Project>{3A512A72-44FC-458A-A6FB-36147D6C0CF6}</Project>
+      <Name>ForumTypes</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
