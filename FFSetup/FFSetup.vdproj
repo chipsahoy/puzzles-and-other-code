@@ -268,7 +268,7 @@
                 "Message" = "8:[VSDNETMSG]"
                 "FrameworkVersion" = "8:.NETFramework,Version=v4.0"
                 "AllowLaterVersions" = "11:FALSE"
-                "InstallUrl" = "8:http://go.microsoft.com/fwlink/?LinkId=131000"
+                "InstallUrl" = "8:http://go.microsoft.com/fwlink/?LinkId=186913"
                 }
             }
         }
@@ -309,7 +309,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:pogutils, Version=2.0.4823.25380, Culture=neutral, processorArchitecture=x86"
+            "AssemblyAsmDisplayName" = "8:pogutils, Version=2.0.4823.26422, Culture=neutral, processorArchitecture=x86"
                 "ScatterAssemblies"
                 {
                     "_08BBF24E2F30C06D8101282472971EBB"
@@ -340,7 +340,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:ForumTypes, Version=2.0.4823.25380, Culture=neutral, processorArchitecture=x86"
+            "AssemblyAsmDisplayName" = "8:ForumTypes, Version=2.0.4823.26422, Culture=neutral, processorArchitecture=x86"
                 "ScatterAssemblies"
                 {
                     "_30118AB43103401CFC616844D413CD48"
@@ -402,7 +402,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:WerewolfTypes, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:WerewolfTypes, Version=1.0.0.0, Culture=neutral, processorArchitecture=x86"
                 "ScatterAssemblies"
                 {
                     "_6832F4A1E33AD6458DF7C4CD16392CAF"
@@ -433,7 +433,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:vbulletin, Version=2.0.4823.25381, Culture=neutral, processorArchitecture=x86"
+            "AssemblyAsmDisplayName" = "8:vbulletin, Version=2.0.4823.26423, Culture=neutral, processorArchitecture=x86"
                 "ScatterAssemblies"
                 {
                     "_BC6C5BF994D21FB35D2D1BE6B33164E4"
@@ -464,7 +464,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:werewolf, Version=2.0.4823.25674, Culture=neutral, processorArchitecture=x86"
+            "AssemblyAsmDisplayName" = "8:werewolf, Version=2.0.4823.26424, Culture=neutral, processorArchitecture=x86"
                 "ScatterAssemblies"
                 {
                     "_C54EE2129A47FB3C52CC55458AE8426E"
@@ -1228,7 +1228,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_9D159AEB4DD54FB7AFD8717C3E3179FA"
             {
-            "SourcePath" = "8:..\\FennecFox\\obj\\x86\\Release\\FennecFox.exe"
+            "SourcePath" = "8:..\\FennecFox\\obj\\x86\\Debug\\FennecFox.exe"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_7C9DB022BBCE42118E5A2BD274AFF1BA"
