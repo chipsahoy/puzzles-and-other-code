@@ -9,6 +9,12 @@ namespace POG.Werewolf
 	{
 		public VoterInfo(String name, Int32 postCount, Int32? postId)
 		{
+			PostNumber = 0;
+			PostId = 0;
+			BoldPosition = 0;
+			Bolded = String.Empty;
+			PostTime = DateTimeOffset.UtcNow;
+
 			Name = name;
 			PostCount = postCount;
 			PostTime = DateTime.Now;

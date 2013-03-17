@@ -55,11 +55,11 @@ namespace FennecWidget
 			this.hbox2.Name = "hbox2";
 			this.hbox2.Spacing = 6;
 			// Container child hbox2.Gtk.Box+BoxChild
-			this.spinHour = new global::Gtk.SpinButton (0D, 100D, 1D);
+			this.spinHour = new global::Gtk.SpinButton (0, 100, 1);
 			this.spinHour.CanFocus = true;
 			this.spinHour.Name = "spinHour";
-			this.spinHour.Adjustment.PageIncrement = 10D;
-			this.spinHour.ClimbRate = 1D;
+			this.spinHour.Adjustment.PageIncrement = 10;
+			this.spinHour.ClimbRate = 1;
 			this.spinHour.Numeric = true;
 			this.hbox2.Add (this.spinHour);
 			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.hbox2 [this.spinHour]));
@@ -67,11 +67,11 @@ namespace FennecWidget
 			w3.Expand = false;
 			w3.Fill = false;
 			// Container child hbox2.Gtk.Box+BoxChild
-			this.spinMinute = new global::Gtk.SpinButton (0D, 100D, 1D);
+			this.spinMinute = new global::Gtk.SpinButton (0, 100, 1);
 			this.spinMinute.CanFocus = true;
 			this.spinMinute.Name = "spinMinute";
-			this.spinMinute.Adjustment.PageIncrement = 10D;
-			this.spinMinute.ClimbRate = 1D;
+			this.spinMinute.Adjustment.PageIncrement = 10;
+			this.spinMinute.ClimbRate = 1;
 			this.spinMinute.Numeric = true;
 			this.hbox2.Add (this.spinMinute);
 			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.hbox2 [this.spinMinute]));

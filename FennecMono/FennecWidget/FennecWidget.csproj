@@ -74,5 +74,9 @@
       <Project>{3A512A72-44FC-458A-A6FB-36147D6C0CF6}</Project>
       <Name>ForumTypes</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\WerewolfTypes\WerewolfTypes.csproj">
+      <Project>{F60529CB-2D09-41BA-9EBA-700568E2ED6C}</Project>
+      <Name>WerewolfTypes</Name>
+    </ProjectReference>
   </ItemGroup>
 </Project>

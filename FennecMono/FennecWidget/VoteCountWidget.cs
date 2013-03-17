@@ -10,13 +10,17 @@ namespace FennecWidget
 	[System.ComponentModel.ToolboxItem(true)]
 	public partial class VoteCountWidget : Gtk.Bin
 	{
-		Gtk.ListStore _votes = new Gtk.ListStore (typeof(bool),
+		Gtk.ListStore _votes = new Gtk.ListStore (
 			typeof(String), typeof(int), typeof(int),
             typeof(String), typeof(String), typeof(String),
 		    typeof(String)
 		);
+		Gtk.ListStore _validVotes = new Gtk.ListStore (
+			typeof(String)
+		);
 		AutoComplete _autoComplete;
 		VoteCount _voteCount;
+		IPogDb _db;
 		TwoPlusTwoForum _forum;
 		Action<Action> _synchronousInvoker;
 		String _url; 
@@ -36,19 +40,21 @@ namespace FennecWidget
 		
 
 		public VoteCountWidget (TwoPlusTwoForum forum, 
-		                        Action<Action> synchronousInvoker, 
+		                        Action<Action> synchronousInvoker,
+		                        IPogDb db,
 		                        String url, 
 		                        Boolean turbo, 
 		                        Int32 day)
 		{
 			_forum = forum;
 			_synchronousInvoker = synchronousInvoker;
+			_db = db;
 			_url = url;
 			_turbo = turbo;
 			_day = day;
 
 			this.Build ();
-			_autoComplete = new AutoComplete(_forum, _synchronousInvoker);
+			_autoComplete = new AutoComplete(_forum, _synchronousInvoker, _db);
 			BindToNewGame (_url);
 			SetupVoteGrid ();
 			FillVoteGrid ();
@@ -57,7 +63,7 @@ namespace FennecWidget
 		{
 			url = POG.Utils.Misc.NormalizeUrl(url);
 			ThreadReader t = _forum.Reader();
-			_voteCount = new VoteCount(_synchronousInvoker, t, url, _forum.PostsPerPage);
+			_voteCount = new VoteCount(_synchronousInvoker, t, _db, url, _forum.PostsPerPage);
 			_voteCount.PropertyChanged += new PropertyChangedEventHandler(_voteCount_PropertyChanged);
 
 			_voteCount.Turbo = _turbo;
@@ -78,39 +84,59 @@ namespace FennecWidget
 		void SetupVoteGrid()
 		{
 			grdVotes.Model = _votes;
-			grdVotes.ModifyFont (Pango.FontDescription.FromString ("normal 8"));
-
-			Gtk.CellRendererToggle crToggle = new Gtk.CellRendererToggle ();
-			crToggle.Activatable = true;
-			grdVotes.AppendColumn ("Dead", crToggle, "active", 0);
+			//grdVotes.ModifyFont (Pango.FontDescription.FromString ("normal 8"));
 
 			Gtk.CellRendererText crt = new Gtk.CellRendererText ();
-			grdVotes.AppendColumn ("player", crt, "text", 1);
+			grdVotes.AppendColumn ("player", crt, "text", 0);
 
 			crt = new Gtk.CellRendererText ();
-			grdVotes.AppendColumn ("votes", crt, "text", 2);
+			grdVotes.AppendColumn ("votes", crt, "text", 1);
 
 			crt = new Gtk.CellRendererText ();
-			grdVotes.AppendColumn ("posts", crt, "text", 3);
+			grdVotes.AppendColumn ("posts", crt, "text", 2);
 
 			crt = new Gtk.CellRendererText ();
-			grdVotes.AppendColumn ("post", crt, "text", 4);
+			grdVotes.AppendColumn ("post", crt, "text", 3);
 
 			crt = new Gtk.CellRendererText ();
-			grdVotes.AppendColumn ("time", crt, "text", 5);
+			grdVotes.AppendColumn ("time", crt, "text", 4);
 
-			crt = new Gtk.CellRendererText ();
-			grdVotes.AppendColumn ("votes for", crt, "text", 6);
+			Gtk.CellRendererCombo crcb = new Gtk.CellRendererCombo ();
+			crcb.Editable = true;
+			crcb.Model = _validVotes;
+			crcb.TextColumn = 0;
+			crcb.Edited += VoteFixed;
+
+			Gtk.TreeViewColumn tvColumn = new Gtk.TreeViewColumn ();
+			tvColumn.PackStart (crcb, true);
+			tvColumn.Title = "votes for";
+			tvColumn.AddAttribute (crcb, "text", 5);
+			grdVotes.AppendColumn (tvColumn);
 		
 			crt = new Gtk.CellRendererText ();
-			grdVotes.AppendColumn ("content", crt, "text", 7);
+			grdVotes.AppendColumn ("content", crt, "text", 6);
+		}
+		void VoteFixed(object o, Gtk.EditedArgs args)
+		{
+			Gtk.TreeSelection sel = grdVotes.Selection;
+			Gtk.TreeIter iter;
+			if (!sel.GetSelected (out iter)) {
+				return;
+			}
+			String bolded = (String)_votes.GetValue (iter, 6);
+			_voteCount.AddVoteAlias (bolded, args.NewText);
+			_voteCount.Refresh ();
 		}
 		void FillVoteGrid()
 		{
 			_votes.Clear ();
 			foreach (Voter v in _voteCount.LivePlayers) {
-				_votes.AppendValues(false, v.Name, v.VoteCount, v.PostCount,
-				                    v.PostNumber, v.PostTime.ToString ("HH:mm"), v.Votee, v.Bolded);
+				_votes.AppendValues(v.Name, v.VoteCount, v.PostCount,
+				                    v.PostNumber.ToString (), v.PostTime.ToString ("HH:mm"), v.Votee, v.Bolded);
+			}
+			_validVotes.Clear ();
+			foreach (String wagon in _voteCount.ValidVotes) {
+				_validVotes.AppendValues (wagon);
 			}
 		}
 		private void _voteCount_PropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -136,7 +162,7 @@ namespace FennecWidget
 			if (e.PropertyName == "EndTime")
 			{
 				String time = String.Empty;
-				time = _voteCount.EndTime.ToString("g");
+				time = _voteCount.EndTime.ToLocalTime ().ToString("g");
 				TxtEndPost.Text = time;
 			}
 			if (e.PropertyName == "Status")
@@ -255,6 +281,12 @@ namespace FennecWidget
 					dlg.Destroy ();
 				}
 			}
+		}
+
+		protected void OnBtnPostItClicked (object sender, EventArgs e)
+		{
+			String count = _voteCount.GetPostableVoteCount ();
+			_forum.MakePost (_voteCount.ThreadId, "Posted from a freakin mac", count, 0, false);
 		}
 
 	}

@@ -20,7 +20,7 @@ namespace FennecCount
 			Gtk.CellRendererText crt = new Gtk.CellRendererText ();
 			c.PackStart (crt, true);
 			c.AddAttribute (crt, "text", 0);
-			treeThreads.ModifyFont (Pango.FontDescription.FromString ("normal 8"));
+			//treeThreads.ModifyFont (Pango.FontDescription.FromString ("normal 8"));
 		}
 		public void Initialize()
 		{

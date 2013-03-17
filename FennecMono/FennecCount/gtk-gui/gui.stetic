@@ -35,7 +35,7 @@
           <widget class="Gtk.Toolbar" id="toolbar1">
             <property name="MemberName" />
             <property name="ShowArrow">False</property>
-            <node name="__gtksharp_184_Stetic_Editor_ActionToolbar" type="Toolbar">
+            <node name="toolbar1" type="Toolbar">
               <node type="Toolitem" action="openAction" />
               <node type="Toolitem" action="stopAction" />
             </node>

@@ -11,13 +11,11 @@ namespace POG.Werewolf
         IPogDb _db;
         Action<Action> _synchronousInvoker;
         TwoPlusTwoForum _forum;
-        public AutoComplete(TwoPlusTwoForum forum, Action<Action> synchronousInvoker)
+        public AutoComplete(TwoPlusTwoForum forum, Action<Action> synchronousInvoker, IPogDb db)
         {
             _forum = forum;
             _synchronousInvoker = synchronousInvoker;
-            String dbName = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\POG\\pogposts.sqlite";
-            _db = new PogSqlite();
-            _db.Connect(dbName);
+			_db = db;
         }
 
         public Int32 GetPosterId(String name, Action<String, Int32> callback)

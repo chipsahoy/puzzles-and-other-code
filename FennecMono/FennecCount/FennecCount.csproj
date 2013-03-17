@@ -90,5 +90,13 @@
       <Project>{D94D1D5B-9F61-4093-A8CD-0BCD9407B3A0}</Project>
       <Name>FennecWidget</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\WerewolfTypes\WerewolfTypes.csproj">
+      <Project>{F60529CB-2D09-41BA-9EBA-700568E2ED6C}</Project>
+      <Name>WerewolfTypes</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\PogMonoSqlite\PogMonoSqlite.csproj">
+      <Project>{0CCF18A3-DDC4-4773-B91D-339A54F69853}</Project>
+      <Name>PogMonoSqlite</Name>
+    </ProjectReference>
   </ItemGroup>
 </Project>

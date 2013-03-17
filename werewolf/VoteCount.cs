@@ -42,7 +42,7 @@ namespace POG.Werewolf
 		#endregion
 
 		#region constructors
-		public VoteCount(Action<Action> synchronousInvoker, ThreadReader t, String url, Int32 postsPerPage) 
+		public VoteCount(Action<Action> synchronousInvoker, ThreadReader t, IPogDb db, String url, Int32 postsPerPage) 
 		{
 			_synchronousInvoker = synchronousInvoker;
 			_url = url;
@@ -54,9 +54,7 @@ namespace POG.Werewolf
 			_thread = t;
 			_thread.PageCompleteEvent += new EventHandler<PageCompleteEventArgs>(_thread_PageCompleteEvent);
 			_thread.ReadCompleteEvent += new EventHandler<ReadCompleteEventArgs>(_thread_ReadCompleteEvent);
-			String dbName = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\POG\\pogposts.sqlite";
-			_db = new PogSqlite();
-			_db.Connect(dbName);
+			_db = db;
 			_db.WriteThreadDefinition(_threadId, url, false);
 		}
 

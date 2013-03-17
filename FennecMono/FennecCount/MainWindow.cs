@@ -9,7 +9,8 @@ namespace FennecCount
 	{	
 		Action<Action> _synchronousInvoker;
 		TwoPlusTwoForum _forum;
-		String _url = @"http://forumserver.twoplustwo.com/59/puzzles-other-games/";
+		IPogDb _db;
+		//String _url = @"http://forumserver.twoplustwo.com/59/puzzles-other-games/";
 		int childFormNumber;
 
 		public MainWindow (): base (Gtk.WindowType.Toplevel)
@@ -21,6 +22,11 @@ namespace FennecCount
 			_synchronousInvoker = a => Gtk.Application.Invoke(delegate {a.Invoke ();});
 			_forum = new TwoPlusTwoForum (_synchronousInvoker);
 			_forum.LoginEvent += HandleLoginEvent;
+			_db = new PogSqlite ();
+			String dbPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "/pog";
+			System.IO.Directory.CreateDirectory (dbPath);
+			String dbName = dbPath + "/pogposts.sqlite";
+			_db.Connect (dbName);
 
 			Gtk.Dialog dlg = null;
 			try
@@ -42,7 +48,7 @@ namespace FennecCount
 			String title = "Window " + childFormNumber++;
 
 			Gtk.Label lbl = new Gtk.Label (title);
-			Gtk.Widget childForm = new FennecWidget.VoteCountWidget(_forum, _synchronousInvoker, url, turbo, day);
+			Gtk.Widget childForm = new FennecWidget.VoteCountWidget(_forum, _synchronousInvoker, _db, url, turbo, day);
 			tabParent.AppendPage(childForm, lbl);
 			childForm.Show ();
 			lbl.Show ();
@@ -50,7 +56,7 @@ namespace FennecCount
 
 		void HandleLoginEvent (object sender, LoginEventArgs e)
 		{
-			Boolean _loggedIn;
+			//Boolean _loggedIn;
 			switch (e.LoginEventType)
 			{
 			case POG.Forum.LoginEventType.LoginFailure:
@@ -61,7 +67,7 @@ namespace FennecCount
 				
 			case POG.Forum.LoginEventType.LoginSuccess:
 			{
-				_loggedIn = true;
+				//_loggedIn = true;
 				//openToolStripButton.Enabled = true;
 				//tsBtnLogout.Enabled = true;
 				{
@@ -103,7 +109,7 @@ namespace FennecCount
 				
 			case POG.Forum.LoginEventType.LogoutSuccess:
 			{
-				_loggedIn = false;
+				//_loggedIn = false;
 				//openToolStripButton.Enabled = false;
 				//CloseAllToolStripMenuItem_Click(this, EventArgs.Empty);
 			}
@@ -115,7 +121,8 @@ namespace FennecCount
 		{
 			Gtk.Application.Quit ();
 			a.RetVal = true;
-		}
+		}
+
 		protected void OnOpenActionActivated (object sender, EventArgs e)
 		{
 			OpenGame dlg = null;

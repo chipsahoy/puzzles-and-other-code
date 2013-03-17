@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>10.0.0</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{0CCF18A3-DDC4-4773-B91D-339A54F69853}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>FennecDb</RootNamespace>
+    <AssemblyName>FennecDb</AssemblyName>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>True</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>False</Optimize>
+    <OutputPath>bin\Debug</OutputPath>
+    <DefineConstants>DEBUG;</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>False</ConsolePause>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>none</DebugType>
+    <Optimize>True</Optimize>
+    <OutputPath>bin\Release</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>False</ConsolePause>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="Mono.Data.Sqlite" />
+    <Reference Include="System.Data" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="..\..\PogDbSqlite\BadSQLiteFileVersionExeption.cs">
+      <Link>BadSQLiteFileVersionExeption.cs</Link>
+    </Compile>
+    <Compile Include="PogMonoSqlite.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <ItemGroup>
+    <ProjectReference Include="..\..\WerewolfTypes\WerewolfTypes.csproj">
+      <Project>{F60529CB-2D09-41BA-9EBA-700568E2ED6C}</Project>
+      <Name>WerewolfTypes</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\ForumTypes\ForumTypes.csproj">
+      <Project>{3A512A72-44FC-458A-A6FB-36147D6C0CF6}</Project>
+      <Name>ForumTypes</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\pogutils\pogutils.csproj">
+      <Project>{D1549E8C-BAB5-4E3B-AE03-DC9895752D31}</Project>
+      <Name>pogutils</Name>
+    </ProjectReference>
+  </ItemGroup>
+</Project>

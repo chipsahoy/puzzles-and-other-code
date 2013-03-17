@@ -110,6 +110,7 @@ namespace FennecWidget
 			w6.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child table1.Gtk.Table+TableChild
 			this.TxtEndPost = new global::Gtk.Entry ();
+			this.TxtEndPost.Sensitive = false;
 			this.TxtEndPost.CanFocus = true;
 			this.TxtEndPost.Name = "TxtEndPost";
 			this.TxtEndPost.IsEditable = true;
@@ -124,6 +125,7 @@ namespace FennecWidget
 			w7.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child table1.Gtk.Table+TableChild
 			this.udStartPost = new global::Gtk.Entry ();
+			this.udStartPost.Sensitive = false;
 			this.udStartPost.CanFocus = true;
 			this.udStartPost.Name = "udStartPost";
 			this.udStartPost.IsEditable = true;
@@ -166,6 +168,7 @@ namespace FennecWidget
 			w12.Fill = false;
 			// Container child statusbar1.Gtk.Box+BoxChild
 			this.btnHide = new global::Gtk.Button ();
+			this.btnHide.Sensitive = false;
 			this.btnHide.CanFocus = true;
 			this.btnHide.Name = "btnHide";
 			this.btnHide.UseUnderline = true;
@@ -177,6 +180,7 @@ namespace FennecWidget
 			w13.Fill = false;
 			// Container child statusbar1.Gtk.Box+BoxChild
 			this.btnUnhide = new global::Gtk.Button ();
+			this.btnUnhide.Sensitive = false;
 			this.btnUnhide.CanFocus = true;
 			this.btnUnhide.Name = "btnUnhide";
 			this.btnUnhide.UseUnderline = true;
@@ -196,6 +200,7 @@ namespace FennecWidget
 				this.Child.ShowAll ();
 			}
 			this.Hide ();
+			this.btnPostIt.Clicked += new global::System.EventHandler (this.OnBtnPostItClicked);
 			this.btnPlayerList.Clicked += new global::System.EventHandler (this.OnBtnPlayerListClicked);
 			this.btnGetPosts.Clicked += new global::System.EventHandler (this.OnBtnGetPostsClicked);
 			this.btnEOD.Clicked += new global::System.EventHandler (this.OnBtnEODClicked);

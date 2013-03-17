@@ -105,6 +105,7 @@
                 <property name="Type">TextOnly</property>
                 <property name="Label" translatable="yes">Post Count</property>
                 <property name="UseUnderline">True</property>
+                <signal name="Clicked" handler="OnBtnPostItClicked" />
               </widget>
               <packing>
                 <property name="TopAttach">1</property>
@@ -163,6 +164,7 @@
             <child>
               <widget class="Gtk.Entry" id="TxtEndPost">
                 <property name="MemberName" />
+                <property name="Sensitive">False</property>
                 <property name="CanFocus">True</property>
                 <property name="IsEditable">True</property>
                 <property name="WidthChars">6</property>
@@ -186,6 +188,7 @@
             <child>
               <widget class="Gtk.Entry" id="udStartPost">
                 <property name="MemberName" />
+                <property name="Sensitive">False</property>
                 <property name="CanFocus">True</property>
                 <property name="IsEditable">True</property>
                 <property name="WidthChars">5</property>
@@ -251,6 +254,7 @@
             <child>
               <widget class="Gtk.Button" id="btnHide">
                 <property name="MemberName" />
+                <property name="Sensitive">False</property>
                 <property name="CanFocus">True</property>
                 <property name="Type">TextOnly</property>
                 <property name="Label" translatable="yes">Hide</property>
@@ -266,6 +270,7 @@
             <child>
               <widget class="Gtk.Button" id="btnUnhide">
                 <property name="MemberName" />
+                <property name="Sensitive">False</property>
                 <property name="CanFocus">True</property>
                 <property name="Type">TextOnly</property>
                 <property name="Label" translatable="yes">Unhide</property>
