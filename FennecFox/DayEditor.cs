@@ -47,19 +47,20 @@ namespace POG.FennecFox
             if (_voteCount != null)
             {
                 Int32 day = (Int32)udDay.Value;
-                DateTime startPost;
+                DateTime startTime;
+				Int32 startPost;
                 DateTime endTime;
                 Int32 endPost;
-                if (_voteCount.GetDayBoundaries(day, out startPost, out endTime, out endPost))
+                if (_voteCount.GetDayBoundaries(day, out startTime, out startPost, out endTime, out endPost))
                 {
-                    //udStartPost.Value = startPost;
+                    udStartPost.Value = startPost;
                     dtEodDate.Value = endTime;
                     dtEodTime.Value = endTime;
                 }
                 else
                 {
                     // try to load previous day
-                    if ((day > 1) && _voteCount.GetDayBoundaries(day - 1, out startPost, out endTime, out endPost))
+                    if ((day > 1) && _voteCount.GetDayBoundaries(day - 1, out startTime, out startPost, out endTime, out endPost))
                     {
                         udStartPost.Value = endPost + 1;
                         DateTime eod;

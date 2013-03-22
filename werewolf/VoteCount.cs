@@ -70,13 +70,7 @@ namespace POG.Werewolf
 		}
 		public void SetDayBoundaries(int day, Int32 startPost, DateTime endTime)
 		{
-			DateTime? startTimeNull = _db.GetPostTime(_threadId, startPost);
-			if (startTimeNull == null)
-			{
-				startTimeNull = DateTime.MinValue;
-			}
-			DateTime startTime = startTimeNull.Value.ToUniversalTime();
-			_db.WriteDayBoundaries(_threadId, day, startTime, endTime);
+			_db.WriteDayBoundaries(_threadId, day, startPost, endTime);
 			if (day == _day)
 			{
 				ReadAllFromDB();
@@ -91,9 +85,15 @@ namespace POG.Werewolf
 		{
 			Day = day;
 		}
-		public Boolean GetDayBoundaries(int day, out DateTime startTime, out DateTime endTime, out Int32 endPost)
+		public Boolean GetDayBoundaries(int day, out DateTime startTime, out Int32 startPost, out DateTime endTime, out Int32 endPost)
 		{
-			Boolean rc = _db.GetDayBoundaries(_threadId, day, out startTime, out endTime, out endPost);
+			startTime = DateTime.MinValue;
+			Boolean rc = _db.GetDayBoundaries(_threadId, day, out startPost, out endTime, out endPost);
+			DateTime? t = _db.GetPostTime(_threadId, startPost);
+			if (t != null)
+			{
+				startTime = t.Value;
+			}
 			return rc;
 		}
 		public void IgnoreVote(string player)
@@ -564,15 +564,16 @@ namespace POG.Werewolf
 		#region private methods
 		void ReadAllFromDB()
 		{
-			DateTime startTime;
+			Int32 startPost;
 			DateTime endTime;
 			Int32 endPost;
-			_db.GetDayBoundaries(_threadId, _day, out startTime, out endTime, out endPost);
-			StartPost = _db.GetPostBeforeTime(_threadId, startTime.ToUniversalTime()) + 1;
+			_db.GetDayBoundaries(_threadId, _day, out startPost, out endTime, out endPost);
+			StartPost = startPost;
+			
 			EndTime = endTime;
 			EndPost = endPost;
 			SortableBindingList<Voter> livePlayers = new SortableBindingList<Voter>();
-			foreach (VoterInfo vi in _db.GetVotes(_threadId, startTime.ToUniversalTime(), _endTime.ToUniversalTime(), this))
+			foreach (VoterInfo vi in _db.GetVotes(_threadId, startPost, _endTime.ToUniversalTime(), this))
 			{
 				Voter v = new Voter(vi, this);
 				livePlayers.Add(v);

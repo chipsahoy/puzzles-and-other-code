@@ -11,7 +11,7 @@ namespace POG.Werewolf
 {
 	public class PogSqlite : POG.Werewolf.IPogDb
 	{
-		static Int32 _schemaVersion = 1;
+		static Int32 _schemaVersion = 2;
 		String _connect;
 		String _dbName;
 
@@ -41,6 +41,16 @@ namespace POG.Werewolf
 		}
 		void Upgrade1To2(SQLiteConnection db)
 		{
+			String sql = @"ALTER TABLE Day ADD COLUMN startpost DEFAULT 1";
+			using (SQLiteCommand cmd = new SQLiteCommand(sql, db))
+			{
+				int e = cmd.ExecuteNonQuery();
+			}
+			String sql2 = @"ALTER TABLE Player ADD COLUMN startpost DEFAULT 1";
+			using (SQLiteCommand cmd2 = new SQLiteCommand(sql2, db))
+			{
+				int e = cmd2.ExecuteNonQuery();
+			}
 		}
 		void CreateTables(SQLiteConnection db)
 		{
@@ -55,7 +65,7 @@ namespace POG.Werewolf
 @"CREATE TABLE IF NOT EXISTS Day (
 	threadid INTEGER REFERENCES Thread(threadid) ON DELETE CASCADE,
 	day INTEGER,
-	starttime TIMESTAMP,
+	startpost INTEGER DEFAULT 1,
 	endtime TIMESTAMP,
 	PRIMARY KEY(threadid, day)
 );",
@@ -93,6 +103,16 @@ poststhreadposter
 ON
 Post (threadid, posterid)
 ;",
+@"CREATE INDEX IF NOT EXISTS 
+poststhreadpostnumber
+ON
+Post (threadid, postnumber)
+;",
+@"CREATE INDEX IF NOT EXISTS 
+poststhreadposttime
+ON
+Post (threadid, posttime)
+;",
 @"CREATE VIRTUAL TABLE IF NOT EXISTS PostContent USING FTS4 (
 	title TEXT,
 	content TEXT,
@@ -115,7 +135,7 @@ Post (threadid, posterid)
 @"CREATE TABLE IF NOT EXISTS Player (
 	roleid INTEGER REFERENCES GameRole(roleid) ON DELETE CASCADE,
 	posterid INTEGER REFERENCES Poster(posterid) ON DELETE CASCADE,
-	starttime TIMESTAMP,
+	startpost INTEGER,
 	endtime TIMESTAMP,
 	PRIMARY KEY(roleid, posterid)
 );",
@@ -177,7 +197,7 @@ Alias (threadid)
 							{
 								upgrade(dbWrite);
 							}
-							SetUserVersion(dbWrite, i);
+							SetUserVersion(dbWrite, i + 1);
 						}
 					}
 					else
@@ -221,7 +241,7 @@ WHERE
 			watch.Stop();
 			//Trace.TraceInformation("after WriteThreadDefinition {0}", watch.Elapsed.ToString());
 		}
-		public void WriteDayBoundaries(Int32 threadId, Int32 day, DateTime startTime, DateTime endTime)
+		public void WriteDayBoundaries(Int32 threadId, Int32 day, Int32 startPost, DateTime endTime)
 		{
 			Stopwatch watch = new Stopwatch();
 			watch.Start();
@@ -232,16 +252,14 @@ WHERE
 @"INSERT OR REPLACE INTO Day (
 threadid,
 day,
-starttime, 
+startpost, 
 endtime)
 VALUES (@p1, @p2, @p3, @p4);";
 				using (SQLiteCommand cmd = new SQLiteCommand(sql, dbWrite))
 				{
 					cmd.Parameters.Add(new SQLiteParameter("@p1", threadId));
 					cmd.Parameters.Add(new SQLiteParameter("@p2", day));
-					SQLiteParameter pStart = new SQLiteParameter("@p3", System.Data.DbType.DateTime);
-					pStart.Value = startTime.ToUniversalTime();
-					cmd.Parameters.Add(pStart);
+					cmd.Parameters.Add(new SQLiteParameter("@p3", startPost));
 					SQLiteParameter pEod = new SQLiteParameter("@p4", System.Data.DbType.DateTime);
 					pEod.Value = endTime.ToUniversalTime();
 					cmd.Parameters.Add(pEod);
@@ -480,13 +498,12 @@ SELECT last_insert_rowid();";
 
 							string sqlPlayer =
 @"INSERT INTO Player 
-(roleid, posterid, starttime, endtime) 
+(roleid, posterid, startpost, endtime) 
 VALUES(@p1, @p2, @p3, @p4);";
 							using (SQLiteCommand cmdPlayer = new SQLiteCommand(sqlPlayer, dbWrite, trans))
 							{
 								SQLiteParameter pRoleId = new SQLiteParameter("@p1");
 								pRoleId.Value = id;
-								DateTime? startTime = null;
 								foreach (CensusEntry player in role)
 								{
 									SQLiteParameter pPosterId = new SQLiteParameter("@p2");
@@ -498,9 +515,7 @@ VALUES(@p1, @p2, @p3, @p4);";
 									pPosterId.Value = playerId;
 									cmdPlayer.Parameters.Add(pRoleId);
 									cmdPlayer.Parameters.Add(pPosterId);
-									SQLiteParameter pStartTime = new SQLiteParameter("@p3", System.Data.DbType.DateTime);
-									pStartTime.Value = startTime;
-									cmdPlayer.Parameters.Add(pStartTime);
+									cmdPlayer.Parameters.Add(new SQLiteParameter("@p3", 1));
 									SQLiteParameter pEndTime = new SQLiteParameter("@p4", System.Data.DbType.DateTime);
 									if (player.Alive != "Alive")
 									{
@@ -510,7 +525,6 @@ VALUES(@p1, @p2, @p3, @p4);";
 											endTime = player.EndPostTime.Value.ToUniversalTime();
 										}
 										pEndTime.Value = endTime;
-										startTime = endTime;
 									}
 									cmdPlayer.Parameters.Add(pEndTime);
 									
@@ -835,7 +849,7 @@ ORDER BY Poster.postername ASC;";
 			//Trace.TraceInformation("after GetPlayerList {0}", watch.Elapsed.ToString());
 			return players;
 		}
-		public IEnumerable<VoterInfo> GetVotes(Int32 threadId, DateTime startTime, DateTime endTime, object game)
+		public IEnumerable<VoterInfo> GetVotes(Int32 threadId, Int32 startPost, DateTime endTime, object game)
 		{
 			String sql = 
 @"
@@ -846,7 +860,7 @@ SELECT GameRole.roleid, Player.posterid, Poster.postername,
 	AND ((Player.endtime IS NULL) OR (player.endtime > @p4))
 	AND (Post.threadid = GameRole.threadid)
 	AND (Post.posterid = Player.posterid)
-	AND (Post.posttime >= @p4) 
+	AND (Post.postnumber >= @p4) 
 	AND (Post.posttime <= @p3)
 ) AS postcount,
 (SELECT MAX(Post.postid)
@@ -856,7 +870,7 @@ SELECT GameRole.roleid, Player.posterid, Poster.postername,
 	AND (Post.threadid = GameRole.threadid)
 	AND (Bolded.postid = Post.postid)
 	AND (Post.posterid = Player.posterid)
-	AND (Post.posttime >= @p4) 
+	AND (Post.postnumber >= @p4) 
 	AND (Post.posttime <= @p3)
 	AND (Bolded.ignore = 0)
 ) AS bolded
@@ -880,9 +894,7 @@ GROUP BY Poster.postername
 					SQLiteParameter pEndTime = new SQLiteParameter("@p3", System.Data.DbType.DateTime);
 					pEndTime.Value = endTime.ToUniversalTime();
 					cmd.Parameters.Add(pEndTime);
-					SQLiteParameter pStartTime = new SQLiteParameter("@p4", System.Data.DbType.DateTime);
-					pStartTime.Value = startTime.ToUniversalTime();
-					cmd.Parameters.Add(pStartTime);
+					cmd.Parameters.Add(new SQLiteParameter("@p4", startPost));
 
 					using (SQLiteDataReader r = cmd.ExecuteReader())
 					{
@@ -945,16 +957,16 @@ SELECT Bolded.bolded, Bolded.position, Post.postnumber, Post.posttime
 			return voters;
 		}
 
-		public Boolean GetDayBoundaries(Int32 threadId, Int32 day, out DateTime startTime,
+		public Boolean GetDayBoundaries(Int32 threadId, Int32 day, out Int32 startPost, 
 				out DateTime endTime, out Int32 endPost)
 		{
-			startTime = DateTime.MinValue;
+			startPost = 0;
 			endTime = DateTime.Now;
 			endPost = 0;
 
 			String sql = 
 @"
-SELECT starttime, endtime FROM Day 
+SELECT startpost, endtime FROM Day 
 WHERE (threadid = @p1) AND (day = @p2)
 LIMIT 1;
 ";
@@ -973,7 +985,7 @@ LIMIT 1;
 					{
 						if (r.Read())
 						{
-							startTime = DateTime.SpecifyKind(r.GetDateTime(0), DateTimeKind.Local);
+							startPost = r.GetInt32(0);
 							endTime = DateTime.SpecifyKind(r.GetDateTime(1), DateTimeKind.Local);
 						}
 						else
@@ -989,7 +1001,7 @@ LIMIT 1;
 			String sqlTime = 
 @"SELECT postnumber
 FROM Post
-WHERE (Post.threadid = @p2) AND (Post.posttime <= @p3) AND (Post.posttime >= @p1)
+WHERE (Post.threadid = @p2) AND (Post.posttime <= @p3) AND (Post.postnumber >= @p1)
 ORDER BY postid DESC LIMIT 1";
 			watch.Reset();
 			watch.Start();
@@ -998,7 +1010,7 @@ ORDER BY postid DESC LIMIT 1";
 				dbRead.Open();
 				using (SQLiteCommand cmd = new SQLiteCommand(sqlTime, dbRead))
 				{
-					cmd.Parameters.Add(new SQLiteParameter("@p1", startTime));
+					cmd.Parameters.Add(new SQLiteParameter("@p1", startPost));
 					cmd.Parameters.Add(new SQLiteParameter("@p2", threadId));
 					SQLiteParameter pEndTime = new SQLiteParameter("@p3", System.Data.DbType.DateTime);
 					pEndTime.Value = endTime.ToUniversalTime();

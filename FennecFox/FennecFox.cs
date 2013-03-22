@@ -484,17 +484,18 @@ namespace POG.FennecFox
 		private void udDay_ValueChanged(object sender, EventArgs e)
 		{
 			Int32 day = (Int32)udDay.Value;
-			DateTime startPost;
+			DateTime startTime;
+			Int32 startPost;
 			DateTime endTime;
 			Int32 endPost;
-			if (_voteCount.GetDayBoundaries(day, out startPost, out endTime, out endPost))
+			if (_voteCount.GetDayBoundaries(day, out startTime, out startPost, out endTime, out endPost))
 			{
 				_day = day;
 				_voteCount.ChangeDay(day);
 			}
 			else
 			{
-				if (_voteCount.GetDayBoundaries(_day, out startPost, out endTime, out endPost))
+				if (_voteCount.GetDayBoundaries(_day, out startTime, out startPost, out endTime, out endPost))
 				{
 					udDay.Value = _day;
 				}
