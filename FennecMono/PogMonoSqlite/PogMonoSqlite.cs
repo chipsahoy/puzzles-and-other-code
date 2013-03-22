@@ -41,6 +41,19 @@ namespace POG.Werewolf
 		}
 		void Upgrade1To2(SqliteConnection db)
 		{
+			String[] updates = {
+@"ALTER TABLE Day ADD COLUMN startpost INTEGER DEFAULT 1",
+@"ALTER TABLE Player ADD COLUMN startpost INTEGER DEFAULT 1",
+@"ALTER TABLE Post ADD COLUMN title TEXT",
+@"ALTER TABLE Post ADD COLUMN content TEXT",
+			};
+			foreach (String sql in updates)
+			{
+				using (SqliteCommand cmd = new SqliteCommand(sql, db))
+				{
+					int e = cmd.ExecuteNonQuery();
+				}
+			}
 		}
 		void CreateTables(SqliteConnection db)
 		{
