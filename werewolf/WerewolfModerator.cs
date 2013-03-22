@@ -234,8 +234,8 @@ namespace POG.Werewolf
             }
             if (daylight.Hours > 1)
             {
-                // vote counts every 2 hours.
-                int hour = (daylight.Hours / 2) * 2;
+                // vote counts every hour.
+                int hour = 1;
                 alarm = eod - new TimeSpan(hour, 0, 0);
             }
             else if (daylight.Hours == 1)
