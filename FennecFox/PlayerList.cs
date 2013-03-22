@@ -109,40 +109,12 @@ namespace POG.FennecFox
         private void ErasePlayer(DataGridViewRow row)
         {
             String name = row.Cells[(Int32)CounterColumn.Player].Value as String;
-            grdRoster.Rows.Remove(row);
-        }
-        private void btnKillSub_Click(object sender, EventArgs e)
-        {
-            String name = String.Empty;
-            DataGridViewCell current = grdRoster.CurrentCell;
-            DataGridViewRow row = current.OwningRow;
-            if (current != null)
+            if (name != null)
             {
-                name = row.Cells[(Int32)CounterColumn.Player].Value as String;
-                KillSub frm = new KillSub(name, _voteCount);
-                DialogResult dr = frm.ShowDialog(this);
-                if (dr == DialogResult.OK)
-                {
-                    Boolean isSub;
-                    DateTime when;
-                    String who;
-                    frm.GetKillSub(out isSub, out when, out who);
-                    if (isSub)
-                    {
-                        row.Cells[(Int32)CounterColumn.Alive].Value = "Sub Out";
-                        row.Cells[(Int32)CounterColumn.ExitTime].Value = when;
-                        row.Cells[(Int32)CounterColumn.Replacement].Value = who;
-                    }
-                    else
-                    {
-                        row.Cells[(Int32)CounterColumn.Alive].Value = "Dead";
-                        row.Cells[(Int32)CounterColumn.ExitTime].Value = when;
-                        row.Cells[(Int32)CounterColumn.Replacement].Value = String.Empty;
-                    }
-                }
+                grdRoster.Rows.Remove(row);
             }
-
         }
+
 
         private void btnErase_Click(object sender, EventArgs e)
         {
@@ -159,12 +131,18 @@ namespace POG.FennecFox
             }
         }
 
+        private void btnEraseAll_Click(object sender, EventArgs e)
+        {
+            while (grdRoster.RowCount > 1)
+            {
+                ErasePlayer(grdRoster.Rows[0]);
+            }
+        }
+
+
         private enum CounterColumn
         {
             Player = 0,
-            Alive,
-            ExitTime,
-            Replacement,
         };
         
         private void SetupGrid()
@@ -185,7 +163,6 @@ namespace POG.FennecFox
         {
             grdRoster.AutoGenerateColumns = false;
             grdRoster.EditMode = DataGridViewEditMode.EditOnEnter;
-            DataGridViewComboBoxColumn colCB;
             DataGridViewTextBoxColumn col;
 
             col = new DataGridViewTextBoxColumn();
@@ -195,33 +172,6 @@ namespace POG.FennecFox
             col.AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
             col.Resizable = DataGridViewTriState.False;
             grdRoster.Columns.Insert((Int32)CounterColumn.Player, col);
-
-            colCB = new DataGridViewComboBoxColumn();
-            colCB.DataPropertyName = "Alive";
-            colCB.HeaderText = "Alive?";
-            colCB.ReadOnly = true;
-            colCB.DisplayStyleForCurrentCellOnly = true;
-            colCB.AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-            colCB.Resizable = DataGridViewTriState.False;
-            colCB.DataSource = new String[] { "Alive", "Dead", "Sub Out" };
-            colCB.DefaultCellStyle.NullValue = "Alive";
-            grdRoster.Columns.Insert((Int32)CounterColumn.Alive, colCB);
-
-            col = new DataGridViewTextBoxColumn();
-            col.DataPropertyName = "EndPostTime";
-            col.HeaderText = "Exit Time";
-            col.ReadOnly = true;
-            col.AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-            col.Resizable = DataGridViewTriState.False;
-            grdRoster.Columns.Insert((Int32)CounterColumn.ExitTime, col);
-
-            col = new DataGridViewTextBoxColumn();
-            col.DataPropertyName = "Replacement";
-            col.HeaderText = "Replaced by";
-            col.ReadOnly = true;
-            col.AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-            col.Resizable = DataGridViewTriState.False;
-            grdRoster.Columns.Insert((Int32)CounterColumn.Replacement, col);
 
             grdRoster.CellValidating += new DataGridViewCellValidatingEventHandler(grdRoster_CellValidating);
             grdRoster.EditingControlShowing += new DataGridViewEditingControlShowingEventHandler(grdRoster_EditingControlShowing);
@@ -307,7 +257,6 @@ namespace POG.FennecFox
                     {
                         if ((oValue != null) && (oValue as String != String.Empty))
                         {
-                            r.Cells[(Int32)CounterColumn.Alive].ReadOnly = false;
                             String name = oValue as String;
                             if (_voteCount.GetPlayerId(name) < 0)
                             {
@@ -319,48 +268,9 @@ namespace POG.FennecFox
                                 r.Cells[e.ColumnIndex].ErrorText = null;
                             }
                         }
-                        else
-                        {
-                            r.Cells[(Int32)CounterColumn.Alive].ReadOnly = true;
-                        }
                     }
                     break;
 
-                case (Int32)CounterColumn.Alive:
-                    {
-                        String status = oValue as String;
-                        if (status == "Alive")
-                        {
-                            r.Cells[(Int32)CounterColumn.ExitTime].ReadOnly = true;
-                            r.Cells[(Int32)CounterColumn.ExitTime].Value = String.Empty;
-                            r.Cells[(Int32)CounterColumn.Replacement].ReadOnly = true;
-                            r.Cells[(Int32)CounterColumn.Replacement].Value = String.Empty;
-                        }
-                        else
-                        {
-                            r.Cells[(Int32)CounterColumn.ExitTime].ReadOnly = false;
-                            if (status != "Dead")
-                            {
-                                r.Cells[(Int32)CounterColumn.Replacement].ReadOnly = false;
-                            }
-                        }
-                    }
-                    break;
-
-                case (Int32)CounterColumn.ExitTime:
-                    {
-                    }
-                    break;
-
-                case (Int32)CounterColumn.Replacement:
-                    {
-                        if (oValue != null)
-                        {
-                            String name = oValue as String;
-                            AddToRoster(name);
-                        }
-                    }
-                    break;
             }
         }
 
@@ -424,13 +334,11 @@ namespace POG.FennecFox
                 else
                 {
                     r.Cells[(Int32)CounterColumn.Player].ErrorText = null;
+                    r.Cells[(Int32)CounterColumn.Player].ReadOnly = true;
                 }
             }
-            else
-            {
-                r.Cells[(Int32)CounterColumn.Alive].ReadOnly = true;
-            }
         }
+
 
 
     }

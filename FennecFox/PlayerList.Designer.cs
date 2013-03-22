@@ -36,7 +36,7 @@
             this.label2 = new System.Windows.Forms.Label();
             this.acMenu = new AutocompleteMenuNS.AutocompleteMenu();
             this.grdRoster = new POG.FennecFox.NoArrowNavigateDataGridView();
-            this.btnKillSub = new System.Windows.Forms.Button();
+            this.btnEraseAll = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.grdRoster)).BeginInit();
             this.SuspendLayout();
             // 
@@ -44,7 +44,7 @@
             // 
             this.btnSubmitPlayers.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.btnSubmitPlayers.DialogResult = System.Windows.Forms.DialogResult.OK;
-            this.btnSubmitPlayers.Location = new System.Drawing.Point(448, 28);
+            this.btnSubmitPlayers.Location = new System.Drawing.Point(189, 28);
             this.btnSubmitPlayers.Name = "btnSubmitPlayers";
             this.btnSubmitPlayers.Size = new System.Drawing.Size(75, 23);
             this.btnSubmitPlayers.TabIndex = 0;
@@ -54,7 +54,7 @@
             // btnDelete
             // 
             this.btnDelete.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnDelete.Location = new System.Drawing.Point(448, 371);
+            this.btnDelete.Location = new System.Drawing.Point(189, 371);
             this.btnDelete.Name = "btnDelete";
             this.btnDelete.Size = new System.Drawing.Size(75, 46);
             this.btnDelete.TabIndex = 4;
@@ -65,7 +65,7 @@
             // btnPaste
             // 
             this.btnPaste.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnPaste.Location = new System.Drawing.Point(448, 142);
+            this.btnPaste.Location = new System.Drawing.Point(189, 142);
             this.btnPaste.Name = "btnPaste";
             this.btnPaste.Size = new System.Drawing.Size(75, 46);
             this.btnPaste.TabIndex = 9;
@@ -76,7 +76,7 @@
             // btnCopyLive
             // 
             this.btnCopyLive.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnCopyLive.Location = new System.Drawing.Point(448, 90);
+            this.btnCopyLive.Location = new System.Drawing.Point(189, 90);
             this.btnCopyLive.Name = "btnCopyLive";
             this.btnCopyLive.Size = new System.Drawing.Size(75, 46);
             this.btnCopyLive.TabIndex = 10;
@@ -90,7 +90,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.label2.AutoSize = true;
             this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label2.Location = new System.Drawing.Point(150, 9);
+            this.label2.Location = new System.Drawing.Point(95, 9);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(85, 16);
             this.label2.TabIndex = 12;
@@ -116,29 +116,29 @@
             this.grdRoster.DisableArrowNavigationMode = false;
             this.grdRoster.Location = new System.Drawing.Point(12, 28);
             this.grdRoster.Name = "grdRoster";
-            this.grdRoster.Size = new System.Drawing.Size(430, 389);
+            this.grdRoster.Size = new System.Drawing.Size(171, 389);
             this.grdRoster.TabIndex = 2;
             this.grdRoster.CellEndEdit += new System.Windows.Forms.DataGridViewCellEventHandler(this.grdRoster_CellEndEdit);
             this.grdRoster.RowValidating += new System.Windows.Forms.DataGridViewCellCancelEventHandler(this.grdRoster_RowValidating);
             // 
-            // btnKillSub
+            // btnEraseAll
             // 
-            this.btnKillSub.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnKillSub.Location = new System.Drawing.Point(447, 319);
-            this.btnKillSub.Name = "btnKillSub";
-            this.btnKillSub.Size = new System.Drawing.Size(75, 46);
-            this.btnKillSub.TabIndex = 13;
-            this.btnKillSub.Text = "Kill / Sub";
-            this.btnKillSub.UseVisualStyleBackColor = true;
-            this.btnKillSub.Click += new System.EventHandler(this.btnKillSub_Click);
+            this.btnEraseAll.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnEraseAll.Location = new System.Drawing.Point(188, 319);
+            this.btnEraseAll.Name = "btnEraseAll";
+            this.btnEraseAll.Size = new System.Drawing.Size(75, 46);
+            this.btnEraseAll.TabIndex = 13;
+            this.btnEraseAll.Text = "Erase All";
+            this.btnEraseAll.UseVisualStyleBackColor = true;
+            this.btnEraseAll.Click += new System.EventHandler(this.btnEraseAll_Click);
             // 
             // PlayerList
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(534, 442);
+            this.ClientSize = new System.Drawing.Size(275, 442);
             this.ControlBox = false;
-            this.Controls.Add(this.btnKillSub);
+            this.Controls.Add(this.btnEraseAll);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.btnCopyLive);
             this.Controls.Add(this.btnPaste);
@@ -166,6 +166,6 @@
         private System.Windows.Forms.Button btnCopyLive;
         private System.Windows.Forms.Label label2;
         private AutocompleteMenuNS.AutocompleteMenu acMenu;
-        private System.Windows.Forms.Button btnKillSub;
+        private System.Windows.Forms.Button btnEraseAll;
     }
 }
