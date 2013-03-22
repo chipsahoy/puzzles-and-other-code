@@ -41,15 +41,18 @@ namespace POG.Werewolf
 		}
 		void Upgrade1To2(SQLiteConnection db)
 		{
-			String sql = @"ALTER TABLE Day ADD COLUMN startpost DEFAULT 1";
-			using (SQLiteCommand cmd = new SQLiteCommand(sql, db))
+			String[] updates = {
+@"ALTER TABLE Day ADD COLUMN startpost INTEGER DEFAULT 1",
+@"ALTER TABLE Player ADD COLUMN startpost INTEGER DEFAULT 1",
+@"ALTER TABLE Post ADD COLUMN title TEXT",
+@"ALTER TABLE Post ADD COLUMN content TEXT",
+            };
+			foreach (String sql in updates)
 			{
-				int e = cmd.ExecuteNonQuery();
-			}
-			String sql2 = @"ALTER TABLE Player ADD COLUMN startpost DEFAULT 1";
-			using (SQLiteCommand cmd2 = new SQLiteCommand(sql2, db))
-			{
-				int e = cmd2.ExecuteNonQuery();
+				using (SQLiteCommand cmd = new SQLiteCommand(sql, db))
+				{
+					int e = cmd.ExecuteNonQuery();
+				}
 			}
 		}
 		void CreateTables(SQLiteConnection db)
@@ -96,7 +99,9 @@ GameRole (threadid)
 	threadid INTEGER REFERENCES Thread(threadid) ON DELETE CASCADE,
 	posterid INTEGER REFERENCES Poster(posterid) ON DELETE CASCADE,
 	postnumber INTEGER,
-	posttime TIMESTAMP
+	posttime TIMESTAMP,
+	title TEXT,
+	content TEXT
 );",
 @"CREATE INDEX IF NOT EXISTS 
 poststhreadposter
@@ -113,18 +118,6 @@ poststhreadposttime
 ON
 Post (threadid, posttime)
 ;",
-@"CREATE VIRTUAL TABLE IF NOT EXISTS PostContent USING FTS4 (
-	title TEXT,
-	content TEXT,
-	editreason TEXT
-);",
-@"CREATE TABLE IF NOT EXISTS PostMeta (
-	postid INTEGER NOT NULL REFERENCES Post(postid) ON DELETE CASCADE,
-	contentid INTEGER NOT NULL REFERENCES PostContent(ROWID) ON DELETE CASCADE,
-	editorid INTEGER,
-	edittime TIMESTAMP,
-	PRIMARY KEY(postid, contentid)
-);",
 @"CREATE TABLE IF NOT EXISTS Bolded (
 	postid INTEGER NOT NULL REFERENCES Post(postid) ON DELETE CASCADE,
 	position INTEGER,
@@ -679,8 +672,10 @@ postid,
 threadid,
 posterid,
 postnumber,
+content,
+title,
 posttime)
-VALUES (@p1, @p2, @p3, @p4, @p7);";
+VALUES (@p1, @p2, @p3, @p4, @p5, @p6, @p7);";
 
 					using (SQLiteCommand cmd = new SQLiteCommand(sql, dbWrite, trans))
 					{
@@ -691,24 +686,26 @@ VALUES (@p1, @p2, @p3, @p4, @p7);";
 						SQLiteParameter pContent = new SQLiteParameter("@p5");
 						SQLiteParameter pTitle = new SQLiteParameter("@p6");
 						SQLiteParameter pTime = new SQLiteParameter("@p7", System.Data.DbType.DateTime);
-						SQLiteParameter pPosterName = new SQLiteParameter("@p8");
-						cmd.Parameters.Add(pPostId);
+                        SQLiteParameter pPosterName = new SQLiteParameter("@p8");
+                        cmd.Parameters.Add(pPostId);
 						cmd.Parameters.Add(pThreadId);
-						cmd.Parameters.Add(pPosterName);
 						cmd.Parameters.Add(pPosterId);
 						cmd.Parameters.Add(pPostNumber);
-						cmd.Parameters.Add(pTime);
+                        cmd.Parameters.Add(pContent);
+                        cmd.Parameters.Add(pTitle);
+                        cmd.Parameters.Add(pTime);
+                        cmd.Parameters.Add(pPosterName);
 
 						foreach (Post p in posts)
 						{
 							pPostId.Value = p.PostId;
 							pThreadId.Value = p.ThreadId;
-							pPosterName.Value = p.Poster.Name;
 							pPosterId.Value = p.Poster.Id;
 							pPostNumber.Value = p.PostNumber;
 							pContent.Value = p.Content;
 							pTitle.Value = p.Title;
 							pTime.Value = p.Time.UtcDateTime;
+                            pPosterName.Value = p.Poster.Name;
 							int e = cmd.ExecuteNonQuery();
 
 							int ix = 0;
