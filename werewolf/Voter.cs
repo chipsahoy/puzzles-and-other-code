@@ -10,7 +10,6 @@ namespace POG.Werewolf
 	public class Voter 
 	{
 		VoteCount _game;
-		Action<Action> _synchronousInvoker;
 		VoterInfo _info;
 		private Int32 _votes;
 
@@ -18,7 +17,6 @@ namespace POG.Werewolf
 		{
 			_info = vi;
 			_game =game;
-			_synchronousInvoker = _game.SynchronousInvoker;
 		}
 		[Browsable(true)]
 		public String Name

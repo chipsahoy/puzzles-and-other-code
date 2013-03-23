@@ -23,7 +23,8 @@ namespace FennecWidget
 		IPogDb _db;
 		TwoPlusTwoForum _forum;
 		Action<Action> _synchronousInvoker;
-		String _url; 
+		String _url;
+		String _forumURL;
 		Boolean _turbo; 
 		Int32 _day;
 		private enum CounterColumn
@@ -52,7 +53,7 @@ namespace FennecWidget
 			_url = url;
 			_turbo = turbo;
 			_day = day;
-
+			_forumURL = _forum.ForumURL;
 			this.Build ();
 			_autoComplete = new AutoComplete(_forum, _synchronousInvoker, _db);
 			BindToNewGame (_url);
@@ -63,7 +64,7 @@ namespace FennecWidget
 		{
 			url = POG.Utils.Misc.NormalizeUrl(url);
 			ThreadReader t = _forum.Reader();
-			_voteCount = new VoteCount(_synchronousInvoker, t, _db, url, _forum.PostsPerPage);
+			_voteCount = new VoteCount(_synchronousInvoker, t, _db, _forumURL, url, _forum.PostsPerPage);
 			_voteCount.PropertyChanged += new PropertyChangedEventHandler(_voteCount_PropertyChanged);
 
 			_voteCount.Turbo = _turbo;
@@ -149,30 +150,28 @@ namespace FennecWidget
 			{
 				FillVoteGrid();
 			}
-			if (e.PropertyName == "StartTime")
-			{
-				//String time = String.Empty;
-				if (_voteCount.StartTime != null)
-				{
-					//time = _voteCount.StartTime.Value.ToString("g");
-					udStartPost.Text = _voteCount.StartPost.ToString ();
-				}
-				//dtStartTime.Text = time;
-			}
-			if (e.PropertyName == "EndTime")
 			{
 				String time = String.Empty;
-				time = _voteCount.EndTime.ToLocalTime ().ToString("g");
-				TxtEndPost.Text = time;
+				if (_voteCount.StartTime != null) {
+					time = _voteCount.StartTime.Value.ToString ("g");
+					udStartPost.Text = _voteCount.StartPost.ToString ();
+				}
+				txtStartPostTime.Text = time;
 			}
-			if (e.PropertyName == "Status")
+
+			{
+				String time = String.Empty;
+				time = _voteCount.EndTime.ToString("g");
+				Int32? endPost = _voteCount.EndPost;
+				if(endPost != null)
+				{
+					TxtEndPost.Text = endPost.Value.ToString ();
+				}
+				txtEndPostTime.Text = time;
+			}
 			{
 
 				lblStatus.Text = _voteCount.Status; // no direct binding support in status strip.
-			}
-			if (e.PropertyName == "Day")
-			{
-				//udDay.Value = _voteCount.Day;
 			}
 		}
 
@@ -287,6 +286,13 @@ namespace FennecWidget
 		{
 			String count = _voteCount.GetPostableVoteCount ();
 			_forum.MakePost (_voteCount.ThreadId, "Posted from a freakin mac", count, 0, false);
+		}
+
+		protected void OnBtnCopyCountClicked (object sender, EventArgs e)
+		{
+			String msg = _voteCount.GetPostableVoteCount ();
+			Gtk.Clipboard clip = Gtk.Clipboard.Get (Gdk.Atom.Intern ("CLIPBOARD", false));
+			clip.Text = msg;
 		}
 
 	}

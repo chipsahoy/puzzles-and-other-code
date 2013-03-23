@@ -66,7 +66,6 @@ namespace POG.Utils
                 }
                 TimeSpan tzTime = new TimeSpan(tzOffset, 0, 0);
                 DateTimeOffset guess = new DateTimeOffset(rawTime, tzTime);
-                DateTime utcMidnight = new DateTime(utcNow.Year, utcNow.Month, utcNow.Day, 0, 0, 0);
                 TimeSpan tsCheck = utcNow - guess.UtcDateTime;
                 rc = guess;
                 if (tsCheck.TotalHours > 12)

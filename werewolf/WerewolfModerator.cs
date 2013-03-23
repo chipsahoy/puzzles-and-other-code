@@ -93,13 +93,11 @@ namespace POG.Werewolf
     {
         VoteCount _voteCount;
         TwoPlusTwoForum _forum;
-        Moderator _outer;
         Boolean _postingCounts = false;
 
         public ModeratorSM(Moderator outer, VoteCount game, TwoPlusTwoForum forum, StateMachineHost host)
             : base("Moderator", host)
         {
-            _outer = outer;
             _voteCount = game;
             _forum = forum;
             SetInitialState(StateTop);
@@ -308,13 +306,11 @@ namespace POG.Werewolf
     {
         #region members
         ModeratorSM _inner;
-        Action<Action> _synchronousInvoker;
         #endregion
         #region constructors
 
         public Moderator(Action<Action> synchronousInvoker, VoteCount voteCount, TwoPlusTwoForum forum)
         {
-            _synchronousInvoker = synchronousInvoker;
             _inner = new ModeratorSM(this, voteCount, forum, new StateMachineHost("ForumHost"));
         }
         public Boolean AutoPostCounts

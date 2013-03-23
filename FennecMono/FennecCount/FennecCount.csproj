@@ -59,21 +59,17 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="gtk-gui\generated.cs" />
-    <Compile Include="MainWindow.cs" />
     <Compile Include="Main.cs" />
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="LoginDialog.cs" />
     <Compile Include="gtk-gui\FennecCount.LoginDialog.cs" />
     <Compile Include="gtk-gui\FennecCount.MainWindow.cs" />
-    <Compile Include="OpenGame.cs" />
     <Compile Include="gtk-gui\FennecCount.OpenGame.cs" />
+    <Compile Include="OpenGame.cs" />
+    <Compile Include="MainWindow.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
-    <ProjectReference Include="..\..\forum\Forum.csproj">
-      <Project>{DF0D7868-C4C0-4388-BF11-138E1FC9BF87}</Project>
-      <Name>Forum</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\ForumTypes\ForumTypes.csproj">
       <Project>{3A512A72-44FC-458A-A6FB-36147D6C0CF6}</Project>
       <Name>ForumTypes</Name>
@@ -94,9 +90,13 @@
       <Project>{F60529CB-2D09-41BA-9EBA-700568E2ED6C}</Project>
       <Name>WerewolfTypes</Name>
     </ProjectReference>
-    <ProjectReference Include="..\PogMonoSqlite\PogMonoSqlite.csproj">
-      <Project>{0CCF18A3-DDC4-4773-B91D-339A54F69853}</Project>
-      <Name>PogMonoSqlite</Name>
+    <ProjectReference Include="..\..\forum\Forum.csproj">
+      <Project>{DF0D7868-C4C0-4388-BF11-138E1FC9BF87}</Project>
+      <Name>Forum</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\PogDbSqlite\PogDbSqlite.csproj">
+      <Project>{F8D0D146-0D91-49E4-AEA1-24E5A1241F96}</Project>
+      <Name>PogDbSqlite</Name>
     </ProjectReference>
   </ItemGroup>
 </Project>

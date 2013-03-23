@@ -19,8 +19,9 @@ namespace FennecCount
 		}
 		public void Initialize()
 		{
+			String host = "forumserver.twoplustwo.com";
 			_synchronousInvoker = a => Gtk.Application.Invoke(delegate {a.Invoke ();});
-			_forum = new TwoPlusTwoForum (_synchronousInvoker);
+			_forum = new TwoPlusTwoForum (_synchronousInvoker, host);
 			_forum.LoginEvent += HandleLoginEvent;
 			_db = new PogSqlite ();
 			String dbPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "/pog";

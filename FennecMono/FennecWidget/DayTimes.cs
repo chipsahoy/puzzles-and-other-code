@@ -24,6 +24,7 @@ namespace FennecWidget
 			DateTime eodDate = EodDate.Date;
 			endTime = new DateTime(eodDate.Year, eodDate.Month, 
 			    eodDate.Day, (Int32)spinHour.Value, (Int32)spinMinute.Value, 0, DateTimeKind.Local);
+			endTime = endTime.ToUniversalTime ();
 		}
 	}
 }
