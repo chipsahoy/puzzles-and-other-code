@@ -23,7 +23,7 @@ namespace ThreadMonitor
         {
             InitializeComponent();
             Action<Action> synchronousInvoker = a => Invoke(a);
-            _forum = new TwoPlusTwoForum(synchronousInvoker);
+            _forum = new TwoPlusTwoForum(synchronousInvoker, "forumserver.twoplustwo.com");
             _forum.StatusUpdate += new EventHandler<NewStatusEventArgs>(_forum_StatusUpdate);
             _forum.LoginEvent += new EventHandler<LoginEventArgs>(_forum_LoginEvent);
         }

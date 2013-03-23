@@ -13,15 +13,16 @@ namespace POG.FennecFox
     public partial class OpenGame : Form
     {
         LobbyReader _lobby;
-        String _url = @"http://forumserver.twoplustwo.com/59/puzzles-other-games/";
+        String _url;
         BindingList<ForumThread> _threads = new BindingList<ForumThread>();
 
         public OpenGame()
         {
             InitializeComponent();
         }
-        public OpenGame(TwoPlusTwoForum forum) : this()
+        public OpenGame(TwoPlusTwoForum forum, String lobbyURL) : this()
         {
+			_url = lobbyURL; 
             _lobby = forum.Lobby();
         }
         public String GetURL(out Boolean turbo)

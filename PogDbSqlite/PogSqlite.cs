@@ -46,7 +46,7 @@ namespace POG.Werewolf
 @"ALTER TABLE Player ADD COLUMN startpost INTEGER DEFAULT 1",
 @"ALTER TABLE Post ADD COLUMN title TEXT",
 @"ALTER TABLE Post ADD COLUMN content TEXT",
-            };
+			};
 			foreach (String sql in updates)
 			{
 				using (SQLiteCommand cmd = new SQLiteCommand(sql, db))
@@ -686,15 +686,15 @@ VALUES (@p1, @p2, @p3, @p4, @p5, @p6, @p7);";
 						SQLiteParameter pContent = new SQLiteParameter("@p5");
 						SQLiteParameter pTitle = new SQLiteParameter("@p6");
 						SQLiteParameter pTime = new SQLiteParameter("@p7", System.Data.DbType.DateTime);
-                        SQLiteParameter pPosterName = new SQLiteParameter("@p8");
-                        cmd.Parameters.Add(pPostId);
+						SQLiteParameter pPosterName = new SQLiteParameter("@p8");
+						cmd.Parameters.Add(pPostId);
 						cmd.Parameters.Add(pThreadId);
 						cmd.Parameters.Add(pPosterId);
 						cmd.Parameters.Add(pPostNumber);
-                        cmd.Parameters.Add(pContent);
-                        cmd.Parameters.Add(pTitle);
-                        cmd.Parameters.Add(pTime);
-                        cmd.Parameters.Add(pPosterName);
+						cmd.Parameters.Add(pContent);
+						cmd.Parameters.Add(pTitle);
+						cmd.Parameters.Add(pTime);
+						cmd.Parameters.Add(pPosterName);
 
 						foreach (Post p in posts)
 						{
@@ -705,7 +705,7 @@ VALUES (@p1, @p2, @p3, @p4, @p5, @p6, @p7);";
 							pContent.Value = p.Content;
 							pTitle.Value = p.Title;
 							pTime.Value = p.Time.UtcDateTime;
-                            pPosterName.Value = p.Poster.Name;
+							pPosterName.Value = p.Poster.Name;
 							int e = cmd.ExecuteNonQuery();
 
 							int ix = 0;

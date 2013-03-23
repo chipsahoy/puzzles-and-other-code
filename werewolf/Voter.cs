@@ -98,8 +98,8 @@ namespace POG.Werewolf
 				String rc = "";
 				if (_info.PostId > 0)
 				{
-					rc = String.Format("{0}/showpost.php?p={1}&postcount={2}",
-							TwoPlusTwoForum.BASE_URL, _info.PostId, _info.PostNumber);
+					rc = String.Format("{0}showpost.php?p={1}&postcount={2}",
+							_game.ForumURL, _info.PostId, _info.PostNumber);
 				}
 				return rc;
 			}

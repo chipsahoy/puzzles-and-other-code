@@ -37,14 +37,14 @@ namespace POG.FennecFox
 		void FoxParent_Load(object sender, EventArgs e)
 		{
 			_synchronousInvoker = a => Invoke(a);
-			
-			_db = new PogSqlite();
-			String dbPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "/pog";
+			String host = "forumserver.twoplustwo.com";
+			String dbPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "/pog/";
 			System.IO.Directory.CreateDirectory(dbPath);
-			String dbName = dbPath + "/pogposts.sqlite";
+			String dbName = String.Format("{0}posts.{1}.sqlite", dbPath, host);
+			_db = new PogSqlite();
 			_db.Connect(dbName);
 			
-			_forum = new TwoPlusTwoForum(_synchronousInvoker);
+			_forum = new TwoPlusTwoForum(_synchronousInvoker, host);
 			_forum.LoginEvent += new EventHandler<LoginEventArgs>(_forum_LoginEvent);
 
 			String username = POG.FennecFox.Properties.Settings.Default.username;
@@ -73,7 +73,7 @@ namespace POG.FennecFox
 		#region generated
 		private void OpenFile(object sender, EventArgs e)
 		{
-			OpenGame frm = new OpenGame(_forum);
+			OpenGame frm = new OpenGame(_forum, _forum.ForumURL + "59/puzzles-other-games/");
 			DialogResult dr = frm.ShowDialog();
 			if (dr == System.Windows.Forms.DialogResult.OK)
 			{
