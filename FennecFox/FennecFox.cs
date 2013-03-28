@@ -193,7 +193,7 @@ namespace POG.FennecFox
 
 				case (Int32)CounterColumn.PostTime:
 					{
-						if (((DateTimeOffset)e.Value) == DateTime.MinValue)
+						if (((DateTimeOffset)e.Value) == DateTimeOffset.MinValue)
 						{
 							e.Value = "";
 						}
@@ -484,7 +484,7 @@ namespace POG.FennecFox
 		private void udDay_ValueChanged(object sender, EventArgs e)
 		{
 			Int32 day = (Int32)udDay.Value;
-			DateTime startTime;
+			DateTime? startTime;
 			Int32 startPost;
 			DateTime endTime;
 			Int32 endPost;

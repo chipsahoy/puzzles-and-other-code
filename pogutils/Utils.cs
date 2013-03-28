@@ -46,10 +46,10 @@ namespace POG.Utils
         {
             Int32 tzOffset = 0;
             DateTimeOffset rc = DateTime.UtcNow;
-            Match m = Regex.Match(pageTime, @"All times are GMT ([\+\-]\d*)\. The time now is (\d\d:\d\d\s[A-Z]*)");
+            Match m = Regex.Match(pageTime, @"All times are GMT ([\+\-]\d+(?:\.5)?)\. The time now is (\d\d:\d\d\s[AP]M)");
             if (m.Success)
             {
-                tzOffset = Int32.Parse(m.Groups[1].Value);
+                tzOffset = (Int32)(decimal.Parse(m.Groups[1].Value) * 60); //offset in minutes
                 String timeServer = m.Groups[2].Value;
                 //Trace.TraceInformation("{0}/{1}", m.Groups[1].Value, m.Groups[2].Value);
                 DateTime rawTime; 
@@ -57,14 +57,13 @@ namespace POG.Utils
                 try
                 {
                     Thread.CurrentThread.CurrentCulture = CultureInfo.CreateSpecificCulture("en-US");
-                    rawTime = DateTime.SpecifyKind(DateTime.ParseExact(timeServer, "hh:mm tt", null), 
-                         DateTimeKind.Unspecified);
+                    rawTime = DateTime.SpecifyKind(DateTime.ParseExact(timeServer, "hh:mm tt", null), DateTimeKind.Unspecified);
                 }
                 finally
                 {
                     Thread.CurrentThread.CurrentCulture = culture;
                 }
-                TimeSpan tzTime = new TimeSpan(tzOffset, 0, 0);
+                TimeSpan tzTime = new TimeSpan(0, tzOffset, 0);
                 DateTimeOffset guess = new DateTimeOffset(rawTime, tzTime);
                 TimeSpan tsCheck = utcNow - guess.UtcDateTime;
                 rc = guess;

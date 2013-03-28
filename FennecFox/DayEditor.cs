@@ -47,7 +47,7 @@ namespace POG.FennecFox
             if (_voteCount != null)
             {
                 Int32 day = (Int32)udDay.Value;
-                DateTime startTime;
+                DateTime? startTime;
 				Int32 startPost;
                 DateTime endTime;
                 Int32 endPost;

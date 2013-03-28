@@ -86,15 +86,10 @@ namespace POG.Werewolf
 		{
 			Day = day;
 		}
-		public Boolean GetDayBoundaries(int day, out DateTime startTime, out Int32 startPost, out DateTime endTime, out Int32 endPost)
+		public Boolean GetDayBoundaries(int day, out DateTime? startTime, out Int32 startPost, out DateTime endTime, out Int32 endPost)
 		{
-			startTime = DateTime.MinValue;
 			Boolean rc = _db.GetDayBoundaries(_threadId, day, out startPost, out endTime, out endPost);
-			DateTime? t = _db.GetPostTime(_threadId, startPost);
-			if (t != null)
-			{
-				startTime = t.Value;
-			}
+			startTime = _db.GetPostTime(_threadId, startPost);
 			return rc;
 		}
 		public void IgnoreVote(string player)
