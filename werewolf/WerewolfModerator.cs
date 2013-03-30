@@ -230,10 +230,22 @@ namespace POG.Werewolf
             {
                 return false;
             }
-            if (daylight.Hours > 1)
+            if (daylight.TotalHours > 24)
+            {
+                int hour = (int)daylight.TotalHours;
+                hour = 4 * (hour / 4);
+                alarm = eod - new TimeSpan(hour, 0, 0);
+            }
+            else if (daylight.TotalHours > 8)
+            {
+                int hour = (int)daylight.TotalHours;
+                hour = 2 * (hour / 2);
+                alarm = eod - new TimeSpan(hour, 0, 0);
+            }
+            else if (daylight.TotalHours > 1)
             {
                 // vote counts every hour.
-                int hour = 1;
+                int hour = (int)daylight.TotalHours;
                 alarm = eod - new TimeSpan(hour, 0, 0);
             }
             else if (daylight.Hours == 1)
@@ -289,7 +301,7 @@ namespace POG.Werewolf
                 }
                 else
                 {
-                    Event evt = new Event("AutoPostOn");
+                    Event evt = new Event("AutoPostOff");
                     PostEvent(evt);
                 }
             }
@@ -313,6 +325,7 @@ namespace POG.Werewolf
         {
             _inner = new ModeratorSM(this, voteCount, forum, new StateMachineHost("ForumHost"));
         }
+        #endregion
         public Boolean AutoPostCounts
         {
             get
@@ -335,6 +348,5 @@ namespace POG.Werewolf
                 _inner.LockThread = value;
             }
         }
-        #endregion
     }
 }

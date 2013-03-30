@@ -321,20 +321,21 @@ namespace POG.FennecFox
         private void grdRoster_RowValidating(object sender, DataGridViewCellCancelEventArgs e)
         {
             DataGridViewRow r = grdRoster.Rows[e.RowIndex];
-            object oValue = r.Cells[(Int32)CounterColumn.Player].FormattedValue;
-            if ((oValue != null) && (oValue as String != String.Empty))
+            DataGridViewCell c = r.Cells[(Int32)CounterColumn.Player];
+            object oValue = c.FormattedValue;
+            if ((oValue != null) && (oValue as String != String.Empty)& (r.Index != -1))
             {
-                r.Cells[(Int32)CounterColumn.Player].ReadOnly = false;
+                c.ReadOnly = false;
                 String name = oValue as String;
                 if (_voteCount.GetPlayerId(name) < 0)
                 {
                     // never heard of this guy.
-                    r.Cells[(Int32)CounterColumn.Player].ErrorText = "Unknown name";
+                    c.ErrorText = "Unknown name";
                 }
                 else
                 {
-                    r.Cells[(Int32)CounterColumn.Player].ErrorText = null;
-                    r.Cells[(Int32)CounterColumn.Player].ReadOnly = true;
+                    c.ErrorText = null;
+                    c.ReadOnly = true;
                 }
             }
         }
