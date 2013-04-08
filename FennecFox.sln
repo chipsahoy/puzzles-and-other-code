@@ -33,6 +33,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WerewolfTypes", "WerewolfTy
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PogDbSqlite", "PogDbSqlite\PogDbSqlite.csproj", "{F8D0D146-0D91-49E4-AEA1-24E5A1241F96}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RickyRaccoon", "RickyRaccoon\RickyRaccoon.csproj", "{5633B541-E6A9-4C23-8D8D-CBC69B7F1933}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x86 = Debug|x86
@@ -81,6 +83,10 @@ Global
 		{F8D0D146-0D91-49E4-AEA1-24E5A1241F96}.Debug|x86.Build.0 = Debug|x86
 		{F8D0D146-0D91-49E4-AEA1-24E5A1241F96}.Release|x86.ActiveCfg = Release|x86
 		{F8D0D146-0D91-49E4-AEA1-24E5A1241F96}.Release|x86.Build.0 = Release|x86
+		{5633B541-E6A9-4C23-8D8D-CBC69B7F1933}.Debug|x86.ActiveCfg = Debug|x86
+		{5633B541-E6A9-4C23-8D8D-CBC69B7F1933}.Debug|x86.Build.0 = Debug|x86
+		{5633B541-E6A9-4C23-8D8D-CBC69B7F1933}.Release|x86.ActiveCfg = Release|x86
+		{5633B541-E6A9-4C23-8D8D-CBC69B7F1933}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
