@@ -72,17 +72,6 @@ namespace RickyRaccoon
             }
         }
 
-
-        private void cmbRoleSet_SelectedIndexChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void txtPlayerCount_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
         private void btnDoIt_Click(object sender, EventArgs e)
         {
             if (roster.Count == 0)
@@ -315,6 +304,113 @@ If any player reaches majority and is lynched before 2 pm, the moderator may, at
 This post was made by automod(TM)
 
 [b]IT IS NIGHT DO NOT POST[/b]";
+        }
+
+        private void removeRoles_Click(object sender, EventArgs e)
+        {
+            Button clickedButton = (Button)sender;
+            int rowIndex = tblRoles.GetRow(clickedButton);
+            System.Console.WriteLine(tblRoles.RowCount);
+            System.Console.WriteLine(tblRoles.RowStyles.Count);
+            System.Console.WriteLine(rowIndex);
+            tblRoles.RowStyles.RemoveAt(rowIndex - 1);
+            for (int columnIndex = 0; columnIndex < tblRoles.ColumnCount; columnIndex++)
+            {
+                var control = tblRoles.GetControlFromPosition(columnIndex, rowIndex);
+                tblRoles.Controls.Remove(control);
+            }
+
+            for (int i = rowIndex + 1; i <= tblRoles.RowCount; i++)
+            {
+                for (int columnIndex = 0; columnIndex < tblRoles.ColumnCount - 1; columnIndex++)
+                {
+                    var control = tblRoles.GetControlFromPosition(columnIndex, i);
+                    tblRoles.SetRow(control, i - 1);
+                    tblRoles.Name = tblRoles.Name.Substring(tblRoles.Name.Length - 1) + (i - 1);
+                }
+            }
+            tblRoles.RowCount--;
+        }
+
+        private void btnAddRole_Click(object sender, EventArgs e)
+        {
+            tblRoles.RowCount += 1;
+            tblRoles.RowStyles.Add(new RowStyle(System.Windows.Forms.SizeType.AutoSize));
+            Button removeRoles = new Button();
+            removeRoles.Text = "Remove Role";
+            removeRoles.Name = "btnRemoveRole";
+            removeRoles.Height = 23;
+            removeRoles.Width = 85;
+            removeRoles.Click += new EventHandler(this.removeRoles_Click);
+            tblRoles.Controls.Add(removeRoles, 0, tblRoles.RowCount);
+
+            ComboBox team = new ComboBox();
+            string[] teamlist = new string[]{
+        	    "Wolves",
+        	    "Village",
+        	    "Neutral"
+        	};
+            team.Items.AddRange(teamlist);
+            team.Name = "boxTeam";
+            tblRoles.Controls.Add(team, 1, tblRoles.RowCount);
+
+            ComboBox role = new ComboBox();
+            string[] rolelist = new string[]{
+        	    "Angel",
+                "Roleblocker",
+                "Seer",
+                "Vanilla",
+                "Vigilante"
+        	};
+            role.Items.AddRange(rolelist);
+            role.Name = "boxRole";
+            tblRoles.Controls.Add(role, 2, tblRoles.RowCount);
+
+            ComboBox subrole = new ComboBox();
+            string[] subrolelist = new string[]{
+        	    "Even",
+                "Odd",
+                "Full",
+                "1x",
+                "n0",
+                "n1",
+                "n2",
+                "n3"
+        	};
+            subrole.Items.AddRange(subrolelist);
+            subrole.Width = 50;
+            subrole.Name = "boxSubRole";
+            tblRoles.Controls.Add(subrole, 3, tblRoles.RowCount);
+
+            TextBox extraflavor = new TextBox();
+            extraflavor.Multiline = true;
+            extraflavor.Width = 206;
+            extraflavor.Height = 81;
+            extraflavor.ScrollBars = ScrollBars.Both;
+            extraflavor.Name = "txtExtraFlavor";
+            tblRoles.Controls.Add(extraflavor, 4, tblRoles.RowCount);
+
+            TextBox wincon = new TextBox();
+            wincon.Multiline = true;
+            wincon.Width = 206;
+            wincon.Height = 81;
+            wincon.ScrollBars = ScrollBars.Both;
+            wincon.Name = "txtWinCon";
+            tblRoles.Controls.Add(wincon, 5, tblRoles.RowCount);
+
+            TextBox fullpm = new TextBox();
+            fullpm.Multiline = true;
+            fullpm.Enabled = false;
+            fullpm.ReadOnly = true;
+            fullpm.Width = 206;
+            fullpm.Height = 81;
+            fullpm.ScrollBars = ScrollBars.Both;
+            fullpm.Name = "txtFullPM";
+            tblRoles.Controls.Add(fullpm, 6, tblRoles.RowCount);
+
+            TextBox count = new TextBox();
+            fullpm.Name = "txtCount";
+            tblRoles.Controls.Add(count, 7, tblRoles.RowCount);
         }
     }
 }

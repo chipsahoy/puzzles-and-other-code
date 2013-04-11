@@ -47,6 +47,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Object.cs" />
     <Compile Include="Raccoon.cs">
       <SubType>Form</SubType>
     </Compile>

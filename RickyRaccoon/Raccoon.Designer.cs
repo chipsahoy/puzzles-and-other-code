@@ -78,24 +78,14 @@
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.tabPage2 = new System.Windows.Forms.TabPage();
-            this.tableLayoutPanel4 = new System.Windows.Forms.TableLayoutPanel();
+            this.tblRoles = new System.Windows.Forms.TableLayoutPanel();
             this.label20 = new System.Windows.Forms.Label();
             this.label19 = new System.Windows.Forms.Label();
             this.btnAddRole = new System.Windows.Forms.Button();
-            this.boxSubRole1 = new System.Windows.Forms.ComboBox();
-            this.txtFlavor1 = new System.Windows.Forms.TextBox();
-            this.txtPM1 = new System.Windows.Forms.TextBox();
-            this.boxRole1 = new System.Windows.Forms.ComboBox();
-            this.boxTeam1 = new System.Windows.Forms.ComboBox();
             this.label21 = new System.Windows.Forms.Label();
             this.label22 = new System.Windows.Forms.Label();
             this.label23 = new System.Windows.Forms.Label();
             this.label24 = new System.Windows.Forms.Label();
-            this.tableLayoutPanel5 = new System.Windows.Forms.TableLayoutPanel();
-            this.btnMinus1 = new System.Windows.Forms.Button();
-            this.txtCount1 = new System.Windows.Forms.TextBox();
-            this.btnAdd1 = new System.Windows.Forms.Button();
-            this.btnRemove1 = new System.Windows.Forms.Button();
             this.tableLayoutPanel6 = new System.Windows.Forms.TableLayoutPanel();
             this.txtPlayers = new System.Windows.Forms.TextBox();
             this.label17 = new System.Windows.Forms.Label();
@@ -105,17 +95,17 @@
             this.label18 = new System.Windows.Forms.Label();
             this.txtRoleSetName = new System.Windows.Forms.TextBox();
             this.button2 = new System.Windows.Forms.Button();
-            this.boxLoadRoleSet = new System.Windows.Forms.ComboBox();
             this.tableLayoutPanel8 = new System.Windows.Forms.TableLayoutPanel();
             this.btnLoadRoleSet = new System.Windows.Forms.Button();
+            this.boxLoadRoleSet = new System.Windows.Forms.ComboBox();
+            this.label25 = new System.Windows.Forms.Label();
             this.tableLayoutPanel2.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
             this.tableLayoutPanel3.SuspendLayout();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.tabPage2.SuspendLayout();
-            this.tableLayoutPanel4.SuspendLayout();
-            this.tableLayoutPanel5.SuspendLayout();
+            this.tblRoles.SuspendLayout();
             this.tableLayoutPanel6.SuspendLayout();
             this.tableLayoutPanel7.SuspendLayout();
             this.tableLayoutPanel8.SuspendLayout();
@@ -126,7 +116,7 @@
             this.boxEODTime.Dock = System.Windows.Forms.DockStyle.Fill;
             this.boxEODTime.Location = new System.Drawing.Point(87, 403);
             this.boxEODTime.Name = "boxEODTime";
-            this.boxEODTime.Size = new System.Drawing.Size(1016, 20);
+            this.boxEODTime.Size = new System.Drawing.Size(1033, 20);
             this.boxEODTime.TabIndex = 28;
             // 
             // boxSODTime
@@ -134,7 +124,7 @@
             this.boxSODTime.Dock = System.Windows.Forms.DockStyle.Fill;
             this.boxSODTime.Location = new System.Drawing.Point(87, 468);
             this.boxSODTime.Name = "boxSODTime";
-            this.boxSODTime.Size = new System.Drawing.Size(1016, 20);
+            this.boxSODTime.Size = new System.Drawing.Size(1033, 20);
             this.boxSODTime.TabIndex = 27;
             // 
             // label10
@@ -167,7 +157,7 @@
             "No n0 Peek"});
             this.boxSeerPeek.Location = new System.Drawing.Point(87, 376);
             this.boxSeerPeek.Name = "boxSeerPeek";
-            this.boxSeerPeek.Size = new System.Drawing.Size(1016, 21);
+            this.boxSeerPeek.Size = new System.Drawing.Size(1033, 21);
             this.boxSeerPeek.TabIndex = 22;
             // 
             // Password
@@ -185,7 +175,7 @@
             this.txtUsername.Dock = System.Windows.Forms.DockStyle.Fill;
             this.txtUsername.Location = new System.Drawing.Point(87, 142);
             this.txtUsername.Name = "txtUsername";
-            this.txtUsername.Size = new System.Drawing.Size(1016, 20);
+            this.txtUsername.Size = new System.Drawing.Size(1033, 20);
             this.txtUsername.TabIndex = 19;
             // 
             // label4
@@ -206,7 +196,7 @@
             this.txtRoleList.Name = "txtRoleList";
             this.txtRoleList.ReadOnly = true;
             this.txtRoleList.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.txtRoleList.Size = new System.Drawing.Size(1016, 74);
+            this.txtRoleList.Size = new System.Drawing.Size(1033, 74);
             this.txtRoleList.TabIndex = 17;
             // 
             // label2
@@ -235,7 +225,7 @@
             this.txtRoleCount.Location = new System.Drawing.Point(87, 64);
             this.txtRoleCount.Name = "txtRoleCount";
             this.txtRoleCount.ReadOnly = true;
-            this.txtRoleCount.Size = new System.Drawing.Size(1016, 20);
+            this.txtRoleCount.Size = new System.Drawing.Size(1033, 20);
             this.txtRoleCount.TabIndex = 15;
             // 
             // RoleCount
@@ -253,7 +243,7 @@
             this.txtPassword.Dock = System.Windows.Forms.DockStyle.Fill;
             this.txtPassword.Location = new System.Drawing.Point(87, 168);
             this.txtPassword.Name = "txtPassword";
-            this.txtPassword.Size = new System.Drawing.Size(1016, 20);
+            this.txtPassword.Size = new System.Drawing.Size(1033, 20);
             this.txtPassword.TabIndex = 13;
             this.txtPassword.TextChanged += new System.EventHandler(this.txtPassword_TextChanged);
             // 
@@ -265,7 +255,7 @@
             this.txtPlayerList.Name = "txtPlayerList";
             this.txtPlayerList.ReadOnly = true;
             this.txtPlayerList.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.txtPlayerList.Size = new System.Drawing.Size(1016, 69);
+            this.txtPlayerList.Size = new System.Drawing.Size(1033, 69);
             this.txtPlayerList.TabIndex = 10;
             this.txtPlayerList.TextChanged += new System.EventHandler(this.txtPlayerList_TextChanged);
             // 
@@ -274,7 +264,7 @@
             this.txtGameTitle.Dock = System.Windows.Forms.DockStyle.Fill;
             this.txtGameTitle.Location = new System.Drawing.Point(87, 90);
             this.txtGameTitle.Name = "txtGameTitle";
-            this.txtGameTitle.Size = new System.Drawing.Size(1016, 20);
+            this.txtGameTitle.Size = new System.Drawing.Size(1033, 20);
             this.txtGameTitle.TabIndex = 2;
             // 
             // tableLayoutPanel2
@@ -293,12 +283,12 @@
             this.tableLayoutPanel2.Name = "tableLayoutPanel2";
             this.tableLayoutPanel2.RowCount = 1;
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 29F));
-            this.tableLayoutPanel2.Size = new System.Drawing.Size(1016, 29);
+            this.tableLayoutPanel2.Size = new System.Drawing.Size(1033, 29);
             this.tableLayoutPanel2.TabIndex = 9;
             // 
             // btnMakeOP
             // 
-            this.btnMakeOP.Location = new System.Drawing.Point(257, 3);
+            this.btnMakeOP.Location = new System.Drawing.Point(261, 3);
             this.btnMakeOP.Name = "btnMakeOP";
             this.btnMakeOP.Size = new System.Drawing.Size(72, 23);
             this.btnMakeOP.TabIndex = 5;
@@ -318,7 +308,7 @@
             // 
             // btnPasteRoles
             // 
-            this.btnPasteRoles.Location = new System.Drawing.Point(511, 3);
+            this.btnPasteRoles.Location = new System.Drawing.Point(519, 3);
             this.btnPasteRoles.Name = "btnPasteRoles";
             this.btnPasteRoles.Size = new System.Drawing.Size(74, 23);
             this.btnPasteRoles.TabIndex = 1;
@@ -329,7 +319,7 @@
             // btnDoIt
             // 
             this.btnDoIt.Enabled = false;
-            this.btnDoIt.Location = new System.Drawing.Point(765, 3);
+            this.btnDoIt.Location = new System.Drawing.Point(777, 3);
             this.btnDoIt.Name = "btnDoIt";
             this.btnDoIt.Size = new System.Drawing.Size(72, 23);
             this.btnDoIt.TabIndex = 4;
@@ -343,10 +333,9 @@
             this.txtPlayerCount.Location = new System.Drawing.Point(87, 38);
             this.txtPlayerCount.Name = "txtPlayerCount";
             this.txtPlayerCount.ReadOnly = true;
-            this.txtPlayerCount.Size = new System.Drawing.Size(1016, 20);
+            this.txtPlayerCount.Size = new System.Drawing.Size(1033, 20);
             this.txtPlayerCount.TabIndex = 8;
             this.txtPlayerCount.TabStop = false;
-            this.txtPlayerCount.TextChanged += new System.EventHandler(this.txtPlayerCount_TextChanged);
             // 
             // label3
             // 
@@ -487,7 +476,7 @@
             this.tableLayoutPanel3.Name = "tableLayoutPanel3";
             this.tableLayoutPanel3.RowCount = 1;
             this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel3.Size = new System.Drawing.Size(1016, 33);
+            this.tableLayoutPanel3.Size = new System.Drawing.Size(1033, 33);
             this.tableLayoutPanel3.TabIndex = 29;
             // 
             // cboxSunday
@@ -579,7 +568,7 @@
             "No Majority Lynch"});
             this.boxMajLynch.Location = new System.Drawing.Point(87, 494);
             this.boxMajLynch.Name = "boxMajLynch";
-            this.boxMajLynch.Size = new System.Drawing.Size(1016, 21);
+            this.boxMajLynch.Size = new System.Drawing.Size(1033, 21);
             this.boxMajLynch.TabIndex = 31;
             // 
             // label12
@@ -602,7 +591,7 @@
             "Once you vote, your vote is locked, and you may not switch or unvote"});
             this.boxMustLynch.Location = new System.Drawing.Point(87, 521);
             this.boxMustLynch.Name = "boxMustLynch";
-            this.boxMustLynch.Size = new System.Drawing.Size(1016, 21);
+            this.boxMustLynch.Size = new System.Drawing.Size(1033, 21);
             this.boxMustLynch.TabIndex = 33;
             // 
             // label13
@@ -625,7 +614,7 @@
             "24 Hours Except Within 1 Hour of EOD"});
             this.boxWolfChat.Location = new System.Drawing.Point(87, 548);
             this.boxWolfChat.Name = "boxWolfChat";
-            this.boxWolfChat.Size = new System.Drawing.Size(1016, 21);
+            this.boxWolfChat.Size = new System.Drawing.Size(1033, 21);
             this.boxWolfChat.TabIndex = 35;
             // 
             // label14
@@ -646,7 +635,7 @@
             this.txtOP.Name = "txtOP";
             this.txtOP.ReadOnly = true;
             this.txtOP.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.txtOP.Size = new System.Drawing.Size(1016, 102);
+            this.txtOP.Size = new System.Drawing.Size(1033, 102);
             this.txtOP.TabIndex = 37;
             // 
             // label15
@@ -664,7 +653,7 @@
             this.txtGameName.Dock = System.Windows.Forms.DockStyle.Fill;
             this.txtGameName.Location = new System.Drawing.Point(87, 116);
             this.txtGameName.Name = "txtGameName";
-            this.txtGameName.Size = new System.Drawing.Size(1016, 20);
+            this.txtGameName.Size = new System.Drawing.Size(1033, 20);
             this.txtGameName.TabIndex = 39;
             // 
             // comboBox1
@@ -673,7 +662,7 @@
             this.comboBox1.FormattingEnabled = true;
             this.comboBox1.Location = new System.Drawing.Point(87, 194);
             this.comboBox1.Name = "comboBox1";
-            this.comboBox1.Size = new System.Drawing.Size(1016, 21);
+            this.comboBox1.Size = new System.Drawing.Size(1033, 21);
             this.comboBox1.TabIndex = 40;
             // 
             // tabControl1
@@ -700,7 +689,7 @@
             // 
             // tabPage2
             // 
-            this.tabPage2.Controls.Add(this.tableLayoutPanel4);
+            this.tabPage2.Controls.Add(this.tblRoles);
             this.tabPage2.Location = new System.Drawing.Point(4, 22);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
@@ -709,47 +698,43 @@
             this.tabPage2.Text = "Create Role Set";
             this.tabPage2.UseVisualStyleBackColor = true;
             // 
-            // tableLayoutPanel4
+            // tblRoles
             // 
-            this.tableLayoutPanel4.ColumnCount = 8;
-            this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 152F));
-            this.tableLayoutPanel4.Controls.Add(this.label20, 2, 1);
-            this.tableLayoutPanel4.Controls.Add(this.label19, 1, 1);
-            this.tableLayoutPanel4.Controls.Add(this.btnAddRole, 0, 1);
-            this.tableLayoutPanel4.Controls.Add(this.boxSubRole1, 3, 2);
-            this.tableLayoutPanel4.Controls.Add(this.txtFlavor1, 4, 2);
-            this.tableLayoutPanel4.Controls.Add(this.txtPM1, 5, 2);
-            this.tableLayoutPanel4.Controls.Add(this.boxRole1, 2, 2);
-            this.tableLayoutPanel4.Controls.Add(this.boxTeam1, 1, 2);
-            this.tableLayoutPanel4.Controls.Add(this.label21, 3, 1);
-            this.tableLayoutPanel4.Controls.Add(this.label22, 4, 1);
-            this.tableLayoutPanel4.Controls.Add(this.label23, 5, 1);
-            this.tableLayoutPanel4.Controls.Add(this.label24, 6, 1);
-            this.tableLayoutPanel4.Controls.Add(this.tableLayoutPanel5, 6, 2);
-            this.tableLayoutPanel4.Controls.Add(this.btnRemove1, 0, 2);
-            this.tableLayoutPanel4.Controls.Add(this.tableLayoutPanel6, 2, 0);
-            this.tableLayoutPanel4.Controls.Add(this.label16, 3, 0);
-            this.tableLayoutPanel4.Controls.Add(this.txtTeams, 4, 0);
-            this.tableLayoutPanel4.Controls.Add(this.tableLayoutPanel7, 5, 0);
-            this.tableLayoutPanel4.Controls.Add(this.button2, 6, 0);
-            this.tableLayoutPanel4.Controls.Add(this.tableLayoutPanel8, 1, 0);
-            this.tableLayoutPanel4.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanel4.Location = new System.Drawing.Point(3, 3);
-            this.tableLayoutPanel4.Name = "tableLayoutPanel4";
-            this.tableLayoutPanel4.RowCount = 4;
-            this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-            this.tableLayoutPanel4.Size = new System.Drawing.Size(1123, 546);
-            this.tableLayoutPanel4.TabIndex = 0;
+            this.tblRoles.AutoScroll = true;
+            this.tblRoles.CellBorderStyle = System.Windows.Forms.TableLayoutPanelCellBorderStyle.Single;
+            this.tblRoles.ColumnCount = 9;
+            this.tblRoles.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tblRoles.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tblRoles.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tblRoles.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tblRoles.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tblRoles.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tblRoles.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tblRoles.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tblRoles.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tblRoles.Controls.Add(this.label20, 2, 1);
+            this.tblRoles.Controls.Add(this.label19, 1, 1);
+            this.tblRoles.Controls.Add(this.btnAddRole, 0, 1);
+            this.tblRoles.Controls.Add(this.label21, 3, 1);
+            this.tblRoles.Controls.Add(this.label22, 4, 1);
+            this.tblRoles.Controls.Add(this.label23, 6, 1);
+            this.tblRoles.Controls.Add(this.label24, 7, 1);
+            this.tblRoles.Controls.Add(this.tableLayoutPanel6, 2, 0);
+            this.tblRoles.Controls.Add(this.label16, 3, 0);
+            this.tblRoles.Controls.Add(this.txtTeams, 4, 0);
+            this.tblRoles.Controls.Add(this.tableLayoutPanel7, 6, 0);
+            this.tblRoles.Controls.Add(this.button2, 7, 0);
+            this.tblRoles.Controls.Add(this.tableLayoutPanel8, 1, 0);
+            this.tblRoles.Controls.Add(this.label25, 5, 1);
+            this.tblRoles.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tblRoles.Location = new System.Drawing.Point(3, 3);
+            this.tblRoles.Name = "tblRoles";
+            this.tblRoles.RowCount = 3;
+            this.tblRoles.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tblRoles.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tblRoles.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tblRoles.Size = new System.Drawing.Size(1123, 546);
+            this.tblRoles.TabIndex = 0;
             // 
             // label20
             // 
@@ -779,72 +764,13 @@
             this.btnAddRole.TabIndex = 0;
             this.btnAddRole.Text = "Add Role";
             this.btnAddRole.UseVisualStyleBackColor = true;
-            // 
-            // boxSubRole1
-            // 
-            this.boxSubRole1.FormattingEnabled = true;
-            this.boxSubRole1.Items.AddRange(new object[] {
-            "Even",
-            "Odd",
-            "Full",
-            "1x",
-            "n0",
-            "n1",
-            "n2",
-            "n3"});
-            this.boxSubRole1.Location = new System.Drawing.Point(348, 90);
-            this.boxSubRole1.Name = "boxSubRole1";
-            this.boxSubRole1.Size = new System.Drawing.Size(71, 21);
-            this.boxSubRole1.TabIndex = 4;
-            // 
-            // txtFlavor1
-            // 
-            this.txtFlavor1.Location = new System.Drawing.Point(425, 90);
-            this.txtFlavor1.Name = "txtFlavor1";
-            this.txtFlavor1.Size = new System.Drawing.Size(121, 20);
-            this.txtFlavor1.TabIndex = 9;
-            // 
-            // txtPM1
-            // 
-            this.txtPM1.Location = new System.Drawing.Point(552, 90);
-            this.txtPM1.Multiline = true;
-            this.txtPM1.Name = "txtPM1";
-            this.txtPM1.ReadOnly = true;
-            this.txtPM1.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.txtPM1.Size = new System.Drawing.Size(206, 81);
-            this.txtPM1.TabIndex = 13;
-            // 
-            // boxRole1
-            // 
-            this.boxRole1.FormattingEnabled = true;
-            this.boxRole1.Items.AddRange(new object[] {
-            "Angel",
-            "Roleblocker",
-            "Seer",
-            "Vanilla",
-            "Vigilante"});
-            this.boxRole1.Location = new System.Drawing.Point(221, 90);
-            this.boxRole1.Name = "boxRole1";
-            this.boxRole1.Size = new System.Drawing.Size(121, 21);
-            this.boxRole1.TabIndex = 8;
-            // 
-            // boxTeam1
-            // 
-            this.boxTeam1.FormattingEnabled = true;
-            this.boxTeam1.Items.AddRange(new object[] {
-            "Villager",
-            "Wolf",
-            "Neutral"});
-            this.boxTeam1.Location = new System.Drawing.Point(94, 90);
-            this.boxTeam1.Name = "boxTeam1";
-            this.boxTeam1.Size = new System.Drawing.Size(121, 21);
-            this.boxTeam1.TabIndex = 3;
+            this.btnAddRole.Click += new System.EventHandler(this.btnAddRole_Click);
             // 
             // label21
             // 
             this.label21.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.label21.AutoSize = true;
-            this.label21.Location = new System.Drawing.Point(358, 66);
+            this.label21.Location = new System.Drawing.Point(348, 66);
             this.label21.Name = "label21";
             this.label21.Size = new System.Drawing.Size(51, 13);
             this.label21.TabIndex = 25;
@@ -854,7 +780,7 @@
             // 
             this.label22.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.label22.AutoSize = true;
-            this.label22.Location = new System.Drawing.Point(454, 66);
+            this.label22.Location = new System.Drawing.Point(434, 66);
             this.label22.Name = "label22";
             this.label22.Size = new System.Drawing.Size(63, 13);
             this.label22.TabIndex = 26;
@@ -864,7 +790,7 @@
             // 
             this.label23.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.label23.AutoSize = true;
-            this.label23.Location = new System.Drawing.Point(634, 66);
+            this.label23.Location = new System.Drawing.Point(693, 66);
             this.label23.Name = "label23";
             this.label23.Size = new System.Drawing.Size(42, 13);
             this.label23.TabIndex = 28;
@@ -874,62 +800,11 @@
             // 
             this.label24.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.label24.AutoSize = true;
-            this.label24.Location = new System.Drawing.Point(792, 66);
+            this.label24.Location = new System.Drawing.Point(851, 66);
             this.label24.Name = "label24";
             this.label24.Size = new System.Drawing.Size(35, 13);
             this.label24.TabIndex = 29;
             this.label24.Text = "Count";
-            // 
-            // tableLayoutPanel5
-            // 
-            this.tableLayoutPanel5.ColumnCount = 3;
-            this.tableLayoutPanel5.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel5.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel5.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel5.Controls.Add(this.btnMinus1, 2, 0);
-            this.tableLayoutPanel5.Controls.Add(this.txtCount1, 0, 0);
-            this.tableLayoutPanel5.Controls.Add(this.btnAdd1, 1, 0);
-            this.tableLayoutPanel5.Location = new System.Drawing.Point(764, 90);
-            this.tableLayoutPanel5.Name = "tableLayoutPanel5";
-            this.tableLayoutPanel5.RowCount = 1;
-            this.tableLayoutPanel5.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel5.Size = new System.Drawing.Size(91, 31);
-            this.tableLayoutPanel5.TabIndex = 30;
-            // 
-            // btnMinus1
-            // 
-            this.btnMinus1.Location = new System.Drawing.Point(64, 3);
-            this.btnMinus1.Name = "btnMinus1";
-            this.btnMinus1.Size = new System.Drawing.Size(18, 23);
-            this.btnMinus1.TabIndex = 2;
-            this.btnMinus1.Text = "-";
-            this.btnMinus1.UseVisualStyleBackColor = true;
-            // 
-            // txtCount1
-            // 
-            this.txtCount1.Location = new System.Drawing.Point(3, 3);
-            this.txtCount1.Name = "txtCount1";
-            this.txtCount1.Size = new System.Drawing.Size(31, 20);
-            this.txtCount1.TabIndex = 0;
-            this.txtCount1.Text = "0";
-            // 
-            // btnAdd1
-            // 
-            this.btnAdd1.Location = new System.Drawing.Point(40, 3);
-            this.btnAdd1.Name = "btnAdd1";
-            this.btnAdd1.Size = new System.Drawing.Size(18, 23);
-            this.btnAdd1.TabIndex = 1;
-            this.btnAdd1.Text = "+";
-            this.btnAdd1.UseVisualStyleBackColor = true;
-            // 
-            // btnRemove1
-            // 
-            this.btnRemove1.Location = new System.Drawing.Point(3, 90);
-            this.btnRemove1.Name = "btnRemove1";
-            this.btnRemove1.Size = new System.Drawing.Size(85, 23);
-            this.btnRemove1.TabIndex = 31;
-            this.btnRemove1.Text = "Remove Role";
-            this.btnRemove1.UseVisualStyleBackColor = true;
             // 
             // tableLayoutPanel6
             // 
@@ -969,7 +844,7 @@
             // 
             this.label16.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.label16.AutoSize = true;
-            this.label16.Location = new System.Drawing.Point(380, 22);
+            this.label16.Location = new System.Drawing.Point(360, 22);
             this.label16.Name = "label16";
             this.label16.Size = new System.Drawing.Size(39, 13);
             this.label16.TabIndex = 16;
@@ -977,7 +852,7 @@
             // 
             // txtTeams
             // 
-            this.txtTeams.Location = new System.Drawing.Point(425, 3);
+            this.txtTeams.Location = new System.Drawing.Point(405, 3);
             this.txtTeams.Multiline = true;
             this.txtTeams.Name = "txtTeams";
             this.txtTeams.ReadOnly = true;
@@ -991,7 +866,7 @@
             this.tableLayoutPanel7.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tableLayoutPanel7.Controls.Add(this.label18, 0, 0);
             this.tableLayoutPanel7.Controls.Add(this.txtRoleSetName, 0, 1);
-            this.tableLayoutPanel7.Location = new System.Drawing.Point(552, 3);
+            this.tableLayoutPanel7.Location = new System.Drawing.Point(611, 3);
             this.tableLayoutPanel7.Name = "tableLayoutPanel7";
             this.tableLayoutPanel7.RowCount = 2;
             this.tableLayoutPanel7.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
@@ -1021,21 +896,12 @@
             // button2
             // 
             this.button2.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.button2.Location = new System.Drawing.Point(764, 17);
+            this.button2.Location = new System.Drawing.Point(823, 17);
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(91, 23);
             this.button2.TabIndex = 20;
             this.button2.Text = "Save Role Set";
             this.button2.UseVisualStyleBackColor = true;
-            // 
-            // boxLoadRoleSet
-            // 
-            this.boxLoadRoleSet.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.boxLoadRoleSet.FormattingEnabled = true;
-            this.boxLoadRoleSet.Location = new System.Drawing.Point(3, 3);
-            this.boxLoadRoleSet.Name = "boxLoadRoleSet";
-            this.boxLoadRoleSet.Size = new System.Drawing.Size(115, 21);
-            this.boxLoadRoleSet.TabIndex = 34;
             // 
             // tableLayoutPanel8
             // 
@@ -1062,6 +928,25 @@
             this.btnLoadRoleSet.Text = "Load Role Set";
             this.btnLoadRoleSet.UseVisualStyleBackColor = true;
             // 
+            // boxLoadRoleSet
+            // 
+            this.boxLoadRoleSet.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.boxLoadRoleSet.FormattingEnabled = true;
+            this.boxLoadRoleSet.Location = new System.Drawing.Point(3, 3);
+            this.boxLoadRoleSet.Name = "boxLoadRoleSet";
+            this.boxLoadRoleSet.Size = new System.Drawing.Size(115, 21);
+            this.boxLoadRoleSet.TabIndex = 34;
+            // 
+            // label25
+            // 
+            this.label25.Anchor = System.Windows.Forms.AnchorStyles.None;
+            this.label25.AutoSize = true;
+            this.label25.Location = new System.Drawing.Point(532, 66);
+            this.label25.Name = "label25";
+            this.label25.Size = new System.Drawing.Size(73, 13);
+            this.label25.TabIndex = 36;
+            this.label25.Text = "Win Condition";
+            // 
             // Raccoon
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1078,10 +963,8 @@
             this.tabControl1.ResumeLayout(false);
             this.tabPage1.ResumeLayout(false);
             this.tabPage2.ResumeLayout(false);
-            this.tableLayoutPanel4.ResumeLayout(false);
-            this.tableLayoutPanel4.PerformLayout();
-            this.tableLayoutPanel5.ResumeLayout(false);
-            this.tableLayoutPanel5.PerformLayout();
+            this.tblRoles.ResumeLayout(false);
+            this.tblRoles.PerformLayout();
             this.tableLayoutPanel6.ResumeLayout(false);
             this.tableLayoutPanel6.PerformLayout();
             this.tableLayoutPanel7.ResumeLayout(false);
@@ -1142,13 +1025,8 @@
         private System.Windows.Forms.TabControl tabControl1;
         private System.Windows.Forms.TabPage tabPage1;
         private System.Windows.Forms.TabPage tabPage2;
-        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel4;
-        private System.Windows.Forms.ComboBox boxTeam1;
-        private System.Windows.Forms.ComboBox boxSubRole1;
+        private System.Windows.Forms.TableLayoutPanel tblRoles;
         private System.Windows.Forms.Button btnAddRole;
-        private System.Windows.Forms.ComboBox boxRole1;
-        private System.Windows.Forms.TextBox txtFlavor1;
-        private System.Windows.Forms.TextBox txtPM1;
         private System.Windows.Forms.TextBox txtTeams;
         private System.Windows.Forms.Label label16;
         private System.Windows.Forms.Label label18;
@@ -1162,17 +1040,13 @@
         private System.Windows.Forms.Label label22;
         private System.Windows.Forms.Label label23;
         private System.Windows.Forms.Label label24;
-        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel5;
-        private System.Windows.Forms.Button btnMinus1;
-        private System.Windows.Forms.TextBox txtCount1;
-        private System.Windows.Forms.Button btnAdd1;
-        private System.Windows.Forms.Button btnRemove1;
         private System.Windows.Forms.ComboBox comboBox1;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel6;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel7;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel8;
         private System.Windows.Forms.ComboBox boxLoadRoleSet;
         private System.Windows.Forms.Button btnLoadRoleSet;
+        private System.Windows.Forms.Label label25;
 
     }
 }
