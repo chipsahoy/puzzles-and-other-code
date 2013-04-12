@@ -45,17 +45,12 @@
             this.txtPlayerList = new System.Windows.Forms.TextBox();
             this.txtGameTitle = new System.Windows.Forms.TextBox();
             this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
-            this.btnMakeOP = new System.Windows.Forms.Button();
-            this.btnPasteList = new System.Windows.Forms.Button();
-            this.btnPasteRoles = new System.Windows.Forms.Button();
-            this.btnDoIt = new System.Windows.Forms.Button();
             this.txtPlayerCount = new System.Windows.Forms.TextBox();
             this.label3 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.label7 = new System.Windows.Forms.Label();
             this.label8 = new System.Windows.Forms.Label();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
-            this.label6 = new System.Windows.Forms.Label();
             this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
             this.cboxSunday = new System.Windows.Forms.CheckBox();
             this.cboxMonday = new System.Windows.Forms.CheckBox();
@@ -74,7 +69,6 @@
             this.txtOP = new System.Windows.Forms.TextBox();
             this.label15 = new System.Windows.Forms.Label();
             this.txtGameName = new System.Windows.Forms.TextBox();
-            this.comboBox1 = new System.Windows.Forms.ComboBox();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.tabPage2 = new System.Windows.Forms.TabPage();
@@ -89,8 +83,6 @@
             this.tableLayoutPanel6 = new System.Windows.Forms.TableLayoutPanel();
             this.txtPlayers = new System.Windows.Forms.TextBox();
             this.label17 = new System.Windows.Forms.Label();
-            this.label16 = new System.Windows.Forms.Label();
-            this.txtTeams = new System.Windows.Forms.TextBox();
             this.tableLayoutPanel7 = new System.Windows.Forms.TableLayoutPanel();
             this.label18 = new System.Windows.Forms.Label();
             this.txtRoleSetName = new System.Windows.Forms.TextBox();
@@ -99,6 +91,9 @@
             this.btnLoadRoleSet = new System.Windows.Forms.Button();
             this.boxLoadRoleSet = new System.Windows.Forms.ComboBox();
             this.label25 = new System.Windows.Forms.Label();
+            this.btnDoIt = new System.Windows.Forms.Button();
+            this.btnPasteList = new System.Windows.Forms.Button();
+            this.btnMakeOP = new System.Windows.Forms.Button();
             this.tableLayoutPanel2.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
             this.tableLayoutPanel3.SuspendLayout();
@@ -114,7 +109,7 @@
             // boxEODTime
             // 
             this.boxEODTime.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.boxEODTime.Location = new System.Drawing.Point(87, 403);
+            this.boxEODTime.Location = new System.Drawing.Point(87, 376);
             this.boxEODTime.Name = "boxEODTime";
             this.boxEODTime.Size = new System.Drawing.Size(1033, 20);
             this.boxEODTime.TabIndex = 28;
@@ -122,7 +117,7 @@
             // boxSODTime
             // 
             this.boxSODTime.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.boxSODTime.Location = new System.Drawing.Point(87, 468);
+            this.boxSODTime.Location = new System.Drawing.Point(87, 441);
             this.boxSODTime.Name = "boxSODTime";
             this.boxSODTime.Size = new System.Drawing.Size(1033, 20);
             this.boxSODTime.TabIndex = 27;
@@ -131,7 +126,7 @@
             // 
             this.label10.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.label10.AutoSize = true;
-            this.label10.Location = new System.Drawing.Point(22, 465);
+            this.label10.Location = new System.Drawing.Point(22, 438);
             this.label10.Name = "label10";
             this.label10.Size = new System.Drawing.Size(59, 13);
             this.label10.TabIndex = 26;
@@ -141,7 +136,7 @@
             // 
             this.label9.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(21, 426);
+            this.label9.Location = new System.Drawing.Point(21, 399);
             this.label9.Name = "label9";
             this.label9.Size = new System.Drawing.Size(60, 13);
             this.label9.TabIndex = 25;
@@ -155,7 +150,7 @@
             "n0 True Peek",
             "n0 Villager Peek",
             "No n0 Peek"});
-            this.boxSeerPeek.Location = new System.Drawing.Point(87, 376);
+            this.boxSeerPeek.Location = new System.Drawing.Point(87, 349);
             this.boxSeerPeek.Name = "boxSeerPeek";
             this.boxSeerPeek.Size = new System.Drawing.Size(1033, 21);
             this.boxSeerPeek.TabIndex = 22;
@@ -182,7 +177,7 @@
             // 
             this.label4.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(23, 218);
+            this.label4.Location = new System.Drawing.Point(23, 191);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(58, 13);
             this.label4.TabIndex = 11;
@@ -191,7 +186,7 @@
             // txtRoleList
             // 
             this.txtRoleList.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.txtRoleList.Location = new System.Drawing.Point(87, 296);
+            this.txtRoleList.Location = new System.Drawing.Point(87, 269);
             this.txtRoleList.Multiline = true;
             this.txtRoleList.Name = "txtRoleList";
             this.txtRoleList.ReadOnly = true;
@@ -213,7 +208,7 @@
             // 
             this.label5.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(30, 293);
+            this.label5.Location = new System.Drawing.Point(30, 266);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(51, 13);
             this.label5.TabIndex = 16;
@@ -245,19 +240,17 @@
             this.txtPassword.Name = "txtPassword";
             this.txtPassword.Size = new System.Drawing.Size(1033, 20);
             this.txtPassword.TabIndex = 13;
-            this.txtPassword.TextChanged += new System.EventHandler(this.txtPassword_TextChanged);
             // 
             // txtPlayerList
             // 
             this.txtPlayerList.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.txtPlayerList.Location = new System.Drawing.Point(87, 221);
+            this.txtPlayerList.Location = new System.Drawing.Point(87, 194);
             this.txtPlayerList.Multiline = true;
             this.txtPlayerList.Name = "txtPlayerList";
             this.txtPlayerList.ReadOnly = true;
             this.txtPlayerList.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
             this.txtPlayerList.Size = new System.Drawing.Size(1033, 69);
             this.txtPlayerList.TabIndex = 10;
-            this.txtPlayerList.TextChanged += new System.EventHandler(this.txtPlayerList_TextChanged);
             // 
             // txtGameTitle
             // 
@@ -266,66 +259,25 @@
             this.txtGameTitle.Name = "txtGameTitle";
             this.txtGameTitle.Size = new System.Drawing.Size(1033, 20);
             this.txtGameTitle.TabIndex = 2;
+            this.txtGameTitle.TextChanged += new System.EventHandler(this.txtGameTitle_TextChanged);
             // 
             // tableLayoutPanel2
             // 
-            this.tableLayoutPanel2.ColumnCount = 4;
-            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 25F));
+            this.tableLayoutPanel2.ColumnCount = 3;
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 25F));
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 25F));
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 25F));
             this.tableLayoutPanel2.Controls.Add(this.btnMakeOP, 0, 0);
             this.tableLayoutPanel2.Controls.Add(this.btnPasteList, 0, 0);
-            this.tableLayoutPanel2.Controls.Add(this.btnPasteRoles, 1, 0);
             this.tableLayoutPanel2.Controls.Add(this.btnDoIt, 2, 0);
             this.tableLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel2.Location = new System.Drawing.Point(87, 3);
             this.tableLayoutPanel2.Name = "tableLayoutPanel2";
             this.tableLayoutPanel2.RowCount = 1;
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 29F));
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
             this.tableLayoutPanel2.Size = new System.Drawing.Size(1033, 29);
             this.tableLayoutPanel2.TabIndex = 9;
-            // 
-            // btnMakeOP
-            // 
-            this.btnMakeOP.Location = new System.Drawing.Point(261, 3);
-            this.btnMakeOP.Name = "btnMakeOP";
-            this.btnMakeOP.Size = new System.Drawing.Size(72, 23);
-            this.btnMakeOP.TabIndex = 5;
-            this.btnMakeOP.Text = "Make OP";
-            this.btnMakeOP.UseVisualStyleBackColor = true;
-            this.btnMakeOP.Click += new System.EventHandler(this.btnMakeOP_Click);
-            // 
-            // btnPasteList
-            // 
-            this.btnPasteList.Location = new System.Drawing.Point(3, 3);
-            this.btnPasteList.Name = "btnPasteList";
-            this.btnPasteList.Size = new System.Drawing.Size(94, 23);
-            this.btnPasteList.TabIndex = 0;
-            this.btnPasteList.Text = "Paste Player List";
-            this.btnPasteList.UseVisualStyleBackColor = true;
-            this.btnPasteList.Click += new System.EventHandler(this.btnPasteList_Click);
-            // 
-            // btnPasteRoles
-            // 
-            this.btnPasteRoles.Location = new System.Drawing.Point(519, 3);
-            this.btnPasteRoles.Name = "btnPasteRoles";
-            this.btnPasteRoles.Size = new System.Drawing.Size(74, 23);
-            this.btnPasteRoles.TabIndex = 1;
-            this.btnPasteRoles.Text = "Paste Roles";
-            this.btnPasteRoles.UseVisualStyleBackColor = true;
-            this.btnPasteRoles.Click += new System.EventHandler(this.btnPasteRoles_Click);
-            // 
-            // btnDoIt
-            // 
-            this.btnDoIt.Enabled = false;
-            this.btnDoIt.Location = new System.Drawing.Point(777, 3);
-            this.btnDoIt.Name = "btnDoIt";
-            this.btnDoIt.Size = new System.Drawing.Size(72, 23);
-            this.btnDoIt.TabIndex = 4;
-            this.btnDoIt.Text = "DO IT!";
-            this.btnDoIt.UseVisualStyleBackColor = true;
-            this.btnDoIt.Click += new System.EventHandler(this.btnDoIt_Click);
             // 
             // txtPlayerCount
             // 
@@ -361,7 +313,7 @@
             // 
             this.label7.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(21, 373);
+            this.label7.Location = new System.Drawing.Point(21, 346);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(60, 13);
             this.label7.TabIndex = 23;
@@ -371,7 +323,7 @@
             // 
             this.label8.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(22, 400);
+            this.label8.Location = new System.Drawing.Point(22, 373);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(59, 13);
             this.label8.TabIndex = 24;
@@ -383,46 +335,43 @@
             this.tableLayoutPanel1.ColumnCount = 2;
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel1.Controls.Add(this.label8, 0, 12);
-            this.tableLayoutPanel1.Controls.Add(this.label7, 0, 11);
+            this.tableLayoutPanel1.Controls.Add(this.label8, 0, 11);
+            this.tableLayoutPanel1.Controls.Add(this.label7, 0, 10);
             this.tableLayoutPanel1.Controls.Add(this.label1, 0, 3);
             this.tableLayoutPanel1.Controls.Add(this.label3, 0, 1);
             this.tableLayoutPanel1.Controls.Add(this.txtPlayerCount, 1, 1);
             this.tableLayoutPanel1.Controls.Add(this.tableLayoutPanel2, 1, 0);
             this.tableLayoutPanel1.Controls.Add(this.txtGameTitle, 1, 3);
-            this.tableLayoutPanel1.Controls.Add(this.txtPlayerList, 1, 9);
+            this.tableLayoutPanel1.Controls.Add(this.txtPlayerList, 1, 8);
             this.tableLayoutPanel1.Controls.Add(this.txtPassword, 1, 7);
             this.tableLayoutPanel1.Controls.Add(this.RoleCount, 0, 2);
             this.tableLayoutPanel1.Controls.Add(this.txtRoleCount, 1, 2);
-            this.tableLayoutPanel1.Controls.Add(this.label5, 0, 10);
+            this.tableLayoutPanel1.Controls.Add(this.label5, 0, 9);
             this.tableLayoutPanel1.Controls.Add(this.label2, 0, 6);
-            this.tableLayoutPanel1.Controls.Add(this.txtRoleList, 1, 10);
-            this.tableLayoutPanel1.Controls.Add(this.label4, 0, 9);
+            this.tableLayoutPanel1.Controls.Add(this.txtRoleList, 1, 9);
+            this.tableLayoutPanel1.Controls.Add(this.label4, 0, 8);
             this.tableLayoutPanel1.Controls.Add(this.txtUsername, 1, 6);
             this.tableLayoutPanel1.Controls.Add(this.Password, 0, 7);
-            this.tableLayoutPanel1.Controls.Add(this.label6, 0, 8);
-            this.tableLayoutPanel1.Controls.Add(this.boxSeerPeek, 1, 11);
-            this.tableLayoutPanel1.Controls.Add(this.label9, 0, 13);
-            this.tableLayoutPanel1.Controls.Add(this.label10, 0, 14);
-            this.tableLayoutPanel1.Controls.Add(this.boxSODTime, 1, 14);
-            this.tableLayoutPanel1.Controls.Add(this.boxEODTime, 1, 12);
-            this.tableLayoutPanel1.Controls.Add(this.tableLayoutPanel3, 1, 13);
-            this.tableLayoutPanel1.Controls.Add(this.label11, 0, 15);
-            this.tableLayoutPanel1.Controls.Add(this.boxMajLynch, 1, 15);
-            this.tableLayoutPanel1.Controls.Add(this.label12, 0, 16);
-            this.tableLayoutPanel1.Controls.Add(this.boxMustLynch, 1, 16);
-            this.tableLayoutPanel1.Controls.Add(this.label13, 0, 17);
-            this.tableLayoutPanel1.Controls.Add(this.boxWolfChat, 1, 17);
-            this.tableLayoutPanel1.Controls.Add(this.label14, 0, 18);
-            this.tableLayoutPanel1.Controls.Add(this.txtOP, 1, 18);
+            this.tableLayoutPanel1.Controls.Add(this.boxSeerPeek, 1, 10);
+            this.tableLayoutPanel1.Controls.Add(this.label9, 0, 12);
+            this.tableLayoutPanel1.Controls.Add(this.label10, 0, 13);
+            this.tableLayoutPanel1.Controls.Add(this.boxSODTime, 1, 13);
+            this.tableLayoutPanel1.Controls.Add(this.boxEODTime, 1, 11);
+            this.tableLayoutPanel1.Controls.Add(this.tableLayoutPanel3, 1, 12);
+            this.tableLayoutPanel1.Controls.Add(this.label11, 0, 14);
+            this.tableLayoutPanel1.Controls.Add(this.boxMajLynch, 1, 14);
+            this.tableLayoutPanel1.Controls.Add(this.label12, 0, 15);
+            this.tableLayoutPanel1.Controls.Add(this.boxMustLynch, 1, 15);
+            this.tableLayoutPanel1.Controls.Add(this.label13, 0, 16);
+            this.tableLayoutPanel1.Controls.Add(this.boxWolfChat, 1, 16);
+            this.tableLayoutPanel1.Controls.Add(this.label14, 0, 17);
+            this.tableLayoutPanel1.Controls.Add(this.txtOP, 1, 17);
             this.tableLayoutPanel1.Controls.Add(this.label15, 0, 5);
             this.tableLayoutPanel1.Controls.Add(this.txtGameName, 1, 5);
-            this.tableLayoutPanel1.Controls.Add(this.comboBox1, 1, 8);
             this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel1.Location = new System.Drawing.Point(3, 3);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
-            this.tableLayoutPanel1.RowCount = 19;
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel1.RowCount = 18;
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
@@ -444,16 +393,6 @@
             this.tableLayoutPanel1.Size = new System.Drawing.Size(1123, 546);
             this.tableLayoutPanel1.TabIndex = 0;
             // 
-            // label6
-            // 
-            this.label6.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(30, 191);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(51, 13);
-            this.label6.TabIndex = 20;
-            this.label6.Text = "Role Set:";
-            // 
             // tableLayoutPanel3
             // 
             this.tableLayoutPanel3.ColumnCount = 7;
@@ -472,7 +411,7 @@
             this.tableLayoutPanel3.Controls.Add(this.cboxSaturday, 6, 0);
             this.tableLayoutPanel3.Controls.Add(this.cboxFriday, 5, 0);
             this.tableLayoutPanel3.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanel3.Location = new System.Drawing.Point(87, 429);
+            this.tableLayoutPanel3.Location = new System.Drawing.Point(87, 402);
             this.tableLayoutPanel3.Name = "tableLayoutPanel3";
             this.tableLayoutPanel3.RowCount = 1;
             this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
@@ -553,7 +492,7 @@
             // 
             this.label11.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.label11.AutoSize = true;
-            this.label11.Location = new System.Drawing.Point(3, 491);
+            this.label11.Location = new System.Drawing.Point(3, 464);
             this.label11.Name = "label11";
             this.label11.Size = new System.Drawing.Size(78, 13);
             this.label11.TabIndex = 30;
@@ -566,7 +505,7 @@
             this.boxMajLynch.Items.AddRange(new object[] {
             "Majority Lynch",
             "No Majority Lynch"});
-            this.boxMajLynch.Location = new System.Drawing.Point(87, 494);
+            this.boxMajLynch.Location = new System.Drawing.Point(87, 467);
             this.boxMajLynch.Name = "boxMajLynch";
             this.boxMajLynch.Size = new System.Drawing.Size(1033, 21);
             this.boxMajLynch.TabIndex = 31;
@@ -575,7 +514,7 @@
             // 
             this.label12.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.label12.AutoSize = true;
-            this.label12.Location = new System.Drawing.Point(16, 518);
+            this.label12.Location = new System.Drawing.Point(16, 491);
             this.label12.Name = "label12";
             this.label12.Size = new System.Drawing.Size(65, 13);
             this.label12.TabIndex = 32;
@@ -589,7 +528,7 @@
             "Standard voting rules apply",
             "Once you vote, you may not unvote, but may switch",
             "Once you vote, your vote is locked, and you may not switch or unvote"});
-            this.boxMustLynch.Location = new System.Drawing.Point(87, 521);
+            this.boxMustLynch.Location = new System.Drawing.Point(87, 494);
             this.boxMustLynch.Name = "boxMustLynch";
             this.boxMustLynch.Size = new System.Drawing.Size(1033, 21);
             this.boxMustLynch.TabIndex = 33;
@@ -598,7 +537,7 @@
             // 
             this.label13.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.label13.AutoSize = true;
-            this.label13.Location = new System.Drawing.Point(24, 545);
+            this.label13.Location = new System.Drawing.Point(24, 518);
             this.label13.Name = "label13";
             this.label13.Size = new System.Drawing.Size(57, 13);
             this.label13.TabIndex = 34;
@@ -612,7 +551,7 @@
             "24 Hours",
             "Only During Night",
             "24 Hours Except Within 1 Hour of EOD"});
-            this.boxWolfChat.Location = new System.Drawing.Point(87, 548);
+            this.boxWolfChat.Location = new System.Drawing.Point(87, 521);
             this.boxWolfChat.Name = "boxWolfChat";
             this.boxWolfChat.Size = new System.Drawing.Size(1033, 21);
             this.boxWolfChat.TabIndex = 35;
@@ -621,7 +560,7 @@
             // 
             this.label14.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.label14.AutoSize = true;
-            this.label14.Location = new System.Drawing.Point(59, 572);
+            this.label14.Location = new System.Drawing.Point(59, 545);
             this.label14.Name = "label14";
             this.label14.Size = new System.Drawing.Size(22, 13);
             this.label14.TabIndex = 36;
@@ -630,12 +569,12 @@
             // txtOP
             // 
             this.txtOP.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.txtOP.Location = new System.Drawing.Point(87, 575);
+            this.txtOP.Location = new System.Drawing.Point(87, 548);
             this.txtOP.Multiline = true;
             this.txtOP.Name = "txtOP";
             this.txtOP.ReadOnly = true;
             this.txtOP.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.txtOP.Size = new System.Drawing.Size(1033, 102);
+            this.txtOP.Size = new System.Drawing.Size(1033, 129);
             this.txtOP.TabIndex = 37;
             // 
             // label15
@@ -655,15 +594,6 @@
             this.txtGameName.Name = "txtGameName";
             this.txtGameName.Size = new System.Drawing.Size(1033, 20);
             this.txtGameName.TabIndex = 39;
-            // 
-            // comboBox1
-            // 
-            this.comboBox1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.comboBox1.FormattingEnabled = true;
-            this.comboBox1.Location = new System.Drawing.Point(87, 194);
-            this.comboBox1.Name = "comboBox1";
-            this.comboBox1.Size = new System.Drawing.Size(1033, 21);
-            this.comboBox1.TabIndex = 40;
             // 
             // tabControl1
             // 
@@ -695,7 +625,7 @@
             this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
             this.tabPage2.Size = new System.Drawing.Size(1129, 552);
             this.tabPage2.TabIndex = 1;
-            this.tabPage2.Text = "Create Role Set";
+            this.tabPage2.Text = "Role Set";
             this.tabPage2.UseVisualStyleBackColor = true;
             // 
             // tblRoles
@@ -720,8 +650,6 @@
             this.tblRoles.Controls.Add(this.label23, 6, 1);
             this.tblRoles.Controls.Add(this.label24, 7, 1);
             this.tblRoles.Controls.Add(this.tableLayoutPanel6, 2, 0);
-            this.tblRoles.Controls.Add(this.label16, 3, 0);
-            this.tblRoles.Controls.Add(this.txtTeams, 4, 0);
             this.tblRoles.Controls.Add(this.tableLayoutPanel7, 6, 0);
             this.tblRoles.Controls.Add(this.button2, 7, 0);
             this.tblRoles.Controls.Add(this.tableLayoutPanel8, 1, 0);
@@ -740,7 +668,7 @@
             // 
             this.label20.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.label20.AutoSize = true;
-            this.label20.Location = new System.Drawing.Point(267, 66);
+            this.label20.Location = new System.Drawing.Point(270, 68);
             this.label20.Name = "label20";
             this.label20.Size = new System.Drawing.Size(29, 13);
             this.label20.TabIndex = 24;
@@ -750,7 +678,7 @@
             // 
             this.label19.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.label19.AutoSize = true;
-            this.label19.Location = new System.Drawing.Point(137, 66);
+            this.label19.Location = new System.Drawing.Point(139, 68);
             this.label19.Name = "label19";
             this.label19.Size = new System.Drawing.Size(34, 13);
             this.label19.TabIndex = 23;
@@ -758,7 +686,7 @@
             // 
             // btnAddRole
             // 
-            this.btnAddRole.Location = new System.Drawing.Point(3, 61);
+            this.btnAddRole.Location = new System.Drawing.Point(4, 63);
             this.btnAddRole.Name = "btnAddRole";
             this.btnAddRole.Size = new System.Drawing.Size(85, 23);
             this.btnAddRole.TabIndex = 0;
@@ -770,7 +698,7 @@
             // 
             this.label21.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.label21.AutoSize = true;
-            this.label21.Location = new System.Drawing.Point(348, 66);
+            this.label21.Location = new System.Drawing.Point(352, 68);
             this.label21.Name = "label21";
             this.label21.Size = new System.Drawing.Size(51, 13);
             this.label21.TabIndex = 25;
@@ -780,7 +708,7 @@
             // 
             this.label22.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.label22.AutoSize = true;
-            this.label22.Location = new System.Drawing.Point(434, 66);
+            this.label22.Location = new System.Drawing.Point(410, 68);
             this.label22.Name = "label22";
             this.label22.Size = new System.Drawing.Size(63, 13);
             this.label22.TabIndex = 26;
@@ -790,7 +718,7 @@
             // 
             this.label23.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.label23.AutoSize = true;
-            this.label23.Location = new System.Drawing.Point(693, 66);
+            this.label23.Location = new System.Drawing.Point(642, 68);
             this.label23.Name = "label23";
             this.label23.Size = new System.Drawing.Size(42, 13);
             this.label23.TabIndex = 28;
@@ -800,7 +728,7 @@
             // 
             this.label24.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.label24.AutoSize = true;
-            this.label24.Location = new System.Drawing.Point(851, 66);
+            this.label24.Location = new System.Drawing.Point(801, 68);
             this.label24.Name = "label24";
             this.label24.Size = new System.Drawing.Size(35, 13);
             this.label24.TabIndex = 29;
@@ -813,7 +741,7 @@
             this.tableLayoutPanel6.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.tableLayoutPanel6.Controls.Add(this.txtPlayers, 0, 1);
             this.tableLayoutPanel6.Controls.Add(this.label17, 0, 0);
-            this.tableLayoutPanel6.Location = new System.Drawing.Point(221, 3);
+            this.tableLayoutPanel6.Location = new System.Drawing.Point(224, 4);
             this.tableLayoutPanel6.Name = "tableLayoutPanel6";
             this.tableLayoutPanel6.RowCount = 2;
             this.tableLayoutPanel6.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
@@ -840,33 +768,13 @@
             this.label17.TabIndex = 17;
             this.label17.Text = "Total Players";
             // 
-            // label16
-            // 
-            this.label16.Anchor = System.Windows.Forms.AnchorStyles.Right;
-            this.label16.AutoSize = true;
-            this.label16.Location = new System.Drawing.Point(360, 22);
-            this.label16.Name = "label16";
-            this.label16.Size = new System.Drawing.Size(39, 13);
-            this.label16.TabIndex = 16;
-            this.label16.Text = "Teams";
-            // 
-            // txtTeams
-            // 
-            this.txtTeams.Location = new System.Drawing.Point(405, 3);
-            this.txtTeams.Multiline = true;
-            this.txtTeams.Name = "txtTeams";
-            this.txtTeams.ReadOnly = true;
-            this.txtTeams.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.txtTeams.Size = new System.Drawing.Size(121, 52);
-            this.txtTeams.TabIndex = 15;
-            // 
             // tableLayoutPanel7
             // 
             this.tableLayoutPanel7.ColumnCount = 1;
             this.tableLayoutPanel7.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tableLayoutPanel7.Controls.Add(this.label18, 0, 0);
             this.tableLayoutPanel7.Controls.Add(this.txtRoleSetName, 0, 1);
-            this.tableLayoutPanel7.Location = new System.Drawing.Point(611, 3);
+            this.tableLayoutPanel7.Location = new System.Drawing.Point(560, 4);
             this.tableLayoutPanel7.Name = "tableLayoutPanel7";
             this.tableLayoutPanel7.RowCount = 2;
             this.tableLayoutPanel7.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
@@ -896,7 +804,7 @@
             // button2
             // 
             this.button2.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.button2.Location = new System.Drawing.Point(823, 17);
+            this.button2.Location = new System.Drawing.Point(773, 18);
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(91, 23);
             this.button2.TabIndex = 20;
@@ -910,7 +818,7 @@
             this.tableLayoutPanel8.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.tableLayoutPanel8.Controls.Add(this.btnLoadRoleSet, 0, 1);
             this.tableLayoutPanel8.Controls.Add(this.boxLoadRoleSet, 0, 0);
-            this.tableLayoutPanel8.Location = new System.Drawing.Point(94, 3);
+            this.tableLayoutPanel8.Location = new System.Drawing.Point(96, 4);
             this.tableLayoutPanel8.Name = "tableLayoutPanel8";
             this.tableLayoutPanel8.RowCount = 2;
             this.tableLayoutPanel8.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
@@ -941,11 +849,42 @@
             // 
             this.label25.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.label25.AutoSize = true;
-            this.label25.Location = new System.Drawing.Point(532, 66);
+            this.label25.Location = new System.Drawing.Point(480, 68);
             this.label25.Name = "label25";
             this.label25.Size = new System.Drawing.Size(73, 13);
             this.label25.TabIndex = 36;
             this.label25.Text = "Win Condition";
+            // 
+            // btnDoIt
+            // 
+            this.btnDoIt.Enabled = false;
+            this.btnDoIt.Location = new System.Drawing.Point(691, 3);
+            this.btnDoIt.Name = "btnDoIt";
+            this.btnDoIt.Size = new System.Drawing.Size(72, 23);
+            this.btnDoIt.TabIndex = 4;
+            this.btnDoIt.Text = "DO IT!";
+            this.btnDoIt.UseVisualStyleBackColor = true;
+            this.btnDoIt.Click += new System.EventHandler(this.btnDoIt_Click);
+            // 
+            // btnPasteList
+            // 
+            this.btnPasteList.Location = new System.Drawing.Point(3, 3);
+            this.btnPasteList.Name = "btnPasteList";
+            this.btnPasteList.Size = new System.Drawing.Size(94, 23);
+            this.btnPasteList.TabIndex = 0;
+            this.btnPasteList.Text = "Paste Player List";
+            this.btnPasteList.UseVisualStyleBackColor = true;
+            this.btnPasteList.Click += new System.EventHandler(this.btnPasteList_Click);
+            // 
+            // btnMakeOP
+            // 
+            this.btnMakeOP.Location = new System.Drawing.Point(347, 3);
+            this.btnMakeOP.Name = "btnMakeOP";
+            this.btnMakeOP.Size = new System.Drawing.Size(72, 23);
+            this.btnMakeOP.TabIndex = 5;
+            this.btnMakeOP.Text = "Make OP";
+            this.btnMakeOP.UseVisualStyleBackColor = true;
+            this.btnMakeOP.Click += new System.EventHandler(this.btnMakeOP_Click);
             // 
             // Raccoon
             // 
@@ -993,9 +932,6 @@
         private System.Windows.Forms.TextBox txtPlayerList;
         private System.Windows.Forms.TextBox txtGameTitle;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
-        private System.Windows.Forms.Button btnPasteList;
-        private System.Windows.Forms.Button btnPasteRoles;
-        private System.Windows.Forms.Button btnDoIt;
         private System.Windows.Forms.TextBox txtPlayerCount;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label label1;
@@ -1018,17 +954,13 @@
         private System.Windows.Forms.ComboBox boxWolfChat;
         private System.Windows.Forms.Label label14;
         private System.Windows.Forms.TextBox txtOP;
-        private System.Windows.Forms.Button btnMakeOP;
         private System.Windows.Forms.Label label15;
         private System.Windows.Forms.TextBox txtGameName;
-        private System.Windows.Forms.Label label6;
         private System.Windows.Forms.TabControl tabControl1;
         private System.Windows.Forms.TabPage tabPage1;
         private System.Windows.Forms.TabPage tabPage2;
         private System.Windows.Forms.TableLayoutPanel tblRoles;
         private System.Windows.Forms.Button btnAddRole;
-        private System.Windows.Forms.TextBox txtTeams;
-        private System.Windows.Forms.Label label16;
         private System.Windows.Forms.Label label18;
         private System.Windows.Forms.TextBox txtPlayers;
         private System.Windows.Forms.Label label17;
@@ -1040,13 +972,15 @@
         private System.Windows.Forms.Label label22;
         private System.Windows.Forms.Label label23;
         private System.Windows.Forms.Label label24;
-        private System.Windows.Forms.ComboBox comboBox1;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel6;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel7;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel8;
         private System.Windows.Forms.ComboBox boxLoadRoleSet;
         private System.Windows.Forms.Button btnLoadRoleSet;
         private System.Windows.Forms.Label label25;
+        private System.Windows.Forms.Button btnMakeOP;
+        private System.Windows.Forms.Button btnPasteList;
+        private System.Windows.Forms.Button btnDoIt;
 
     }
 }

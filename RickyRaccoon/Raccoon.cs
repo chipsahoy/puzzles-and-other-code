@@ -15,37 +15,12 @@ namespace RickyRaccoon
     {
 
         List<String> roster = new List<string>();
-        List<String> roles = new List<string>();
         private TwoPlusTwoForum _forum;
         private Action<Action> _synchronousInvoker;
 
         public Raccoon()
         {
             InitializeComponent();
-        }
-
-        private void btnPasteRoles_Click(object sender, EventArgs e)
-        {
-            roles.Clear();
-            object o = Clipboard.GetData(DataFormats.Text);
-            if (o != null)
-            {
-                String clip = o as String;
-                String[] lines = clip.Split(new String[] { "\r\n", "\r" }, StringSplitOptions.RemoveEmptyEntries);
-                foreach (String line in lines)
-                {
-                    String name = line.Trim();
-                    if(Regex.IsMatch(name, @"^[\s]*$")) continue;
-                    roles.Add(name);
-                }
-                txtRoleCount.Text = roles.Count.ToString();
-                txtRoleList.Text = String.Join(Environment.NewLine, roles);
-            }
-            if (roles.Count > 0 && roster.Count > 0 && roster.Count == roles.Count)
-            {
-                btnDoIt.Enabled = true;
-            }
-            else btnDoIt.Enabled = false;
         }
 
         private void btnPasteList_Click(object sender, EventArgs e)
@@ -62,9 +37,16 @@ namespace RickyRaccoon
                     if (Regex.IsMatch(name, @"^[\s]*$")) continue;
                     roster.Add(name);
                 }
+                roster.Sort();
                 txtPlayerCount.Text = roster.Count.ToString();
                 txtPlayerList.Text = String.Join(Environment.NewLine, roster);
-                if (roles.Count > 0 && roster.Count > 0 && roster.Count == roles.Count)
+                int temp = 0;
+                if(!Int32.TryParse(txtRoleCount.Text, out temp))
+                {
+                    btnDoIt.Enabled = false;
+                    return;
+                }
+                if (Convert.ToInt16(txtRoleCount.Text) > 0 && roster.Count > 0 && roster.Count == Convert.ToInt16(txtRoleCount.Text))
                 {
                     btnDoIt.Enabled = true;
                 }
@@ -79,12 +61,12 @@ namespace RickyRaccoon
                 MessageBox.Show("Please enter in your playerlist!");
                 return;
             }
-            else if (roles.Count == 0)
+            else if (Convert.ToInt16(txtRoleCount.Text) == 0)
             {
                 MessageBox.Show("Please enter in your roles!");
                 return;
             }
-            else if (roster.Count != roles.Count)
+            else if (roster.Count != Convert.ToInt16(txtRoleCount.Text))
             {
                 MessageBox.Show("There needs to be the same amount of players as roles!");
                 return;
@@ -124,102 +106,56 @@ namespace RickyRaccoon
             }
             btnDoIt.Enabled = false;
             Random rng = new Random();
-            int n = roles.Count;
+            int n = Convert.ToInt16(txtRoleCount.Text);
             while (n > 1)
             {
                 n--;
                 int k = rng.Next(n + 1);
-                String value = roles[k];
-                roles[k] = roles[n];
-                roles[n] = value;
+                String value = roster[k];
+                roster[k] = roster[n];
+                roster[n] = value;
             }
-
-            txtRoleList.Text = "";
-            List<String> villagers = new List<string>();
-            List<String> wolves = new List<string>();
-            List<String> seers = new List<string>();
-            for (int i = 0; i < roles.Count; i++)
+            int curplayer = 0;
+            for (int i = 4; i <= tblRoles.RowCount; i++)
             {
-                txtRoleList.Text += roster[i] + " - " + roles[i] + Environment.NewLine;
-
-                //Add roles into their list for PMing purposes. Warning: Brutal hack where we assume the spelling/capatilization of the roles
-                if (roles[i] == "villager")
+                Dictionary<string, string> pm = getPM(i);
+                int temp = 0;
+                if (!Int32.TryParse(pm["count"], out temp)) pm["count"] = "0";
+                txtRoleList.Text += pm["count"] + "X " + pm["team"] + pm["subrole"] + pm["role"] + Environment.NewLine;
+                for(int j = 0; j < Convert.ToInt16(pm["count"]); j++)
                 {
-                    villagers.Add(roster[i]);
-                }
-                else if (roles[i] == "wolf")
-                {
-                    wolves.Add(roster[i]);
-                }
-                else if (roles[i] == "seer")
-                {
-                    seers.Add(roster[i]);
-                }
-            }
-            for (int i = 0; i < villagers.Count; i += 8)
-            {
-                _forum.SendPM(null, villagers.GetRange(i, Math.Min(8, villagers.Count - i)), txtGameName.Text + " Role PM", @"*************************************************
-You are a villager! You win by eliminating all the wolves.
+                    _forum.SendPM(new List<string>() { roster[curplayer] }, null, txtGameName.Text + " Role PM", @"*************************************************
+You are " + pm["extraflavor"] + "a " + pm["team"] + pm["subrole"] + pm["role"] + "! You win by " + pm["wincon"] + @"
 
 The game thread is here: " + txtGameTitle.Text + @"
 
 Good luck!
-*************************************************", true);
-                System.Threading.Thread.Sleep(60000);
-            }
-            for (int i = 0; i < wolves.Count; i += 8)
-            {
-                _forum.SendPM(null, wolves.GetRange(i, Math.Min(8, wolves.Count - i)), txtGameName.Text + " Role PM", @"*************************************************
-You are a wolf! You win by achieving even numbers with the village
-
-The wolf team is:
-" + String.Join(Environment.NewLine, wolves) + @"
-
-The game thread is here: " + txtGameTitle.Text + @"
-
-Good luck!
-*************************************************", true);
-                System.Threading.Thread.Sleep(60000);
-            }
-            for (int i = 0; i < seers.Count; i += 8)
-            {
-                String peektext = "";
-                if (boxSeerPeek.Text == "n0 True Peek") peektext = "You receive an n0 peek chosen from the playerlist!";
-                else if (boxSeerPeek.Text == "n0 Villager Peek") peektext = "You receive a random n0 villager peek!";
-                else if (boxSeerPeek.Text == "No n0 Peek") peektext = "You don't receive an n0 peek!";
-
-                _forum.SendPM(null, seers.GetRange(i, Math.Min(8, seers.Count - i)), txtGameName.Text + " Role PM", @"*************************************************
-You are the Seer! " + peektext + @"
-
-The Playerlist is:
-" + String.Join(Environment.NewLine, roster) + @"
-
-The game thread is here: " + txtGameTitle.Text + @"
-
-Good luck!
-*************************************************", true);
-                System.Threading.Thread.Sleep(60000);
-            }
-        }
-
-        private void txtPlayerList_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void txtPassword_TextChanged(object sender, EventArgs e)
-        {
-
+*************************************************");
+                    System.Threading.Thread.Sleep(30000);
+                    curplayer += 1;
+                }
+                
+            } 
+            roster.Sort();
+            txtPlayerCount.Text = roster.Count.ToString();
         }
 
         private void btnMakeOP_Click(object sender, EventArgs e)
         {
-            String peektext = "";
+            string pms = "";
+            for (int i = 3; i <= tblRoles.RowCount; i++)
+            {
+                for (int columnIndex = 0; columnIndex < tblRoles.ColumnCount - 1; columnIndex++)
+                {
+                    var control = tblRoles.GetControlFromPosition(columnIndex, i);
+                    if (control == null || control.Name == null) continue;
+                    if (control.Name == "txtFullPM")
+                    {
+                        pms += "[quote]" + control.Text + "[/quote]" + Environment.NewLine + Environment.NewLine;
+                    }
+                }
+            }
             String majlynchtext = "";
-
-            if (boxSeerPeek.Text == "n0 True Peek") peektext = "You receive an n0 peek chosen from the playerlist!";
-            else if (boxSeerPeek.Text == "n0 Villager Peek") peektext = "You receive a random n0 villager peek!";
-            else if (boxSeerPeek.Text == "No n0 Peek") peektext = "You don't receive an n0 peek!";
 
             if (boxMajLynch.Text == "Majority Lynch") majlynchtext = "If at any time during the day any player has a majority the possible votes on him (e.g., with nine players alive, five or more is a majority), the day ends immediately and that player is lynched. Any player who believes a player has reached majority should post '[B]night[/B]', and all other posting should cease while the vote count is confirmed.";
             else majlynchtext = "";
@@ -232,42 +168,9 @@ Werewolf is a game about lying and catching people lying. It's an adversarial ga
 Werewolf is also a community and team-based game. While there are many styles and strategies and reasons for playing and you may choose your own, you are expected to be respectful of the time and energy others put in as players and as moderators. [u]You are expected to play to win. Intentionally sabotaging your team, or choosing strategies with the sole purpose of trolling other players in the game is not allowed.[/u][/indent]
 [b][U]The Setup[/U][/b][indent]
 
-Villager PM:
-
-[quote]" + @"*************************************************
-You are a villager! You win by eliminating all the wolves.
-
-The game thread is here: " + txtGameTitle.Text + @"
-
-Good luck!
-*************************************************" + @"
-[/quote]
-
-Wolf PM:
-[quote]" + @"*************************************************
-You are a wolf! You win by achieving even numbers with the village
-
-The wolf team is:
-WOLVES
-
-The game thread is here: " + txtGameTitle.Text + @"
-
-Good luck!
-*************************************************" + @"
-[/quote]
-
-Seer PM:
-[quote]" + @"*************************************************
-You are the Seer! " + peektext + @"
-
-The Playerlist is:
-" + String.Join(Environment.NewLine, roster) + @"
-
-The game thread is here: " + txtGameTitle.Text + @"
-
-Good luck!
-*************************************************" + @"
-[/quote]
+PMs:
+" + pms +
+@"
 
 [U]Voting[/U]
 
@@ -288,7 +191,7 @@ Day lasts until [b][color=red]" + boxEODTime.Text + @"[/color][/b]. Posting at [
 
 Weekends are different: There is not 'night' Saturday night -- the thread remains open from Saturday morning until Sunday evening. There is no scheduled Saturday night lynch.
 
-If any player reaches majority and is lynched before 2 pm, the moderator may, at his discretion, reopen the thread for a second game day that same day. He will do so only if it seems clear that this will not unduly disadvantage either side.[/indent]
+If this game has majority and any player reaches majority and is lynched before 2 pm, the moderator may, at his discretion, reopen the thread for a second game day that same day. He will do so only if it seems clear that this will not unduly disadvantage either side.[/indent]
 [b][U]Wolf Chat[/U][/b]
 [indent]Wolves may communicate with each other by any means they desire during [I]wolf chat[/I]. 
 
@@ -332,6 +235,113 @@ This post was made by automod(TM)
             tblRoles.RowCount--;
         }
 
+        private void count_Change(object sender, EventArgs e)
+        {
+            int playerCount = 0;
+            for (int i = 0; i <= tblRoles.RowCount; i++)
+            {
+                for (int columnIndex = 0; columnIndex < tblRoles.ColumnCount - 1; columnIndex++)
+                {
+                    var control = tblRoles.GetControlFromPosition(columnIndex, i);
+                    if (control == null || control.Name == null) continue;
+                    if (control.Name == "txtCount")
+                    {
+                        int result = 0;
+                        if (int.TryParse(control.Text, out result)) playerCount += result;
+                        else Console.WriteLine(control.Text);
+                        
+                    }
+                }
+            }
+            txtPlayers.Text = Convert.ToString(playerCount);
+            txtRoleCount.Text = Convert.ToString(playerCount);
+            updateRoleList();
+        }
+
+        private Dictionary<string, string> getPM(int row)
+        {
+            Dictionary<string, string> pm = new Dictionary<string, string>();
+            pm["team"] = "";
+            pm["role"] = "";
+            pm["subrole"] = "";
+            pm["extraflavor"] = "";
+            pm["wincon"] = "";
+            for (int columnIndex = 0; columnIndex < tblRoles.ColumnCount - 1; columnIndex++)
+            {
+                var control = tblRoles.GetControlFromPosition(columnIndex, row);
+                if (control == null || control.Name == null) continue;
+                else
+                {
+                    switch (control.Name)
+                    {
+                        case "boxTeam":
+                            pm["team"] = control.Text;
+                            break;
+                        case "boxRole":
+                            if (control.Text != "") pm["role"] = " " + control.Text;
+                            break;
+                        case "boxSubRole":
+                            if (control.Text != "") pm["subrole"] = " " + control.Text;
+                            break;
+                        case "txtExtraFlavor":
+                            if (control.Text != "") pm["extraflavor"] = control.Text + " ";
+                            break;
+                        case "txtWinCon":
+                            pm["wincon"] = control.Text;
+                            break;
+                        case "txtCount":
+                            pm["count"] = control.Text;
+                            break;
+                    }
+                }
+            }
+            return pm;
+        }
+
+        private void pm_Change(object sender, EventArgs e)
+        {
+            Control changedForm = (Control)sender;
+            int rowIndex = tblRoles.GetRow(changedForm);
+            updatePM(rowIndex);
+        }
+
+        private void updatePM(int rowIndex)
+        {
+            for (int columnIndex = 0; columnIndex < tblRoles.ColumnCount - 1; columnIndex++)
+            {
+                var control = tblRoles.GetControlFromPosition(columnIndex, rowIndex);
+                if (control != null && control.Name == "txtFullPM")
+                {
+                    Dictionary<string, string> pm = getPM(rowIndex);
+                    control.Text = @"*************************************************
+You are " + pm["extraflavor"] + "a " + pm["team"] + pm["subrole"] + pm["role"] + "! You win by " + pm["wincon"] + @"
+
+The game thread is here: " + txtGameTitle.Text + @"
+
+Good luck!
+*************************************************";
+                }
+            }
+            updateRoleList();
+        }
+
+        private void updateRoleList()
+        {
+            txtRoleList.Text = "";
+            for (int i = 4; i <= tblRoles.RowCount; i++)
+            {
+                Dictionary<string, string> pm = getPM(i);
+                int temp = 0;
+                if (!Int32.TryParse(pm["count"], out temp)) pm["count"] = "0";
+                txtRoleList.Text += pm["count"] + "X " + pm["team"] + pm["subrole"] + pm["role"] + Environment.NewLine;
+            }
+            if (Convert.ToInt16(txtRoleCount.Text) > 0 && roster.Count > 0 && roster.Count == Convert.ToInt16(txtRoleCount.Text))
+            {
+                btnDoIt.Enabled = true;
+            }
+            else btnDoIt.Enabled = false;
+        }
+
         private void btnAddRole_Click(object sender, EventArgs e)
         {
             tblRoles.RowCount += 1;
@@ -346,12 +356,13 @@ This post was made by automod(TM)
 
             ComboBox team = new ComboBox();
             string[] teamlist = new string[]{
-        	    "Wolves",
-        	    "Village",
+        	    "Wolf",
+        	    "Villager",
         	    "Neutral"
         	};
             team.Items.AddRange(teamlist);
             team.Name = "boxTeam";
+            team.TextChanged += new EventHandler(this.pm_Change);
             tblRoles.Controls.Add(team, 1, tblRoles.RowCount);
 
             ComboBox role = new ComboBox();
@@ -364,6 +375,7 @@ This post was made by automod(TM)
         	};
             role.Items.AddRange(rolelist);
             role.Name = "boxRole";
+            role.TextChanged += new EventHandler(this.pm_Change);
             tblRoles.Controls.Add(role, 2, tblRoles.RowCount);
 
             ComboBox subrole = new ComboBox();
@@ -380,6 +392,7 @@ This post was made by automod(TM)
             subrole.Items.AddRange(subrolelist);
             subrole.Width = 50;
             subrole.Name = "boxSubRole";
+            subrole.TextChanged += new EventHandler(this.pm_Change);
             tblRoles.Controls.Add(subrole, 3, tblRoles.RowCount);
 
             TextBox extraflavor = new TextBox();
@@ -388,6 +401,7 @@ This post was made by automod(TM)
             extraflavor.Height = 81;
             extraflavor.ScrollBars = ScrollBars.Both;
             extraflavor.Name = "txtExtraFlavor";
+            extraflavor.TextChanged += new EventHandler(this.pm_Change);
             tblRoles.Controls.Add(extraflavor, 4, tblRoles.RowCount);
 
             TextBox wincon = new TextBox();
@@ -396,11 +410,11 @@ This post was made by automod(TM)
             wincon.Height = 81;
             wincon.ScrollBars = ScrollBars.Both;
             wincon.Name = "txtWinCon";
+            wincon.TextChanged += new EventHandler(this.pm_Change);
             tblRoles.Controls.Add(wincon, 5, tblRoles.RowCount);
 
             TextBox fullpm = new TextBox();
             fullpm.Multiline = true;
-            fullpm.Enabled = false;
             fullpm.ReadOnly = true;
             fullpm.Width = 206;
             fullpm.Height = 81;
@@ -409,8 +423,18 @@ This post was made by automod(TM)
             tblRoles.Controls.Add(fullpm, 6, tblRoles.RowCount);
 
             TextBox count = new TextBox();
-            fullpm.Name = "txtCount";
+            count.Name = "txtCount";
+            count.Text = "0";
+            count.TextChanged += new EventHandler(this.count_Change);
             tblRoles.Controls.Add(count, 7, tblRoles.RowCount);
+        }
+
+        private void txtGameTitle_TextChanged(object sender, EventArgs e)
+        {
+            for (int i = 4; i <= tblRoles.RowCount; i++)
+            {
+                updatePM(i);
+            }
         }
     }
 }
