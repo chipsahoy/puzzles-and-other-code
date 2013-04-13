@@ -90,10 +90,12 @@
             this.label18 = new System.Windows.Forms.Label();
             this.txtRoleSetName = new System.Windows.Forms.TextBox();
             this.btnSaveRoleSet = new System.Windows.Forms.Button();
-            this.tableLayoutPanel8 = new System.Windows.Forms.TableLayoutPanel();
-            this.btnLoadRoleSet = new System.Windows.Forms.Button();
-            this.boxLoadRoleSet = new System.Windows.Forms.ComboBox();
             this.label25 = new System.Windows.Forms.Label();
+            this.tableLayoutPanel4 = new System.Windows.Forms.TableLayoutPanel();
+            this.btnLoadRoleSet = new System.Windows.Forms.Button();
+            this.comboBox1 = new System.Windows.Forms.ComboBox();
+            this.openFileDialog = new System.Windows.Forms.OpenFileDialog();
+            this.saveFileDialog = new System.Windows.Forms.SaveFileDialog();
             this.tableLayoutPanel2.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
             this.tableLayoutPanel3.SuspendLayout();
@@ -103,7 +105,7 @@
             this.tblRoles.SuspendLayout();
             this.tableLayoutPanel6.SuspendLayout();
             this.tableLayoutPanel7.SuspendLayout();
-            this.tableLayoutPanel8.SuspendLayout();
+            this.tableLayoutPanel4.SuspendLayout();
             this.SuspendLayout();
             // 
             // boxEODTime
@@ -685,8 +687,8 @@
             this.tblRoles.Controls.Add(this.tableLayoutPanel6, 2, 0);
             this.tblRoles.Controls.Add(this.tableLayoutPanel7, 6, 0);
             this.tblRoles.Controls.Add(this.btnSaveRoleSet, 7, 0);
-            this.tblRoles.Controls.Add(this.tableLayoutPanel8, 1, 0);
             this.tblRoles.Controls.Add(this.label25, 5, 1);
+            this.tblRoles.Controls.Add(this.tableLayoutPanel4, 1, 0);
             this.tblRoles.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tblRoles.Location = new System.Drawing.Point(3, 3);
             this.tblRoles.Name = "tblRoles";
@@ -701,7 +703,7 @@
             // 
             this.label20.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.label20.AutoSize = true;
-            this.label20.Location = new System.Drawing.Point(270, 68);
+            this.label20.Location = new System.Drawing.Point(249, 68);
             this.label20.Name = "label20";
             this.label20.Size = new System.Drawing.Size(29, 13);
             this.label20.TabIndex = 24;
@@ -711,7 +713,7 @@
             // 
             this.label19.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.label19.AutoSize = true;
-            this.label19.Location = new System.Drawing.Point(139, 68);
+            this.label19.Location = new System.Drawing.Point(129, 68);
             this.label19.Name = "label19";
             this.label19.Size = new System.Drawing.Size(34, 13);
             this.label19.TabIndex = 23;
@@ -731,7 +733,7 @@
             // 
             this.label21.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.label21.AutoSize = true;
-            this.label21.Location = new System.Drawing.Point(352, 68);
+            this.label21.Location = new System.Drawing.Point(331, 68);
             this.label21.Name = "label21";
             this.label21.Size = new System.Drawing.Size(51, 13);
             this.label21.TabIndex = 25;
@@ -741,7 +743,7 @@
             // 
             this.label22.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.label22.AutoSize = true;
-            this.label22.Location = new System.Drawing.Point(410, 68);
+            this.label22.Location = new System.Drawing.Point(389, 68);
             this.label22.Name = "label22";
             this.label22.Size = new System.Drawing.Size(63, 13);
             this.label22.TabIndex = 26;
@@ -751,7 +753,7 @@
             // 
             this.label23.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.label23.AutoSize = true;
-            this.label23.Location = new System.Drawing.Point(642, 68);
+            this.label23.Location = new System.Drawing.Point(621, 68);
             this.label23.Name = "label23";
             this.label23.Size = new System.Drawing.Size(42, 13);
             this.label23.TabIndex = 28;
@@ -761,7 +763,7 @@
             // 
             this.label24.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.label24.AutoSize = true;
-            this.label24.Location = new System.Drawing.Point(801, 68);
+            this.label24.Location = new System.Drawing.Point(780, 68);
             this.label24.Name = "label24";
             this.label24.Size = new System.Drawing.Size(35, 13);
             this.label24.TabIndex = 29;
@@ -774,7 +776,7 @@
             this.tableLayoutPanel6.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.tableLayoutPanel6.Controls.Add(this.txtPlayers, 0, 1);
             this.tableLayoutPanel6.Controls.Add(this.label17, 0, 0);
-            this.tableLayoutPanel6.Location = new System.Drawing.Point(224, 4);
+            this.tableLayoutPanel6.Location = new System.Drawing.Point(203, 4);
             this.tableLayoutPanel6.Name = "tableLayoutPanel6";
             this.tableLayoutPanel6.RowCount = 2;
             this.tableLayoutPanel6.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
@@ -808,7 +810,7 @@
             this.tableLayoutPanel7.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tableLayoutPanel7.Controls.Add(this.label18, 0, 0);
             this.tableLayoutPanel7.Controls.Add(this.txtRoleSetName, 0, 1);
-            this.tableLayoutPanel7.Location = new System.Drawing.Point(560, 4);
+            this.tableLayoutPanel7.Location = new System.Drawing.Point(539, 4);
             this.tableLayoutPanel7.Name = "tableLayoutPanel7";
             this.tableLayoutPanel7.RowCount = 2;
             this.tableLayoutPanel7.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
@@ -839,7 +841,7 @@
             // btnSaveRoleSet
             // 
             this.btnSaveRoleSet.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.btnSaveRoleSet.Location = new System.Drawing.Point(773, 18);
+            this.btnSaveRoleSet.Location = new System.Drawing.Point(752, 18);
             this.btnSaveRoleSet.Name = "btnSaveRoleSet";
             this.btnSaveRoleSet.Size = new System.Drawing.Size(91, 23);
             this.btnSaveRoleSet.TabIndex = 20;
@@ -847,50 +849,60 @@
             this.btnSaveRoleSet.UseVisualStyleBackColor = true;
             this.btnSaveRoleSet.Click += new System.EventHandler(this.btnSaveRoleSet_Click);
             // 
-            // tableLayoutPanel8
-            // 
-            this.tableLayoutPanel8.BackColor = System.Drawing.Color.Transparent;
-            this.tableLayoutPanel8.ColumnCount = 1;
-            this.tableLayoutPanel8.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel8.Controls.Add(this.btnLoadRoleSet, 0, 1);
-            this.tableLayoutPanel8.Controls.Add(this.boxLoadRoleSet, 0, 0);
-            this.tableLayoutPanel8.Location = new System.Drawing.Point(96, 4);
-            this.tableLayoutPanel8.Name = "tableLayoutPanel8";
-            this.tableLayoutPanel8.RowCount = 2;
-            this.tableLayoutPanel8.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel8.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel8.Size = new System.Drawing.Size(121, 52);
-            this.tableLayoutPanel8.TabIndex = 35;
-            // 
-            // btnLoadRoleSet
-            // 
-            this.btnLoadRoleSet.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.btnLoadRoleSet.Location = new System.Drawing.Point(18, 29);
-            this.btnLoadRoleSet.Name = "btnLoadRoleSet";
-            this.btnLoadRoleSet.Size = new System.Drawing.Size(85, 20);
-            this.btnLoadRoleSet.TabIndex = 35;
-            this.btnLoadRoleSet.Text = "Load Role Set";
-            this.btnLoadRoleSet.UseVisualStyleBackColor = true;
-            this.btnLoadRoleSet.Click += new System.EventHandler(this.btnLoadRoleSet_Click);
-            // 
-            // boxLoadRoleSet
-            // 
-            this.boxLoadRoleSet.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.boxLoadRoleSet.FormattingEnabled = true;
-            this.boxLoadRoleSet.Location = new System.Drawing.Point(3, 3);
-            this.boxLoadRoleSet.Name = "boxLoadRoleSet";
-            this.boxLoadRoleSet.Size = new System.Drawing.Size(115, 21);
-            this.boxLoadRoleSet.TabIndex = 34;
-            // 
             // label25
             // 
             this.label25.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.label25.AutoSize = true;
-            this.label25.Location = new System.Drawing.Point(480, 68);
+            this.label25.Location = new System.Drawing.Point(459, 68);
             this.label25.Name = "label25";
             this.label25.Size = new System.Drawing.Size(73, 13);
             this.label25.TabIndex = 36;
             this.label25.Text = "Win Condition";
+            // 
+            // tableLayoutPanel4
+            // 
+            this.tableLayoutPanel4.ColumnCount = 1;
+            this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel4.Controls.Add(this.btnLoadRoleSet, 0, 1);
+            this.tableLayoutPanel4.Controls.Add(this.comboBox1, 0, 0);
+            this.tableLayoutPanel4.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel4.Location = new System.Drawing.Point(96, 4);
+            this.tableLayoutPanel4.Name = "tableLayoutPanel4";
+            this.tableLayoutPanel4.RowCount = 2;
+            this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel4.Size = new System.Drawing.Size(100, 52);
+            this.tableLayoutPanel4.TabIndex = 38;
+            // 
+            // btnLoadRoleSet
+            // 
+            this.btnLoadRoleSet.Anchor = System.Windows.Forms.AnchorStyles.None;
+            this.btnLoadRoleSet.Location = new System.Drawing.Point(7, 29);
+            this.btnLoadRoleSet.Name = "btnLoadRoleSet";
+            this.btnLoadRoleSet.Size = new System.Drawing.Size(85, 20);
+            this.btnLoadRoleSet.TabIndex = 37;
+            this.btnLoadRoleSet.Text = "Add New...";
+            this.btnLoadRoleSet.UseVisualStyleBackColor = true;
+            this.btnLoadRoleSet.Click += new System.EventHandler(this.btnLoadRoleSet_Click);
+            // 
+            // comboBox1
+            // 
+            this.comboBox1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.comboBox1.FormattingEnabled = true;
+            this.comboBox1.Location = new System.Drawing.Point(3, 3);
+            this.comboBox1.Name = "comboBox1";
+            this.comboBox1.Size = new System.Drawing.Size(94, 21);
+            this.comboBox1.TabIndex = 38;
+            // 
+            // openFileDialog
+            // 
+            this.openFileDialog.DefaultExt = "json";
+            this.openFileDialog.Filter = "JSON|*.json*|All files|*.*";
+            // 
+            // saveFileDialog
+            // 
+            this.saveFileDialog.DefaultExt = "json";
+            this.saveFileDialog.Filter = "JSON|*.json*|All files|*.*";
             // 
             // Raccoon
             // 
@@ -914,7 +926,7 @@
             this.tableLayoutPanel6.PerformLayout();
             this.tableLayoutPanel7.ResumeLayout(false);
             this.tableLayoutPanel7.PerformLayout();
-            this.tableLayoutPanel8.ResumeLayout(false);
+            this.tableLayoutPanel4.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -967,11 +979,9 @@
         private System.Windows.Forms.TabPage tabPage2;
         private System.Windows.Forms.TableLayoutPanel tblRoles;
         private System.Windows.Forms.Button btnAddRole;
-        private System.Windows.Forms.Label label18;
         private System.Windows.Forms.TextBox txtPlayers;
         private System.Windows.Forms.Label label17;
         private System.Windows.Forms.Button btnSaveRoleSet;
-        private System.Windows.Forms.TextBox txtRoleSetName;
         private System.Windows.Forms.Label label20;
         private System.Windows.Forms.Label label19;
         private System.Windows.Forms.Label label21;
@@ -979,14 +989,18 @@
         private System.Windows.Forms.Label label23;
         private System.Windows.Forms.Label label24;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel6;
-        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel7;
-        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel8;
-        private System.Windows.Forms.ComboBox boxLoadRoleSet;
-        private System.Windows.Forms.Button btnLoadRoleSet;
         private System.Windows.Forms.Label label25;
         private System.Windows.Forms.Button btnMakeOP;
         private System.Windows.Forms.Button btnPasteList;
         private System.Windows.Forms.Button btnDoIt;
+        private System.Windows.Forms.Button btnLoadRoleSet;
+        private System.Windows.Forms.OpenFileDialog openFileDialog;
+        private System.Windows.Forms.SaveFileDialog saveFileDialog;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel4;
+        private System.Windows.Forms.ComboBox comboBox1;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel7;
+        private System.Windows.Forms.Label label18;
+        private System.Windows.Forms.TextBox txtRoleSetName;
 
     }
 }

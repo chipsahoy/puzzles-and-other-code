@@ -8,6 +8,8 @@ using System.Text;
 using System.Windows.Forms;
 using System.Text.RegularExpressions;
 using POG.Forum;
+using Newtonsoft.Json;
+using System.IO;
 
 namespace RickyRaccoon
 {
@@ -210,14 +212,28 @@ This post was made by automod(TM)
             rolepms.Name = txtRoleSetName.Text;
         }
 
-        private void count_Change(object sender, EventArgs e)
+        private void count_Change(object sender, KeyPressEventArgs e)
+        {
+            char ch = e.KeyChar;
+            if (!Char.IsDigit(ch) && ch != 8 && ch != 13)
+            {
+                e.Handled = true;
+            }
+        }
+
+        private void count_Change_text(object sender, EventArgs e)
+        {
+            updateCounts();
+        }
+
+        private void updateCounts()
         {
             int playerCount = 0;
             for (int i = ROWINDEX_START; i <= tblRoles.RowCount; i++)
             {
                 setRole(i);
                 RolePM role = rolepms.Roles[i - ROWINDEX_START];
-                playerCount += role.Count;                
+                playerCount += role.Count;
             }
             txtPlayers.Text = Convert.ToString(playerCount);
             txtRoleCount.Text = Convert.ToString(playerCount);
@@ -240,6 +256,8 @@ This post was made by automod(TM)
 
         private RolePM setRole(int rowIndex)
         {
+            Console.WriteLine(rowIndex);
+            Console.WriteLine(rolepms.Roles.Count);
             RolePM role = rolepms.Roles[rowIndex - ROWINDEX_START];
             for (int columnIndex = 0; columnIndex < tblRoles.ColumnCount - 1; columnIndex++)
             {
@@ -265,7 +283,8 @@ This post was made by automod(TM)
                             role.WinCon = control.Text;
                             break;
                         case "txtCount":
-                            role.Count = Convert.ToInt16(control.Text);
+                            if (control.Text == "") control.Text = "0";
+                            role.Count = Convert.ToInt32(control.Text);
                             break;
                         case "txtFullPM":
                             control.Text = rolepms.Roles[rowIndex - ROWINDEX_START].FullPM(txtGameURL.Text);
@@ -286,105 +305,27 @@ This post was made by automod(TM)
 
         private void btnAddRole_Click(object sender, EventArgs e)
         {
-            tblRoles.Visible = false;
-            tblRoles.RowCount += 1;
-            tblRoles.RowStyles.Add(new RowStyle(System.Windows.Forms.SizeType.AutoSize));
-            Button removeRoles = new Button();
-            removeRoles.Text = "Remove Role";
-            removeRoles.Name = "btnRemoveRole";
-            removeRoles.Height = 23;
-            removeRoles.Width = 85;
-            removeRoles.Click += new EventHandler(this.removeRoles_Click);
-            tblRoles.Controls.Add(removeRoles, 0, tblRoles.RowCount);
-
-            ComboBox team = new ComboBox();
-            string[] teamlist = new string[]{
-        	    "Wolf",
-        	    "Villager",
-        	    "Neutral"
-        	};
-            team.Items.AddRange(teamlist);
-            team.Name = "boxTeam";
-            team.TextChanged += new EventHandler(this.pm_Change);
-            tblRoles.Controls.Add(team, 1, tblRoles.RowCount);
-
-            ComboBox role = new ComboBox();
-            string[] rolelist = new string[]{
-        	    "Angel",
-                "Roleblocker",
-                "Seer",
-                "Vanilla",
-                "Vigilante"
-        	};
-            role.Items.AddRange(rolelist);
-            role.Name = "boxRole";
-            role.TextChanged += new EventHandler(this.pm_Change);
-            tblRoles.Controls.Add(role, 2, tblRoles.RowCount);
-
-            ComboBox subrole = new ComboBox();
-            string[] subrolelist = new string[]{
-        	    "Even",
-                "Odd",
-                "Full",
-                "1x",
-                "n0",
-                "n1",
-                "n2",
-                "n3"
-        	};
-            subrole.Items.AddRange(subrolelist);
-            subrole.Width = 50;
-            subrole.Name = "boxSubRole";
-            subrole.TextChanged += new EventHandler(this.pm_Change);
-            tblRoles.Controls.Add(subrole, 3, tblRoles.RowCount);
-
-            TextBox extraflavor = new TextBox();
-            extraflavor.Multiline = true;
-            extraflavor.Width = 206;
-            extraflavor.Height = 81;
-            extraflavor.ScrollBars = ScrollBars.Both;
-            extraflavor.Name = "txtExtraFlavor";
-            extraflavor.TextChanged += new EventHandler(this.pm_Change);
-            tblRoles.Controls.Add(extraflavor, 4, tblRoles.RowCount);
-
-            TextBox wincon = new TextBox();
-            wincon.Multiline = true;
-            wincon.Width = 206;
-            wincon.Height = 81;
-            wincon.ScrollBars = ScrollBars.Both;
-            wincon.Name = "txtWinCon";
-            wincon.TextChanged += new EventHandler(this.pm_Change);
-            tblRoles.Controls.Add(wincon, 5, tblRoles.RowCount);
-
-            TextBox fullpm = new TextBox();
-            fullpm.Multiline = true;
-            fullpm.ReadOnly = true;
-            fullpm.Width = 206;
-            fullpm.Height = 81;
-            fullpm.ScrollBars = ScrollBars.Both;
-            fullpm.Name = "txtFullPM";
-            tblRoles.Controls.Add(fullpm, 6, tblRoles.RowCount);
-
-            TextBox count = new TextBox();
-            count.Name = "txtCount";
-            count.Text = "0";
-            count.TextChanged += new EventHandler(this.count_Change);
-            tblRoles.Controls.Add(count, 7, tblRoles.RowCount);
-
             RolePM rolepm = new RolePM("", "", "", "", "", 0);
             rolestxt.Add("");
             rolepms.Roles.Add(rolepm);
-            tblRoles.Visible = true;
+            addRoleRow(rolepm);
         }
 
         private void removeRoles_Click(object sender, EventArgs e)
         {
-            tblRoles.Visible = false;
+            
             Button clickedButton = (Button)sender;
             int rowIndex = tblRoles.GetRow(clickedButton);
             System.Console.WriteLine(tblRoles.RowCount);
             System.Console.WriteLine(tblRoles.RowStyles.Count);
             System.Console.WriteLine(rowIndex);
+            removeRoleRow(rowIndex);
+            updateCounts();           
+        }
+
+        private void removeRoleRow(int rowIndex)
+        {
+            tblRoles.Visible = false;
             tblRoles.RowStyles.RemoveAt(rowIndex - 1);
             for (int columnIndex = 0; columnIndex < tblRoles.ColumnCount; columnIndex++)
             {
@@ -405,18 +346,151 @@ This post was made by automod(TM)
             rolestxt.RemoveAt(rowIndex - ROWINDEX_START);
             txtRoleList.Text = String.Join(Environment.NewLine, rolestxt);
             tblRoles.RowCount--;
-            count_Change(sender, e);
+            
             tblRoles.Visible = true;
+        }
+
+        private void addRoleRow(RolePM rolepm)
+        {
+            tblRoles.Visible = false;
+            tblRoles.RowCount += 1;
+            tblRoles.RowStyles.Add(new RowStyle(System.Windows.Forms.SizeType.AutoSize));
+            Button removeRoles = new Button();
+            removeRoles.Text = "Remove Role";
+            removeRoles.Name = "btnRemoveRole";
+            removeRoles.Height = 23;
+            removeRoles.Width = 85;
+            removeRoles.Click += new EventHandler(this.removeRoles_Click);
+            tblRoles.Controls.Add(removeRoles, 0, tblRoles.RowCount);
+
+            ComboBox team = new ComboBox();
+            string[] teamlist = new string[]{
+        	    "Wolf",
+        	    "Villager",
+        	    "Neutral"
+        	};
+            team.Items.AddRange(teamlist);
+            team.Name = "boxTeam";
+            team.Text = rolepm.Team;
+            team.TextChanged += new EventHandler(this.pm_Change);
+            tblRoles.Controls.Add(team, 1, tblRoles.RowCount);
+
+            ComboBox role = new ComboBox();
+            string[] rolelist = new string[]{
+        	    "Angel",
+                "Roleblocker",
+                "Seer",
+                "Vanilla",
+                "Vigilante"
+        	};
+            role.Items.AddRange(rolelist);
+            role.Name = "boxRole";
+            role.Text = rolepm.Role;
+            role.TextChanged += new EventHandler(this.pm_Change);
+            tblRoles.Controls.Add(role, 2, tblRoles.RowCount);
+
+            ComboBox subrole = new ComboBox();
+            string[] subrolelist = new string[]{
+        	    "Even",
+                "Odd",
+                "Full",
+                "1x",
+                "n0",
+                "n1",
+                "n2",
+                "n3"
+        	};
+            subrole.Items.AddRange(subrolelist);
+            subrole.Width = 50;
+            subrole.Name = "boxSubRole";
+            subrole.Text = rolepm.SubRole;
+            subrole.TextChanged += new EventHandler(this.pm_Change);
+            tblRoles.Controls.Add(subrole, 3, tblRoles.RowCount);
+
+            TextBox extraflavor = new TextBox();
+            extraflavor.Multiline = true;
+            extraflavor.Width = 206;
+            extraflavor.Height = 81;
+            extraflavor.ScrollBars = ScrollBars.Both;
+            extraflavor.Name = "txtExtraFlavor";
+            extraflavor.Text = rolepm.ExtraFlavor;
+            extraflavor.TextChanged += new EventHandler(this.pm_Change);
+            tblRoles.Controls.Add(extraflavor, 4, tblRoles.RowCount);
+
+            TextBox wincon = new TextBox();
+            wincon.Multiline = true;
+            wincon.Width = 206;
+            wincon.Height = 81;
+            wincon.ScrollBars = ScrollBars.Both;
+            wincon.Name = "txtWinCon";
+            wincon.Text = rolepm.WinCon;
+            wincon.TextChanged += new EventHandler(this.pm_Change);
+            tblRoles.Controls.Add(wincon, 5, tblRoles.RowCount);
+
+            TextBox fullpm = new TextBox();
+            fullpm.Multiline = true;
+            fullpm.ReadOnly = true;
+            fullpm.Width = 206;
+            fullpm.Height = 81;
+            fullpm.ScrollBars = ScrollBars.Both;
+            fullpm.Text = rolepm.FullPM(txtGameURL.Text);
+            fullpm.Name = "txtFullPM";
+            tblRoles.Controls.Add(fullpm, 6, tblRoles.RowCount);
+
+            TextBox count = new TextBox();
+            count.Name = "txtCount";
+            count.Text = Convert.ToString(rolepm.Count);
+            count.MaxLength = 2;
+            count.KeyPress += new KeyPressEventHandler(this.count_Change);
+            count.TextChanged += new EventHandler(this.count_Change_text);
+            tblRoles.Controls.Add(count, 7, tblRoles.RowCount);
+            
+            tblRoles.Visible = true;
+            updateCounts();
         }
 
         private void btnSaveRoleSet_Click(object sender, EventArgs e)
         {
-            //save to SQLite?
+            String roleset = JsonConvert.SerializeObject(rolepms, Formatting.Indented);
+            Console.WriteLine(roleset);
+            // Show the dialog and get result.
+            saveFileDialog.FileName = rolepms.Name;
+            DialogResult result = saveFileDialog.ShowDialog();
+            if (result == DialogResult.OK) // Test result.
+            {
+                using (Stream s = File.Open(saveFileDialog.FileName, FileMode.Create))
+                using (StreamWriter sw = new StreamWriter(s))
+                {
+                    sw.Write(roleset);
+                }
+            }
+            Console.WriteLine(result); // <-- For debugging use.
         }
 
         private void btnLoadRoleSet_Click(object sender, EventArgs e)
         {
-            //Load from SQLite?
+            // Show the dialog and get result.
+            DialogResult result = openFileDialog.ShowDialog();
+            if (result == DialogResult.OK) // Test result.
+            {
+                while (tblRoles.RowCount != ROWINDEX_START - 1)
+                {
+                    removeRoleRow(ROWINDEX_START);
+                    Console.WriteLine(tblRoles.RowCount);
+                }
+                string file = openFileDialog.FileName;
+                rolepms = JsonConvert.DeserializeObject<RolePMSet>(File.ReadAllText(file));
+                Console.WriteLine(tblRoles.RowCount);
+                for (int i = 0; i < rolepms.Roles.Count; i++)
+                {
+                    RolePM rolepm = rolepms.Roles[i];
+                    rolestxt.Add(rolepm.Count + "X " + rolepm.Team + " " + rolepm.SubRole + " " + rolepm.Role);
+                    addRoleRow(rolepm);
+                }
+                Console.WriteLine(rolepms.Roles.Count);
+                txtRoleSetName.Text = rolepms.Name;
+            }
+            Console.WriteLine(result); // <-- For debugging use.
         }
     }
 }
