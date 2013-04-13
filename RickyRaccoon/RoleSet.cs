@@ -26,6 +26,123 @@ namespace RickyRaccoon
             get;
             private set;
         }
+        public Dictionary<string, string> DefaultRoleSets = new Dictionary<string, string>() { 
+        {"Vanilla 9'er", @"{
+  ""Name"": ""Vanilla 9er"",
+  ""Roles"": [
+    {
+      ""DefaultRoleSets"": {
+        ""Vanilla 9er"": """"
+      },
+      ""Team"": ""Wolf"",
+      ""Role"": """",
+      ""SubRole"": """",
+      ""ExtraFlavor"": """",
+      ""WinCon"": """",
+      ""Count"": 2
+    },
+    {
+      ""DefaultRoleSets"": {
+        ""Vanilla 9er"": """"
+      },
+      ""Team"": ""Villager"",
+      ""Role"": ""Seer"",
+      ""SubRole"": ""Full"",
+      ""ExtraFlavor"": """",
+      ""WinCon"": """",
+      ""Count"": 1
+    },
+    {
+      ""DefaultRoleSets"": {
+        ""Vanilla 9er"": """"
+      },
+      ""Team"": ""Villager"",
+      ""Role"": ""Vanilla"",
+      ""SubRole"": """",
+      ""ExtraFlavor"": """",
+      ""WinCon"": """",
+      ""Count"": 6
+    }
+  ]
+}"},
+  {"Vanilla 13'er", @"{
+  ""Name"": ""Vanilla 13'er"",
+  ""Roles"": [
+    {
+      ""DefaultRoleSets"": {
+        ""Vanilla 9'er"": """"
+      },
+      ""Team"": ""Wolf"",
+      ""Role"": """",
+      ""SubRole"": """",
+      ""ExtraFlavor"": """",
+      ""WinCon"": """",
+      ""Count"": 3
+    },
+    {
+      ""DefaultRoleSets"": {
+        ""Vanilla 9'er"": """"
+      },
+      ""Team"": ""Villager"",
+      ""Role"": ""Seer"",
+      ""SubRole"": ""Full"",
+      ""ExtraFlavor"": """",
+      ""WinCon"": """",
+      ""Count"": 1
+    },
+    {
+      ""DefaultRoleSets"": {
+        ""Vanilla 9'er"": """"
+      },
+      ""Team"": ""Villager"",
+      ""Role"": ""Vanilla"",
+      ""SubRole"": """",
+      ""ExtraFlavor"": """",
+      ""WinCon"": """",
+      ""Count"": 9
+    }
+  ]
+}"},
+  {"Vanilla 17'er", @"{
+  ""Name"": ""Vanilla 17'er"",
+  ""Roles"": [
+    {
+      ""DefaultRoleSets"": {
+        ""Vanilla 9'er"": """"
+      },
+      ""Team"": ""Wolf"",
+      ""Role"": """",
+      ""SubRole"": """",
+      ""ExtraFlavor"": """",
+      ""WinCon"": """",
+      ""Count"": 4
+    },
+    {
+      ""DefaultRoleSets"": {
+        ""Vanilla 9'er"": """"
+      },
+      ""Team"": ""Villager"",
+      ""Role"": ""Seer"",
+      ""SubRole"": ""Full"",
+      ""ExtraFlavor"": """",
+      ""WinCon"": """",
+      ""Count"": 1
+    },
+    {
+      ""DefaultRoleSets"": {
+        ""Vanilla 9'er"": """"
+      },
+      ""Team"": ""Villager"",
+      ""Role"": ""Vanilla"",
+      ""SubRole"": """",
+      ""ExtraFlavor"": """",
+      ""WinCon"": """",
+      ""Count"": 12
+    }
+  ]
+}"
+  }
+        };
     }
     public class RolePM
     {
@@ -86,5 +203,7 @@ The game thread is here: {5}
 Good luck!
 *************************************************", ExtraFlavor, Team, SubRole, Role, WinCon, gameURL);
         }
+        
     }
+    
 }

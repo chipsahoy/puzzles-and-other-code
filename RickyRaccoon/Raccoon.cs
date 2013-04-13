@@ -20,13 +20,16 @@ namespace RickyRaccoon
         private TwoPlusTwoForum _forum;
         private Action<Action> _synchronousInvoker;
         RolePMSet rolepms = new RolePMSet("");
+        RolePMSet gamepms = new RolePMSet("");
         private static int ROWINDEX_START = 4;
-        List<String> rolestxt = new List<string>();
+        
 
         public Raccoon()
         {
-            //load role set names from SQLite???
             InitializeComponent();
+            string[] keys = new List<string>(rolepms.DefaultRoleSets.Keys).ToArray();
+            boxRoleSetSelect.Items.AddRange(keys);
+            boxRoleSetSelectLoad.Items.AddRange(keys);
         }
 
         private void btnPasteList_Click(object sender, EventArgs e)
@@ -292,9 +295,7 @@ This post was made by automod(TM)
                     }
                 }
             }
-            rolestxt[rowIndex - ROWINDEX_START] = "";
-            rolestxt[rowIndex - ROWINDEX_START] += role.Count + "X " + role.Team + " " + role.SubRole + " " + role.Role;
-            txtRoleList.Text = String.Join(Environment.NewLine, rolestxt);
+            
             if (Convert.ToInt16(txtRoleCount.Text) > 0 && roster.Count > 0 && roster.Count == Convert.ToInt16(txtRoleCount.Text))
             {
                 btnDoIt.Enabled = true;
@@ -306,7 +307,6 @@ This post was made by automod(TM)
         private void btnAddRole_Click(object sender, EventArgs e)
         {
             RolePM rolepm = new RolePM("", "", "", "", "", 0);
-            rolestxt.Add("");
             rolepms.Roles.Add(rolepm);
             addRoleRow(rolepm);
         }
@@ -343,8 +343,6 @@ This post was made by automod(TM)
                 }
             }
             rolepms.Roles.RemoveAt(rowIndex - ROWINDEX_START);
-            rolestxt.RemoveAt(rowIndex - ROWINDEX_START);
-            txtRoleList.Text = String.Join(Environment.NewLine, rolestxt);
             tblRoles.RowCount--;
             
             tblRoles.Visible = true;
@@ -466,31 +464,68 @@ This post was made by automod(TM)
             }
             Console.WriteLine(result); // <-- For debugging use.
         }
-
+        
+        private void resetRoleList(RolePMSet rolepmset)
+        {
+            while (tblRoles.RowCount != ROWINDEX_START - 1)
+            {
+                removeRoleRow(ROWINDEX_START);
+                Console.WriteLine(tblRoles.RowCount);
+            }
+            rolepms = rolepmset;
+            for (int i = 0; i < rolepms.Roles.Count; i++)
+            {
+                RolePM rolepm = rolepms.Roles[i];
+                addRoleRow(rolepm);
+            }
+            txtRoleSetName.Text = rolepms.Name;
+        }
         private void btnLoadRoleSet_Click(object sender, EventArgs e)
         {
             // Show the dialog and get result.
             DialogResult result = openFileDialog.ShowDialog();
             if (result == DialogResult.OK) // Test result.
-            {
-                while (tblRoles.RowCount != ROWINDEX_START - 1)
-                {
-                    removeRoleRow(ROWINDEX_START);
-                    Console.WriteLine(tblRoles.RowCount);
-                }
+            {                
                 string file = openFileDialog.FileName;
-                rolepms = JsonConvert.DeserializeObject<RolePMSet>(File.ReadAllText(file));
-                Console.WriteLine(tblRoles.RowCount);
-                for (int i = 0; i < rolepms.Roles.Count; i++)
-                {
-                    RolePM rolepm = rolepms.Roles[i];
-                    rolestxt.Add(rolepm.Count + "X " + rolepm.Team + " " + rolepm.SubRole + " " + rolepm.Role);
-                    addRoleRow(rolepm);
-                }
-                Console.WriteLine(rolepms.Roles.Count);
-                txtRoleSetName.Text = rolepms.Name;
+                resetRoleList(JsonConvert.DeserializeObject<RolePMSet>(File.ReadAllText(file)));
             }
             Console.WriteLine(result); // <-- For debugging use.
+        }
+
+        private void boxRoleSetSelect_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            List<String> rolestxt = new List<string>();
+            ComboBox roleset = (ComboBox)sender;
+            gamepms = JsonConvert.DeserializeObject<RolePMSet>(rolepms.DefaultRoleSets[roleset.Text]);
+            for (int i = 0; i < gamepms.Roles.Count; i++)
+            {
+                RolePM role = gamepms.Roles[i];
+                rolestxt.Add(role.Count + "X " + role.Team + " " + role.SubRole + " " + role.Role);                
+            }
+            txtRoleList.Text = String.Join(Environment.NewLine, rolestxt);
+        }
+
+        private void boxRoleSetSelectLoad_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            ComboBox roleset = (ComboBox)sender;
+            resetRoleList(JsonConvert.DeserializeObject<RolePMSet>(rolepms.DefaultRoleSets[roleset.Text]));
+        }
+
+        private void btnLoadRoleSetGame_Click(object sender, EventArgs e)
+        {
+            DialogResult result = openFileDialog.ShowDialog();
+            if (result == DialogResult.OK) // Test result.
+            {
+                string file = openFileDialog.FileName;
+                List<String> rolestxt = new List<string>();
+                gamepms = JsonConvert.DeserializeObject<RolePMSet>(File.ReadAllText(file));
+                for (int i = 0; i < gamepms.Roles.Count; i++)
+                {
+                    RolePM role = gamepms.Roles[i];
+                    rolestxt.Add(role.Count + "X " + role.Team + " " + role.SubRole + " " + role.Role);
+                }
+                txtRoleList.Text = String.Join(Environment.NewLine, rolestxt);
+            }
         }
     }
 }
