@@ -17,9 +17,13 @@ namespace RickyRaccoon
         List<String> roster = new List<string>();
         private TwoPlusTwoForum _forum;
         private Action<Action> _synchronousInvoker;
+        RolePMSet rolepms = new RolePMSet("");
+        private static int ROWINDEX_START = 4;
+        List<String> rolestxt = new List<string>();
 
         public Raccoon()
         {
+            //load role set names from SQLite???
             InitializeComponent();
         }
 
@@ -118,19 +122,11 @@ namespace RickyRaccoon
             int curplayer = 0;
             for (int i = 4; i <= tblRoles.RowCount; i++)
             {
-                Dictionary<string, string> pm = getPM(i);
-                int temp = 0;
-                if (!Int32.TryParse(pm["count"], out temp)) pm["count"] = "0";
-                txtRoleList.Text += pm["count"] + "X " + pm["team"] + pm["subrole"] + pm["role"] + Environment.NewLine;
-                for(int j = 0; j < Convert.ToInt16(pm["count"]); j++)
+                RolePM role = rolepms.Roles[i - ROWINDEX_START];
+                string pm = role.FullPM(txtGameURL.Text);
+                for(int j = 0; j < role.Count; j++)
                 {
-                    _forum.SendPM(new List<string>() { roster[curplayer] }, null, txtGameName.Text + " Role PM", @"*************************************************
-You are " + pm["extraflavor"] + "a " + pm["team"] + pm["subrole"] + pm["role"] + "! You win by " + pm["wincon"] + @"
-
-The game thread is here: " + txtGameTitle.Text + @"
-
-Good luck!
-*************************************************");
+                    _forum.SendPM(new List<string>() { roster[curplayer] }, null, txtGameName.Text + " Role PM", pm);
                     System.Threading.Thread.Sleep(30000);
                     curplayer += 1;
                 }
@@ -209,141 +205,88 @@ This post was made by automod(TM)
 [b]IT IS NIGHT DO NOT POST[/b]";
         }
 
-        private void removeRoles_Click(object sender, EventArgs e)
+        private void txtRoleSetName_TextChanged(object sender, EventArgs e)
         {
-            Button clickedButton = (Button)sender;
-            int rowIndex = tblRoles.GetRow(clickedButton);
-            System.Console.WriteLine(tblRoles.RowCount);
-            System.Console.WriteLine(tblRoles.RowStyles.Count);
-            System.Console.WriteLine(rowIndex);
-            tblRoles.RowStyles.RemoveAt(rowIndex - 1);
-            for (int columnIndex = 0; columnIndex < tblRoles.ColumnCount; columnIndex++)
-            {
-                var control = tblRoles.GetControlFromPosition(columnIndex, rowIndex);
-                tblRoles.Controls.Remove(control);
-            }
-
-            for (int i = rowIndex + 1; i <= tblRoles.RowCount; i++)
-            {
-                for (int columnIndex = 0; columnIndex < tblRoles.ColumnCount - 1; columnIndex++)
-                {
-                    var control = tblRoles.GetControlFromPosition(columnIndex, i);
-                    tblRoles.SetRow(control, i - 1);
-                    tblRoles.Name = tblRoles.Name.Substring(tblRoles.Name.Length - 1) + (i - 1);
-                }
-            }
-            tblRoles.RowCount--;
+            rolepms.Name = txtRoleSetName.Text;
         }
 
         private void count_Change(object sender, EventArgs e)
         {
             int playerCount = 0;
-            for (int i = 0; i <= tblRoles.RowCount; i++)
+            for (int i = ROWINDEX_START; i <= tblRoles.RowCount; i++)
             {
-                for (int columnIndex = 0; columnIndex < tblRoles.ColumnCount - 1; columnIndex++)
-                {
-                    var control = tblRoles.GetControlFromPosition(columnIndex, i);
-                    if (control == null || control.Name == null) continue;
-                    if (control.Name == "txtCount")
-                    {
-                        int result = 0;
-                        if (int.TryParse(control.Text, out result)) playerCount += result;
-                        else Console.WriteLine(control.Text);
-                        
-                    }
-                }
+                setRole(i);
+                RolePM role = rolepms.Roles[i - ROWINDEX_START];
+                playerCount += role.Count;                
             }
             txtPlayers.Text = Convert.ToString(playerCount);
             txtRoleCount.Text = Convert.ToString(playerCount);
-            updateRoleList();
         }
 
-        private Dictionary<string, string> getPM(int row)
+        private void txtGameTitle_TextChanged(object sender, EventArgs e)
         {
-            Dictionary<string, string> pm = new Dictionary<string, string>();
-            pm["team"] = "";
-            pm["role"] = "";
-            pm["subrole"] = "";
-            pm["extraflavor"] = "";
-            pm["wincon"] = "";
-            for (int columnIndex = 0; columnIndex < tblRoles.ColumnCount - 1; columnIndex++)
+            for (int i = ROWINDEX_START; i <= tblRoles.RowCount; i++)
             {
-                var control = tblRoles.GetControlFromPosition(columnIndex, row);
-                if (control == null || control.Name == null) continue;
-                else
-                {
-                    switch (control.Name)
-                    {
-                        case "boxTeam":
-                            pm["team"] = control.Text;
-                            break;
-                        case "boxRole":
-                            if (control.Text != "") pm["role"] = " " + control.Text;
-                            break;
-                        case "boxSubRole":
-                            if (control.Text != "") pm["subrole"] = " " + control.Text;
-                            break;
-                        case "txtExtraFlavor":
-                            if (control.Text != "") pm["extraflavor"] = control.Text + " ";
-                            break;
-                        case "txtWinCon":
-                            pm["wincon"] = control.Text;
-                            break;
-                        case "txtCount":
-                            pm["count"] = control.Text;
-                            break;
-                    }
-                }
+                setRole(i);
             }
-            return pm;
         }
 
         private void pm_Change(object sender, EventArgs e)
         {
             Control changedForm = (Control)sender;
             int rowIndex = tblRoles.GetRow(changedForm);
-            updatePM(rowIndex);
+            setRole(rowIndex);
         }
 
-        private void updatePM(int rowIndex)
+        private RolePM setRole(int rowIndex)
         {
+            RolePM role = rolepms.Roles[rowIndex - ROWINDEX_START];
             for (int columnIndex = 0; columnIndex < tblRoles.ColumnCount - 1; columnIndex++)
             {
                 var control = tblRoles.GetControlFromPosition(columnIndex, rowIndex);
-                if (control != null && control.Name == "txtFullPM")
+                if (control == null || control.Name == null) continue;
+                else
                 {
-                    Dictionary<string, string> pm = getPM(rowIndex);
-                    control.Text = @"*************************************************
-You are " + pm["extraflavor"] + "a " + pm["team"] + pm["subrole"] + pm["role"] + "! You win by " + pm["wincon"] + @"
-
-The game thread is here: " + txtGameTitle.Text + @"
-
-Good luck!
-*************************************************";
+                    switch (control.Name)
+                    {
+                        case "boxTeam":
+                            role.Team = control.Text;
+                            break;
+                        case "boxRole":
+                            role.Role = control.Text;
+                            break;
+                        case "boxSubRole":
+                            role.SubRole = control.Text;
+                            break;
+                        case "txtExtraFlavor":
+                            role.ExtraFlavor = control.Text;
+                            break;
+                        case "txtWinCon":
+                            role.WinCon = control.Text;
+                            break;
+                        case "txtCount":
+                            role.Count = Convert.ToInt16(control.Text);
+                            break;
+                        case "txtFullPM":
+                            control.Text = rolepms.Roles[rowIndex - ROWINDEX_START].FullPM(txtGameURL.Text);
+                            break;
+                    }
                 }
             }
-            updateRoleList();
-        }
-
-        private void updateRoleList()
-        {
-            txtRoleList.Text = "";
-            for (int i = 4; i <= tblRoles.RowCount; i++)
-            {
-                Dictionary<string, string> pm = getPM(i);
-                int temp = 0;
-                if (!Int32.TryParse(pm["count"], out temp)) pm["count"] = "0";
-                txtRoleList.Text += pm["count"] + "X " + pm["team"] + pm["subrole"] + pm["role"] + Environment.NewLine;
-            }
+            rolestxt[rowIndex - ROWINDEX_START] = "";
+            rolestxt[rowIndex - ROWINDEX_START] += role.Count + "X " + role.Team + " " + role.SubRole + " " + role.Role;
+            txtRoleList.Text = String.Join(Environment.NewLine, rolestxt);
             if (Convert.ToInt16(txtRoleCount.Text) > 0 && roster.Count > 0 && roster.Count == Convert.ToInt16(txtRoleCount.Text))
             {
                 btnDoIt.Enabled = true;
             }
             else btnDoIt.Enabled = false;
+            return role;
         }
 
         private void btnAddRole_Click(object sender, EventArgs e)
         {
+            tblRoles.Visible = false;
             tblRoles.RowCount += 1;
             tblRoles.RowStyles.Add(new RowStyle(System.Windows.Forms.SizeType.AutoSize));
             Button removeRoles = new Button();
@@ -427,14 +370,53 @@ Good luck!
             count.Text = "0";
             count.TextChanged += new EventHandler(this.count_Change);
             tblRoles.Controls.Add(count, 7, tblRoles.RowCount);
+
+            RolePM rolepm = new RolePM("", "", "", "", "", 0);
+            rolestxt.Add("");
+            rolepms.Roles.Add(rolepm);
+            tblRoles.Visible = true;
         }
 
-        private void txtGameTitle_TextChanged(object sender, EventArgs e)
+        private void removeRoles_Click(object sender, EventArgs e)
         {
-            for (int i = 4; i <= tblRoles.RowCount; i++)
+            tblRoles.Visible = false;
+            Button clickedButton = (Button)sender;
+            int rowIndex = tblRoles.GetRow(clickedButton);
+            System.Console.WriteLine(tblRoles.RowCount);
+            System.Console.WriteLine(tblRoles.RowStyles.Count);
+            System.Console.WriteLine(rowIndex);
+            tblRoles.RowStyles.RemoveAt(rowIndex - 1);
+            for (int columnIndex = 0; columnIndex < tblRoles.ColumnCount; columnIndex++)
             {
-                updatePM(i);
+                var control = tblRoles.GetControlFromPosition(columnIndex, rowIndex);
+                tblRoles.Controls.Remove(control);
             }
+
+            for (int i = rowIndex + 1; i <= tblRoles.RowCount; i++)
+            {
+                for (int columnIndex = 0; columnIndex < tblRoles.ColumnCount - 1; columnIndex++)
+                {
+                    var control = tblRoles.GetControlFromPosition(columnIndex, i);
+                    tblRoles.SetRow(control, i - 1);
+                    tblRoles.Name = tblRoles.Name.Substring(tblRoles.Name.Length - 1) + (i - 1);
+                }
+            }
+            rolepms.Roles.RemoveAt(rowIndex - ROWINDEX_START);
+            rolestxt.RemoveAt(rowIndex - ROWINDEX_START);
+            txtRoleList.Text = String.Join(Environment.NewLine, rolestxt);
+            tblRoles.RowCount--;
+            count_Change(sender, e);
+            tblRoles.Visible = true;
+        }
+
+        private void btnSaveRoleSet_Click(object sender, EventArgs e)
+        {
+            //save to SQLite?
+        }
+
+        private void btnLoadRoleSet_Click(object sender, EventArgs e)
+        {
+            //Load from SQLite?
         }
     }
 }

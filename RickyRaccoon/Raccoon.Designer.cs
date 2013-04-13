@@ -43,8 +43,11 @@
             this.RoleCount = new System.Windows.Forms.Label();
             this.txtPassword = new System.Windows.Forms.TextBox();
             this.txtPlayerList = new System.Windows.Forms.TextBox();
-            this.txtGameTitle = new System.Windows.Forms.TextBox();
+            this.txtGameURL = new System.Windows.Forms.TextBox();
             this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
+            this.btnMakeOP = new System.Windows.Forms.Button();
+            this.btnPasteList = new System.Windows.Forms.Button();
+            this.btnDoIt = new System.Windows.Forms.Button();
             this.txtPlayerCount = new System.Windows.Forms.TextBox();
             this.label3 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
@@ -86,14 +89,11 @@
             this.tableLayoutPanel7 = new System.Windows.Forms.TableLayoutPanel();
             this.label18 = new System.Windows.Forms.Label();
             this.txtRoleSetName = new System.Windows.Forms.TextBox();
-            this.button2 = new System.Windows.Forms.Button();
+            this.btnSaveRoleSet = new System.Windows.Forms.Button();
             this.tableLayoutPanel8 = new System.Windows.Forms.TableLayoutPanel();
             this.btnLoadRoleSet = new System.Windows.Forms.Button();
             this.boxLoadRoleSet = new System.Windows.Forms.ComboBox();
             this.label25 = new System.Windows.Forms.Label();
-            this.btnDoIt = new System.Windows.Forms.Button();
-            this.btnPasteList = new System.Windows.Forms.Button();
-            this.btnMakeOP = new System.Windows.Forms.Button();
             this.tableLayoutPanel2.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
             this.tableLayoutPanel3.SuspendLayout();
@@ -222,6 +222,7 @@
             this.txtRoleCount.ReadOnly = true;
             this.txtRoleCount.Size = new System.Drawing.Size(1033, 20);
             this.txtRoleCount.TabIndex = 15;
+            this.txtRoleCount.Text = "0";
             // 
             // RoleCount
             // 
@@ -252,14 +253,14 @@
             this.txtPlayerList.Size = new System.Drawing.Size(1033, 69);
             this.txtPlayerList.TabIndex = 10;
             // 
-            // txtGameTitle
+            // txtGameURL
             // 
-            this.txtGameTitle.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.txtGameTitle.Location = new System.Drawing.Point(87, 90);
-            this.txtGameTitle.Name = "txtGameTitle";
-            this.txtGameTitle.Size = new System.Drawing.Size(1033, 20);
-            this.txtGameTitle.TabIndex = 2;
-            this.txtGameTitle.TextChanged += new System.EventHandler(this.txtGameTitle_TextChanged);
+            this.txtGameURL.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.txtGameURL.Location = new System.Drawing.Point(87, 90);
+            this.txtGameURL.Name = "txtGameURL";
+            this.txtGameURL.Size = new System.Drawing.Size(1033, 20);
+            this.txtGameURL.TabIndex = 2;
+            this.txtGameURL.TextChanged += new System.EventHandler(this.txtGameTitle_TextChanged);
             // 
             // tableLayoutPanel2
             // 
@@ -279,6 +280,37 @@
             this.tableLayoutPanel2.Size = new System.Drawing.Size(1033, 29);
             this.tableLayoutPanel2.TabIndex = 9;
             // 
+            // btnMakeOP
+            // 
+            this.btnMakeOP.Location = new System.Drawing.Point(347, 3);
+            this.btnMakeOP.Name = "btnMakeOP";
+            this.btnMakeOP.Size = new System.Drawing.Size(72, 23);
+            this.btnMakeOP.TabIndex = 5;
+            this.btnMakeOP.Text = "Make OP";
+            this.btnMakeOP.UseVisualStyleBackColor = true;
+            this.btnMakeOP.Click += new System.EventHandler(this.btnMakeOP_Click);
+            // 
+            // btnPasteList
+            // 
+            this.btnPasteList.Location = new System.Drawing.Point(3, 3);
+            this.btnPasteList.Name = "btnPasteList";
+            this.btnPasteList.Size = new System.Drawing.Size(94, 23);
+            this.btnPasteList.TabIndex = 0;
+            this.btnPasteList.Text = "Paste Player List";
+            this.btnPasteList.UseVisualStyleBackColor = true;
+            this.btnPasteList.Click += new System.EventHandler(this.btnPasteList_Click);
+            // 
+            // btnDoIt
+            // 
+            this.btnDoIt.Enabled = false;
+            this.btnDoIt.Location = new System.Drawing.Point(691, 3);
+            this.btnDoIt.Name = "btnDoIt";
+            this.btnDoIt.Size = new System.Drawing.Size(72, 23);
+            this.btnDoIt.TabIndex = 4;
+            this.btnDoIt.Text = "DO IT!";
+            this.btnDoIt.UseVisualStyleBackColor = true;
+            this.btnDoIt.Click += new System.EventHandler(this.btnDoIt_Click);
+            // 
             // txtPlayerCount
             // 
             this.txtPlayerCount.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -288,6 +320,7 @@
             this.txtPlayerCount.Size = new System.Drawing.Size(1033, 20);
             this.txtPlayerCount.TabIndex = 8;
             this.txtPlayerCount.TabStop = false;
+            this.txtPlayerCount.Text = "0";
             // 
             // label3
             // 
@@ -341,7 +374,7 @@
             this.tableLayoutPanel1.Controls.Add(this.label3, 0, 1);
             this.tableLayoutPanel1.Controls.Add(this.txtPlayerCount, 1, 1);
             this.tableLayoutPanel1.Controls.Add(this.tableLayoutPanel2, 1, 0);
-            this.tableLayoutPanel1.Controls.Add(this.txtGameTitle, 1, 3);
+            this.tableLayoutPanel1.Controls.Add(this.txtGameURL, 1, 3);
             this.tableLayoutPanel1.Controls.Add(this.txtPlayerList, 1, 8);
             this.tableLayoutPanel1.Controls.Add(this.txtPassword, 1, 7);
             this.tableLayoutPanel1.Controls.Add(this.RoleCount, 0, 2);
@@ -651,7 +684,7 @@
             this.tblRoles.Controls.Add(this.label24, 7, 1);
             this.tblRoles.Controls.Add(this.tableLayoutPanel6, 2, 0);
             this.tblRoles.Controls.Add(this.tableLayoutPanel7, 6, 0);
-            this.tblRoles.Controls.Add(this.button2, 7, 0);
+            this.tblRoles.Controls.Add(this.btnSaveRoleSet, 7, 0);
             this.tblRoles.Controls.Add(this.tableLayoutPanel8, 1, 0);
             this.tblRoles.Controls.Add(this.label25, 5, 1);
             this.tblRoles.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -757,6 +790,7 @@
             this.txtPlayers.ReadOnly = true;
             this.txtPlayers.Size = new System.Drawing.Size(115, 20);
             this.txtPlayers.TabIndex = 18;
+            this.txtPlayers.Text = "0";
             // 
             // label17
             // 
@@ -800,16 +834,18 @@
             this.txtRoleSetName.Name = "txtRoleSetName";
             this.txtRoleSetName.Size = new System.Drawing.Size(200, 20);
             this.txtRoleSetName.TabIndex = 21;
+            this.txtRoleSetName.TextChanged += new System.EventHandler(this.txtRoleSetName_TextChanged);
             // 
-            // button2
+            // btnSaveRoleSet
             // 
-            this.button2.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.button2.Location = new System.Drawing.Point(773, 18);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(91, 23);
-            this.button2.TabIndex = 20;
-            this.button2.Text = "Save Role Set";
-            this.button2.UseVisualStyleBackColor = true;
+            this.btnSaveRoleSet.Anchor = System.Windows.Forms.AnchorStyles.None;
+            this.btnSaveRoleSet.Location = new System.Drawing.Point(773, 18);
+            this.btnSaveRoleSet.Name = "btnSaveRoleSet";
+            this.btnSaveRoleSet.Size = new System.Drawing.Size(91, 23);
+            this.btnSaveRoleSet.TabIndex = 20;
+            this.btnSaveRoleSet.Text = "Save Role Set";
+            this.btnSaveRoleSet.UseVisualStyleBackColor = true;
+            this.btnSaveRoleSet.Click += new System.EventHandler(this.btnSaveRoleSet_Click);
             // 
             // tableLayoutPanel8
             // 
@@ -835,6 +871,7 @@
             this.btnLoadRoleSet.TabIndex = 35;
             this.btnLoadRoleSet.Text = "Load Role Set";
             this.btnLoadRoleSet.UseVisualStyleBackColor = true;
+            this.btnLoadRoleSet.Click += new System.EventHandler(this.btnLoadRoleSet_Click);
             // 
             // boxLoadRoleSet
             // 
@@ -854,37 +891,6 @@
             this.label25.Size = new System.Drawing.Size(73, 13);
             this.label25.TabIndex = 36;
             this.label25.Text = "Win Condition";
-            // 
-            // btnDoIt
-            // 
-            this.btnDoIt.Enabled = false;
-            this.btnDoIt.Location = new System.Drawing.Point(691, 3);
-            this.btnDoIt.Name = "btnDoIt";
-            this.btnDoIt.Size = new System.Drawing.Size(72, 23);
-            this.btnDoIt.TabIndex = 4;
-            this.btnDoIt.Text = "DO IT!";
-            this.btnDoIt.UseVisualStyleBackColor = true;
-            this.btnDoIt.Click += new System.EventHandler(this.btnDoIt_Click);
-            // 
-            // btnPasteList
-            // 
-            this.btnPasteList.Location = new System.Drawing.Point(3, 3);
-            this.btnPasteList.Name = "btnPasteList";
-            this.btnPasteList.Size = new System.Drawing.Size(94, 23);
-            this.btnPasteList.TabIndex = 0;
-            this.btnPasteList.Text = "Paste Player List";
-            this.btnPasteList.UseVisualStyleBackColor = true;
-            this.btnPasteList.Click += new System.EventHandler(this.btnPasteList_Click);
-            // 
-            // btnMakeOP
-            // 
-            this.btnMakeOP.Location = new System.Drawing.Point(347, 3);
-            this.btnMakeOP.Name = "btnMakeOP";
-            this.btnMakeOP.Size = new System.Drawing.Size(72, 23);
-            this.btnMakeOP.TabIndex = 5;
-            this.btnMakeOP.Text = "Make OP";
-            this.btnMakeOP.UseVisualStyleBackColor = true;
-            this.btnMakeOP.Click += new System.EventHandler(this.btnMakeOP_Click);
             // 
             // Raccoon
             // 
@@ -930,7 +936,7 @@
         private System.Windows.Forms.Label RoleCount;
         private System.Windows.Forms.TextBox txtPassword;
         private System.Windows.Forms.TextBox txtPlayerList;
-        private System.Windows.Forms.TextBox txtGameTitle;
+        private System.Windows.Forms.TextBox txtGameURL;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
         private System.Windows.Forms.TextBox txtPlayerCount;
         private System.Windows.Forms.Label label3;
@@ -964,7 +970,7 @@
         private System.Windows.Forms.Label label18;
         private System.Windows.Forms.TextBox txtPlayers;
         private System.Windows.Forms.Label label17;
-        private System.Windows.Forms.Button button2;
+        private System.Windows.Forms.Button btnSaveRoleSet;
         private System.Windows.Forms.TextBox txtRoleSetName;
         private System.Windows.Forms.Label label20;
         private System.Windows.Forms.Label label19;
