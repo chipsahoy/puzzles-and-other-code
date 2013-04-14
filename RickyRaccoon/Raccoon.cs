@@ -80,7 +80,12 @@ namespace RickyRaccoon
                 MessageBox.Show("There needs to be the same amount of players as roles!");
                 return;
             }
-            
+
+            if (MessageBox.Show("Are you sure you want to continue? You can't go back after this!", "Continue?", MessageBoxButtons.YesNo) != DialogResult.Yes)
+            {
+                return;
+            }
+
             _synchronousInvoker = a => Invoke(a);
             String username = txtUsername.Text;
             String password = txtPassword.Text;
@@ -239,7 +244,10 @@ This post was made by automod(TM)
                 playerCount += role.Count;
             }
             txtPlayers.Text = Convert.ToString(playerCount);
-            txtRoleCount.Text = Convert.ToString(playerCount);
+            if (playerCount > 0 && roster.Count > 0 && roster.Count == playerCount)
+            {
+                btnDoIt.Enabled = true;
+            }
         }
 
         private void txtGameTitle_TextChanged(object sender, EventArgs e)
@@ -487,7 +495,18 @@ This post was made by automod(TM)
             if (result == DialogResult.OK) // Test result.
             {                
                 string file = openFileDialog.FileName;
-                resetRoleList(JsonConvert.DeserializeObject<RolePMSet>(File.ReadAllText(file)));
+                try 
+                {
+                    RolePMSet temp = JsonConvert.DeserializeObject<RolePMSet>(File.ReadAllText(file));
+                    resetRoleList(temp);
+                }
+                catch (JsonSerializationException error)
+                {
+                    Console.WriteLine(error);
+                    MessageBox.Show("This isn't valid JSON!");
+                    return;
+                }
+                
             }
             Console.WriteLine(result); // <-- For debugging use.
         }
@@ -497,12 +516,15 @@ This post was made by automod(TM)
             List<String> rolestxt = new List<string>();
             ComboBox roleset = (ComboBox)sender;
             gamepms = JsonConvert.DeserializeObject<RolePMSet>(rolepms.DefaultRoleSets[roleset.Text]);
+            int playerCount = 0;
             for (int i = 0; i < gamepms.Roles.Count; i++)
             {
                 RolePM role = gamepms.Roles[i];
-                rolestxt.Add(role.Count + "X " + role.Team + " " + role.SubRole + " " + role.Role);                
+                rolestxt.Add(role.Count + "X " + role.Team + " " + role.SubRole + " " + role.Role);
+                playerCount += role.Count;
             }
             txtRoleList.Text = String.Join(Environment.NewLine, rolestxt);
+            txtRoleCount.Text = Convert.ToString(playerCount);
         }
 
         private void boxRoleSetSelectLoad_SelectedIndexChanged(object sender, EventArgs e)
@@ -518,14 +540,27 @@ This post was made by automod(TM)
             {
                 string file = openFileDialog.FileName;
                 List<String> rolestxt = new List<string>();
-                gamepms = JsonConvert.DeserializeObject<RolePMSet>(File.ReadAllText(file));
+                try
+                {
+                    gamepms = JsonConvert.DeserializeObject<RolePMSet>(File.ReadAllText(file));
+                }
+                catch (JsonSerializationException error)
+                {
+                    Console.WriteLine(error);
+                    MessageBox.Show("This isn't valid JSON!");
+                    return;
+                }
                 for (int i = 0; i < gamepms.Roles.Count; i++)
                 {
                     RolePM role = gamepms.Roles[i];
                     rolestxt.Add(role.Count + "X " + role.Team + " " + role.SubRole + " " + role.Role);
                 }
-                txtRoleList.Text = String.Join(Environment.NewLine, rolestxt);
             }
+        }
+
+        private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+
         }
     }
 }
