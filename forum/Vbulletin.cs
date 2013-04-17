@@ -351,6 +351,117 @@ namespace POG.Forum
 
             return true;
         }
+        internal bool DeleteThread(int postId)
+        {
+            ConnectionSettings cs = _connectionSettings.Clone();
+            cs.Url = _outer.ForumURL + "private.php";
+            String doc = HtmlHelper.GetUrlResponseString(cs);
+            if (doc == null)
+            {
+                return false;
+            }
+            // parse out securitytoken
+            Regex reg = new Regex("var SECURITYTOKEN = \"(.+)\"");
+            String securityToken = "";
+            Match match = reg.Match(doc);
+            if (match.Success)
+            {
+                securityToken = match.Groups[1].Value;
+            }
+            //			var ajax_last_post = 1338251071;
+            String ajaxLastPost = "";
+            reg = new Regex("var ajax_last_post = (.+);");
+            match = reg.Match(doc);
+            if (match.Success)
+            {
+                ajaxLastPost = match.Groups[1].Value;
+            }
+            StringBuilder msg = new StringBuilder();
+
+            msg.AppendFormat("{0}={1}&", "do", "deletepost");
+            msg.AppendFormat("{0}={1}&", "s", "");
+            msg.AppendFormat("{0}={1}&", "securitytoken", securityToken);
+            msg.AppendFormat("{0}={1}&", "postid", postId.ToString());
+            msg.AppendFormat("{0}={1}&", "deletepost", "delete");
+            msg.AppendFormat("{0}={1}&", "reason", "");
+            cs.Url = String.Format("{0}editpost.php", _outer.ForumURL);
+            cs.Data = msg.ToString();
+            //Trace.TraceInformation("Posting: " + cs.Data);
+            String resp = HtmlHelper.PostToUrl(cs);
+            if (resp == null)
+            {
+                // failure
+                return false;
+            }
+            return true;
+        }
+        internal String NewThread(Int32 forum, String title, String body, Int32 icon, Boolean lockit)
+        {
+            String rc = String.Empty;
+            ConnectionSettings cs = _connectionSettings.Clone();
+            cs.Url = _outer.ForumURL + "private.php";
+            String doc = HtmlHelper.GetUrlResponseString(cs);
+            if (doc == null)
+            {
+                return rc;
+            }
+            // parse out securitytoken
+            Regex reg = new Regex("var SECURITYTOKEN = \"(.+)\"");
+            String securityToken = "";
+            Match match = reg.Match(doc);
+            if (match.Success)
+            {
+                securityToken = match.Groups[1].Value;
+            }
+            //			var ajax_last_post = 1338251071;
+            String ajaxLastPost = "";
+            reg = new Regex("var ajax_last_post = (.+);");
+            match = reg.Match(doc);
+            if (match.Success)
+            {
+                ajaxLastPost = match.Groups[1].Value;
+            }
+            StringBuilder msg = new StringBuilder();
+
+            msg.AppendFormat("{0}={1}&", "subject", title);
+            msg.AppendFormat("{0}={1}&", "message", body);
+            msg.AppendFormat("{0}={1}&", "wysiwyg", "0");
+            msg.AppendFormat("{0}={1}&", "iconid", icon.ToString());
+            msg.AppendFormat("{0}={1}&", "s", "");
+            msg.AppendFormat("{0}={1}&", "securitytoken", securityToken);
+            msg.AppendFormat("{0}={1}&", "f", forum.ToString());
+            msg.AppendFormat("{0}={1}&", "do", "postthread");
+            msg.AppendFormat("{0}={1}&", "posthash", String.Empty);
+            msg.AppendFormat("{0}={1}&", "poststarttime", String.Empty);
+            if (lockit)
+            {
+                msg.AppendFormat("{0}={1}&", "openclose", "1");
+            }
+            msg.AppendFormat("{0}={1}", "loggedinuser", cs.CC.GetCookies(new System.Uri(_outer.ForumURL))["bbuserid"]);
+            msg.AppendFormat("{0}={1}&", "sbutton", "Submit New Thread");
+            msg.AppendFormat("{0}={1}&", "parseurl", "1");
+            msg.AppendFormat("{0}={1}&", "emailupdate", "0");
+            msg.AppendFormat("{0}={1}&", "polloptions", "4");
+            cs.Url = String.Format("{0}newthread.php?do=postthread&f=", _outer.ForumURL, forum);
+            cs.Data = msg.ToString();
+            //Trace.TraceInformation("Posting: " + cs.Data);
+            String resp = HtmlHelper.PostToUrl(cs);
+            if (resp == null)
+            {
+                // failure
+                return rc;
+            }
+            var html = new HtmlAgilityPack.HtmlDocument();
+            html.LoadHtml(resp);
+            HtmlAgilityPack.HtmlNode root = html.DocumentNode;
+            HtmlAgilityPack.HtmlNode link = root.SelectSingleNode("html/head/link[@rel='canonical']");
+            if (link != null)
+            {
+                String url = link.Attributes["href"].Value;
+                rc = url;
+            }
+            return rc;
+        }
         Boolean DoMakePost(Int32 threadId, String title, String content, Boolean lockit, Int32 icon)
 		{
 			/* headers
@@ -662,6 +773,16 @@ fragment	name
 			Boolean rc = _inner.MakePost(threadId, title, message, LockThread, PostIcon);
 			return rc;
 		}
+        public Boolean DeleteThread(Int32 postId)
+        {
+            Boolean rc = _inner.DeleteThread(postId);
+            return rc;
+        }
+        public String NewThread(Int32 forum, String title, String body, Int32 icon, Boolean lockit)
+        {
+            String rc = _inner.NewThread(forum, title, body, icon, lockit);
+            return rc;
+        }
 		public void GetPostersLike(string name, Action<String, IEnumerable<Poster>> callback)
 		{
 			_inner.GetPostersLike(name, callback);
