@@ -21,7 +21,6 @@ namespace RickyRaccoon
         private Action<Action> _synchronousInvoker;
         RolePMSet rolepms = new RolePMSet("", new List<Team>());
         RolePMSet gamepms = new RolePMSet("", new List<Team>());
-        private static int ROWINDEX_START = 4;
 
 
         public Raccoon()
@@ -130,31 +129,93 @@ namespace RickyRaccoon
                 roster[n] = value;
             }
             int curplayer = 0;
-            for (int i = 4; i <= tblRoles.RowCount; i++)
+            for (int i = 0; i < gamepms.Roles.Count; i++)
             {
-                RolePM role = rolepms.Roles[i - ROWINDEX_START];
-                string pm = role.FullPM(txtGameURL.Text);
-                for (int j = 0; j < role.Count; j++)
+                RolePM role = gamepms.Roles[i];
+                for (int j = curplayer; j < curplayer + role.Count; j++)
                 {
-                    _forum.SendPM(new List<string>() { roster[curplayer] }, null, txtGameName.Text + " Role PM", pm);
-                    System.Threading.Thread.Sleep(30000);
-                    curplayer += 1;
+                    role.Players.Add(roster[j]);                    
                 }
-
+                curplayer += role.Count;
+            }
+            curplayer = 0;
+            for (int i = 0; i < gamepms.Roles.Count; i++)
+            {
+                RolePM role = gamepms.Roles[i];
+                string peek = "";
+                string peektype = "";
+                if (role.Role == "Seer" && boxSeerPeek.Text == "n0 Random Villager Peek")
+                {
+                    List<string> villagers = new List<string>();
+                    for (int j = 0; j < gamepms.Roles.Count; j++)
+                    {
+                        if (gamepms.Roles[j].TeamRole.Name == "Villager")
+                        {
+                            for (int k = 0; k < gamepms.Roles[j].Players.Count; k++)
+                            {
+                                
+                                villagers.Add(gamepms.Roles[j].Players[k]);
+                            }
+                        }
+                    }
+                    Random random = new Random();
+                    int index = random.Next(villagers.Count);
+                    peek = villagers[index];
+                    peektype = "villager";
+                }
+                Console.WriteLine(peek);
+                string pm = role.FullPM(txtGameURL.Text, gamepms, peek, peektype);
+                for (int j = curplayer; j < curplayer + role.Count; j+=8)
+                {
+                    Console.WriteLine("PM: " + pm);
+                    Console.WriteLine("currentplayer" + j + "-" + (Math.Min(8, curplayer + role.Count - j) + j));
+                    _forum.SendPM(null, roster.GetRange(j, Math.Min(8, curplayer + role.Count - j) + j), txtGameName.Text + " Role PM", pm);
+                    System.Threading.Thread.Sleep(30000);                    
+                }
+                curplayer += role.Count;
+                gamepms.Roles[i].Players.Clear();
             }
             roster.Sort();
-            txtPlayerCount.Text = roster.Count.ToString();
+        }
+
+        private void makeTurboOP()
+        {
+            txtOP.Text = String.Format(@"{0}
+1st day is {1} minutes long, subsequent days are {2} minutes long. Nights are {3} minutes long, and NAs will be randed if not recieved by that time.
+Seer got a {4}
+There is {5} after d1
+Must Lynch rules are {6}
+Wolf Chat is {7}
+
+You will receive your PMs shortly.
+
+[b]IT IS NIGHT, DO NOT POST[/b]", txtRoleList.Text, txtDay1Length.Text, txtDayLength.Text, txtNightLength.Text, boxSeerPeek.Text, boxMajLynch.Text, boxMustLynch.Text, boxWolfChat.Text);
         }
 
         private void btnMakeOP_Click(object sender, EventArgs e)
         {
+            if (boxTurbo.Checked)
+            {
+                makeTurboOP();
+                return;
+            }
+
             string pms = "";
             for (int i = 0; i < gamepms.Roles.Count; i++)
             {
-                pms += "[quote]" + gamepms.Roles[i].FullPM(txtGameURL.Text) + "[/quote]" + Environment.NewLine + Environment.NewLine;
+                pms += "[quote]" + gamepms.Roles[i].EditedPM(txtGameURL.Text) + "[/quote]" + Environment.NewLine + Environment.NewLine;
             }
-            String majlynchtext = "";
-
+            string majlynchtext = "";
+            string lynchdays = "";
+            if (cboxSunday.Checked) lynchdays += "Sunday, ";
+            if (cboxMonday.Checked) lynchdays += "Monday, ";
+            if (cboxTuesday.Checked) lynchdays += "Tuesday, ";
+            if (cboxWednesday.Checked) lynchdays += "Wednesday, ";
+            if (cboxThursday.Checked) lynchdays += "Thursday, ";
+            if (cboxFriday.Checked) lynchdays += "Friday, ";
+            if (cboxSaturday.Checked) lynchdays += "Saturday, ";
+            if (lynchdays.Length > 1)
+                lynchdays = lynchdays.Substring(0, lynchdays.Length - 2);
             if (boxMajLynch.Text == "Majority Lynch") majlynchtext = "If at any time during the day any player has a majority the possible votes on him (e.g., with nine players alive, five or more is a majority), the day ends immediately and that player is lynched. Any player who believes a player has reached majority should post '[B]night[/B]', and all other posting should cease while the vote count is confirmed.";
             else majlynchtext = "";
 
@@ -187,7 +248,7 @@ I will open the thread every morning by posting '[B]It is day.[/B]' You may not 
 
 Day lasts until [b][color=red]" + boxEODTime.Text + @"[/color][/b]. Posting at [b][color=red]" + boxEODTime.Text + @"[/color][/b] is acceptable, and votes with that time stamp will be counted. Posting after that, even just a minute after, is not acceptable, even if I have not yet declared it night by posting '[B]It is night.[/B]' Do not post in the thread at any time, for any reason, between the end of the day and the opening of the thread the next morning.
 
-Weekends are different: There is not 'night' Saturday night -- the thread remains open from Saturday morning until Sunday evening. There is no scheduled Saturday night lynch.
+Night will fall on the following days: " + lynchdays + @"
 
 If this game has majority and any player reaches majority and is lynched before 2 pm, the moderator may, at his discretion, reopen the thread for a second game day that same day. He will do so only if it seems clear that this will not unduly disadvantage either side.[/indent]
 [b][U]Wolf Chat[/U][/b]
@@ -211,7 +272,7 @@ This post was made by automod(TM)
         {
             for (int i = 0; i < rolepms.Roles.Count; i++)
             {
-                dataRoles.Rows[i].Cells["txtFullPM"].Value = rolepms.Roles[i].FullPM(txtGameURL.Text);
+                dataRoles.Rows[i].Cells["txtFullPM"].Value = rolepms.Roles[i].EditedPM(txtGameURL.Text);
             }
         }
 
@@ -226,7 +287,6 @@ This post was made by automod(TM)
             {
                 ReferenceLoopHandling = ReferenceLoopHandling.Ignore
             });
-            Console.WriteLine(roleset);
             // Show the dialog and get result.
             saveFileDialog.FileName = rolepms.Name;
             DialogResult result = saveFileDialog.ShowDialog();
@@ -248,7 +308,7 @@ This post was made by automod(TM)
             rolepms = rolepmset;
             for (int i = 0; i < rolepms.Teams.Count(); i++)
             {
-                dataTeams.Rows.Add(rolepms.Teams[i].Name, rolepms.Teams[i].WinCon, rolepms.Teams[i].Hidden);
+                dataTeams.Rows.Add(rolepms.Teams[i].Name, rolepms.Teams[i].WinCon, rolepms.Teams[i].Hidden, rolepms.Teams[i].Share);
             }
             DataGridViewComboBoxColumn comboboxColumn = (DataGridViewComboBoxColumn)dataRoles.Columns[0];
             comboboxColumn.DataSource = rolepms.Teams;
@@ -295,7 +355,6 @@ This post was made by automod(TM)
 
         private void boxRoleSetSelect_SelectedIndexChanged(object sender, EventArgs e)
         {
-            List<String> rolestxt = new List<string>();
             ComboBox roleset = (ComboBox)sender;
             gamepms = JsonConvert.DeserializeObject<RolePMSet>(rolepms.DefaultRoleSets[roleset.Text]);
             int playerCount = 0;
@@ -307,9 +366,14 @@ This post was made by automod(TM)
                 string team = gamepms.Roles[i].TeamRole.Name;
                 if (gamepms.Roles[i].TeamRole.Name != "") team = gamepms.Roles[i].TeamRole.Name + " ";
                 txtRoleList.Text += gamepms.Roles[i].Count + "X " + team + subrole + gamepms.Roles[i].Role + Environment.NewLine;
+                playerCount += gamepms.Roles[i].Count;
             }
-            txtRoleList.Text = String.Join(Environment.NewLine, rolestxt);
             txtRoleCount.Text = Convert.ToString(playerCount);
+            if (Convert.ToInt16(txtRoleCount.Text) > 0 && roster.Count > 0 && roster.Count == Convert.ToInt16(txtRoleCount.Text))
+            {
+                btnDoIt.Enabled = true;
+            }
+            else btnDoIt.Enabled = false;
         }
 
         private void boxRoleSetSelectLoad_SelectedIndexChanged(object sender, EventArgs e)
@@ -335,6 +399,7 @@ This post was made by automod(TM)
                     MessageBox.Show("This isn't valid JSON!");
                     return;
                 }
+                int playerCount = 0;
                 txtRoleList.Text = "";
                 for (int i = 0; i < gamepms.Roles.Count; i++)
                 {
@@ -343,7 +408,18 @@ This post was made by automod(TM)
                     string team = gamepms.Roles[i].TeamRole.Name;
                     if (gamepms.Roles[i].TeamRole.Name != "") team = gamepms.Roles[i].TeamRole.Name + " ";
                     txtRoleList.Text += gamepms.Roles[i].Count + "X " + team + subrole + gamepms.Roles[i].Role + Environment.NewLine;
+                    playerCount += gamepms.Roles[i].Count;
                 }
+                for (int i = 0; i < gamepms.Teams.Count; i++)
+                {
+                    Console.WriteLine(gamepms.Teams[i].Name + gamepms.Teams[i].Share);
+                }
+                txtRoleCount.Text = Convert.ToString(playerCount);
+                if (Convert.ToInt16(txtRoleCount.Text) > 0 && roster.Count > 0 && roster.Count == Convert.ToInt16(txtRoleCount.Text))
+                {
+                    btnDoIt.Enabled = true;
+                }
+                else btnDoIt.Enabled = false;
             }
         }
 
@@ -360,15 +436,17 @@ This post was made by automod(TM)
                 string teamname = dataTeams.Rows[i].Cells["colTeamName"].Value.ToString();
                 string wincon = dataTeams.Rows[i].Cells["colWinCon"].Value.ToString();
                 bool hidden = Convert.ToBoolean(dataTeams.Rows[i].Cells["colReveal"].Value);
+                bool share = Convert.ToBoolean(dataTeams.Rows[i].Cells["colShare"].Value);
                 if (i < teams.Count)
                 {
                     teams[i].Name = teamname;
                     teams[i].WinCon = wincon;
                     teams[i].Hidden = hidden;
+                    teams[i].Share = share;
                 }
                 else
                 {
-                    Team team = new Team(teamname, wincon, hidden);
+                    Team team = new Team(teamname, wincon, hidden, share);
                     teams.Add(team);
                 }
             }
@@ -396,7 +474,6 @@ This post was made by automod(TM)
                 if (dataRoles.Rows[i].Cells["boxSubRole"].Value != null) subrole = dataRoles.Rows[i].Cells["boxSubRole"].Value.ToString();
                 string extraflavor = "";
                 if (dataRoles.Rows[i].Cells["txtExtraFlavor"].Value != null) extraflavor = dataRoles.Rows[i].Cells["txtExtraFlavor"].Value.ToString();
-                Console.WriteLine(extraflavor);
                 int count = 0;
                 if (dataRoles.Rows[i].Cells["txtCount"].Value != null) count = Convert.ToInt16(dataRoles.Rows[i].Cells["txtCount"].Value.ToString());
                 RolePM rolepm = new RolePM(team, role, subrole, extraflavor, count);
@@ -409,15 +486,9 @@ This post was made by automod(TM)
                     rolepms.Roles.Add(rolepm);
                 }
                 playerCount += count;
-                dataRoles.Rows[i].Cells["txtFullPM"].Value = rolepm.FullPM(txtGameURL.Text);
+                dataRoles.Rows[i].Cells["txtFullPM"].Value = rolepm.EditedPM(txtGameURL.Text);
             }
             txtPlayers.Text = Convert.ToString(playerCount);
-            txtRoleCount.Text = Convert.ToString(playerCount);
-            if (Convert.ToInt16(txtRoleCount.Text) > 0 && roster.Count > 0 && roster.Count == Convert.ToInt16(txtRoleCount.Text))
-            {
-                btnDoIt.Enabled = true;
-            }
-            else btnDoIt.Enabled = false;
         }
 
         private void dataRoles_UserDeletingRow(object sender, DataGridViewRowCancelEventArgs e)
@@ -439,6 +510,54 @@ This post was made by automod(TM)
                 }
             }
             rolepms.Teams.RemoveAt(rowIndex);
+        }
+
+        private void boxTurbo_CheckedChanged(object sender, EventArgs e)
+        {
+            CheckBox turbo = (CheckBox)sender;
+            if (turbo.Checked)
+            {
+                txtDayLength.Enabled = true;
+                txtDay1Length.Enabled = true;
+                txtNightLength.Enabled = true;
+                boxLongGame.Checked = false;
+            }
+            else
+            {
+                txtDayLength.Enabled = false;
+                txtDay1Length.Enabled = false;
+                txtNightLength.Enabled = false;
+            }
+        }
+
+        private void boxLongGame_CheckedChanged(object sender, EventArgs e)
+        {
+            CheckBox longgame = (CheckBox)sender;
+            if (longgame.Checked)
+            {
+                boxEODTime.Enabled = true;
+                boxSODTime.Enabled = true;
+                cboxSunday.Enabled = true;
+                cboxMonday.Enabled = true;
+                cboxTuesday.Enabled = true;
+                cboxWednesday.Enabled = true;
+                cboxThursday.Enabled = true;
+                cboxFriday.Enabled = true;
+                cboxSaturday.Enabled = true;
+                boxTurbo.Checked = false;
+            }
+            else
+            {
+                boxEODTime.Enabled = false;
+                boxSODTime.Enabled = false;
+                cboxSunday.Enabled = false;
+                cboxMonday.Enabled = false;
+                cboxTuesday.Enabled = false;
+                cboxWednesday.Enabled = false;
+                cboxThursday.Enabled = false;
+                cboxFriday.Enabled = false;
+                cboxSaturday.Enabled = false;
+            }
         }
     }
 }

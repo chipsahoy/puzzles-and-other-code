@@ -6,11 +6,12 @@ namespace RickyRaccoon
     [DataContract()]
     public class Team
     {
-        public Team(string name, string wincon, bool hidden)
+        public Team(string name, string wincon, bool hidden, bool share)
         {
             Name = name;
             WinCon = wincon;
-            hidden = Hidden;
+            Hidden = hidden;
+            Share = share;
         }
         [DataMember]
         public string Name
@@ -26,6 +27,12 @@ namespace RickyRaccoon
         }
         [DataMember]
         public bool Hidden
+        {
+            get;
+            set;
+        }
+        [DataMember]
+        public bool Share
         {
             get;
             set;
