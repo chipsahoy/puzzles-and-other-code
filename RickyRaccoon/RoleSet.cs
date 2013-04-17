@@ -9,13 +9,20 @@ namespace RickyRaccoon
     [DataContract()]
     public class RolePMSet
     {
-        public RolePMSet(string name)
+        public RolePMSet(string name, List<Team> teams)
         {
             Name = name;
             Roles = new List<RolePM>();
+            Teams = teams;
         }
         [DataMember]
         public string Name
+        {
+            get;
+            set;
+        }
+        [DataMember]
+        public List<Team> Teams
         {
             get;
             set;
@@ -28,116 +35,152 @@ namespace RickyRaccoon
         }
         public Dictionary<string, string> DefaultRoleSets = new Dictionary<string, string>() { 
         {"Vanilla 9'er", @"{
-  ""Name"": ""Vanilla 9er"",
+  ""Name"": ""Vanilla9er"",
+  ""Teams"": [
+    {
+      ""Name"": ""Villager"",
+      ""WinCon"": ""eliminating all wolves"",
+      ""Hidden"": false
+    },
+    {
+      ""Name"": ""Wolf"",
+      ""WinCon"": ""reaching parity with the village"",
+      ""Hidden"": false
+    }
+  ],
   ""Roles"": [
     {
-      ""DefaultRoleSets"": {
-        ""Vanilla 9er"": """"
+      ""TeamRole"": {
+        ""Name"": ""Villager"",
+        ""WinCon"": ""eliminating all wolves"",
+        ""Hidden"": false
       },
-      ""Team"": ""Wolf"",
-      ""Role"": """",
-      ""SubRole"": """",
-      ""ExtraFlavor"": """",
-      ""WinCon"": """",
-      ""Count"": 2
-    },
-    {
-      ""DefaultRoleSets"": {
-        ""Vanilla 9er"": """"
-      },
-      ""Team"": ""Villager"",
-      ""Role"": ""Seer"",
-      ""SubRole"": ""Full"",
-      ""ExtraFlavor"": """",
-      ""WinCon"": """",
-      ""Count"": 1
-    },
-    {
-      ""DefaultRoleSets"": {
-        ""Vanilla 9er"": """"
-      },
-      ""Team"": ""Villager"",
       ""Role"": ""Vanilla"",
       ""SubRole"": """",
       ""ExtraFlavor"": """",
-      ""WinCon"": """",
       ""Count"": 6
+    },
+    {
+      ""TeamRole"": {
+        ""Name"": ""Wolf"",
+        ""WinCon"": ""reaching parity with the village"",
+        ""Hidden"": false
+      },
+      ""Role"": ""Vanilla"",
+      ""SubRole"": """",
+      ""ExtraFlavor"": """",
+      ""Count"": 2
+    },
+    {
+      ""TeamRole"": {
+        ""Name"": ""Villager"",
+        ""WinCon"": ""eliminating all wolves"",
+        ""Hidden"": false
+      },
+      ""Role"": ""Seer"",
+      ""SubRole"": """",
+      ""ExtraFlavor"": """",
+      ""Count"": 1
     }
   ]
 }"},
   {"Vanilla 13'er", @"{
-  ""Name"": ""Vanilla 13'er"",
+  ""Name"": ""Vanilla13er"",
+  ""Teams"": [
+    {
+      ""Name"": ""Villager"",
+      ""WinCon"": ""eliminating all wolves"",
+      ""Hidden"": false
+    },
+    {
+      ""Name"": ""Wolf"",
+      ""WinCon"": ""reaching parity with the village"",
+      ""Hidden"": false
+    }
+  ],
   ""Roles"": [
     {
-      ""DefaultRoleSets"": {
-        ""Vanilla 9'er"": """"
+      ""TeamRole"": {
+        ""Name"": ""Villager"",
+        ""WinCon"": ""eliminating all wolves"",
+        ""Hidden"": false
       },
-      ""Team"": ""Wolf"",
-      ""Role"": """",
-      ""SubRole"": """",
-      ""ExtraFlavor"": """",
-      ""WinCon"": """",
-      ""Count"": 3
-    },
-    {
-      ""DefaultRoleSets"": {
-        ""Vanilla 9'er"": """"
-      },
-      ""Team"": ""Villager"",
-      ""Role"": ""Seer"",
-      ""SubRole"": ""Full"",
-      ""ExtraFlavor"": """",
-      ""WinCon"": """",
-      ""Count"": 1
-    },
-    {
-      ""DefaultRoleSets"": {
-        ""Vanilla 9'er"": """"
-      },
-      ""Team"": ""Villager"",
       ""Role"": ""Vanilla"",
       ""SubRole"": """",
       ""ExtraFlavor"": """",
-      ""WinCon"": """",
       ""Count"": 9
+    },
+    {
+      ""TeamRole"": {
+        ""Name"": ""Wolf"",
+        ""WinCon"": ""reaching parity with the village"",
+        ""Hidden"": false
+      },
+      ""Role"": ""Vanilla"",
+      ""SubRole"": """",
+      ""ExtraFlavor"": """",
+      ""Count"": 3
+    },
+    {
+      ""TeamRole"": {
+        ""Name"": ""Villager"",
+        ""WinCon"": ""eliminating all wolves"",
+        ""Hidden"": false
+      },
+      ""Role"": ""Seer"",
+      ""SubRole"": """",
+      ""ExtraFlavor"": """",
+      ""Count"": 1
     }
   ]
 }"},
   {"Vanilla 17'er", @"{
-  ""Name"": ""Vanilla 17'er"",
+  ""Name"": ""Vanilla17er"",
+  ""Teams"": [
+    {
+      ""Name"": ""Villager"",
+      ""WinCon"": ""eliminating all wolves"",
+      ""Hidden"": false
+    },
+    {
+      ""Name"": ""Wolf"",
+      ""WinCon"": ""reaching parity with the village"",
+      ""Hidden"": false
+    }
+  ],
   ""Roles"": [
     {
-      ""DefaultRoleSets"": {
-        ""Vanilla 9'er"": """"
+      ""TeamRole"": {
+        ""Name"": ""Villager"",
+        ""WinCon"": ""eliminating all wolves"",
+        ""Hidden"": false
       },
-      ""Team"": ""Wolf"",
-      ""Role"": """",
-      ""SubRole"": """",
-      ""ExtraFlavor"": """",
-      ""WinCon"": """",
-      ""Count"": 4
-    },
-    {
-      ""DefaultRoleSets"": {
-        ""Vanilla 9'er"": """"
-      },
-      ""Team"": ""Villager"",
-      ""Role"": ""Seer"",
-      ""SubRole"": ""Full"",
-      ""ExtraFlavor"": """",
-      ""WinCon"": """",
-      ""Count"": 1
-    },
-    {
-      ""DefaultRoleSets"": {
-        ""Vanilla 9'er"": """"
-      },
-      ""Team"": ""Villager"",
       ""Role"": ""Vanilla"",
       ""SubRole"": """",
       ""ExtraFlavor"": """",
-      ""WinCon"": """",
       ""Count"": 12
+    },
+    {
+      ""TeamRole"": {
+        ""Name"": ""Wolf"",
+        ""WinCon"": ""reaching parity with the village"",
+        ""Hidden"": false
+      },
+      ""Role"": ""Vanilla"",
+      ""SubRole"": """",
+      ""ExtraFlavor"": """",
+      ""Count"": 4
+    },
+    {
+      ""TeamRole"": {
+        ""Name"": ""Villager"",
+        ""WinCon"": ""eliminating all wolves"",
+        ""Hidden"": false
+      },
+      ""Role"": ""Seer"",
+      ""SubRole"": """",
+      ""ExtraFlavor"": """",
+      ""Count"": 1
     }
   ]
 }"
@@ -146,18 +189,17 @@ namespace RickyRaccoon
     }
     public class RolePM
     {
-        public RolePM(string team, string role, string subrole, string extraflavor, string wincon, int count)
+        public RolePM(Team team, string role, string subrole, string extraflavor, int count)
         {
-            Team = team;
+            TeamRole = team;
             Role = role;
             SubRole = subrole;
             ExtraFlavor = extraflavor;
-            WinCon = wincon;
             Count = count;
         }
 
         [DataMember]
-        public string Team
+        public Team TeamRole
         {
             get;
             set;
@@ -179,14 +221,7 @@ namespace RickyRaccoon
         {
             get;
             set;
-        }
-        [DataMember]
-        public string WinCon
-        {
-            get;
-            set;
-        }
-        
+        }        
         [DataMember]
         public int Count
         {
@@ -195,13 +230,21 @@ namespace RickyRaccoon
         }
         public string FullPM(string gameURL)
         {
+            string subrole = "";
+            if (SubRole != null) subrole = SubRole + " ";
+            string role = "";
+            if (SubRole != null) role = Role;
+            string team = "";
+            if (TeamRole != null) team = TeamRole.Name + " ";
+            string extraflavor = "";
+            if (ExtraFlavor != "") extraflavor = ExtraFlavor + " ";
             return String.Format(@"*************************************************
-You are {0} a {1} {2} {3}! You win by {4}.
+You are {0}a {1}{2}{3}! You win by {4}.
 
 The game thread is here: {5}
 
 Good luck!
-*************************************************", ExtraFlavor, Team, SubRole, Role, WinCon, gameURL);
+*************************************************", extraflavor, team, subrole, role, TeamRole.WinCon, gameURL);
         }
         
     }
