@@ -263,6 +263,87 @@ namespace POG.Forum
 			Boolean rc = DoMakePost(threadId, title, content, lockit, icon);
 			return rc;
 		}
+        internal bool CanUserReceivePM(string name)
+        {
+            ConnectionSettings cs = _connectionSettings.Clone();
+            cs.Url = _outer.ForumURL + "private.php";
+            String doc = HtmlHelper.GetUrlResponseString(cs);
+            if (doc == null)
+            {
+                return false;
+            }
+            // parse out securitytoken
+            Regex reg = new Regex("var SECURITYTOKEN = \"(.+)\"");
+            String securityToken = "";
+            Match match = reg.Match(doc);
+            if (match.Success)
+            {
+                securityToken = match.Groups[1].Value;
+            }
+            //			var ajax_last_post = 1338251071;
+            String ajaxLastPost = "";
+            reg = new Regex("var ajax_last_post = (.+);");
+            match = reg.Match(doc);
+            if (match.Success)
+            {
+                ajaxLastPost = match.Groups[1].Value;
+            }
+            StringBuilder msg = new StringBuilder();
+
+            String sTo = name;
+            
+            String sBCC = String.Empty;
+            msg.AppendFormat("{0}={1}&", "recipients", sTo);
+            msg.AppendFormat("{0}={1}&", "bccrecipients", sBCC);
+            String title = "test";
+            if (title != String.Empty)
+            {
+                msg.AppendFormat("{0}={1}&", "title", HttpUtility.UrlEncode(title));
+            }
+            String content = "test";
+            content = content.Replace("\r\n", "\n");
+            msg.AppendFormat("{0}={1}&", "message", HttpUtility.UrlEncode(content));
+            msg.AppendFormat("{0}={1}&", "wysiwyg", "0");
+            msg.AppendFormat("{0}={1}&", "iconid", "0");
+            msg.AppendFormat("{0}={1}&", "s", "");
+            msg.AppendFormat("{0}={1}&", "securitytoken", securityToken);
+            msg.AppendFormat("{0}={1}&", "do", "insertpm");
+            msg.AppendFormat("{0}={1}&", "pmid", "");
+            msg.AppendFormat("{0}={1}&", "forward", "");
+            msg.AppendFormat("{0}={1}&", "preview", "Preview Message");
+            msg.AppendFormat("{0}={1}&", "savecopy", "1");
+            msg.AppendFormat("{0}={1}&", "parseurl", "1");
+
+            cs.Url = String.Format("{0}private.php?do=insertpm&pmid=", _outer.ForumURL);
+            cs.Data = msg.ToString();
+            //Trace.TraceInformation("Posting: " + cs.Data);
+            String resp = HtmlHelper.PostToUrl(cs);
+            if (resp == null)
+            {
+                // failure
+                return false;
+            }
+            // Parse out response.
+            var html = new HtmlAgilityPack.HtmlDocument();
+            html.LoadHtml(resp);
+            HtmlAgilityPack.HtmlNode root = html.DocumentNode;
+            if (root == null)
+            {
+                return false;
+            }
+            HtmlAgilityPack.HtmlNode status = root.SelectSingleNode("/html[1]/body[1]/table[2]/tr[2]/td[1]/td[1]/div[1]/div[1]/div[1]/table[2]/tr[1]/td[3]/table[1]/tr[1]/td");
+            if (status != null)
+            {
+                String result = status.InnerText.Trim();
+                // Error looks like "The following errors occurred with your submission:"
+                if (result.Contains("Preview"))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
         internal Boolean SendPM(IEnumerable<string> To, IEnumerable<string> bcc, string title, string content, bool receipt)
         {
             ConnectionSettings cs = _connectionSettings.Clone();
@@ -693,7 +774,6 @@ fragment	name
 			}
 			callback(name, posters);
 		}
-
     }
 	public class TwoPlusTwoForum
 	{
@@ -781,6 +861,11 @@ fragment	name
         public String NewThread(Int32 forum, String title, String body, Int32 icon, Boolean lockit)
         {
             String rc = _inner.NewThread(forum, title, body, icon, lockit);
+            return rc;
+        }
+        public Boolean CanUserReceivePM(String name)
+        {
+            Boolean rc = _inner.CanUserReceivePM(name);
             return rc;
         }
 		public void GetPostersLike(string name, Action<String, IEnumerable<Poster>> callback)
