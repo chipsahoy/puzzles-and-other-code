@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Runtime.Serialization;
 
 namespace RickyRaccoon
@@ -12,6 +13,13 @@ namespace RickyRaccoon
             WinCon = wincon;
             Hidden = hidden;
             Share = share;
+            Members = new List<RolePM>();
+        }
+        [DataMember]
+        public List<RolePM> Members
+        {
+            get;
+            set;
         }
         [DataMember]
         public string Name

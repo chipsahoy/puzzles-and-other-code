@@ -176,7 +176,7 @@
             this.boxSeerPeek.Location = new System.Drawing.Point(90, 386);
             this.boxSeerPeek.Name = "boxSeerPeek";
             this.boxSeerPeek.Size = new System.Drawing.Size(160, 21);
-            this.boxSeerPeek.TabIndex = 22;
+            this.boxSeerPeek.TabIndex = 8;
             // 
             // Password
             // 
@@ -193,7 +193,7 @@
             this.txtUsername.Location = new System.Drawing.Point(90, 143);
             this.txtUsername.Name = "txtUsername";
             this.txtUsername.Size = new System.Drawing.Size(160, 20);
-            this.txtUsername.TabIndex = 19;
+            this.txtUsername.TabIndex = 4;
             // 
             // label4
             // 
@@ -213,7 +213,7 @@
             this.txtRoleList.ReadOnly = true;
             this.txtRoleList.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
             this.txtRoleList.Size = new System.Drawing.Size(160, 74);
-            this.txtRoleList.TabIndex = 17;
+            this.txtRoleList.TabIndex = 7;
             // 
             // label2
             // 
@@ -241,7 +241,7 @@
             this.txtRoleCount.Name = "txtRoleCount";
             this.txtRoleCount.ReadOnly = true;
             this.txtRoleCount.Size = new System.Drawing.Size(40, 20);
-            this.txtRoleCount.TabIndex = 15;
+            this.txtRoleCount.TabIndex = 1;
             this.txtRoleCount.Text = "0";
             // 
             // RoleCount
@@ -259,7 +259,7 @@
             this.txtPassword.Location = new System.Drawing.Point(90, 169);
             this.txtPassword.Name = "txtPassword";
             this.txtPassword.Size = new System.Drawing.Size(160, 20);
-            this.txtPassword.TabIndex = 13;
+            this.txtPassword.TabIndex = 5;
             // 
             // txtPlayerList
             // 
@@ -269,7 +269,7 @@
             this.txtPlayerList.ReadOnly = true;
             this.txtPlayerList.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
             this.txtPlayerList.Size = new System.Drawing.Size(160, 69);
-            this.txtPlayerList.TabIndex = 10;
+            this.txtPlayerList.TabIndex = 6;
             // 
             // txtGameURL
             // 
@@ -304,7 +304,7 @@
             this.btnMakeOP.Location = new System.Drawing.Point(210, 3);
             this.btnMakeOP.Name = "btnMakeOP";
             this.btnMakeOP.Size = new System.Drawing.Size(72, 24);
-            this.btnMakeOP.TabIndex = 5;
+            this.btnMakeOP.TabIndex = 1;
             this.btnMakeOP.Text = "Make OP";
             this.btnMakeOP.UseVisualStyleBackColor = true;
             this.btnMakeOP.Click += new System.EventHandler(this.btnMakeOP_Click);
@@ -327,7 +327,7 @@
             this.btnDoIt.Location = new System.Drawing.Point(417, 3);
             this.btnDoIt.Name = "btnDoIt";
             this.btnDoIt.Size = new System.Drawing.Size(72, 24);
-            this.btnDoIt.TabIndex = 4;
+            this.btnDoIt.TabIndex = 2;
             this.btnDoIt.Text = "DO IT!";
             this.btnDoIt.UseVisualStyleBackColor = true;
             this.btnDoIt.Click += new System.EventHandler(this.btnDoIt_Click);
@@ -338,7 +338,7 @@
             this.txtPlayerCount.Name = "txtPlayerCount";
             this.txtPlayerCount.ReadOnly = true;
             this.txtPlayerCount.Size = new System.Drawing.Size(40, 20);
-            this.txtPlayerCount.TabIndex = 8;
+            this.txtPlayerCount.TabIndex = 0;
             this.txtPlayerCount.TabStop = false;
             this.txtPlayerCount.Text = "0";
             // 
@@ -489,7 +489,7 @@
             this.txtNightLength.Location = new System.Drawing.Point(85, 3);
             this.txtNightLength.Name = "txtNightLength";
             this.txtNightLength.Size = new System.Drawing.Size(75, 20);
-            this.txtNightLength.TabIndex = 51;
+            this.txtNightLength.TabIndex = 0;
             // 
             // label11
             // 
@@ -510,7 +510,7 @@
             this.boxMajLynch.Location = new System.Drawing.Point(90, 618);
             this.boxMajLynch.Name = "boxMajLynch";
             this.boxMajLynch.Size = new System.Drawing.Size(320, 21);
-            this.boxMajLynch.TabIndex = 31;
+            this.boxMajLynch.TabIndex = 9;
             // 
             // label12
             // 
@@ -532,7 +532,7 @@
             this.boxMustLynch.Location = new System.Drawing.Point(90, 645);
             this.boxMustLynch.Name = "boxMustLynch";
             this.boxMustLynch.Size = new System.Drawing.Size(320, 21);
-            this.boxMustLynch.TabIndex = 33;
+            this.boxMustLynch.TabIndex = 10;
             // 
             // label13
             // 
@@ -554,7 +554,7 @@
             this.boxWolfChat.Location = new System.Drawing.Point(90, 672);
             this.boxWolfChat.Name = "boxWolfChat";
             this.boxWolfChat.Size = new System.Drawing.Size(320, 21);
-            this.boxWolfChat.TabIndex = 35;
+            this.boxWolfChat.TabIndex = 11;
             // 
             // label14
             // 
@@ -574,7 +574,7 @@
             this.txtOP.ReadOnly = true;
             this.txtOP.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
             this.txtOP.Size = new System.Drawing.Size(550, 208);
-            this.txtOP.TabIndex = 37;
+            this.txtOP.TabIndex = 12;
             // 
             // label15
             // 
@@ -591,7 +591,7 @@
             this.txtGameName.Location = new System.Drawing.Point(90, 117);
             this.txtGameName.Name = "txtGameName";
             this.txtGameName.Size = new System.Drawing.Size(320, 20);
-            this.txtGameName.TabIndex = 39;
+            this.txtGameName.TabIndex = 3;
             // 
             // tableLayoutPanel5
             // 
@@ -614,7 +614,7 @@
             this.btnLoadRoleSetGame.Location = new System.Drawing.Point(130, 3);
             this.btnLoadRoleSetGame.Name = "btnLoadRoleSetGame";
             this.btnLoadRoleSetGame.Size = new System.Drawing.Size(116, 24);
-            this.btnLoadRoleSetGame.TabIndex = 38;
+            this.btnLoadRoleSetGame.TabIndex = 1;
             this.btnLoadRoleSetGame.Text = "Load Custom Roles...";
             this.btnLoadRoleSetGame.UseVisualStyleBackColor = true;
             this.btnLoadRoleSetGame.Click += new System.EventHandler(this.btnLoadRoleSetGame_Click);
@@ -665,7 +665,7 @@
             this.boxEODTime.Name = "boxEODTime";
             this.boxEODTime.ShowUpDown = true;
             this.boxEODTime.Size = new System.Drawing.Size(92, 20);
-            this.boxEODTime.TabIndex = 44;
+            this.boxEODTime.TabIndex = 0;
             this.boxEODTime.Value = new System.DateTime(2013, 4, 14, 0, 0, 0, 0);
             // 
             // tableLayoutPanel11
@@ -714,7 +714,7 @@
             this.cboxMonday.Location = new System.Drawing.Point(71, 3);
             this.cboxMonday.Name = "cboxMonday";
             this.cboxMonday.Size = new System.Drawing.Size(64, 17);
-            this.cboxMonday.TabIndex = 0;
+            this.cboxMonday.TabIndex = 1;
             this.cboxMonday.Text = "Monday";
             this.cboxMonday.UseVisualStyleBackColor = true;
             // 
@@ -725,7 +725,7 @@
             this.cboxTuesday.Location = new System.Drawing.Point(141, 3);
             this.cboxTuesday.Name = "cboxTuesday";
             this.cboxTuesday.Size = new System.Drawing.Size(67, 17);
-            this.cboxTuesday.TabIndex = 1;
+            this.cboxTuesday.TabIndex = 2;
             this.cboxTuesday.Text = "Tuesday";
             this.cboxTuesday.UseVisualStyleBackColor = true;
             // 
@@ -736,7 +736,7 @@
             this.cboxWednesday.Location = new System.Drawing.Point(214, 3);
             this.cboxWednesday.Name = "cboxWednesday";
             this.cboxWednesday.Size = new System.Drawing.Size(83, 17);
-            this.cboxWednesday.TabIndex = 2;
+            this.cboxWednesday.TabIndex = 3;
             this.cboxWednesday.Text = "Wednesday";
             this.cboxWednesday.UseVisualStyleBackColor = true;
             // 
@@ -747,7 +747,7 @@
             this.cboxThursday.Location = new System.Drawing.Point(303, 3);
             this.cboxThursday.Name = "cboxThursday";
             this.cboxThursday.Size = new System.Drawing.Size(70, 17);
-            this.cboxThursday.TabIndex = 3;
+            this.cboxThursday.TabIndex = 4;
             this.cboxThursday.Text = "Thursday";
             this.cboxThursday.UseVisualStyleBackColor = true;
             // 
@@ -758,7 +758,7 @@
             this.cboxSaturday.Location = new System.Drawing.Point(439, 3);
             this.cboxSaturday.Name = "cboxSaturday";
             this.cboxSaturday.Size = new System.Drawing.Size(68, 17);
-            this.cboxSaturday.TabIndex = 5;
+            this.cboxSaturday.TabIndex = 6;
             this.cboxSaturday.Text = "Saturday";
             this.cboxSaturday.UseVisualStyleBackColor = true;
             // 
@@ -769,7 +769,7 @@
             this.cboxFriday.Location = new System.Drawing.Point(379, 3);
             this.cboxFriday.Name = "cboxFriday";
             this.cboxFriday.Size = new System.Drawing.Size(54, 17);
-            this.cboxFriday.TabIndex = 4;
+            this.cboxFriday.TabIndex = 5;
             this.cboxFriday.Text = "Friday";
             this.cboxFriday.UseVisualStyleBackColor = true;
             // 
@@ -780,7 +780,7 @@
             this.cboxSunday.Location = new System.Drawing.Point(3, 3);
             this.cboxSunday.Name = "cboxSunday";
             this.cboxSunday.Size = new System.Drawing.Size(62, 17);
-            this.cboxSunday.TabIndex = 6;
+            this.cboxSunday.TabIndex = 0;
             this.cboxSunday.Text = "Sunday";
             this.cboxSunday.UseVisualStyleBackColor = true;
             // 
@@ -807,7 +807,7 @@
             this.boxSODTime.Name = "boxSODTime";
             this.boxSODTime.ShowUpDown = true;
             this.boxSODTime.Size = new System.Drawing.Size(92, 20);
-            this.boxSODTime.TabIndex = 43;
+            this.boxSODTime.TabIndex = 0;
             this.boxSODTime.Value = new System.DateTime(2013, 4, 14, 0, 0, 0, 0);
             // 
             // tableLayoutPanel13
@@ -842,7 +842,7 @@
             this.txtDayLength.Location = new System.Drawing.Point(79, 3);
             this.txtDayLength.Name = "txtDayLength";
             this.txtDayLength.Size = new System.Drawing.Size(81, 20);
-            this.txtDayLength.TabIndex = 51;
+            this.txtDayLength.TabIndex = 0;
             // 
             // tableLayoutPanel9
             // 
@@ -902,7 +902,7 @@
             this.txtDay1Length.Location = new System.Drawing.Point(83, 3);
             this.txtDay1Length.Name = "txtDay1Length";
             this.txtDay1Length.Size = new System.Drawing.Size(77, 20);
-            this.txtDay1Length.TabIndex = 51;
+            this.txtDay1Length.TabIndex = 0;
             // 
             // boxTurbo
             // 
@@ -1007,7 +1007,7 @@
             this.txtPlayers.Name = "txtPlayers";
             this.txtPlayers.ReadOnly = true;
             this.txtPlayers.Size = new System.Drawing.Size(130, 20);
-            this.txtPlayers.TabIndex = 18;
+            this.txtPlayers.TabIndex = 0;
             this.txtPlayers.Text = "0";
             // 
             // label17
@@ -1041,7 +1041,7 @@
             this.btnLoadRoleSet.Location = new System.Drawing.Point(3, 46);
             this.btnLoadRoleSet.Name = "btnLoadRoleSet";
             this.btnLoadRoleSet.Size = new System.Drawing.Size(130, 37);
-            this.btnLoadRoleSet.TabIndex = 40;
+            this.btnLoadRoleSet.TabIndex = 1;
             this.btnLoadRoleSet.Text = "Load Custom...";
             this.btnLoadRoleSet.UseVisualStyleBackColor = true;
             this.btnLoadRoleSet.Click += new System.EventHandler(this.btnLoadRoleSet_Click);
@@ -1054,7 +1054,7 @@
             this.boxRoleSetSelectLoad.Location = new System.Drawing.Point(3, 3);
             this.boxRoleSetSelectLoad.Name = "boxRoleSetSelectLoad";
             this.boxRoleSetSelectLoad.Size = new System.Drawing.Size(130, 21);
-            this.boxRoleSetSelectLoad.TabIndex = 39;
+            this.boxRoleSetSelectLoad.TabIndex = 0;
             this.boxRoleSetSelectLoad.SelectedIndexChanged += new System.EventHandler(this.boxRoleSetSelectLoad_SelectedIndexChanged);
             // 
             // tableLayoutPanel7
@@ -1079,7 +1079,7 @@
             this.txtRoleSetName.Location = new System.Drawing.Point(3, 3);
             this.txtRoleSetName.Name = "txtRoleSetName";
             this.txtRoleSetName.Size = new System.Drawing.Size(130, 20);
-            this.txtRoleSetName.TabIndex = 22;
+            this.txtRoleSetName.TabIndex = 0;
             this.txtRoleSetName.TextChanged += new System.EventHandler(this.txtRoleSetName_TextChanged);
             // 
             // btnSaveRoleSet
@@ -1088,7 +1088,7 @@
             this.btnSaveRoleSet.Location = new System.Drawing.Point(21, 38);
             this.btnSaveRoleSet.Name = "btnSaveRoleSet";
             this.btnSaveRoleSet.Size = new System.Drawing.Size(93, 22);
-            this.btnSaveRoleSet.TabIndex = 20;
+            this.btnSaveRoleSet.TabIndex = 1;
             this.btnSaveRoleSet.Text = "Save Role Set...";
             this.btnSaveRoleSet.UseVisualStyleBackColor = true;
             this.btnSaveRoleSet.Click += new System.EventHandler(this.btnSaveRoleSet_Click);
@@ -1108,7 +1108,7 @@
             this.dataRoles.Location = new System.Drawing.Point(3, 103);
             this.dataRoles.Name = "dataRoles";
             this.dataRoles.Size = new System.Drawing.Size(1148, 425);
-            this.dataRoles.TabIndex = 1;
+            this.dataRoles.TabIndex = 0;
             this.dataRoles.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataRoles_CellValueChanged);
             this.dataRoles.UserDeletingRow += new System.Windows.Forms.DataGridViewRowCancelEventHandler(this.dataRoles_UserDeletingRow);
             // 

@@ -12,7 +12,6 @@ namespace RickyRaccoon
         public RolePMSet(string name, List<Team> teams)
         {
             Name = name;
-            Roles = new List<RolePM>();
             Teams = teams;
         }
         [DataMember]
@@ -27,184 +26,258 @@ namespace RickyRaccoon
             get;
             set;
         }
-        [DataMember]
-        public List<RolePM> Roles
+        public void setRolePM(RolePM role, int rolenum)
         {
-            get;
-            private set;
+            for (int i = 0; i < Teams.Count; i++)
+            {
+                for (int j = 0; j < Teams[i].Members.Count; j++)
+                {
+                    if (Teams[i].Members[j].RoleNum == rolenum)
+                    {
+                        Teams[i].Members[j] = role;
+                        return;
+                    }
+                }
+            }
+            for (int i = 0; i < Teams.Count; i++)
+            {
+                if (Teams[i].Equals(role.TeamRole))
+                {
+                    Teams[i].Members.Add(role);
+                }
+            }
         }
+        public void removeRolePM(int rolenum)
+        {
+            for (int i = 0; i < Teams.Count; i++)
+            {
+                for (int j = 0; j < Teams[i].Members.Count; j++)
+                {
+                    if (Teams[i].Members[j].RoleNum == rolenum)
+                    {
+                        Teams[i].Members.RemoveAt(j);
+                    }
+                    else if (Teams[i].Members[j].RoleNum > rolenum)
+                    {
+                        Teams[i].Members[j].RoleNum--;
+                    }
+                }
+            }
+        }
+
         public Dictionary<string, string> DefaultRoleSets = new Dictionary<string, string>() { 
         {"Vanilla 9'er", @"{
-  ""Name"": ""Vanilla9er"",
+  ""Name"": ""Vanilla 9'er"",
   ""Teams"": [
     {
+      ""Members"": [
+        {
+          ""Players"": [],
+          ""RoleNum"": 0,
+          ""Role"": ""Vanilla"",
+          ""SubRole"": """",
+          ""ExtraFlavor"": """",
+          ""Count"": 6
+        },
+        {
+          ""Players"": [],
+          ""RoleNum"": 2,
+          ""Role"": ""Seer"",
+          ""SubRole"": """",
+          ""ExtraFlavor"": """",
+          ""Count"": 1
+        }
+      ],
       ""Name"": ""Villager"",
-      ""WinCon"": ""eliminating all wolves"",
+      ""WinCon"": ""eliminate all wolves"",
       ""Hidden"": false,
       ""Share"": false
     },
     {
+      ""Members"": [
+        {
+          ""Players"": [],
+          ""RoleNum"": 1,
+          ""Role"": ""Vanilla"",
+          ""SubRole"": """",
+          ""ExtraFlavor"": """",
+          ""Count"": 2
+        }
+      ],
       ""Name"": ""Wolf"",
-      ""WinCon"": ""reaching parity with the village"",
+      ""WinCon"": ""reach parity with the village"",
       ""Hidden"": false,
       ""Share"": true
-    }
-  ],
-  ""Roles"": [
-    {
-      ""Players"": [],
-      ""TeamRole"": {
-        ""Name"": ""Villager"",
-        ""WinCon"": ""eliminating all wolves"",
-        ""Hidden"": false,
-        ""Share"": false
-      },
-      ""Role"": ""Vanilla"",
-      ""SubRole"": """",
-      ""ExtraFlavor"": """",
-      ""Count"": 6
-    },
-    {
-      ""Players"": [],
-      ""TeamRole"": {
-        ""Name"": ""Wolf"",
-        ""WinCon"": ""reaching parity with the village"",
-        ""Hidden"": false,
-        ""Share"": true
-      },
-      ""Role"": ""Vanilla"",
-      ""SubRole"": """",
-      ""ExtraFlavor"": """",
-      ""Count"": 2
-    },
-    {
-      ""Players"": [],
-      ""TeamRole"": {
-        ""Name"": ""Villager"",
-        ""WinCon"": ""eliminating all wolves"",
-        ""Hidden"": false,
-        ""Share"": false
-      },
-      ""Role"": ""Seer"",
-      ""SubRole"": """",
-      ""ExtraFlavor"": """",
-      ""Count"": 1
     }
   ]
 }"},
   {"Vanilla 13'er", @"{
-  ""Name"": ""Vanilla13er"",
+  ""Name"": ""Vanilla 13'er"",
   ""Teams"": [
     {
+      ""Members"": [
+        {
+          ""Players"": [],
+          ""RoleNum"": 0,
+          ""Role"": ""Vanilla"",
+          ""SubRole"": """",
+          ""ExtraFlavor"": """",
+          ""Count"": 9
+        },
+        {
+          ""Players"": [],
+          ""TeamRole"": {
+            ""Members"": [
+              {
+                ""Players"": [],
+                ""RoleNum"": 1,
+                ""Role"": ""Seer"",
+                ""SubRole"": """",
+                ""ExtraFlavor"": """",
+                ""Count"": 1
+              }
+            ],
+            ""Name"": ""Wolf"",
+            ""WinCon"": ""reach parity with the village"",
+            ""Hidden"": false,
+            ""Share"": true
+          },
+          ""RoleNum"": 2,
+          ""Role"": ""Vanilla"",
+          ""SubRole"": """",
+          ""ExtraFlavor"": """",
+          ""Count"": 3
+        }
+      ],
       ""Name"": ""Villager"",
-      ""WinCon"": ""eliminating all wolves"",
+      ""WinCon"": ""eliminate all wolves"",
       ""Hidden"": false,
       ""Share"": false
     },
     {
+      ""Members"": [
+        {
+          ""Players"": [],
+          ""TeamRole"": {
+            ""Members"": [
+              {
+                ""Players"": [],
+                ""RoleNum"": 0,
+                ""Role"": ""Vanilla"",
+                ""SubRole"": """",
+                ""ExtraFlavor"": """",
+                ""Count"": 9
+              },
+              {
+                ""Players"": [],
+                ""RoleNum"": 2,
+                ""Role"": ""Vanilla"",
+                ""SubRole"": """",
+                ""ExtraFlavor"": """",
+                ""Count"": 3
+              }
+            ],
+            ""Name"": ""Villager"",
+            ""WinCon"": ""eliminate all wolves"",
+            ""Hidden"": false,
+            ""Share"": false
+          },
+          ""RoleNum"": 1,
+          ""Role"": ""Seer"",
+          ""SubRole"": """",
+          ""ExtraFlavor"": """",
+          ""Count"": 1
+        }
+      ],
       ""Name"": ""Wolf"",
-      ""WinCon"": ""reaching parity with the village"",
+      ""WinCon"": ""reach parity with the village"",
       ""Hidden"": false,
       ""Share"": true
-    }
-  ],
-  ""Roles"": [
-    {
-      ""Players"": [],
-      ""TeamRole"": {
-        ""Name"": ""Villager"",
-        ""WinCon"": ""eliminating all wolves"",
-        ""Hidden"": false,
-        ""Share"": false
-      },
-      ""Role"": ""Vanilla"",
-      ""SubRole"": """",
-      ""ExtraFlavor"": """",
-      ""Count"": 9
-    },
-    {
-      ""Players"": [],
-      ""TeamRole"": {
-        ""Name"": ""Wolf"",
-        ""WinCon"": ""reaching parity with the village"",
-        ""Hidden"": false,
-        ""Share"": true
-      },
-      ""Role"": ""Vanilla"",
-      ""SubRole"": """",
-      ""ExtraFlavor"": """",
-      ""Count"": 3
-    },
-    {
-      ""Players"": [],
-      ""TeamRole"": {
-        ""Name"": ""Villager"",
-        ""WinCon"": ""eliminating all wolves"",
-        ""Hidden"": false,
-        ""Share"": false
-      },
-      ""Role"": ""Seer"",
-      ""SubRole"": """",
-      ""ExtraFlavor"": """",
-      ""Count"": 1
     }
   ]
 }"},
   {"Vanilla 17'er", @"{
-  ""Name"": ""Vanilla17er"",
+  ""Name"": ""Vanilla 17'er"",
   ""Teams"": [
     {
+      ""Members"": [
+        {
+          ""Players"": [],
+          ""RoleNum"": 0,
+          ""Role"": ""Vanilla"",
+          ""SubRole"": """",
+          ""ExtraFlavor"": """",
+          ""Count"": 12
+        },
+        {
+          ""Players"": [],
+          ""TeamRole"": {
+            ""Members"": [
+              {
+                ""Players"": [],
+                ""RoleNum"": 1,
+                ""Role"": ""Seer"",
+                ""SubRole"": """",
+                ""ExtraFlavor"": """",
+                ""Count"": 1
+              }
+            ],
+            ""Name"": ""Wolf"",
+            ""WinCon"": ""reach parity with the village"",
+            ""Hidden"": false,
+            ""Share"": true
+          },
+          ""RoleNum"": 2,
+          ""Role"": ""Vanilla"",
+          ""SubRole"": """",
+          ""ExtraFlavor"": """",
+          ""Count"": 4
+        }
+      ],
       ""Name"": ""Villager"",
-      ""WinCon"": ""eliminating all wolves"",
+      ""WinCon"": ""eliminate all wolves"",
       ""Hidden"": false,
       ""Share"": false
     },
     {
+      ""Members"": [
+        {
+          ""Players"": [],
+          ""TeamRole"": {
+            ""Members"": [
+              {
+                ""Players"": [],
+                ""RoleNum"": 0,
+                ""Role"": ""Vanilla"",
+                ""SubRole"": """",
+                ""ExtraFlavor"": """",
+                ""Count"": 12
+              },
+              {
+                ""Players"": [],
+                ""RoleNum"": 2,
+                ""Role"": ""Vanilla"",
+                ""SubRole"": """",
+                ""ExtraFlavor"": """",
+                ""Count"": 4
+              }
+            ],
+            ""Name"": ""Villager"",
+            ""WinCon"": ""eliminate all wolves"",
+            ""Hidden"": false,
+            ""Share"": false
+          },
+          ""RoleNum"": 1,
+          ""Role"": ""Seer"",
+          ""SubRole"": """",
+          ""ExtraFlavor"": """",
+          ""Count"": 1
+        }
+      ],
       ""Name"": ""Wolf"",
-      ""WinCon"": ""reaching parity with the village"",
+      ""WinCon"": ""reach parity with the village"",
       ""Hidden"": false,
       ""Share"": true
-    }
-  ],
-  ""Roles"": [
-    {
-      ""Players"": [],
-      ""TeamRole"": {
-        ""Name"": ""Villager"",
-        ""WinCon"": ""eliminating all wolves"",
-        ""Hidden"": false,
-        ""Share"": false
-      },
-      ""Role"": ""Vanilla"",
-      ""SubRole"": """",
-      ""ExtraFlavor"": """",
-      ""Count"": 12
-    },
-    {
-      ""Players"": [],
-      ""TeamRole"": {
-        ""Name"": ""Wolf"",
-        ""WinCon"": ""reaching parity with the village"",
-        ""Hidden"": false,
-        ""Share"": true
-      },
-      ""Role"": ""Vanilla"",
-      ""SubRole"": """",
-      ""ExtraFlavor"": """",
-      ""Count"": 4
-    },
-    {
-      ""Players"": [],
-      ""TeamRole"": {
-        ""Name"": ""Villager"",
-        ""WinCon"": ""eliminating all wolves"",
-        ""Hidden"": false,
-        ""Share"": false
-      },
-      ""Role"": ""Seer"",
-      ""SubRole"": """",
-      ""ExtraFlavor"": """",
-      ""Count"": 1
     }
   ]
 }"
@@ -213,13 +286,14 @@ namespace RickyRaccoon
     }
     public class RolePM
     {
-        public RolePM(Team team, string role, string subrole, string extraflavor, int count)
+        public RolePM(Team team, string role, string subrole, string extraflavor, int count, int rolenum)
         {
             TeamRole = team;
             Role = role;
             SubRole = subrole;
             ExtraFlavor = extraflavor;
             Count = count;
+            RoleNum = rolenum;
             Players = new List<string>();
         }
         public List<string> Players
@@ -229,6 +303,12 @@ namespace RickyRaccoon
         }
         [DataMember]
         public Team TeamRole
+        {
+            get;
+            set;
+        }
+        [DataMember]
+        public int RoleNum
         {
             get;
             set;
@@ -266,15 +346,9 @@ namespace RickyRaccoon
             {
                 Console.WriteLine("HERE");
                 teammates += "Your Team is:" + Environment.NewLine;
-                for (int i = 0; i < gamepms.Roles.Count; i++)
+                for (int i = 0; i < TeamRole.Members.Count; i++)
                 {
-                    if (TeamRole.Equals(gamepms.Roles[i].TeamRole))
-                    {
-                        for (int j = 0; j < gamepms.Roles[i].Players.Count; j++)
-                        {
-                            teammates += gamepms.Roles[i].Players[j] + Environment.NewLine;
-                        }
-                    }
+                    teammates += TeamRole.Members[i] + Environment.NewLine;
                 }
             }
             Console.WriteLine(peek);
