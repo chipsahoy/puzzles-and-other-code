@@ -8,6 +8,13 @@ using System.Runtime.Serialization;
 
 namespace POG.Forum
 {
+    public enum Language
+    {
+        undefined = 0,
+        English,
+        Estonian,
+    }
+
     [DataContract()]
     public class Bold
     {

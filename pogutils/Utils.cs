@@ -12,6 +12,7 @@ namespace POG.Utils
 {
     public class Misc
     {
+        public delegate DateTimeOffset ParseItemTimeDelegate(DateTimeOffset pageTime, String date);
         public static Int32 TidFromURL(String url)
         {
             int ixTidStart = url.LastIndexOf('-') + 1;
@@ -44,9 +45,16 @@ namespace POG.Utils
         }
         public static DateTimeOffset ParsePageTime(String pageTime, DateTime utcNow)
         {
+            String sMatchTZ = @"All times are GMT ([\+\-]\d+(?:\.5)?)\. The time now is (\d\d:\d\d\s[AP]M)";
+            String sHourFormat = "hh:mm tt";
+            if (pageTime.Contains("K�ik ajad"))
+            {
+                sMatchTZ = @"K�ik ajad on GMT ([\+\-]\d+(?:\.5)?)\. Kell on praegu (\d\d:\d\d)";
+                sHourFormat = "HH:mm";
+            }
             Int32 tzOffset = 0;
             DateTimeOffset rc = DateTime.UtcNow;
-            Match m = Regex.Match(pageTime, @"All times are GMT ([\+\-]\d+(?:\.5)?)\. The time now is (\d\d:\d\d\s[AP]M)");
+            Match m = Regex.Match(pageTime, sMatchTZ);
             if (m.Success)
             {
                 tzOffset = (Int32)(decimal.Parse(m.Groups[1].Value) * 60); //offset in minutes
@@ -57,7 +65,7 @@ namespace POG.Utils
                 try
                 {
                     Thread.CurrentThread.CurrentCulture = CultureInfo.CreateSpecificCulture("en-US");
-                    rawTime = DateTime.SpecifyKind(DateTime.ParseExact(timeServer, "hh:mm tt", null), DateTimeKind.Unspecified);
+                    rawTime = DateTime.SpecifyKind(DateTime.ParseExact(timeServer, sHourFormat, null), DateTimeKind.Unspecified);
                 }
                 finally
                 {
@@ -79,7 +87,7 @@ namespace POG.Utils
             //Trace.TraceInformation("Server Time: {0}", rc.DateTime.ToShortTimeString());
             return rc;
         }
-        public static DateTimeOffset ParseItemTime(DateTimeOffset pageTime, String time)
+        public static DateTimeOffset ParseItemTimeEnglish(DateTimeOffset pageTime, String time)
         {
             // 09-04-2012 at 11:03 AM
             // 04-12-2012 07:02 PM
@@ -106,6 +114,35 @@ namespace POG.Utils
             rc = rc.ToUniversalTime();
             return rc;
         }
+        public static DateTimeOffset ParseItemTimeEstonia(DateTimeOffset pageTime, String time)
+        {
+            // 09-04-2012 at 11:03 AM
+            // 04-12-2012 07:02 PM
+            // 04-12-2012, 02:10 PM
+
+            DateTimeOffset rc;
+            string today = pageTime.ToString("dd-MM-yy");
+            time = time.Replace("T�na", today);
+            DateTime dtYesterday = pageTime.DateTime - new TimeSpan(1, 0, 0, 0);
+            string yesterday = dtYesterday.ToString("dd-MM-yy");
+            time = time.Replace("Eile", yesterday);
+            time = time.Replace(",", String.Empty);
+            time = time.Replace("at ", String.Empty);
+            time = time.Replace('.', '-');
+            time = time.Replace(' ', ' '); // $nbsp; looks like space but isn't!
+            var culture = Thread.CurrentThread.CurrentCulture;
+            try
+            {
+                Thread.CurrentThread.CurrentCulture = CultureInfo.CreateSpecificCulture("en-US");
+                rc = new DateTimeOffset(DateTime.ParseExact(time, "dd-MM-yy HH:mm", null), pageTime.Offset);
+            }
+            finally
+            {
+                Thread.CurrentThread.CurrentCulture = culture;
+            }
+            rc = rc.ToUniversalTime();
+            return rc;
+        }
         public static Int32 ParseMemberId(String profileUrl)
         {
             Int32 posterId = -1;
@@ -116,6 +153,18 @@ namespace POG.Utils
                 if (sId != String.Empty)
                 {
                     posterId = Int32.Parse(sId);
+                }
+            }
+            else // Bestonia
+            {
+                m = Regex.Match(profileUrl, @".*member.php/(\d*)-");
+                if (m.Success)
+                {
+                    String sId = m.Groups[1].Value;
+                    if (sId != String.Empty)
+                    {
+                        posterId = Int32.Parse(sId);
+                    }
                 }
             }
             return posterId;

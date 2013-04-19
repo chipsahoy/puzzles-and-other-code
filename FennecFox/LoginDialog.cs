@@ -13,13 +13,13 @@ namespace POG.FennecFox
 {
     public partial class LoginDialog : Form
     {
-        private TwoPlusTwoForum _forum;
+        private VBulletinForum _forum;
         public LoginDialog()
         {
             InitializeComponent();
         }
 
-        public LoginDialog(TwoPlusTwoForum _forum) : this()
+        public LoginDialog(VBulletinForum _forum) : this()
         {
             // TODO: Complete member initialization
             this._forum = _forum;

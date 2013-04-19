@@ -9,11 +9,16 @@ namespace POG.FennecFox
         /// The main entry point for the application.
         /// </summary>
         [STAThread]
-        static void Main()
+        static void Main(string[] args)
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Form f = new FoxParent();
+            String forum = "forumserver.twoplustwo.com";
+            if (args.Length > 0)
+            {
+                forum = args[0].ToLowerInvariant();
+            }
+            Form f = new FoxParent(forum);
             if (f != null)
             {
                 Application.Run(f);

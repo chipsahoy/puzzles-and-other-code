@@ -29,7 +29,8 @@ namespace POG.FennecFox
 		};
 
 		private VoteCount _voteCount;
-		private TwoPlusTwoForum _forum;
+		private VBulletinForum _forum;
+        Language _language;
 		IPogDb _db;
 		Moderator _moderator;
 		private Action<Action> _synchronousInvoker;
@@ -43,8 +44,8 @@ namespace POG.FennecFox
 		{
 			InitializeComponent();
 		}
-		public FormVoteCounter(TwoPlusTwoForum forum, Action<Action> synchronousInvoker, IPogDb db,
-			String url, Boolean turbo, Int32 day) : this()
+		public FormVoteCounter(VBulletinForum forum, Action<Action> synchronousInvoker, IPogDb db,
+			String url, Boolean turbo, Int32 day, Language language) : this()
 		{
 			_forum = forum;
 			_synchronousInvoker = synchronousInvoker;
@@ -52,6 +53,7 @@ namespace POG.FennecFox
 			_url = url;
 			_turbo = turbo;
 			_day = day;
+            _language = language;
 		}
 
 		protected override void OnLoad(EventArgs e)
@@ -407,7 +409,7 @@ namespace POG.FennecFox
 		{
 			url = Utils.Misc.NormalizeUrl(url);
 			ThreadReader t = _forum.Reader();
-			_voteCount = new VoteCount(_synchronousInvoker, t, _db, _forum.ForumURL, url, _forum.PostsPerPage);
+			_voteCount = new VoteCount(_synchronousInvoker, t, _db, _forum.ForumURL, url, _forum.PostsPerPage, _language);
 			_voteCount.PropertyChanged += new PropertyChangedEventHandler(_voteCount_PropertyChanged);
 			_voteCount.Turbo = _turbo;
 			_moderator = new Moderator(_synchronousInvoker, _voteCount, _forum);

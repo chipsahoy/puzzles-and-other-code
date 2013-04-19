@@ -10,8 +10,8 @@ namespace POG.Werewolf
     {
         IPogDb _db;
         Action<Action> _synchronousInvoker;
-        TwoPlusTwoForum _forum;
-        public AutoComplete(TwoPlusTwoForum forum, Action<Action> synchronousInvoker, IPogDb db)
+        VBulletinForum _forum;
+        public AutoComplete(VBulletinForum forum, Action<Action> synchronousInvoker, IPogDb db)
         {
             _forum = forum;
             _synchronousInvoker = synchronousInvoker;

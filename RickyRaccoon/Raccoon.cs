@@ -17,7 +17,7 @@ namespace RickyRaccoon
     {
 
         List<String> roster = new List<string>();
-        private TwoPlusTwoForum _forum;
+        private VBulletinForum _forum;
         private Action<Action> _synchronousInvoker;
         RolePMSet rolepms = new RolePMSet("", new List<Team>());
         RolePMSet gamepms = new RolePMSet("", new List<Team>());
@@ -90,7 +90,7 @@ namespace RickyRaccoon
             String password = txtPassword.Text;
             String host = "forumserver.twoplustwo.com";
 
-            _forum = new TwoPlusTwoForum(_synchronousInvoker, host);
+            _forum = new VBulletinForum(_synchronousInvoker, host, "3.8.7", "59/puzzles-other-games/");
             _forum.LoginEvent += new EventHandler<LoginEventArgs>(_forum_LoginEvent);
 
             if ((username != String.Empty) && (password != String.Empty))

@@ -24,6 +24,7 @@ namespace POG.Werewolf
 
 		String _url = String.Empty;
 		String _forumURL = String.Empty;
+        POG.Forum.Language _language = Language.English;
 		POG.Forum.ThreadReader _thread;
 		Int32 _postsPerPage = 100;
 		Int32 _threadId;
@@ -42,13 +43,14 @@ namespace POG.Werewolf
 		#endregion
 
 		#region constructors
-		public VoteCount(Action<Action> synchronousInvoker, ThreadReader t, IPogDb db, String forum, String url, Int32 postsPerPage) 
+		public VoteCount(Action<Action> synchronousInvoker, ThreadReader t, IPogDb db, String forum, String url, Int32 postsPerPage, Language language) 
 		{
 			_synchronousInvoker = synchronousInvoker;
 			_forumURL = forum;
 			_url = url;
 			_postsPerPage = postsPerPage;
-			_threadId = TwoPlusTwoForum.ThreadIdFromUrl(url);
+            _language = language;
+			_threadId = VBulletinForum.ThreadIdFromUrl(url);
 			_day = 1;
 			DateTime now = DateTime.Now;
 			_endTime = new DateTime(now.Year, now.Month, now.Day, 18, 0, 0, now.Kind);
@@ -163,7 +165,9 @@ namespace POG.Werewolf
 		}
 		public string GetPostableVoteCount()
 		{
-			int? endPost = EndPost;
+            string sError = "Error";
+            string sNotVoting = "not voting";
+            int? endPost = EndPost;
 			int end;
 			if (endPost != null)
 			{
@@ -173,12 +177,41 @@ namespace POG.Werewolf
 			{
 				end = LastPost;
 			}
-			var sb = new StringBuilder(@"[color=black][b]Votes from post ");
-			sb
-				.Append(StartPost.ToString())
-				.Append(" to post ")
-				.Append(end.ToString())
-				.AppendLine();
+            String sStart = "[color=black][b]Votes from post {0} to post {1}";
+            String sTimeToNight = "Night in {0}{1}";
+            String sNight = "It is night";
+            String startTable = "[table=head][b]Votes[/b]\t[b]Lynch[/b]\t[b]Voters[/b]";
+            String sWagonLine = "{0} \t [b]{1}[/b] \t {2}";
+            String sNoVoteLine = "{0} \t {1} \t {2}";
+            String showNotVoting = sNotVoting;
+            String sErrorLine = "{0} \t [color=red][b]{1}[/b][/color] \t {2}";
+            String redError = sError;
+            String sGoodBad = "[highlight][color=green]:{0} good[/color] [color=red]:{1} bad[/color][/highlight]";
+            String sOneDay = "1 day ";
+            String sDays = "{0} days ";
+
+            switch (_language)
+            {
+                case Language.Estonian:
+                    {
+                        sStart = "[color=black][b]Hääled seisuga post {0} kuni {1}";
+                        sTimeToNight = "Öö saabub {0}{1} pärast";
+                        sNight = "On öö";
+                        startTable = "[table= class: grid][tr][td][b]Hääli[/b][/td][td][b]Lynch[/b][/td][td][b]Hääletajad[/b][/td][/tr]";
+                        sWagonLine = "[tr][td]{0} [/td][td] [b]{1}[/b] [/td][td] {2}[/td][/tr]";
+                        sNoVoteLine = "[tr][td]{0} [/td][td] {1} [/td][td] {2}[/td][/tr]";
+                        sErrorLine = "[tr][td]{0} [/td][td] [color=red][b]{1}[/b][/color] [/td][td] {2}[/td][/tr]";
+                        showNotVoting = "ei ole hääletanud";
+                        redError = "Viga";
+                        sGoodBad = "[highlight][color=green]:{0}  loeb[/color] [color=red]:{1} ei loe[/color][/highlight]";
+                        sOneDay = "1 päeva ja ";
+                        sDays = "{0} päeva ja ";
+                    }
+                    break;
+            }
+            var sb = new StringBuilder();
+            sb.AppendFormat(sStart, StartPost, end);
+			sb.AppendLine();
 
 			TimeSpan ts = TimeUntilNight;
 			Boolean almostNight = false;
@@ -199,33 +232,31 @@ namespace POG.Werewolf
 
 					case 1:
 						{
-							days = "1 day ";
+							days = sOneDay;
 						}
 						break;
 
 					default:
 						{
-							days = ts.Days.ToString() + " days ";
+							days = String.Format(sDays, ts.Days);
 						}
 						break;
 				}
-				sb.AppendFormat("Night in {0}{1}", days, ts.ToString(@"hh\:mm\:ss"));
+                sb.AppendFormat(sTimeToNight, days, ts.ToString(@"hh\:mm\:ss"));
 			}
 			else
 			{
-				sb.Append("It is night");
+                sb.Append(sNight);
 			}
 
 			sb.AppendLine("[/b][/color]").AppendLine("---")
-			.AppendLine("[table=head][b]Votes[/b]\t[b]Lynch[/b]\t[b]Voters[/b]");
+            .AppendLine(startTable);
 
 			Dictionary<String, List<Voter>> wagons = new Dictionary<string, List<Voter>>();
 			List<Voter> listError = new List<Voter>();
 			List<Voter> listNoLynch = new List<Voter>();
 			List<Voter> listUnvote = new List<Voter>();
 			List<Voter> listNotVoting = new List<Voter>();
-			string sError = "Error";
-			string sNotVoting = "not voting";
 			wagons.Add(sError, listError);
 			wagons.Add(NoLynch, listNoLynch);
 			wagons.Add(Unvote, listUnvote);
@@ -280,35 +311,35 @@ namespace POG.Werewolf
 			foreach (var wagon in sortedWagons)
 			{
 				sb
-					.AppendFormat("{0} \t [b]{1}[/b] \t {2}", wagon.Value.Count, wagon.Key,
+                    .AppendFormat(sWagonLine, wagon.Value.Count, wagon.Key,
 									VoteLinks(wagon.Value, true))
 					.AppendLine();
 			}
 			if (listNoLynch.Count > 0)
 			{
 				sb
-					.AppendFormat("{0} \t {1} \t {2}", listNoLynch.Count, NoLynch,
+                    .AppendFormat(sNoVoteLine, listNoLynch.Count, NoLynch,
 									VoteLinks(listNoLynch, true))
 					.AppendLine();
 			}
 			if (listUnvote.Count > 0)
 			{
 				sb
-					.AppendFormat("{0} \t {1} \t {2}", listUnvote.Count, Unvote,
+                    .AppendFormat(sNoVoteLine, listUnvote.Count, Unvote,
 									VoteLinks(listUnvote, true))
 					.AppendLine();
 			}
 			if (listNotVoting.Count > 0)
 			{
 				sb
-					.AppendFormat("{0} \t {1} \t {2}", listNotVoting.Count, sNotVoting,
+                    .AppendFormat(sNoVoteLine, listNotVoting.Count, showNotVoting,
 									VoteLinks(listNotVoting, false))
 					.AppendLine();
 			}
 			if (listError.Count > 0)
 			{
 				sb
-					.AppendFormat("{0} \t [color=red][b]{1}[/b][/color] \t {2}", listError.Count, sError,
+                    .AppendFormat(sErrorLine, listError.Count, redError,
 									VoteLinks(listError, true))
 					.AppendLine();
 			}
@@ -319,7 +350,7 @@ namespace POG.Werewolf
 				int good = et.Minute;
 				int bad = (good + 1) % 60;
 				sb.AppendLine();
-				sb.AppendFormat("[highlight][color=green]:{0} good[/color] [color=red]:{1} bad[/color][/highlight]",
+                sb.AppendFormat(sGoodBad,
 						good.ToString("00"), bad.ToString("00"));
 			}
 			return sb.ToString();

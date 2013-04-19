@@ -20,13 +20,16 @@ namespace POG.FennecFox
 		[DllImport("user32.dll")]
 		public static extern int SendMessage(IntPtr hWnd, Int32 wMsg, bool wParam, Int32 lParam); private int childFormNumber = 0;
 
-		private TwoPlusTwoForum _forum;
+		private VBulletinForum _forum;
+        Language _language = Language.English;
 		private Action<Action> _synchronousInvoker;
 		IPogDb _db;
+        String _forumName;
 
-		public FoxParent()
+		public FoxParent(String forumName)
 		{
-			InitializeComponent();
+            _forumName = forumName;
+            InitializeComponent();
 			if (POG.FennecFox.Properties.Settings.Default.updateSettings)
 			{
 				POG.FennecFox.Properties.Settings.Default.Upgrade();
@@ -37,14 +40,35 @@ namespace POG.FennecFox
 		void FoxParent_Load(object sender, EventArgs e)
 		{
 			_synchronousInvoker = a => Invoke(a);
-			String host = "forumserver.twoplustwo.com";
-			String dbPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "/pog/";
+			//String host = "forumserver.twoplustwo.com";
+            String host = _forumName;
+            String lobby;
+            String vbVersion;
+            switch (host)
+            {
+                case "foorum.pokkeriprod.com":
+                    {
+                        vbVersion = "4.2.0";
+                        lobby = "forumdisplay.php/9-Võistlused";
+                        _language = Language.Estonian;
+                    }
+                    break;
+
+                default:
+                    {
+                        vbVersion = "3.8.7";
+                        lobby = "59/puzzles-other-games/";
+                        _language = Language.English;
+                    }
+                    break;
+            }
+            String dbPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "/pog/";
 			System.IO.Directory.CreateDirectory(dbPath);
 			String dbName = String.Format("{0}posts.{1}.sqlite", dbPath, host);
 			_db = new PogSqlite();
 			_db.Connect(dbName);
 			
-			_forum = new TwoPlusTwoForum(_synchronousInvoker, host);
+			_forum = new VBulletinForum(_synchronousInvoker, host, vbVersion, lobby);
 			_forum.LoginEvent += new EventHandler<LoginEventArgs>(_forum_LoginEvent);
 
 			String username = POG.FennecFox.Properties.Settings.Default.username;
@@ -64,7 +88,7 @@ namespace POG.FennecFox
 		}
 		private void ShowCounter(String url, Boolean turbo, Int32 day)
 		{
-			Form childForm = new FormVoteCounter(_forum, _synchronousInvoker, _db, url, turbo, day);
+			Form childForm = new FormVoteCounter(_forum, _synchronousInvoker, _db, url, turbo, day, _language);
 			childForm.MdiParent = this;
 			childForm.Text = "Window " + childFormNumber++;
 			childForm.Show();
@@ -73,7 +97,7 @@ namespace POG.FennecFox
 		#region generated
 		private void OpenFile(object sender, EventArgs e)
 		{
-			OpenGame frm = new OpenGame(_forum, _forum.ForumURL + "59/puzzles-other-games/");
+			OpenGame frm = new OpenGame(_forum, _forum.ForumURL + _forum.ForumLobby);
 			DialogResult dr = frm.ShowDialog();
 			if (dr == System.Windows.Forms.DialogResult.OK)
 			{
@@ -207,20 +231,6 @@ namespace POG.FennecFox
 		private void FoxParent_FormClosing(object sender, FormClosingEventArgs e)
 		{
 			_forum.LoginEvent -= _forum_LoginEvent;
-			StringCollection games = new StringCollection();
-			foreach (Form child in MdiChildren)
-			{
-				FormVoteCounter counter = child as FormVoteCounter;
-				if (counter != null)
-				{
-					String gameInfo = String.Format("{0}|{1}|{2}", counter.Turbo, counter.Day, counter.URL);
-					games.Add(gameInfo);
-				}
-			}
-			POG.FennecFox.Properties.Settings.Default.games = games;
-			POG.FennecFox.Properties.Settings.Default.Save();
-
-
 		}
 		Boolean _inLoginDialog = false;
 		Boolean _loggedIn = false;
@@ -258,40 +268,6 @@ namespace POG.FennecFox
 						_loggedIn = true;
 						openToolStripButton.Enabled = true;
 						tsBtnLogout.Enabled = true;
-						{
-							StringCollection games = POG.FennecFox.Properties.Settings.Default.games;
-							if (games == null)
-							{
-								games = new StringCollection();
-								POG.FennecFox.Properties.Settings.Default.games = games;
-								POG.FennecFox.Properties.Settings.Default.Save();
-								OpenFile(this, EventArgs.Empty);
-							}
-							else
-							{
-								foreach (String game in games)
-								{
-									String[] parts = game.Split('|');
-									if (parts.Length >= 3)
-									{
-										Boolean turbo = false;
-										Boolean.TryParse(parts[0], out turbo);
-										Int32 day = 1;
-										Int32.TryParse(parts[1], out day);
-										ShowCounter(parts[2], turbo, day);
-									}
-								}
-							}
-							//if (URLTextBox.Text == "")
-							//{
-							//    URLTextBox.Text = POG.FennecFox.Properties.Settings.Default.threadUrl;
-							//    if (URLTextBox.Text != "")
-							//    {
-							//        _day = POG.FennecFox.Properties.Settings.Default.day;
-							//        btnStartGame_Click(this, EventArgs.Empty);
-							//    }
-							//}
-						}
 					}
 					break;
 

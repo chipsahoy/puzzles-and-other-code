@@ -10,11 +10,51 @@ using POG.Utils;
 
 namespace POG.Forum
 {
+    public class LobbyReaderEstonia : LobbyReader
+    {
+        public LobbyReaderEstonia(ConnectionSettings connectionSettings, Action<Action> synchronousInvoker) :
+            base(connectionSettings, synchronousInvoker)
+        {
+            ParseItemTime = Misc.ParseItemTimeEstonia;
+        }
+        protected override void ParseLobbyPage(string url, string doc, out DateTimeOffset serverTime, ref List<ForumThread> threadList)
+        {
+            Int32 threadId = VBulletinForum.ThreadIdFromUrl(url);
+            var html = new HtmlAgilityPack.HtmlDocument();
+            html.LoadHtml(doc);
+            HtmlAgilityPack.HtmlNode root = html.DocumentNode;
+
+            serverTime = DateTime.Now;
+            HtmlAgilityPack.HtmlNode timeNode = root.SelectNodes("//div[@id='footer_time']").Last();
+            if (timeNode != null)
+            {
+                String timeText = timeNode.InnerText;
+                serverTime = Utils.Misc.ParsePageTime(timeText, DateTime.UtcNow);
+            }
+
+            HtmlAgilityPack.HtmlNodeCollection threads = root.SelectNodes("//tbody[contains(@id, 'threadbits_forum_')]/tr[contains(@id, 'vbpostrow_')]");
+            if (threads == null)
+            {
+                return;
+            }
+            foreach (HtmlAgilityPack.HtmlNode thread in threads)
+            {
+                ForumThread t = HtmlToThread(threadId, thread, serverTime);
+                if (t != null)
+                {
+                    threadList.Add(t);
+                }
+            }
+        }
+
+    }
+
     public class LobbyReader
     {
         #region fields
         readonly ConnectionSettings _connectionSettings;
         Action<Action> _synchronousInvoker;
+        protected Misc.ParseItemTimeDelegate ParseItemTime = Misc.ParseItemTimeEnglish;
         #endregion
         #region constructors
         public LobbyReader(ConnectionSettings connectionSettings, Action<Action> synchronousInvoker)
@@ -103,9 +143,9 @@ namespace POG.Forum
             OnLobbyPageComplete(url, pageNumber, ts, recentFirst, threadList);
         }
 
-        private void ParseLobbyPage(string url, string doc, out DateTimeOffset serverTime, ref List<ForumThread> threadList)
+        protected virtual void ParseLobbyPage(string url, string doc, out DateTimeOffset serverTime, ref List<ForumThread> threadList)
         {
-            Int32 threadId = TwoPlusTwoForum.ThreadIdFromUrl(url);
+            Int32 threadId = VBulletinForum.ThreadIdFromUrl(url);
             var html = new HtmlAgilityPack.HtmlDocument();
             html.LoadHtml(doc);
             HtmlAgilityPack.HtmlNode root = html.DocumentNode;
@@ -135,7 +175,7 @@ namespace POG.Forum
             }
         }
 
-        private ForumThread HtmlToThread(int threadId, HtmlAgilityPack.HtmlNode thread,
+        protected ForumThread HtmlToThread(int threadId, HtmlAgilityPack.HtmlNode thread,
             DateTimeOffset pageTime)
         {
             ForumThread ft = new ForumThread();
@@ -200,7 +240,7 @@ namespace POG.Forum
                 if (lines.Count() >= 2)
                 {
                     lastPostTime = lines[0].Trim();
-                    DateTimeOffset dtLastPost = Misc.ParseItemTime(pageTime, lastPostTime);
+                    DateTimeOffset dtLastPost = ParseItemTime(pageTime, lastPostTime);
                     lastPoster = lines[1].Trim().Substring(3);
                     ft.LastPostTime = dtLastPost.ToUniversalTime();
                 }

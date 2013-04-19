@@ -14,7 +14,7 @@ namespace POG.Forum
 {
     public class HtmlHelper
     {
-        private static String USER_AGENT = "Mozilla/5.0 (Windows NT 6.1; U; ru; rv:5.0.1.6) Gecko/20110501 Firefox/5.0.1 Firefox/5.0.1";
+        private static String USER_AGENT = "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.31 (KHTML, like Gecko) Chrome/26.0.1410.43 Safari/537.31";
         private static Boolean FIDDLER = false;
         /// <summary>
         /// Copies the contents of input to output. Doesn't close either stream.
@@ -50,7 +50,8 @@ namespace POG.Forum
         public static Stream PostToUrlStream(ConnectionSettings settings)
         {
             settings.Message = null;
-            ASCIIEncoding encoding = new ASCIIEncoding();
+            //System.Text.UTF8Encoding encoding = new UTF8Encoding();
+            System.Text.ASCIIEncoding encoding = new ASCIIEncoding();
             byte[] dataBytes = encoding.GetBytes(settings.Data);
             Stream responseStream = null;
             try
@@ -67,7 +68,7 @@ namespace POG.Forum
                 myRequest.CookieContainer = settings.CC;
                 myRequest.Method = "POST";
                 myRequest.Timeout = 600000;
-                myRequest.ContentType = "application/x-www-form-urlencoded";
+                myRequest.ContentType = "application/x-www-form-urlencoded; charset=UTF-8";
                 myRequest.UserAgent = USER_AGENT;
                 myRequest.ContentLength = settings.Data.Length;
                 myRequest.AllowAutoRedirect = settings.FollowRedirect;

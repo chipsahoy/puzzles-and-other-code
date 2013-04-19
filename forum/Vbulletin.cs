@@ -16,32 +16,63 @@ using System.Web;
 
 namespace POG.Forum
 {
-	internal class VBulletinSM : StateMachine
+    internal class VBulletin_4_2_0 : VBulletinSM
+    {
+        internal VBulletin_4_2_0(VBulletinForum outer, StateMachineHost host, String forum, String lobby, Action<Action> synchronousInvoker) :
+            base(outer, host, forum, lobby, synchronousInvoker)
+        {
+        }
+        internal override ThreadReader Reader()
+        {
+            ThreadReader t = new ThreadReader_4_2_0(_connectionSettings, _synchronousInvoker);
+            return t;
+        }
+        internal override LobbyReader Lobby()
+        {
+            LobbyReader lr = new LobbyReaderEstonia(_connectionSettings, _synchronousInvoker);
+            return lr;
+        }
+        protected override String GetOurUserId(ConnectionSettings cs)
+        {
+            String rc = cs.CC.GetCookies(new System.Uri(ForumURL))["bb_userid"].Value;
+            return rc;
+        }
+    }
+    internal class VBulletin_3_8_7 : VBulletinSM
+    {
+        internal VBulletin_3_8_7(VBulletinForum outer, StateMachineHost host, String forum, String lobby, Action<Action> synchronousInvoker) :
+            base(outer, host, forum, lobby, synchronousInvoker)
+        {
+        }
+    }
+    internal class VBulletinSM : StateMachine
 	{
 		#region members
-		TwoPlusTwoForum _outer;
-		ConnectionSettings _connectionSettings;
-		Action<Action> _synchronousInvoker;
+		VBulletinForum _outer;
+		protected ConnectionSettings _connectionSettings;
+		protected Action<Action> _synchronousInvoker;
 		private String _username = ""; // if this changes from what user entered previously, need to logout then re-login with new info.
 		int _postsPerPage = 50;
 
 		#endregion
 
-		internal VBulletinSM(TwoPlusTwoForum outer, StateMachineHost host, Action<Action> synchronousInvoker) :
+		internal VBulletinSM(VBulletinForum outer, StateMachineHost host, String forum, String lobby, Action<Action> synchronousInvoker) :
 			base("VBulletin", host)
 		{
 			_outer = outer;
 			_synchronousInvoker = synchronousInvoker;
-			_connectionSettings = new ConnectionSettings(outer.ForumURL);
+            ForumHost = forum;
+            ForumLobby = lobby;
+            _connectionSettings = new ConnectionSettings(ForumURL);
 			SetInitialState(StateLoggedOut);
 		}
 		#region Properties
-		internal ThreadReader Reader()
+		internal virtual ThreadReader Reader()
 		{
 			ThreadReader t = new ThreadReader(_connectionSettings, _synchronousInvoker);
 			return t;
 		}
-		internal LobbyReader Lobby()
+		internal virtual LobbyReader Lobby()
 		{
 			LobbyReader lr = new LobbyReader(_connectionSettings, _synchronousInvoker);
 			return lr;
@@ -137,29 +168,31 @@ namespace POG.Forum
 		private String DoLogin(String username, String password)
 		{
 			// Get some needed cookies!
-			_connectionSettings.Url = _outer.ForumURL;
+			_connectionSettings.Url = ForumURL;
 			String page = HtmlHelper.GetUrlResponseString(_connectionSettings);
 			if (page == null)
 			{
-				return "Error loggin in. Could not reach " + _outer.ForumURL;
+				return "Error loggin in. Could not reach " + ForumURL;
 			}
 			// They are hidden in javascript...
 			Regex reg = new Regex(Regex.Escape("setCookie('") + "([^\']*)\', \'([^\']*)\'");
 			Match match = reg.Match(page);
 			if (match.Success)
 			{
-				String host =_outer.ForumHost;
+				String host = ForumHost;
 				string cookieName = match.Groups[1].Value;
 				string cookieValue = match.Groups[2].Value;
 				Cookie cookie = new Cookie(cookieName, cookieValue, "/", host);
 				_connectionSettings.CC.Add(cookie);
-				Cookie cReferrer = new Cookie("DOAReferrer", _outer.ForumURL, "/", host);
+				Cookie cReferrer = new Cookie("DOAReferrer", ForumURL, "/", host);
 				_connectionSettings.CC.Add(cReferrer);
 			}
+            Cookie cLanguage = new Cookie("bb_languageid", "2", "/", ForumHost); // Estonian!
+            _connectionSettings.CC.Add(cLanguage);
 			_username = null;
 			String hashedPassword = SecurityUtils.md5(password);
 
-			_connectionSettings.Url = String.Format("{0}login.php?do=login", _outer.ForumURL);
+			_connectionSettings.Url = String.Format("{0}login.php?do=login", ForumURL);
 			_connectionSettings.Data =
 				String.Format("vb_login_username={0}&cookieuser=1&vb_login_password=&s=&securitytoken=guest&do=login&vb_login_md5password={1}&vb_login_md5password_utf={1}", username, hashedPassword);
 			String resp = HtmlHelper.PostToUrl(_connectionSettings);
@@ -177,7 +210,7 @@ namespace POG.Forum
 
 
 			// set posts/page
-			_connectionSettings.Url = String.Format("{0}profile.php?do=editoptions", _outer.ForumURL);
+			_connectionSettings.Url = String.Format("{0}profile.php?do=editoptions", ForumURL);
 			_username = username;
 			resp = HtmlHelper.GetUrlResponseString(_connectionSettings);
 			if (resp != null)
@@ -218,7 +251,7 @@ namespace POG.Forum
 		private void DoLogout()
 		{
 			// get the page once to find the logout url
-			_connectionSettings.Url = _outer.ForumURL;
+			_connectionSettings.Url = ForumURL;
 			String resp = HtmlHelper.GetUrlResponseString(_connectionSettings);
 			if (resp != null)
 			{
@@ -226,7 +259,7 @@ namespace POG.Forum
 				if (m.Success)
 				{
 					String hash = m.Groups[1].Value;
-					_connectionSettings.Url = String.Format("login.php?do=logout&amp;logouthash={0}", _outer.ForumURL, hash);
+					_connectionSettings.Url = String.Format("login.php?do=logout&amp;logouthash={0}", ForumURL, hash);
 					HtmlHelper.GetUrlResponseString(_connectionSettings);
 					_connectionSettings.CC = new CookieContainer(); // just in case
 					_username = null;
@@ -518,7 +551,7 @@ namespace POG.Forum
             {
                 msg.AppendFormat("{0}={1}&", "openclose", "1");
             }
-            msg.AppendFormat("{0}={1}", "loggedinuser", cs.CC.GetCookies(new System.Uri(_outer.ForumURL))["bbuserid"]);
+            msg.AppendFormat("{0}={1}", "loggedinuser", GetOurUserId(cs));
             msg.AppendFormat("{0}={1}&", "sbutton", "Submit New Thread");
             msg.AppendFormat("{0}={1}&", "parseurl", "1");
             msg.AppendFormat("{0}={1}&", "emailupdate", "0");
@@ -581,7 +614,7 @@ loggedinuser 81788
 			 * openclose 1 <-- lock thread
 			 * */
 			ConnectionSettings cs = _connectionSettings.Clone();
-			cs.Url = _outer.ForumURL + "private.php";
+			cs.Url = ForumURL + "private.php";
 			String doc = HtmlHelper.GetUrlResponseString(cs);
 			if (doc == null)
 			{
@@ -624,22 +657,26 @@ loggedinuser 81788
 			StringBuilder msg = new StringBuilder();
 			
 			msg.AppendFormat("{0}={1}&", "securitytoken", securityToken);
-			content = content.Replace("\r\n", "\r");
+			content = content.Replace("\r\n", "\n");
 			if (title != String.Empty)
 			{
-				msg.AppendFormat("{0}={1}&", "title", HttpUtility.UrlEncode(title));
+				msg.AppendFormat("{0}={1}&", "title", HttpUtility.UrlEncodeUnicode(title));
 			}
-			msg.AppendFormat("{0}={1}&", "message", HttpUtility.UrlEncode(content));
-			msg.AppendFormat("{0}={1}&", "wysiwyg", "0");
+            msg.AppendFormat("{0}={1}&", "ajax", "1");
+            msg.AppendFormat("{0}={1}&", "ajax_lastpost", "1");
+            msg.AppendFormat("{0}={1}&", "message_backup", HttpUtility.UrlEncodeUnicode(content));
+            msg.AppendFormat("{0}={1}&", "message", HttpUtility.UrlEncodeUnicode(content));
+            msg.AppendFormat("{0}={1}&", "wysiwyg", "0");
 			if (icon != 0)
 			{
 				msg.AppendFormat("{0}={1}&", "iconid", icon.ToString());
 			}
 			msg.AppendFormat("{0}={1}&", "s", "");
-			msg.AppendFormat("{0}={1}&", "do", "postreply");
+            msg.AppendFormat("{0}={1}&", "do", "postreply");
 			msg.AppendFormat("{0}={1}&", "t", threadId.ToString());
 			msg.AppendFormat("{0}={1}&", "p", "");
-			msg.AppendFormat("{0}={1}&", "parseurl", "1");
+            msg.AppendFormat("{0}={1}&", "specifiedpost", "0");
+            msg.AppendFormat("{0}={1}&", "parseurl", "1");
 			msg.AppendFormat("{0}={1}&", "posthash", "invalid posthash");
 			msg.AppendFormat("{0}={1}&", "poststarttime", "0");
 			msg.AppendFormat("{0}={1}&", "multiquoteempty", "");
@@ -651,9 +688,10 @@ loggedinuser 81788
 			{
 				msg.AppendFormat("{0}={1}&", "openclose", "1");
 			}
-			msg.AppendFormat("{0}={1}", "loggedinuser", cs.CC.GetCookies(new System.Uri(_outer.ForumURL))["bbuserid"]);
-			cs.Url = String.Format("{0}newreply.php?do=postreply&t={1}", _outer.ForumURL, threadId);
+			msg.AppendFormat("{0}={1}", "loggedinuser", GetOurUserId(cs));
+			cs.Url = String.Format("{0}newreply.php?do=postreply&t={1}", ForumURL, threadId);
 			cs.Data = msg.ToString();
+            cs.Headers.Add("X-Requested-With", "XMLHttpRequest");
 			//Trace.TraceInformation("Posting: " + cs.Data);
 			String resp = HtmlHelper.PostToUrl(cs);
 			if (resp == null)
@@ -664,6 +702,12 @@ loggedinuser 81788
 
 			return true;
 		}
+
+        protected virtual String GetOurUserId(ConnectionSettings cs)
+        {
+            String rc = cs.CC.GetCookies(new System.Uri(ForumURL))["bbuserid"].Value;
+            return rc;
+        }
 
 
 		internal void GetPostersLike(String name, Action<String, IEnumerable<Poster>> callback)
@@ -690,7 +734,7 @@ fragment	name
 			 * */
 			List<Poster> posters = new List<Poster>();
 			ConnectionSettings cs = _connectionSettings.Clone();
-			cs.Url = _outer.ForumURL + "private.php";
+			cs.Url = ForumURL + "private.php";
 			String doc = HtmlHelper.GetUrlResponseString(cs);
 			if (doc == null)
 			{
@@ -721,7 +765,7 @@ fragment	name
 			msg.AppendFormat("{0}={1}&", "securitytoken", securityToken);
 			msg.AppendFormat("{0}={1}&", "do", "usersearch");
 			msg.AppendFormat("{0}={1}&", "fragment", name);
-			cs.Url = String.Format("{0}/ajax.php?do=usersearch", _outer.ForumURL);
+			cs.Url = String.Format("{0}/ajax.php?do=usersearch", ForumURL);
 			cs.Data = msg.ToString();
 			//Trace.TraceInformation("Posting: " + cs.Data);
 			String resp = HtmlHelper.PostToUrl(cs);
@@ -774,19 +818,50 @@ fragment	name
 			}
 			callback(name, posters);
 		}
+
+        public virtual string ForumLobby
+        {
+            get;
+            private set;
+        }
+
+        public string ForumHost { 
+            get; 
+            private set; 
+        }
+
+        public string ForumURL { 
+            get
+            {
+                String rc = String.Format("http://{0}/", ForumHost);
+                return rc;
+            }
+        }
     }
-	public class TwoPlusTwoForum
+	public class VBulletinForum
 	{
 		#region members
 		VBulletinSM _inner;
 		Action<Action> _synchronousInvoker;
 		#endregion
 		#region constructors
-		public TwoPlusTwoForum(Action<Action> synchronousInvoker, String forum)
+		public VBulletinForum(Action<Action> synchronousInvoker, String forum, String vbVersion, String lobby)
 		{
-			ForumHost = forum;
 			_synchronousInvoker = synchronousInvoker;
-			_inner = new VBulletinSM(this, new StateMachineHost("ForumHost"), synchronousInvoker);
+            switch (vbVersion)
+            {
+                case "4.2.0":
+                    {
+                        _inner = new VBulletin_4_2_0(this, new StateMachineHost("ForumHost"), forum, lobby, synchronousInvoker);
+                    }
+                    break;
+
+                default:
+                    {
+                        _inner = new VBulletin_3_8_7(this, new StateMachineHost("ForumHost"), forum, lobby, synchronousInvoker);
+                    }
+                    break;
+            }
 		}
 		#endregion
 		#region events
@@ -888,6 +963,15 @@ fragment	name
 			string tid = url.Substring(ixTidStart, url.Length - (ixTidStart + 1));
 			Int32 threadId = 0;
 			Int32.TryParse(tid, out threadId);
+            if (0 == threadId)
+            {
+                // Estonia?
+                int ixTidEnd = url.IndexOf('-');
+                tid = url.Substring(0, ixTidEnd);
+                ixTidStart = tid.LastIndexOf('/') + 1;
+                tid = tid.Substring(ixTidStart, ixTidEnd - ixTidStart);
+                Int32.TryParse(tid, out threadId);
+            }
 			return threadId;
 		}
 		#endregion
@@ -900,14 +984,25 @@ fragment	name
 		{
 			get
 			{
-				String rc = String.Format("http://{0}/", ForumHost);
+                String rc = _inner.ForumURL;
 				return rc;
 			}
 		}
+        public String ForumLobby
+        {
+            get
+            {
+                String rc = _inner.ForumLobby;
+                return rc;
+            }
+        }
 		public String ForumHost
 		{
-			get;
-			private set;
+			get
+            {
+                String rc = _inner.ForumHost;
+                return rc;
+            }
 		}
 	}
 	public class NewStatusEventArgs : EventArgs

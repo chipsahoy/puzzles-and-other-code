@@ -15,11 +15,188 @@ using System.Diagnostics;
 
 namespace POG.Forum
 {
+    public class ThreadReader_4_2_0 : ThreadReader
+    {
+        public ThreadReader_4_2_0(ConnectionSettings connectionSettings, Action<Action> synchronousInvoker)
+            : base(connectionSettings, synchronousInvoker)
+        {
+            ParseItemTime = Misc.ParseItemTimeEstonia;
+        }
+        protected override void ParseThreadPage(String url, String doc, out Int32 lastPageNumber, out DateTimeOffset serverTime, ref Posts postList)
+        {
+            Int32 threadId = VBulletinForum.ThreadIdFromUrl(url);
+            lastPageNumber = 0;
+            var html = new HtmlAgilityPack.HtmlDocument();
+            html.LoadHtml(doc);
+            HtmlAgilityPack.HtmlNode root = html.DocumentNode;
+
+            serverTime = DateTime.Now;
+            //(//div[class="smallfont", align="center'])[last()] All times are GMT ... The time is now <span class="time">time</span>"."
+            HtmlAgilityPack.HtmlNode timeNode = root.SelectNodes("//div[@id='footer_time']").Last();
+            if (timeNode != null)
+            {
+                String timeText = timeNode.InnerText;
+                serverTime = Utils.Misc.ParsePageTime(timeText, DateTime.UtcNow);
+                
+            }
+
+            
+            // Results 301 to 400 of 1195
+            HtmlAgilityPack.HtmlNode threadNode = root.SelectSingleNode("//input[@name='t']");
+            if (threadNode != null)
+            {
+                HtmlAgilityPack.HtmlNode pageNode = threadNode.SelectSingleNode("../span[1]/a[1]");
+                if (pageNode != null)
+                {
+                    string pages = pageNode.InnerText;
+                    Match m = Regex.Match(pages, @"Lehek�lg (\d+), kokku (\d+)");
+                    if (m.Success)
+                    {
+                        //Trace.TraceInformation("{0}/{1}", m.Groups[1].Value, m.Groups[2].Value);
+                        lastPageNumber = Convert.ToInt32(m.Groups[2].Value);
+                    }
+                }
+            }
+
+            // //div[@id='posts']/div/div/div/div/table/tbody/tr[2]
+            // td[1]/div[1] has (id with post #, <a> with user id, user name.)
+            // td[2]/div[1] has title
+            // td[2]/div[2] has post
+            // "/html[1]/body[1]/table[2]/tr[2]/td[1]/td[1]/div[2]/div[1]/div[1]/div[1]/div[1]/table[1]/tr[2]/td[2]/div[2]" is a post
+            HtmlAgilityPack.HtmlNodeCollection posts = root.SelectNodes("//ol[@id='posts']/li");
+            if (posts == null)
+            {
+                return;
+            }
+            postList = new Posts();
+            foreach (HtmlAgilityPack.HtmlNode post in posts)
+            {
+                Post p = HtmlToPost(threadId, post, serverTime);
+                if (p != null)
+                {
+                    postList.Add(p);
+                }
+            }
+        }
+        protected override Post HtmlToPost(Int32 threadId, HtmlAgilityPack.HtmlNode html, DateTimeOffset pageTime)
+        {
+
+            string posterName = "";
+            Int32 postNumber = 0;
+            String postLink = null;
+            DateTimeOffset postTime = DateTime.Now;
+            HtmlAgilityPack.HtmlNode postNumberNode = html.SelectSingleNode("div[@class='posthead']/span[@class='nodecontrols']/a[2]");
+
+            if (postNumberNode != null)
+            {
+                String postNumberText = postNumberNode.Attributes["name"].Value;
+                postNumber = Int32.Parse(postNumberText);
+            }
+
+            HtmlAgilityPack.HtmlNode postLinkNode = html.SelectSingleNode("div[@class='posthead']/span[@class='nodecontrols']/a[1]");
+            if (postLinkNode != null)
+            {
+                postLink = HtmlAgilityPack.HtmlEntity.DeEntitize(postLinkNode.Attributes["href"].Value);
+            }
+
+            RemoveComments(html);
+            HtmlAgilityPack.HtmlNode postTimeNode = html.SelectSingleNode("div[@class='posthead']/span[1]/span[@class='date']");
+            if (postTimeNode != null)
+            {
+                string date = postTimeNode.InnerText;
+                date = HtmlAgilityPack.HtmlEntity.DeEntitize(date);
+                //string time = postTimeNode.ChildNodes[1].InnerText;
+                postTime = ParseItemTime(pageTime, date);
+                //Trace.TraceInformation("Post time: {0}", postTime.DateTime.ToShortTimeString());
+            }
+            String postTitle = "";
+            HtmlAgilityPack.HtmlNode titleNode = html.SelectSingleNode("div[@class='postdetails']/div[@class='postbody']/div[1]/h2");
+            if (titleNode != null)
+            {
+                postTitle = HtmlAgilityPack.HtmlEntity.DeEntitize(titleNode.InnerText).Trim();
+                //Trace.TraceInformation("title[{0}]:{1} ", postNumber, postTitle);
+            }
+
+            HtmlAgilityPack.HtmlNode editNode = html.SelectSingleNode("../div[@class='smallfont']/em");
+            PostEdit edit = null;
+            if (editNode != null)
+            {
+                String postEdit = HtmlAgilityPack.HtmlEntity.DeEntitize(editNode.InnerText);
+                postEdit = postEdit.Trim();
+                // Last edited by well named; 09-03-2012 at 08:50 PM. Reason: people who are out will receive the special ******* role
+                String regex = @"Last edited by (.*); (.*)\.(?:\s*Reason: (.*))?";
+                Match m = Regex.Match(postEdit, regex);
+                if (m.Success)
+                {
+                    String editor = m.Groups[1].Value;
+                    String when = m.Groups[2].Value;
+                    DateTimeOffset editTime = ParseItemTime(pageTime, when);
+                    String editText = null;
+                    if (m.Groups.Count > 2)
+                    {
+                        editText = m.Groups[3].Value.Trim();
+                    }
+                    edit = new PostEdit(editor, editTime, editText);
+                }
+            }
+
+            Int32 posterId = -1;
+            HtmlAgilityPack.HtmlNode userNode = html.SelectSingleNode("div[@class='postdetails']/div[@class='userinfo']/div[@class='username_container']/div[@class='popupmenu memberaction']/a");
+            if (userNode != null)
+            {
+                posterName = HtmlAgilityPack.HtmlEntity.DeEntitize(userNode.InnerText);
+                String profile = userNode.Attributes["href"].Value;
+                posterId = Misc.ParseMemberId(profile);
+            }
+            HtmlAgilityPack.HtmlNode postContent = html.SelectSingleNode("div[@class='postdetails']/div[@class='postbody']/div[1]/div[@class='content']/div/blockquote");
+            List<Bold> bolded = ParseBolded(postContent);
+            Post p = new Post(threadId, posterName, posterId, postNumber, postTime, postLink, postTitle,
+                    postContent.OuterHtml, bolded, edit);
+            return p;
+        }
+        protected override Boolean GetPage(String url, Int32 pageNumber, object o, out Int32 outPages)
+        {
+            outPages = 0;
+            String local = url;
+            if (pageNumber > 1)
+            {
+                local += "page" + pageNumber;
+            }
+            string doc = null;
+            for (int i = 0; i < 10; i++)
+            {
+                ConnectionSettings cs = _connectionSettings.Clone();
+                cs.Url = local;
+                doc = HtmlHelper.GetUrlResponseString(cs);
+                if (doc != null)
+                {
+                    break;
+                }
+                else
+                {
+                    Trace.TraceInformation("*** Error fetching page " + pageNumber.ToString());
+                }
+            }
+            if (doc == null)
+            {
+                OnPageError(url, pageNumber, o);
+                return false;
+            }
+            Posts posts = new Posts();
+            Int32 totalPages;
+            DateTimeOffset serverTime;
+            ParseThreadPage(local, doc, out totalPages, out serverTime, ref posts);
+            outPages = totalPages;
+            OnPageComplete(local, pageNumber, totalPages, serverTime, posts, o);
+            return true;
+        }
+    }
     public class ThreadReader
     {
         #region fields
-        readonly ConnectionSettings _connectionSettings;
+        protected readonly ConnectionSettings _connectionSettings;
         Action<Action> _synchronousInvoker;
+        protected Misc.ParseItemTimeDelegate ParseItemTime = Misc.ParseItemTimeEnglish;
         #endregion
         #region constructors
         public ThreadReader(ConnectionSettings connectionSettings, Action<Action> synchronousInvoker)
@@ -57,7 +234,7 @@ namespace POG.Forum
             }
         }
 
-        private void OnPageError(String url, int pageNumber, object o)
+        protected void OnPageError(String url, int pageNumber, object o)
         {
             try
             {
@@ -135,7 +312,7 @@ namespace POG.Forum
             } 
             OnReadComplete(url, pageStart, pageEnd, o);
         }
-        Boolean GetPage(String url, Int32 pageNumber, object o, out Int32 outPages)
+        protected virtual Boolean GetPage(String url, Int32 pageNumber, object o, out Int32 outPages)
         {
             outPages = 0;
             String local = url;
@@ -172,9 +349,9 @@ namespace POG.Forum
             return true;
         }
 
-        private void ParseThreadPage(String url, String doc, out Int32 lastPageNumber, out DateTimeOffset serverTime, ref Posts postList)
+        protected virtual void ParseThreadPage(String url, String doc, out Int32 lastPageNumber, out DateTimeOffset serverTime, ref Posts postList)
         {
-            Int32 threadId = TwoPlusTwoForum.ThreadIdFromUrl(url);
+            Int32 threadId = VBulletinForum.ThreadIdFromUrl(url);
             lastPageNumber = 0;
             var html = new HtmlAgilityPack.HtmlDocument();
             html.LoadHtml(doc);
@@ -188,10 +365,10 @@ namespace POG.Forum
             {
                 String timeText = timeNode.InnerText;
                 serverTime = Utils.Misc.ParsePageTime(timeText, DateTime.UtcNow);
-                
+
             }
 
-            
+
             // find total posts: /table/tr[1]/td[2]/div[@class="pagenav"]/table[1]/tr[1]/td[1] -- Page 106 of 106
             HtmlAgilityPack.HtmlNode pageNode = root.SelectSingleNode("//div[@class='pagenav']/table/tr/td");
             if (pageNode != null)
@@ -225,7 +402,7 @@ namespace POG.Forum
                 }
             }
         }
-        private Post HtmlToPost(Int32 threadId, HtmlAgilityPack.HtmlNode html, DateTimeOffset pageTime)
+        protected virtual Post HtmlToPost(Int32 threadId, HtmlAgilityPack.HtmlNode html, DateTimeOffset pageTime)
         {
 
             string posterName = "";
@@ -244,7 +421,7 @@ namespace POG.Forum
             if (postTimeNode != null)
             {
                 string time = postTimeNode.InnerText.Trim();
-                postTime = Misc.ParseItemTime(pageTime, time);
+                postTime = ParseItemTime(pageTime, time);
                 //Trace.TraceInformation("Post time: {0}", postTime.DateTime.ToShortTimeString());
             }
             String postTitle = "";
@@ -268,7 +445,7 @@ namespace POG.Forum
                 {
                     String editor = m.Groups[1].Value;
                     String when = m.Groups[2].Value;
-                    DateTimeOffset editTime = Misc.ParseItemTime(pageTime, when);
+                    DateTimeOffset editTime = ParseItemTime(pageTime, when);
                     String editText = null;
                     if (m.Groups.Count > 2)
                     {
@@ -287,11 +464,11 @@ namespace POG.Forum
                 posterId = Misc.ParseMemberId(profile);
             }
             List<Bold> bolded = ParseBolded(html);
-            Post p = new Post(threadId, posterName, posterId, postNumber, postTime, postLink, postTitle, 
+            Post p = new Post(threadId, posterName, posterId, postNumber, postTime, postLink, postTitle,
                     html.OuterHtml, bolded, edit);
             return p;
         }
-        private void RemoveComments(HtmlAgilityPack.HtmlNode node)
+        protected void RemoveComments(HtmlAgilityPack.HtmlNode node)
         {
             foreach (var n in node.SelectNodes("//comment()") ?? new HtmlAgilityPack.HtmlNodeCollection(node))
             {
@@ -321,7 +498,7 @@ namespace POG.Forum
                 }
             }
         }
-        private List<Bold> ParseBolded(HtmlAgilityPack.HtmlNode original)
+        protected List<Bold> ParseBolded(HtmlAgilityPack.HtmlNode original)
         {
             List<Bold> bolded = new List<Bold>();
             HtmlAgilityPack.HtmlNode content = original.CloneNode("Votes", true);

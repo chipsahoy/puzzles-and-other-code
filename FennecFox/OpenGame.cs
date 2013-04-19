@@ -20,7 +20,7 @@ namespace POG.FennecFox
         {
             InitializeComponent();
         }
-        public OpenGame(TwoPlusTwoForum forum, String lobbyURL) : this()
+        public OpenGame(VBulletinForum forum, String lobbyURL) : this()
         {
 			_url = lobbyURL; 
             _lobby = forum.Lobby();
