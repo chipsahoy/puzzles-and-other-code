@@ -374,7 +374,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:pogutils, Version=2.0.4844.40249, Culture=neutral, processorArchitecture=x86"
+            "AssemblyAsmDisplayName" = "8:pogutils, Version=2.0.4856.39626, Culture=neutral, processorArchitecture=x86"
                 "ScatterAssemblies"
                 {
                     "_1084CD1F51E032C4FD8D86070DEFC23A"
@@ -405,7 +405,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:pogutils, Version=2.0.4844.40249, Culture=neutral, processorArchitecture=x86"
+            "AssemblyAsmDisplayName" = "8:pogutils, Version=2.0.4856.39626, Culture=neutral, processorArchitecture=x86"
                 "ScatterAssemblies"
                 {
                     "_33943D25542B0442231B4CD4B5E485E3"
@@ -436,7 +436,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:werewolf, Version=2.0.4844.40250, Culture=neutral, processorArchitecture=x86"
+            "AssemblyAsmDisplayName" = "8:werewolf, Version=2.0.4856.39628, Culture=neutral, processorArchitecture=x86"
                 "ScatterAssemblies"
                 {
                     "_84D135C5519C078F74D5F87B50CCB4C6"
@@ -673,7 +673,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:ForumTypes, Version=2.0.4844.40249, Culture=neutral, processorArchitecture=x86"
+            "AssemblyAsmDisplayName" = "8:ForumTypes, Version=2.0.4856.39627, Culture=neutral, processorArchitecture=x86"
                 "ScatterAssemblies"
                 {
                     "_F25C1519A6BB257D503285E22BAD13EB"
@@ -704,7 +704,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:vbulletin, Version=2.0.4844.40250, Culture=neutral, processorArchitecture=x86"
+            "AssemblyAsmDisplayName" = "8:vbulletin, Version=2.0.4856.39628, Culture=neutral, processorArchitecture=x86"
                 "ScatterAssemblies"
                 {
                     "_F31F8747B21AA5FE856785E144159A56"
@@ -988,7 +988,7 @@
             "ShowCmd" = "3:1"
             "IconIndex" = "3:0"
             "Transitive" = "11:FALSE"
-            "Target" = "8:"
+            "Target" = "8:_9D159AEB4DD54FB7AFD8717C3E3179FA"
             "Folder" = "8:_77D4854F0C0B4387A30C2015062B096C"
             "WorkingFolder" = "8:_77D4854F0C0B4387A30C2015062B096C"
             "Icon" = "8:_EC15385987F54C31AC916BAA2EDBC8D0"
