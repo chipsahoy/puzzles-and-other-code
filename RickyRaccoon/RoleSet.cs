@@ -76,15 +76,17 @@ namespace RickyRaccoon
           ""Role"": ""Vanilla"",
           ""SubRole"": """",
           ""ExtraFlavor"": """",
-          ""Count"": 6
+          ""Count"": 6,
+          ""n0"": ""no n0 actions""
         },
         {
           ""Players"": [],
-          ""RoleNum"": 2,
+          ""RoleNum"": 1,
           ""Role"": ""Seer"",
           ""SubRole"": """",
           ""ExtraFlavor"": """",
-          ""Count"": 1
+          ""Count"": 1,
+          ""n0"": ""a random villager peek""
         }
       ],
       ""Name"": ""Villager"",
@@ -96,11 +98,12 @@ namespace RickyRaccoon
       ""Members"": [
         {
           ""Players"": [],
-          ""RoleNum"": 1,
+          ""RoleNum"": 2,
           ""Role"": ""Vanilla"",
           ""SubRole"": """",
           ""ExtraFlavor"": """",
-          ""Count"": 2
+          ""Count"": 2,
+          ""n0"": ""no n0 actions""
         }
       ],
       ""Name"": ""Wolf"",
@@ -121,31 +124,17 @@ namespace RickyRaccoon
           ""Role"": ""Vanilla"",
           ""SubRole"": """",
           ""ExtraFlavor"": """",
-          ""Count"": 9
+          ""Count"": 9,
+          ""n0"": ""no n0 actions""
         },
         {
           ""Players"": [],
-          ""TeamRole"": {
-            ""Members"": [
-              {
-                ""Players"": [],
-                ""RoleNum"": 1,
-                ""Role"": ""Seer"",
-                ""SubRole"": """",
-                ""ExtraFlavor"": """",
-                ""Count"": 1
-              }
-            ],
-            ""Name"": ""Wolf"",
-            ""WinCon"": ""reach parity with the village"",
-            ""Hidden"": false,
-            ""Share"": true
-          },
           ""RoleNum"": 2,
-          ""Role"": ""Vanilla"",
+          ""Role"": ""Seer"",
           ""SubRole"": """",
           ""ExtraFlavor"": """",
-          ""Count"": 3
+          ""Count"": 1,
+          ""n0"": ""an n0 action""
         }
       ],
       ""Name"": ""Villager"",
@@ -157,35 +146,12 @@ namespace RickyRaccoon
       ""Members"": [
         {
           ""Players"": [],
-          ""TeamRole"": {
-            ""Members"": [
-              {
-                ""Players"": [],
-                ""RoleNum"": 0,
-                ""Role"": ""Vanilla"",
-                ""SubRole"": """",
-                ""ExtraFlavor"": """",
-                ""Count"": 9
-              },
-              {
-                ""Players"": [],
-                ""RoleNum"": 2,
-                ""Role"": ""Vanilla"",
-                ""SubRole"": """",
-                ""ExtraFlavor"": """",
-                ""Count"": 3
-              }
-            ],
-            ""Name"": ""Villager"",
-            ""WinCon"": ""eliminate all wolves"",
-            ""Hidden"": false,
-            ""Share"": false
-          },
           ""RoleNum"": 1,
-          ""Role"": ""Seer"",
+          ""Role"": ""Vanilla"",
           ""SubRole"": """",
           ""ExtraFlavor"": """",
-          ""Count"": 1
+          ""Count"": 3,
+          ""n0"": ""no n0 actions""
         }
       ],
       ""Name"": ""Wolf"",
@@ -206,31 +172,17 @@ namespace RickyRaccoon
           ""Role"": ""Vanilla"",
           ""SubRole"": """",
           ""ExtraFlavor"": """",
-          ""Count"": 12
+          ""Count"": 12,
+          ""n0"": ""no n0 actions""
         },
         {
           ""Players"": [],
-          ""TeamRole"": {
-            ""Members"": [
-              {
-                ""Players"": [],
-                ""RoleNum"": 1,
-                ""Role"": ""Seer"",
-                ""SubRole"": """",
-                ""ExtraFlavor"": """",
-                ""Count"": 1
-              }
-            ],
-            ""Name"": ""Wolf"",
-            ""WinCon"": ""reach parity with the village"",
-            ""Hidden"": false,
-            ""Share"": true
-          },
           ""RoleNum"": 2,
-          ""Role"": ""Vanilla"",
+          ""Role"": ""Seer"",
           ""SubRole"": """",
           ""ExtraFlavor"": """",
-          ""Count"": 4
+          ""Count"": 1,
+          ""n0"": ""an n0 action""
         }
       ],
       ""Name"": ""Villager"",
@@ -242,35 +194,12 @@ namespace RickyRaccoon
       ""Members"": [
         {
           ""Players"": [],
-          ""TeamRole"": {
-            ""Members"": [
-              {
-                ""Players"": [],
-                ""RoleNum"": 0,
-                ""Role"": ""Vanilla"",
-                ""SubRole"": """",
-                ""ExtraFlavor"": """",
-                ""Count"": 12
-              },
-              {
-                ""Players"": [],
-                ""RoleNum"": 2,
-                ""Role"": ""Vanilla"",
-                ""SubRole"": """",
-                ""ExtraFlavor"": """",
-                ""Count"": 4
-              }
-            ],
-            ""Name"": ""Villager"",
-            ""WinCon"": ""eliminate all wolves"",
-            ""Hidden"": false,
-            ""Share"": false
-          },
           ""RoleNum"": 1,
-          ""Role"": ""Seer"",
+          ""Role"": ""Vanilla"",
           ""SubRole"": """",
           ""ExtraFlavor"": """",
-          ""Count"": 1
+          ""Count"": 4,
+          ""n0"": ""no n0 actions""
         }
       ],
       ""Name"": ""Wolf"",

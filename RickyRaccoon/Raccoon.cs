@@ -403,7 +403,7 @@ This post was made by Ricky Raccoon. Forward all complaints/suggestions/bugs to 
                     if (gamepms.Teams[i].Members[j].SubRole != "") subrole = gamepms.Teams[i].Members[j].SubRole + " ";
                     string team = gamepms.Teams[i].Name;
                     if (gamepms.Teams[i].Name != "") team = gamepms.Teams[i].Name + " ";
-                    txtRoleList.Text += gamepms.Teams[i].Members[j].Count + "X " + team + subrole + gamepms.Teams[i].Members[j].Role + Environment.NewLine;
+                    txtRoleList.Text += gamepms.Teams[i].Members[j].Count + "X " + team + subrole + gamepms.Teams[i].Members[j].Role + " with " + gamepms.Teams[i].Members[j].n0 + Environment.NewLine;
                     playerCount += gamepms.Teams[i].Members[j].Count;
                 }
             }
@@ -448,7 +448,7 @@ This post was made by Ricky Raccoon. Forward all complaints/suggestions/bugs to 
                         if (gamepms.Teams[i].Members[j].SubRole != "") subrole = gamepms.Teams[i].Members[j].SubRole + " ";
                         string team = gamepms.Teams[i].Name;
                         if (gamepms.Teams[i].Name != "") team = gamepms.Teams[i].Name + " ";
-                        txtRoleList.Text += gamepms.Teams[i].Members[j].Count + "X " + team + subrole + gamepms.Teams[i].Members[j].Role + Environment.NewLine;
+                        txtRoleList.Text += gamepms.Teams[i].Members[j].Count + "X " + team + subrole + gamepms.Teams[i].Members[j].Role + " with " + gamepms.Teams[i].Members[j].n0 + Environment.NewLine;
                         playerCount += gamepms.Teams[i].Members[j].Count;
                     }
                 }

@@ -28,9 +28,9 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle10 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle11 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle12 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle5 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle6 = new System.Windows.Forms.DataGridViewCellStyle();
             this.label10 = new System.Windows.Forms.Label();
             this.label9 = new System.Windows.Forms.Label();
             this.Password = new System.Windows.Forms.Label();
@@ -198,7 +198,7 @@
             this.txtRoleList.Name = "txtRoleList";
             this.txtRoleList.ReadOnly = true;
             this.txtRoleList.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.txtRoleList.Size = new System.Drawing.Size(160, 74);
+            this.txtRoleList.Size = new System.Drawing.Size(249, 74);
             this.txtRoleList.TabIndex = 7;
             // 
             // label2
@@ -254,7 +254,7 @@
             this.txtPlayerList.Name = "txtPlayerList";
             this.txtPlayerList.ReadOnly = true;
             this.txtPlayerList.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.txtPlayerList.Size = new System.Drawing.Size(160, 69);
+            this.txtPlayerList.Size = new System.Drawing.Size(249, 69);
             this.txtPlayerList.TabIndex = 6;
             // 
             // txtGameURL
@@ -1112,8 +1112,8 @@
             // colWinCon
             // 
             this.colWinCon.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
-            dataGridViewCellStyle10.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.colWinCon.DefaultCellStyle = dataGridViewCellStyle10;
+            dataGridViewCellStyle4.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.colWinCon.DefaultCellStyle = dataGridViewCellStyle4;
             this.colWinCon.HeaderText = "Win Condition";
             this.colWinCon.Name = "colWinCon";
             this.colWinCon.Width = 98;
@@ -1174,8 +1174,8 @@
             // 
             // txtExtraFlavor
             // 
-            dataGridViewCellStyle11.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.txtExtraFlavor.DefaultCellStyle = dataGridViewCellStyle11;
+            dataGridViewCellStyle5.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.txtExtraFlavor.DefaultCellStyle = dataGridViewCellStyle5;
             this.txtExtraFlavor.HeaderText = "Extra Flavor";
             this.txtExtraFlavor.Name = "txtExtraFlavor";
             // 
@@ -1183,16 +1183,16 @@
             // 
             this.boxn0.HeaderText = "n0 Action?";
             this.boxn0.Items.AddRange(new object[] {
-            "Random Villager Peek",
-            "Random Peek Across Entire Playerlist",
-            "Other n0 action",
-            "No n0 action"});
+            "a random villager peek",
+            "a random peek across the entire playerlist",
+            "an n0 action",
+            "no n0 actions"});
             this.boxn0.Name = "boxn0";
             // 
             // txtFullPM
             // 
-            dataGridViewCellStyle12.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.txtFullPM.DefaultCellStyle = dataGridViewCellStyle12;
+            dataGridViewCellStyle6.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.txtFullPM.DefaultCellStyle = dataGridViewCellStyle6;
             this.txtFullPM.HeaderText = "Full PM";
             this.txtFullPM.Name = "txtFullPM";
             this.txtFullPM.ReadOnly = true;
