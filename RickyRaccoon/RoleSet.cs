@@ -26,7 +26,7 @@ namespace RickyRaccoon
             get;
             set;
         }
-        public void setRolePM(RolePM role, int rolenum)
+        public void setRolePM(RolePM role, Team team, int rolenum)
         {
             for (int i = 0; i < Teams.Count; i++)
             {
@@ -34,14 +34,13 @@ namespace RickyRaccoon
                 {
                     if (Teams[i].Members[j].RoleNum == rolenum)
                     {
-                        Teams[i].Members[j] = role;
-                        return;
+                        Teams[i].Members.RemoveAt(j);
                     }
                 }
             }
             for (int i = 0; i < Teams.Count; i++)
             {
-                if (Teams[i].Equals(role.TeamRole))
+                if (Teams[i].Equals(team))
                 {
                     Teams[i].Members.Add(role);
                 }
@@ -286,23 +285,17 @@ namespace RickyRaccoon
     }
     public class RolePM
     {
-        public RolePM(Team team, string role, string subrole, string extraflavor, int count, int rolenum)
+        public RolePM(string role, string subrole, string extraflavor, string _n0, int count, int rolenum)
         {
-            TeamRole = team;
             Role = role;
             SubRole = subrole;
             ExtraFlavor = extraflavor;
             Count = count;
             RoleNum = rolenum;
+            n0 = _n0;
             Players = new List<string>();
         }
         public List<string> Players
-        {
-            get;
-            set;
-        }
-        [DataMember]
-        public Team TeamRole
         {
             get;
             set;
@@ -337,42 +330,94 @@ namespace RickyRaccoon
             get;
             set;
         }
-        public string FullPM(string gameURL, RolePMSet gamepms, string peek, string peekteam)
+        public string n0
         {
-            if (peek != "") peek = String.Format("Your n0 random peek is {0}, {1}", peek, peekteam);
-            string teammates = "";
-            Console.WriteLine(TeamRole.Share);
-            if (TeamRole.Share == true)
+            get;
+            set;
+        }
+        public string FullPM(string gameURL, RolePMSet gamepms, Team team, string playername)
+        {
+            string peek = "";
+            string peektype = "";
+            if (n0 == "a random villager peek")
             {
-                Console.WriteLine("HERE");
-                teammates += "Your Team is:" + Environment.NewLine;
-                for (int i = 0; i < TeamRole.Members.Count; i++)
+                List<string> villagers = new List<string>();
+                for (int k = 0; k < gamepms.Teams.Count; k++)
                 {
-                    teammates += TeamRole.Members[i] + Environment.NewLine;
+                    for (int l = 0; l < gamepms.Teams[k].Members.Count; l++)
+                    {
+                        if (gamepms.Teams[k].Name == "Villager")
+                            villagers.AddRange(gamepms.Teams[k].Members[l].Players);
+                    }
+                }
+                villagers.Remove(playername);
+                Random random = new Random();
+                int index = random.Next(villagers.Count);
+                peek = villagers[index];
+                peektype = "villager";
+            }
+            else if (n0 == "a random peek across entire playerlist")
+            {
+                Random random = new Random();
+                List<string> roster = new List<string>();
+                for (int k = 0; k < gamepms.Teams.Count; k++)
+                {
+                    for (int l = 0; l < gamepms.Teams[k].Members.Count; l++)
+                    {
+                        roster.AddRange(gamepms.Teams[k].Members[l].Players);
+                    }
+                }
+                roster.Remove(playername);
+                int index = random.Next(roster.Count);
+                peek = roster[index];
+                peektype = "ERROR";
+                for (int k = 0; k < gamepms.Teams.Count; k++)
+                {
+                    for (int l = 0; l < gamepms.Teams[k].Members.Count; l++)
+                    {
+                        for (int m = 0; m < gamepms.Teams[k].Members[l].Players.Count; m++)
+                        {
+                            if (gamepms.Teams[k].Members[l].Players[m] == peek)
+                                peektype = gamepms.Teams[k].Name;
+                        }
+                    }
                 }
             }
-            Console.WriteLine(peek);
+            if (peek != "") peek = String.Format("Your n0 random peek is {0}, {1}", peek, peektype);
+            string teammates = "";
+            if (team.Share == true)
+            {
+                teammates += "Your Team is:" + Environment.NewLine;
+                for (int i = 0; i < team.Members.Count; i++)
+                {
+                    for (int j = 0; j < team.Members[i].Count; j++)
+                    {
+                        teammates += team.Members[i].Players[j] + Environment.NewLine;
+                    }
+                }
+            }
+            Console.WriteLine(teammates);
             string subrole = "";
             if (SubRole != "") subrole = SubRole + " ";
             string role = "";
             if (Role != "") role = Role;
-            string team = "";
-            if (TeamRole.Name != "") team = TeamRole.Name + " ";
+            string teamname = "";
+            if (team.Name != "") teamname = team.Name + " ";
             string extraflavor = "";
             if (ExtraFlavor != "") extraflavor = ExtraFlavor + " ";
             return String.Format(@"*************************************************
-You are {0}a {1}{2}{3}! You win by {4}.
-{5}{6}
-The game thread is here: {7}
+You are {0}a {1}{2}{3}! You win by {4}. You have {5}.
+{6}{7}
+The game thread is here: {8}
 
 Good luck!
-*************************************************", extraflavor, team, subrole, role, TeamRole.WinCon, teammates, peek, gameURL);
+*************************************************", extraflavor, teamname, subrole, role, team.WinCon, n0, teammates, peek, gameURL);
         }
 
-        public string EditedPM(string gameURL)
+        public string EditedPM(string gameURL, Team team)
         {
             string teammates = "";
-            if (TeamRole.Share == true)
+            if (team.Share == true)
             {
                 teammates += "Your Team is: XXX" + Environment.NewLine;
             }
@@ -380,17 +425,17 @@ Good luck!
             if (SubRole != null) subrole = SubRole + " ";
             string role = "";
             if (Role != null) role = Role;
-            string team = "";
-            if (TeamRole != null) team = TeamRole.Name + " ";
+            string teamname = "";
+            if (team.Name != null) teamname = team.Name + " ";
             string extraflavor = "";
             if (ExtraFlavor != "") extraflavor = ExtraFlavor + " ";
             return String.Format(@"*************************************************
-You are {0}a {1}{2}{3}! You win by {4}.
+You are {0}a {1}{2}{3}! You win by {4}. You have {5}.
 
-The game thread is here: {5}
+The game thread is here: {6}
 
 Good luck!
-*************************************************", extraflavor, team, subrole, role, TeamRole.WinCon, gameURL);
+*************************************************", extraflavor, teamname, subrole, role, team.WinCon, n0, gameURL);
         }
         
     }

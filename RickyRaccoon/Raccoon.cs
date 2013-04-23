@@ -43,6 +43,7 @@ namespace RickyRaccoon
                 {
                     String name = line.Trim();
                     if (Regex.IsMatch(name, @"^[\s]*$")) continue;
+                    Console.WriteLine(name);
                     roster.Add(name);
                 }
                 roster.Sort();
@@ -117,6 +118,21 @@ namespace RickyRaccoon
                     MessageBox.Show("Login Success! This may take a while...");
                     break;
             }
+            for (int i = 0; i < roster.Count; i++)
+            {
+                if (!_forum.CanUserReceivePM(roster[i]))
+                {
+                    MessageBox.Show(String.Format("Can't contact {0}, they can't receive PMs! Role PMs being sent cancelled...", roster[i]));
+                    return;
+                }
+            }
+            if (boxMajLynch.Text == "" || boxSODTime.Text == "" || boxEODTime.Text == "" || boxWolfChat.Text == "" || roster.Count < 1 || boxMustLynch.Text == "" || txtGameName.Text == "")
+            {
+                MessageBox.Show("Please fill in all boxes before submitting");
+                return;
+            }
+            if (!makeOP())
+                return;
             btnDoIt.Enabled = false;
             Random rng = new Random();
             int n = Convert.ToInt16(txtRoleCount.Text);
@@ -133,7 +149,7 @@ namespace RickyRaccoon
             {
                 for (int j = 0; j < gamepms.Teams[i].Members.Count; j++)
                 {
-                    RolePM role = gamepms.Teams[i].Members[i];
+                    RolePM role = gamepms.Teams[i].Members[j];
                     for (int k = curplayer; k < curplayer + role.Count; k++)
                     {
                         role.Players.Add(roster[k]);
@@ -147,76 +163,77 @@ namespace RickyRaccoon
                 for (int j = 0; j < gamepms.Teams[i].Members.Count; j++)
                 {
                     RolePM role = gamepms.Teams[i].Members[j];
-                    string peek = "";
-                    string peektype = "";
-                    if (role.Role == "Seer" && boxSeerPeek.Text == "n0 Random Villager Peek")
+                    if (role.Role == "Vanilla")
                     {
-                        List<string> villagers = new List<string>();
-                        for (int k = 0; k < gamepms.Teams.Count; k++)
+                        string pm = role.FullPM(txtGameURL.Text, gamepms, gamepms.Teams[i], "");
+                        for (int k = curplayer; k < curplayer + role.Count; k += 8)
                         {
-                            for (int l = 0; l < gamepms.Teams[k].Members.Count; l++)
-                            {
-                                if (gamepms.Teams[k].Name == "Villager")
-                                    villagers.AddRange(gamepms.Teams[k].Members[l].Players);
-                            }
+                            Console.WriteLine("PM: " + pm);
+                            Console.WriteLine("currentplayer" + k + "-" + (Math.Min(8, curplayer + role.Count - k)));
+                            _forum.SendPM(null, roster.GetRange(k, Math.Min(8, curplayer + role.Count - k)), txtGameName.Text + " Role PM", pm);
+                            System.Threading.Thread.Sleep(30000);
                         }
-                        Random random = new Random();
-                        int index = random.Next(villagers.Count);
-                        peek = villagers[index];
-                        peektype = "villager";
+                        curplayer += role.Count;
                     }
-                    Console.WriteLine(peek);
-                    string pm = role.FullPM(txtGameURL.Text, gamepms, peek, peektype);
-                    for (int k = curplayer; k < curplayer + role.Count; k += 8)
+                    else
                     {
+                        string pm = role.FullPM(txtGameURL.Text, gamepms, gamepms.Teams[i], roster[curplayer]);
                         Console.WriteLine("PM: " + pm);
-                        Console.WriteLine("currentplayer" + k + "-" + (Math.Min(8, curplayer + role.Count - k) + k));
-                        _forum.SendPM(null, roster.GetRange(k, Math.Min(8, curplayer + role.Count - k) + k), txtGameName.Text + " Role PM", pm);
+                        Console.WriteLine("currentplayer" + curplayer);
+                        _forum.SendPM(null, new List<string>(new string[] {roster[curplayer]}), txtGameName.Text + " Role PM", pm);
                         System.Threading.Thread.Sleep(30000);
+                        curplayer += 1;
                     }
-                    curplayer += role.Count;
                 }
             }
             roster.Sort();
         }
 
-        private void makeTurboOP()
+        private bool makeTurboOP()
         {
-            string optext = String.Format(@"{0}
-1st day is {1} minutes long, subsequent days are {2} minutes long. Nights are {3} minutes long, and NAs will be randed if not recieved by that time.
-Seer got a {4}
-There is {5} after d1
-Must Lynch rules are {6}
-Wolf Chat is {7}
-
-You will receive your PMs shortly.
-
-This post was made by Ricky Racoon. Forward all complaints/suggestions/bugs to Krayz or Chips Ahoy
-
-[b]IT IS NIGHT, DO NOT POST[/b]", txtRoleList.Text, txtDay1Length.Text, txtDayLength.Text, txtNightLength.Text, boxSeerPeek.Text, boxMajLynch.Text, boxMustLynch.Text, boxWolfChat.Text);
-            txtOP.Text = optext;
-            //_forum.NewThread(59, txtGameName.Text, optext, 18, true);
-        }
-
-        private void btnMakeOP_Click(object sender, EventArgs e)
-        {
-            if (MessageBox.Show("Are you sure you want to continue? You can't go back after this!", "Continue?", MessageBoxButtons.YesNo) != DialogResult.Yes)
-            {
-                return;
-            }
-
-            if (boxTurbo.Checked)
-            {
-                makeTurboOP();
-                return;
-            }
-
             string pms = "";
             for (int i = 0; i < gamepms.Teams.Count; i++)
             {
                 for (int j = 0; j < gamepms.Teams[i].Members.Count; j++)
                 {
-                    pms += "[quote]" + gamepms.Teams[i].Members[j].EditedPM(txtGameURL.Text) + "[/quote]" + Environment.NewLine + Environment.NewLine;
+                    pms += "[quote]" + gamepms.Teams[i].Members[j].EditedPM(txtGameURL.Text, gamepms.Teams[i]) + "[/quote]" + Environment.NewLine + Environment.NewLine;
+                }
+            }
+            string optext = String.Format(@"{0}
+1st day is {1} minutes long, subsequent days are {2} minutes long. Nights are {3} minutes long, and NAs will be randed if not recieved by that time.
+There is {5} after d1
+Must Lynch rules are {6}
+Wolf Chat is {7}
+
+PMs: {8}
+
+You will receive your PMs shortly.
+
+This post was made by Ricky Raccoon. Forward all complaints/suggestions/bugs to Krayz or Chips Ahoy
+
+[b]IT IS NIGHT, DO NOT POST[/b]", txtRoleList.Text, txtDay1Length.Text, txtDayLength.Text, txtNightLength.Text, boxMajLynch.Text, boxMustLynch.Text, boxWolfChat.Text, pms);
+            txtOP.Text = optext;
+            _forum.NewThread(59, txtGameName.Text, optext, 18, true);
+            return true;
+        }
+
+        private bool makeOP()
+        {
+            if (MessageBox.Show("Are you sure you want to continue? You can't go back after this!", "Continue?", MessageBoxButtons.YesNo) != DialogResult.Yes)
+            {
+                return false;
+            }
+
+            if (boxTurbo.Checked)
+            {
+                return makeTurboOP();
+            }
+            string pms = "";
+            for (int i = 0; i < gamepms.Teams.Count; i++)
+            {
+                for (int j = 0; j < gamepms.Teams[i].Members.Count; j++)
+                {
+                    pms += "[quote]" + gamepms.Teams[i].Members[j].EditedPM(txtGameURL.Text, gamepms.Teams[i]) + "[/quote]" + Environment.NewLine + Environment.NewLine;
                 }
             }
             string majlynchtext = "";
@@ -233,7 +250,7 @@ This post was made by Ricky Racoon. Forward all complaints/suggestions/bugs to K
             if (boxMajLynch.Text == "Majority Lynch") majlynchtext = "If at any time during the day any player has a majority the possible votes on him (e.g., with nine players alive, five or more is a majority), the day ends immediately and that player is lynched. Any player who believes a player has reached majority should post '[B]night[/B]', and all other posting should cease while the vote count is confirmed.";
             else majlynchtext = "";
 
-            txtOP.Text = @"[b][u]POG Werewolf Rules[/u][/b]
+            string optext = String.Format(@"[b][u]POG Werewolf Rules[/u][/b]
 [indent]For more details, please see [url=http://forumserver.twoplustwo.com/showpost.php?p=32574213&postcount=5]Werewolf Rules And Etiquette[/url][/indent][list][*][b][color=green]As long as the game is ongoing, you may talk about the game only inside the game thread[/color][/b][*][b][color=green]You may post in the game thread only when it is [u]DAY[/u][/color][/b][*][b][color=green]You may post only when you are alive[/color][/b][*][b][color=green]If you have a role which allows you to communicate outside the game thread, then you may do so only when allowed by your role, and only with individuals specified by your role[/color][/b][*][b][color=green]You may not edit or delete posts in the game thread for any reason at any time[/color][/b][*][b][color=green]You may not post screenshots of, or directly quote your role PM, seer peeks, or any other game-related communication that originated outside of the game thread[/color][/b][*][b][color=green]You are expected to participate[/color][/b][*][b][color=green]You are expected to be familiar with the rules, and you are expected to abide by them even if you think they are incorrect[/color][/b][*][b][color=green]You are expected to behave civilly[/color][/b][/list][indent]
 
 Werewolf is a game about lying and catching people lying. It's an adversarial game and arguments between players are normal and expected. Passion and Intensity are fine but excessively personal attacks or insults are not. Even in a werewolf game you must respect the forum rules about civility. [u]Failure to do so may cause you to be infracted or temp banned, and repeated problems may get you perma-banned.[/u]
@@ -242,8 +259,7 @@ Werewolf is also a community and team-based game. While there are many styles an
 [b][U]The Setup[/U][/b][indent]
 
 PMs:
-" + pms +
-@"
+{0}
 
 [U]Voting[/U]
 
@@ -253,35 +269,37 @@ You may remove your vote by posting '[B]unvote[/B]'. You may change your vote si
 
 At the end of the scheduled game day, the player with the most votes is lynched, and his role revealed in the thread. If two or more players are tied for the most votes, one of the tied players is chosen randomly by the moderator.
 
-" + majlynchtext + @"
+{1}
 [/indent]
 [b][U]Day and Night Times[/U][/b]
 [indent]All times give are server time, which is also Eastern Standard Time.
 
-I will open the thread every morning by posting '[B]It is day.[/B]' You may not post in the thread until I have made the morning post. Day will usually start at [color=red]" + boxSODTime.Text + @"[/color]
+I will open the thread every morning by posting '[B]It is day.[/B]' You may not post in the thread until I have made the morning post. Day will usually start at [color=red]{2}[/color]
 
-Day lasts until [b][color=red]" + boxEODTime.Text + @"[/color][/b]. Posting at [b][color=red]" + boxEODTime.Text + @"[/color][/b] is acceptable, and votes with that time stamp will be counted. Posting after that, even just a minute after, is not acceptable, even if I have not yet declared it night by posting '[B]It is night.[/B]' Do not post in the thread at any time, for any reason, between the end of the day and the opening of the thread the next morning.
+Day lasts until [b][color=red]{3}[/color][/b]. Posting at [b][color=red]{4}[/color][/b] is acceptable, and votes with that time stamp will be counted. Posting after that, even just a minute after, is not acceptable, even if I have not yet declared it night by posting '[B]It is night.[/B]' Do not post in the thread at any time, for any reason, between the end of the day and the opening of the thread the next morning.
 
-Night will fall on the following days: " + lynchdays + @"
+Night will fall on the following days: {5}
 
 If this game has majority and any player reaches majority and is lynched before 2 pm, the moderator may, at his discretion, reopen the thread for a second game day that same day. He will do so only if it seems clear that this will not unduly disadvantage either side.[/indent]
 [b][U]Wolf Chat[/U][/b]
 [indent]Wolves may communicate with each other by any means they desire during [I]wolf chat[/I]. 
 
-[b][color=red]Wolf chat is: " + boxWolfChat.Text + @"[/color][/b][/indent]
+[b][color=red]Wolf chat is: {6}[/color][/b][/indent]
 [b][U]The Roster[/U][/b]
-[indent][color=red][b]" + String.Join(Environment.NewLine, roster) + @"[/b][/color][/indent]
+[indent][color=red][b]{7}[/b][/color][/indent]
 [b][U]Questions and Confirmation[/U][/b]
 [indent][color=red][b]Any questions regarding the rules should be submitted to the moderator by PM ONLY[/b][/color][/indent]
 [U][b]Must Lynch[/b][/u]
-[indent][color=red]" + boxMustLynch.Text + @"
-[/color][/indent]
+[indent][color=red]{8}[/color][/indent]
 
 You will receive your PMs shortly.
 
-This post was made by Ricky Racoon. Forward all complaints/suggestions/bugs to Krayz or Chips Ahoy
+This post was made by Ricky Raccoon. Forward all complaints/suggestions/bugs to Krayz or Chips Ahoy
 
-[b]IT IS NIGHT DO NOT POST[/b]";
+[b]IT IS NIGHT DO NOT POST[/b]", pms, majlynchtext, boxSODTime.Text, boxEODTime.Text, boxEODTime.Text, lynchdays, boxWolfChat.Text, String.Join(Environment.NewLine, roster), boxMustLynch.Text);
+            txtOP.Text = optext;
+            _forum.NewThread(59, txtGameName.Text, optext, 18, true);
+            return true;
         }
 
         private void txtGameTitle_TextChanged(object sender, EventArgs e)
@@ -290,7 +308,7 @@ This post was made by Ricky Racoon. Forward all complaints/suggestions/bugs to K
             {
                 for (int j = 0; j < rolepms.Teams[i].Members.Count; j++)
                 {
-                    dataRoles.Rows[i].Cells["txtFullPM"].Value = rolepms.Teams[i].Members[j].EditedPM(txtGameURL.Text);
+                    dataRoles.Rows[i].Cells["txtFullPM"].Value = rolepms.Teams[i].Members[j].EditedPM(txtGameURL.Text, rolepms.Teams[i]);
                 }
             }
         }
@@ -330,6 +348,8 @@ This post was made by Ricky Racoon. Forward all complaints/suggestions/bugs to K
                 dataTeams.Rows.Add(rolepms.Teams[i].Name, rolepms.Teams[i].WinCon, rolepms.Teams[i].Hidden, rolepms.Teams[i].Share);
             }
             DataGridViewComboBoxColumn comboboxColumn = (DataGridViewComboBoxColumn)dataRoles.Columns[0];
+            DataGridViewComboBoxColumn roleColumn = (DataGridViewComboBoxColumn)dataRoles.Columns[1];
+            DataGridViewComboBoxColumn subRoleColumn = (DataGridViewComboBoxColumn)dataRoles.Columns[2];
             comboboxColumn.DataSource = rolepms.Teams;
             comboboxColumn.DisplayMember = "Name";
             comboboxColumn.ValueMember = "Self";
@@ -337,7 +357,9 @@ This post was made by Ricky Racoon. Forward all complaints/suggestions/bugs to K
             {
                 for (int j = 0; j < rolepms.Teams[i].Members.Count; j++)
                 {
-                    dataRoles.Rows.Add(rolepms.Teams[i], rolepms.Teams[i].Members[j].Role, rolepms.Teams[i].Members[j].SubRole, rolepms.Teams[i].Members[j].ExtraFlavor, "", rolepms.Teams[i].Members[j].Count);
+                    if (!roleColumn.Items.Contains(rolepms.Teams[i].Members[j].Role) && rolepms.Teams[i].Members[j].Role.Length > 0) roleColumn.Items.Add(rolepms.Teams[i].Members[j].Role);
+                    if (!subRoleColumn.Items.Contains(rolepms.Teams[i].Members[j].SubRole) && rolepms.Teams[i].Members[j].SubRole.Length > 0) subRoleColumn.Items.Add(rolepms.Teams[i].Members[j].SubRole);
+                    dataRoles.Rows.Add(rolepms.Teams[i], rolepms.Teams[i].Members[j].Role, rolepms.Teams[i].Members[j].SubRole, rolepms.Teams[i].Members[j].ExtraFlavor, rolepms.Teams[i].Members[j].n0, "", rolepms.Teams[i].Members[j].Count);
                 }
             }
             txtRoleSetName.Text = rolepms.Name;
@@ -488,25 +510,28 @@ This post was made by Ricky Racoon. Forward all complaints/suggestions/bugs to K
                 if (!dataRoles.Columns.Contains("boxTeam")) continue;
                 if (dataRoles.Rows[i].Cells["boxTeam"].Value == null || dataRoles.Rows[i].Cells["boxRole"].Value == null || dataRoles.Rows[i].Cells["boxTeam"].Value.ToString() == "")
                     continue;
-                Team team = (Team)dataRoles.Rows[i].Cells["boxTeam"].Value;
+                Team team = (Team)dataRoles.Rows[i].Cells["boxTeam"].Value;                
                 string role = dataRoles.Rows[i].Cells["boxRole"].Value.ToString();
                 string subrole = "";
                 if (dataRoles.Rows[i].Cells["boxSubRole"].Value != null) subrole = dataRoles.Rows[i].Cells["boxSubRole"].Value.ToString();
                 string extraflavor = "";
                 if (dataRoles.Rows[i].Cells["txtExtraFlavor"].Value != null) extraflavor = dataRoles.Rows[i].Cells["txtExtraFlavor"].Value.ToString();
+                string n0 = "";
+                if (dataRoles.Rows[i].Cells["boxn0"].Value != null) n0 = dataRoles.Rows[i].Cells["boxn0"].Value.ToString();
                 int count = 0;
                 if (dataRoles.Rows[i].Cells["txtCount"].Value != null) count = Convert.ToInt16(dataRoles.Rows[i].Cells["txtCount"].Value.ToString());
-                RolePM rolepm = new RolePM(team, role, subrole, extraflavor, count, i);
-                rolepms.setRolePM(rolepm, i);
+                RolePM rolepm = new RolePM(role, subrole, extraflavor, n0, count, i);
+                rolepms.setRolePM(rolepm, team, i);
                 playerCount += count;
-                dataRoles.Rows[i].Cells["txtFullPM"].Value = rolepm.EditedPM(txtGameURL.Text);
+                dataRoles.Rows[i].Cells["txtFullPM"].Value = rolepm.EditedPM(txtGameURL.Text, team);
             }
             txtPlayers.Text = Convert.ToString(playerCount);
         }
 
         private void dataRoles_UserDeletingRow(object sender, DataGridViewRowCancelEventArgs e)
-        {
+        {            
             int rowIndex = e.Row.Index;
+            Console.WriteLine(String.Format("Deleting row: {0}", rowIndex));
             rolepms.removeRolePM(rowIndex);
         }
 
@@ -514,7 +539,7 @@ This post was made by Ricky Racoon. Forward all complaints/suggestions/bugs to K
         {
             int rowIndex = e.Row.Index;
             Team team = rolepms.Teams[rowIndex];
-            if(team.Members.Count > 0)
+            if (team.Members.Count > 0)
                 e.Cancel = true;
             else
                 rolepms.Teams.RemoveAt(rowIndex);
@@ -567,5 +592,30 @@ This post was made by Ricky Racoon. Forward all complaints/suggestions/bugs to K
                 cboxSaturday.Enabled = false;
             }
         }
+
+        private void dataRoles_EditingControlShowing(object sender, DataGridViewEditingControlShowingEventArgs e)
+        {
+            String columnName = this.dataRoles.Columns[this.dataRoles.CurrentCellAddress.X].Name;
+            Console.WriteLine(columnName);
+            if (columnName != "boxRole" && columnName != "boxSubRole") return;
+            ComboBox cb = e.Control as ComboBox;
+            if (cb != null)
+            {
+                cb.DropDownStyle = ComboBoxStyle.DropDown;
+            }
+        }
+
+        private void dataRoles_CellValidating(object sender, DataGridViewCellValidatingEventArgs e)
+        {            
+            String columnName = this.dataRoles.Columns[e.ColumnIndex].Name;
+            Console.WriteLine(columnName);
+            if (columnName != "boxRole" && columnName != "boxSubRole") return;
+            DataGridViewComboBoxColumn col = this.dataRoles.Columns[e.ColumnIndex] as DataGridViewComboBoxColumn;
+            if (!col.Items.Contains(e.FormattedValue) && e.FormattedValue.ToString().Length > 0)
+            {
+                col.Items.Add(e.FormattedValue);
+            }
+        }
     }
 }
+
