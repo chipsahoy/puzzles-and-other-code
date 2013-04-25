@@ -28,9 +28,9 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle5 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle6 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
             this.label10 = new System.Windows.Forms.Label();
             this.label9 = new System.Windows.Forms.Label();
             this.Password = new System.Windows.Forms.Label();
@@ -106,6 +106,13 @@
             this.txtRoleSetName = new System.Windows.Forms.TextBox();
             this.btnSaveRoleSet = new System.Windows.Forms.Button();
             this.dataRoles = new System.Windows.Forms.DataGridView();
+            this.boxTeam = new System.Windows.Forms.DataGridViewComboBoxColumn();
+            this.boxRole = new System.Windows.Forms.DataGridViewComboBoxColumn();
+            this.boxSubRole = new System.Windows.Forms.DataGridViewComboBoxColumn();
+            this.txtExtraFlavor = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.boxn0 = new System.Windows.Forms.DataGridViewComboBoxColumn();
+            this.txtFullPM = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.txtCount = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.tabPage3 = new System.Windows.Forms.TabPage();
             this.dataTeams = new System.Windows.Forms.DataGridView();
             this.colTeamName = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -114,13 +121,7 @@
             this.colShare = new System.Windows.Forms.DataGridViewCheckBoxColumn();
             this.openFileDialog = new System.Windows.Forms.OpenFileDialog();
             this.saveFileDialog = new System.Windows.Forms.SaveFileDialog();
-            this.boxTeam = new System.Windows.Forms.DataGridViewComboBoxColumn();
-            this.boxRole = new System.Windows.Forms.DataGridViewComboBoxColumn();
-            this.boxSubRole = new System.Windows.Forms.DataGridViewComboBoxColumn();
-            this.txtExtraFlavor = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.boxn0 = new System.Windows.Forms.DataGridViewComboBoxColumn();
-            this.txtFullPM = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.txtCount = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.btnTest = new System.Windows.Forms.Button();
             this.tableLayoutPanel2.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
             this.tableLayoutPanel14.SuspendLayout();
@@ -269,11 +270,13 @@
             // 
             // tableLayoutPanel2
             // 
-            this.tableLayoutPanel2.ColumnCount = 2;
-            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
-            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
+            this.tableLayoutPanel2.ColumnCount = 3;
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33444F));
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33444F));
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33112F));
             this.tableLayoutPanel2.Controls.Add(this.btnPasteList, 0, 0);
-            this.tableLayoutPanel2.Controls.Add(this.btnDoIt, 1, 0);
+            this.tableLayoutPanel2.Controls.Add(this.btnDoIt, 0, 0);
+            this.tableLayoutPanel2.Controls.Add(this.btnTest, 1, 0);
             this.tableLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel2.Location = new System.Drawing.Point(90, 3);
             this.tableLayoutPanel2.Name = "tableLayoutPanel2";
@@ -295,11 +298,9 @@
             // 
             // btnDoIt
             // 
-            this.btnDoIt.Dock = System.Windows.Forms.DockStyle.Left;
-            this.btnDoIt.Enabled = false;
-            this.btnDoIt.Location = new System.Drawing.Point(314, 3);
+            this.btnDoIt.Location = new System.Drawing.Point(210, 3);
             this.btnDoIt.Name = "btnDoIt";
-            this.btnDoIt.Size = new System.Drawing.Size(72, 24);
+            this.btnDoIt.Size = new System.Drawing.Size(141, 24);
             this.btnDoIt.TabIndex = 2;
             this.btnDoIt.Text = "Make OP and Send Roles";
             this.btnDoIt.UseVisualStyleBackColor = true;
@@ -939,7 +940,7 @@
             this.tblRoles.Location = new System.Drawing.Point(3, 3);
             this.tblRoles.Name = "tblRoles";
             this.tblRoles.RowCount = 1;
-            this.tblRoles.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 98F));
+            this.tblRoles.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 100F));
             this.tblRoles.Size = new System.Drawing.Size(1095, 101);
             this.tblRoles.TabIndex = 0;
             // 
@@ -956,13 +957,13 @@
             this.tableLayoutPanel6.RowCount = 2;
             this.tableLayoutPanel6.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.tableLayoutPanel6.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel6.Size = new System.Drawing.Size(129, 93);
+            this.tableLayoutPanel6.Size = new System.Drawing.Size(129, 94);
             this.tableLayoutPanel6.TabIndex = 32;
             // 
             // txtPlayers
             // 
             this.txtPlayers.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.txtPlayers.Location = new System.Drawing.Point(3, 49);
+            this.txtPlayers.Location = new System.Drawing.Point(3, 50);
             this.txtPlayers.Name = "txtPlayers";
             this.txtPlayers.ReadOnly = true;
             this.txtPlayers.Size = new System.Drawing.Size(123, 20);
@@ -973,7 +974,7 @@
             // 
             this.label17.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.label17.AutoSize = true;
-            this.label17.Location = new System.Drawing.Point(30, 16);
+            this.label17.Location = new System.Drawing.Point(30, 17);
             this.label17.Name = "label17";
             this.label17.Size = new System.Drawing.Size(68, 13);
             this.label17.TabIndex = 17;
@@ -991,13 +992,13 @@
             this.tableLayoutPanel8.RowCount = 2;
             this.tableLayoutPanel8.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.tableLayoutPanel8.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel8.Size = new System.Drawing.Size(129, 93);
+            this.tableLayoutPanel8.Size = new System.Drawing.Size(129, 94);
             this.tableLayoutPanel8.TabIndex = 39;
             // 
             // btnLoadRoleSet
             // 
             this.btnLoadRoleSet.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.btnLoadRoleSet.Location = new System.Drawing.Point(3, 49);
+            this.btnLoadRoleSet.Location = new System.Drawing.Point(3, 50);
             this.btnLoadRoleSet.Name = "btnLoadRoleSet";
             this.btnLoadRoleSet.Size = new System.Drawing.Size(123, 41);
             this.btnLoadRoleSet.TabIndex = 1;
@@ -1029,7 +1030,7 @@
             this.tableLayoutPanel7.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.tableLayoutPanel7.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.tableLayoutPanel7.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-            this.tableLayoutPanel7.Size = new System.Drawing.Size(129, 93);
+            this.tableLayoutPanel7.Size = new System.Drawing.Size(129, 94);
             this.tableLayoutPanel7.TabIndex = 33;
             // 
             // txtRoleSetName
@@ -1044,7 +1045,7 @@
             // btnSaveRoleSet
             // 
             this.btnSaveRoleSet.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.btnSaveRoleSet.Location = new System.Drawing.Point(18, 43);
+            this.btnSaveRoleSet.Location = new System.Drawing.Point(18, 44);
             this.btnSaveRoleSet.Name = "btnSaveRoleSet";
             this.btnSaveRoleSet.Size = new System.Drawing.Size(93, 22);
             this.btnSaveRoleSet.TabIndex = 1;
@@ -1073,6 +1074,70 @@
             this.dataRoles.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataRoles_CellValueChanged);
             this.dataRoles.EditingControlShowing += new System.Windows.Forms.DataGridViewEditingControlShowingEventHandler(this.dataRoles_EditingControlShowing);
             this.dataRoles.UserDeletingRow += new System.Windows.Forms.DataGridViewRowCancelEventHandler(this.dataRoles_UserDeletingRow);
+            // 
+            // boxTeam
+            // 
+            this.boxTeam.HeaderText = "Team";
+            this.boxTeam.Name = "boxTeam";
+            // 
+            // boxRole
+            // 
+            this.boxRole.DataPropertyName = "teams";
+            this.boxRole.DisplayStyle = System.Windows.Forms.DataGridViewComboBoxDisplayStyle.ComboBox;
+            this.boxRole.HeaderText = "Role";
+            this.boxRole.Items.AddRange(new object[] {
+            "Angel",
+            "Roleblocker",
+            "Seer",
+            "Vanilla",
+            "Vig"});
+            this.boxRole.Name = "boxRole";
+            // 
+            // boxSubRole
+            // 
+            this.boxSubRole.DisplayStyle = System.Windows.Forms.DataGridViewComboBoxDisplayStyle.ComboBox;
+            this.boxSubRole.HeaderText = "Sub Role";
+            this.boxSubRole.Items.AddRange(new object[] {
+            "Full",
+            "Odd",
+            "Even",
+            "n0",
+            "n1",
+            "n2",
+            "1x",
+            "2x",
+            "3x"});
+            this.boxSubRole.Name = "boxSubRole";
+            // 
+            // txtExtraFlavor
+            // 
+            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.txtExtraFlavor.DefaultCellStyle = dataGridViewCellStyle1;
+            this.txtExtraFlavor.HeaderText = "Extra Flavor";
+            this.txtExtraFlavor.Name = "txtExtraFlavor";
+            // 
+            // boxn0
+            // 
+            this.boxn0.HeaderText = "n0 Action?";
+            this.boxn0.Items.AddRange(new object[] {
+            "a random villager peek",
+            "a random peek across the entire playerlist",
+            "an n0 action",
+            "no n0 actions"});
+            this.boxn0.Name = "boxn0";
+            // 
+            // txtFullPM
+            // 
+            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.txtFullPM.DefaultCellStyle = dataGridViewCellStyle2;
+            this.txtFullPM.HeaderText = "Full PM";
+            this.txtFullPM.Name = "txtFullPM";
+            this.txtFullPM.ReadOnly = true;
+            // 
+            // txtCount
+            // 
+            this.txtCount.HeaderText = "Count";
+            this.txtCount.Name = "txtCount";
             // 
             // tabPage3
             // 
@@ -1112,8 +1177,8 @@
             // colWinCon
             // 
             this.colWinCon.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
-            dataGridViewCellStyle4.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.colWinCon.DefaultCellStyle = dataGridViewCellStyle4;
+            dataGridViewCellStyle3.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.colWinCon.DefaultCellStyle = dataGridViewCellStyle3;
             this.colWinCon.HeaderText = "Win Condition";
             this.colWinCon.Name = "colWinCon";
             this.colWinCon.Width = 98;
@@ -1138,69 +1203,15 @@
             this.saveFileDialog.DefaultExt = "json";
             this.saveFileDialog.Filter = "JSON|*.json*|All files|*.*";
             // 
-            // boxTeam
+            // btnTest
             // 
-            this.boxTeam.HeaderText = "Team";
-            this.boxTeam.Name = "boxTeam";
-            // 
-            // boxRole
-            // 
-            this.boxRole.DataPropertyName = "teams";
-            this.boxRole.DisplayStyle = System.Windows.Forms.DataGridViewComboBoxDisplayStyle.ComboBox;
-            this.boxRole.HeaderText = "Role";
-            this.boxRole.Items.AddRange(new object[] {
-            "Angel",
-            "Roleblocker",
-            "Seer",
-            "Vanilla",
-            "Vig"});
-            this.boxRole.Name = "boxRole";
-            // 
-            // boxSubRole
-            // 
-            this.boxSubRole.DisplayStyle = System.Windows.Forms.DataGridViewComboBoxDisplayStyle.ComboBox;
-            this.boxSubRole.HeaderText = "Sub Role";
-            this.boxSubRole.Items.AddRange(new object[] {
-            "Full",
-            "Odd",
-            "Even",
-            "n0",
-            "n1",
-            "n2",
-            "1x",
-            "2x",
-            "3x"});
-            this.boxSubRole.Name = "boxSubRole";
-            // 
-            // txtExtraFlavor
-            // 
-            dataGridViewCellStyle5.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.txtExtraFlavor.DefaultCellStyle = dataGridViewCellStyle5;
-            this.txtExtraFlavor.HeaderText = "Extra Flavor";
-            this.txtExtraFlavor.Name = "txtExtraFlavor";
-            // 
-            // boxn0
-            // 
-            this.boxn0.HeaderText = "n0 Action?";
-            this.boxn0.Items.AddRange(new object[] {
-            "a random villager peek",
-            "a random peek across the entire playerlist",
-            "an n0 action",
-            "no n0 actions"});
-            this.boxn0.Name = "boxn0";
-            // 
-            // txtFullPM
-            // 
-            dataGridViewCellStyle6.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.txtFullPM.DefaultCellStyle = dataGridViewCellStyle6;
-            this.txtFullPM.HeaderText = "Full PM";
-            this.txtFullPM.Name = "txtFullPM";
-            this.txtFullPM.ReadOnly = true;
-            // 
-            // txtCount
-            // 
-            this.txtCount.HeaderText = "Count";
-            this.txtCount.Name = "txtCount";
+            this.btnTest.Location = new System.Drawing.Point(417, 3);
+            this.btnTest.Name = "btnTest";
+            this.btnTest.Size = new System.Drawing.Size(72, 24);
+            this.btnTest.TabIndex = 3;
+            this.btnTest.Text = "Test Run";
+            this.btnTest.UseVisualStyleBackColor = true;
+            this.btnTest.Click += new System.EventHandler(this.btnTest_Click);
             // 
             // Raccoon
             // 
@@ -1338,6 +1349,7 @@
         private System.Windows.Forms.DataGridViewComboBoxColumn boxn0;
         private System.Windows.Forms.DataGridViewTextBoxColumn txtFullPM;
         private System.Windows.Forms.DataGridViewTextBoxColumn txtCount;
+        private System.Windows.Forms.Button btnTest;
 
     }
 }

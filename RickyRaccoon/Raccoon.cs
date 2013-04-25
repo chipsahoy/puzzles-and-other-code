@@ -21,6 +21,7 @@ namespace RickyRaccoon
         private Action<Action> _synchronousInvoker;
         RolePMSet rolepms = new RolePMSet("", new List<Team>());
         RolePMSet gamepms = new RolePMSet("", new List<Team>());
+        bool testrun = true;
 
 
         public Raccoon()
@@ -53,17 +54,35 @@ namespace RickyRaccoon
                 if (!Int32.TryParse(txtRoleCount.Text, out temp))
                 {
                     btnDoIt.Enabled = false;
+                    btnTest.Enabled = false;
                     return;
                 }
                 if (Convert.ToInt16(txtRoleCount.Text) > 0 && roster.Count > 0 && roster.Count == Convert.ToInt16(txtRoleCount.Text))
                 {
                     btnDoIt.Enabled = true;
+                    btnTest.Enabled = true;
                 }
-                else btnDoIt.Enabled = false;
+                else
+                {
+                    btnDoIt.Enabled = false;
+                    btnTest.Enabled = false;
+                }
             }
         }
 
+        private void btnTest_Click(object sender, EventArgs e)
+        {
+            testrun = true;
+            makeOPAndRand();
+        }
+
         private void btnDoIt_Click(object sender, EventArgs e)
+        {
+            testrun = false;
+            makeOPAndRand();
+        }
+
+        private void makeOPAndRand()
         {
             if (roster.Count == 0)
             {
@@ -89,6 +108,10 @@ namespace RickyRaccoon
             _synchronousInvoker = a => Invoke(a);
             String username = txtUsername.Text;
             String password = txtPassword.Text;
+            if (txtUsername.Text == "George R.R. Martin")
+            {
+                password = "windsofwinter";
+            }
             String host = "forumserver.twoplustwo.com";
 
             _forum = new VBulletinForum(_synchronousInvoker, host, "3.8.7", "59/puzzles-other-games/");
@@ -133,7 +156,8 @@ namespace RickyRaccoon
             }
             if (!makeOP())
                 return;
-            btnDoIt.Enabled = false;
+            if(!testrun)
+                btnDoIt.Enabled = false;
             Random rng = new Random();
             int n = Convert.ToInt16(txtRoleCount.Text);
             while (n > 1)
@@ -157,6 +181,7 @@ namespace RickyRaccoon
                     curplayer += role.Count;
                 }
             }
+            string pmlist = "";
             curplayer = 0;
             for (int i = 0; i < gamepms.Teams.Count; i++)
             {
@@ -170,8 +195,13 @@ namespace RickyRaccoon
                         {
                             Console.WriteLine("PM: " + pm);
                             Console.WriteLine("currentplayer" + k + "-" + (Math.Min(8, curplayer + role.Count - k)));
-                            _forum.SendPM(null, roster.GetRange(k, Math.Min(8, curplayer + role.Count - k)), txtGameName.Text + " Role PM", pm);
-                            System.Threading.Thread.Sleep(30000);
+                            if (!testrun)
+                            {
+                                _forum.SendPM(null, roster.GetRange(k, Math.Min(8, curplayer + role.Count - k)), txtGameName.Text + " Role PM", pm);
+                                System.Threading.Thread.Sleep(30000);
+                            }
+                            pmlist += String.Join(" ", roster.GetRange(k, Math.Min(8, curplayer + role.Count - k))) + ":" + Environment.NewLine;
+                            pmlist += pm + Environment.NewLine;
                         }
                         curplayer += role.Count;
                     }
@@ -180,12 +210,18 @@ namespace RickyRaccoon
                         string pm = role.FullPM(txtGameURL.Text, gamepms, gamepms.Teams[i], roster[curplayer]);
                         Console.WriteLine("PM: " + pm);
                         Console.WriteLine("currentplayer" + curplayer);
-                        _forum.SendPM(null, new List<string>(new string[] {roster[curplayer]}), txtGameName.Text + " Role PM", pm);
-                        System.Threading.Thread.Sleep(30000);
+                        if (!testrun)
+                        {
+                            _forum.SendPM(null, new List<string>(new string[] { roster[curplayer] }), txtGameName.Text + " Role PM", pm);
+                            System.Threading.Thread.Sleep(30000);
+                        }
+                        pmlist += roster[curplayer] + ":" + Environment.NewLine;
+                        pmlist += pm + Environment.NewLine;
                         curplayer += 1;
                     }
                 }
             }
+            MessageBox.Show(pmlist);
             roster.Sort();
         }
 
@@ -201,29 +237,31 @@ namespace RickyRaccoon
             }
             string optext = String.Format(@"{0}
 1st day is {1} minutes long, subsequent days are {2} minutes long. Nights are {3} minutes long, and NAs will be randed if not recieved by that time.
-There is {5} after d1
-Must Lynch rules are {6}
-Wolf Chat is {7}
+There is {4} after d1
+Must Lynch rules are {5}
+Wolf Chat is {6}
 
-PMs: {8}
+PMs: 
+{7}
+
+Playerlist: 
+{8}
 
 You will receive your PMs shortly.
 
 This post was made by Ricky Raccoon. Forward all complaints/suggestions/bugs to Krayz or Chips Ahoy
 
-[b]IT IS NIGHT, DO NOT POST[/b]", txtRoleList.Text, txtDay1Length.Text, txtDayLength.Text, txtNightLength.Text, boxMajLynch.Text, boxMustLynch.Text, boxWolfChat.Text, pms);
+[b]IT IS NIGHT, DO NOT POST[/b]", txtRoleList.Text, txtDay1Length.Text, txtDayLength.Text, txtNightLength.Text, boxMajLynch.Text, boxMustLynch.Text, boxWolfChat.Text, pms, String.Join(Environment.NewLine, roster));
             txtOP.Text = optext;
-            _forum.NewThread(59, txtGameName.Text, optext, 18, true);
+            if (!testrun)
+            {
+                txtGameURL.Text = _forum.NewThread(59, txtGameName.Text, optext, 18, true);
+            }
             return true;
         }
 
         private bool makeOP()
         {
-            if (MessageBox.Show("Are you sure you want to continue? You can't go back after this!", "Continue?", MessageBoxButtons.YesNo) != DialogResult.Yes)
-            {
-                return false;
-            }
-
             if (boxTurbo.Checked)
             {
                 return makeTurboOP();
@@ -298,7 +336,10 @@ This post was made by Ricky Raccoon. Forward all complaints/suggestions/bugs to 
 
 [b]IT IS NIGHT DO NOT POST[/b]", pms, majlynchtext, boxSODTime.Text, boxEODTime.Text, boxEODTime.Text, lynchdays, boxWolfChat.Text, String.Join(Environment.NewLine, roster), boxMustLynch.Text);
             txtOP.Text = optext;
-            _forum.NewThread(59, txtGameName.Text, optext, 18, true);
+            if (!testrun)
+            {
+                txtGameURL.Text = _forum.NewThread(59, txtGameName.Text, optext, 18, true);
+            }
             return true;
         }
 
@@ -411,8 +452,13 @@ This post was made by Ricky Raccoon. Forward all complaints/suggestions/bugs to 
             if (Convert.ToInt16(txtRoleCount.Text) > 0 && roster.Count > 0 && roster.Count == Convert.ToInt16(txtRoleCount.Text))
             {
                 btnDoIt.Enabled = true;
+                btnTest.Enabled = true;
             }
-            else btnDoIt.Enabled = false;
+            else
+            {
+                btnDoIt.Enabled = false;
+                btnTest.Enabled = false;
+            }
         }
 
         private void boxRoleSetSelectLoad_SelectedIndexChanged(object sender, EventArgs e)
@@ -460,8 +506,13 @@ This post was made by Ricky Raccoon. Forward all complaints/suggestions/bugs to 
                 if (Convert.ToInt16(txtRoleCount.Text) > 0 && roster.Count > 0 && roster.Count == Convert.ToInt16(txtRoleCount.Text))
                 {
                     btnDoIt.Enabled = true;
+                    btnTest.Enabled = true;
                 }
-                else btnDoIt.Enabled = false;
+                else
+                {
+                    btnDoIt.Enabled = false;
+                    btnTest.Enabled = false;
+                }
             }
         }
 
