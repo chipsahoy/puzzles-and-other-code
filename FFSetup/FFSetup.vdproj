@@ -123,6 +123,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_86A8829D3BFF416DAEF53297C720BA0F"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_8E136BEC365B46E1BBC9460F64C5CF38"
         "OwnerKey" = "8:_9D159AEB4DD54FB7AFD8717C3E3179FA"
         "MsmSig" = "8:_UNDEFINED"
@@ -374,7 +380,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:pogutils, Version=2.0.4861.3522, Culture=neutral, processorArchitecture=x86"
+            "AssemblyAsmDisplayName" = "8:pogutils, Version=2.0.4868.6441, Culture=neutral, processorArchitecture=x86"
                 "ScatterAssemblies"
                 {
                     "_0E4AC20B9CC9CD6657E8137F52129D10"
@@ -467,7 +473,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:vbulletin, Version=2.0.4861.3523, Culture=neutral, processorArchitecture=x86"
+            "AssemblyAsmDisplayName" = "8:vbulletin, Version=2.0.4868.6441, Culture=neutral, processorArchitecture=x86"
                 "ScatterAssemblies"
                 {
                     "_3CD89ABDD67BC656DBAED9BA4374BA6B"
@@ -560,7 +566,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:werewolf, Version=2.0.4861.3523, Culture=neutral, processorArchitecture=x86"
+            "AssemblyAsmDisplayName" = "8:werewolf, Version=2.0.4868.6445, Culture=neutral, processorArchitecture=x86"
                 "ScatterAssemblies"
                 {
                     "_6C28924ED68084BC05C18EB6A67B041E"
@@ -618,6 +624,26 @@
             "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_86A8829D3BFF416DAEF53297C720BA0F"
+            {
+            "SourcePath" = "8:..\\..\\..\\Desktop\\ricky.ico"
+            "TargetName" = "8:ricky.ico"
+            "Tag" = "8:"
+            "Folder" = "8:_7C9DB022BBCE42118E5A2BD274AFF1BA"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_8E136BEC365B46E1BBC9460F64C5CF38"
             {
             "AssemblyRegister" = "3:1"
@@ -653,7 +679,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:ForumTypes, Version=2.0.4861.3522, Culture=neutral, processorArchitecture=x86"
+            "AssemblyAsmDisplayName" = "8:ForumTypes, Version=2.0.4868.6441, Culture=neutral, processorArchitecture=x86"
                 "ScatterAssemblies"
                 {
                     "_A5A966BDD236ED6D528D62E37F788D68"
@@ -684,7 +710,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:pogutils, Version=2.0.4861.3522, Culture=neutral, processorArchitecture=x86"
+            "AssemblyAsmDisplayName" = "8:pogutils, Version=2.0.4868.6441, Culture=neutral, processorArchitecture=x86"
                 "ScatterAssemblies"
                 {
                     "_C3E95B06AFFB3C8A3E44B3104C9A329E"
@@ -831,15 +857,15 @@
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:FennecFox"
-        "ProductCode" = "8:{5EC3AE4C-D7BE-477F-98B4-6D2F0F9B8B10}"
-        "PackageCode" = "8:{3A18DA24-4517-4ADB-8DCF-355907AA1861}"
+        "ProductCode" = "8:{0DA88000-E4C8-4CFC-8FC1-DD89F5F28F98}"
+        "PackageCode" = "8:{0B6EDF73-5FA0-40B7-8A73-0A1BB9BA73DD}"
         "UpgradeCode" = "8:{6FA378AC-1D8C-4F10-AD8C-831DCAE5C6BF}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:FALSE"
-        "ProductVersion" = "8:1.1.34"
+        "ProductVersion" = "8:1.1.37"
         "Manufacturer" = "8:POG"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:"
@@ -977,7 +1003,7 @@
             "Target" = "8:_E2B4E1DBCC7B41C4BAD710BF8E1C15C4"
             "Folder" = "8:_0BBA5968119B4423B9E1E5E1ABA1A1AE"
             "WorkingFolder" = "8:_7C9DB022BBCE42118E5A2BD274AFF1BA"
-            "Icon" = "8:_EC15385987F54C31AC916BAA2EDBC8D0"
+            "Icon" = "8:_86A8829D3BFF416DAEF53297C720BA0F"
             "Feature" = "8:"
             }
             "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_92A30C45209848B7B5B855343CE764A9"
@@ -1005,7 +1031,7 @@
             "Target" = "8:_E2B4E1DBCC7B41C4BAD710BF8E1C15C4"
             "Folder" = "8:_77D4854F0C0B4387A30C2015062B096C"
             "WorkingFolder" = "8:_7C9DB022BBCE42118E5A2BD274AFF1BA"
-            "Icon" = "8:"
+            "Icon" = "8:_86A8829D3BFF416DAEF53297C720BA0F"
             "Feature" = "8:"
             }
             "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_E1CDF11533DF467C9162E3E721054AFB"

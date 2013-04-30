@@ -90,7 +90,7 @@ namespace RickyRaccoon
         }
       ],
       ""Name"": ""Villager"",
-      ""WinCon"": ""eliminate all wolves"",
+      ""WinCon"": ""eliminating all wolves"",
       ""Hidden"": false,
       ""Share"": false
     },
@@ -107,7 +107,7 @@ namespace RickyRaccoon
         }
       ],
       ""Name"": ""Wolf"",
-      ""WinCon"": ""reach parity with the village"",
+      ""WinCon"": ""reaching parity with the village"",
       ""Hidden"": false,
       ""Share"": true
     }
@@ -138,7 +138,7 @@ namespace RickyRaccoon
         }
       ],
       ""Name"": ""Villager"",
-      ""WinCon"": ""eliminate all wolves"",
+      ""WinCon"": ""eliminating all wolves"",
       ""Hidden"": false,
       ""Share"": false
     },
@@ -155,7 +155,7 @@ namespace RickyRaccoon
         }
       ],
       ""Name"": ""Wolf"",
-      ""WinCon"": ""reach parity with the village"",
+      ""WinCon"": ""reaching parity with the village"",
       ""Hidden"": false,
       ""Share"": true
     }
@@ -186,7 +186,7 @@ namespace RickyRaccoon
         }
       ],
       ""Name"": ""Villager"",
-      ""WinCon"": ""eliminate all wolves"",
+      ""WinCon"": ""eliminating all wolves"",
       ""Hidden"": false,
       ""Share"": false
     },
@@ -203,7 +203,7 @@ namespace RickyRaccoon
         }
       ],
       ""Name"": ""Wolf"",
-      ""WinCon"": ""reach parity with the village"",
+      ""WinCon"": ""reaching parity with the village"",
       ""Hidden"": false,
       ""Share"": true
     }
@@ -335,12 +335,12 @@ namespace RickyRaccoon
             string extraflavor = "";
             if (ExtraFlavor != "") extraflavor = ExtraFlavor + " ";
             return String.Format(@"*************************************************
-You are {0}a {1}{2}{3}! You win by {4}. You have {5}.
+You are {0}on the {1} team. Your role is: {2}{3}! You win by {4}. You have {5}.
 {6}{7}
 The game thread is here: {8}
 
 Good luck!
-*************************************************", extraflavor, teamname, subrole, role, team.WinCon, n0, teammates, peek, gameURL);
+*************************************************", extraflavor, team.Name, subrole, role, team.WinCon, n0, teammates, peek, gameURL);
         }
 
         public string EditedPM(string gameURL, Team team)
@@ -354,17 +354,15 @@ Good luck!
             if (SubRole != null) subrole = SubRole + " ";
             string role = "";
             if (Role != null) role = Role;
-            string teamname = "";
-            if (team.Name != null) teamname = team.Name + " ";
             string extraflavor = "";
             if (ExtraFlavor != "") extraflavor = ExtraFlavor + " ";
             return String.Format(@"*************************************************
-You are {0}a {1}{2}{3}! You win by {4}. You have {5}.
+You are {0}on the {1} team. Your role is: {2}{3}! You win by {4}. You have {5}.
 
 The game thread is here: {6}
 
 Good luck!
-*************************************************", extraflavor, teamname, subrole, role, team.WinCon, n0, gameURL);
+*************************************************", extraflavor, team.Name, subrole, role, team.WinCon, n0, gameURL);
         }
         
     }

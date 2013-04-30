@@ -31,6 +31,7 @@
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Raccoon));
             this.label10 = new System.Windows.Forms.Label();
             this.label9 = new System.Windows.Forms.Label();
             this.Password = new System.Windows.Forms.Label();
@@ -47,6 +48,7 @@
             this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
             this.btnPasteList = new System.Windows.Forms.Button();
             this.btnDoIt = new System.Windows.Forms.Button();
+            this.btnTest = new System.Windows.Forms.Button();
             this.txtPlayerCount = new System.Windows.Forms.TextBox();
             this.label3 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
@@ -121,7 +123,6 @@
             this.colShare = new System.Windows.Forms.DataGridViewCheckBoxColumn();
             this.openFileDialog = new System.Windows.Forms.OpenFileDialog();
             this.saveFileDialog = new System.Windows.Forms.SaveFileDialog();
-            this.btnTest = new System.Windows.Forms.Button();
             this.tableLayoutPanel2.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
             this.tableLayoutPanel14.SuspendLayout();
@@ -245,6 +246,7 @@
             // 
             this.txtPassword.Location = new System.Drawing.Point(90, 169);
             this.txtPassword.Name = "txtPassword";
+            this.txtPassword.PasswordChar = '*';
             this.txtPassword.Size = new System.Drawing.Size(160, 20);
             this.txtPassword.TabIndex = 5;
             // 
@@ -305,6 +307,16 @@
             this.btnDoIt.Text = "Make OP and Send Roles";
             this.btnDoIt.UseVisualStyleBackColor = true;
             this.btnDoIt.Click += new System.EventHandler(this.btnDoIt_Click);
+            // 
+            // btnTest
+            // 
+            this.btnTest.Location = new System.Drawing.Point(417, 3);
+            this.btnTest.Name = "btnTest";
+            this.btnTest.Size = new System.Drawing.Size(72, 24);
+            this.btnTest.TabIndex = 3;
+            this.btnTest.Text = "Test Run";
+            this.btnTest.UseVisualStyleBackColor = true;
+            this.btnTest.Click += new System.EventHandler(this.btnTest_Click);
             // 
             // txtPlayerCount
             // 
@@ -451,6 +463,7 @@
             this.txtNightLength.Name = "txtNightLength";
             this.txtNightLength.Size = new System.Drawing.Size(75, 20);
             this.txtNightLength.TabIndex = 0;
+            this.txtNightLength.Text = "7";
             // 
             // label11
             // 
@@ -472,6 +485,7 @@
             this.boxMajLynch.Name = "boxMajLynch";
             this.boxMajLynch.Size = new System.Drawing.Size(320, 21);
             this.boxMajLynch.TabIndex = 9;
+            this.boxMajLynch.Text = "Majority Lynch";
             // 
             // label12
             // 
@@ -494,6 +508,7 @@
             this.boxMustLynch.Name = "boxMustLynch";
             this.boxMustLynch.Size = new System.Drawing.Size(320, 21);
             this.boxMustLynch.TabIndex = 10;
+            this.boxMustLynch.Text = "Once you vote, your vote is locked, and you may not switch or unvote";
             // 
             // label13
             // 
@@ -516,6 +531,7 @@
             this.boxWolfChat.Name = "boxWolfChat";
             this.boxWolfChat.Size = new System.Drawing.Size(320, 21);
             this.boxWolfChat.TabIndex = 11;
+            this.boxWolfChat.Text = "Only During Night";
             // 
             // label14
             // 
@@ -627,7 +643,7 @@
             this.boxEODTime.ShowUpDown = true;
             this.boxEODTime.Size = new System.Drawing.Size(92, 20);
             this.boxEODTime.TabIndex = 0;
-            this.boxEODTime.Value = new System.DateTime(2013, 4, 14, 0, 0, 0, 0);
+            this.boxEODTime.Value = new System.DateTime(2013, 4, 30, 22, 0, 0, 0);
             // 
             // tableLayoutPanel11
             // 
@@ -671,6 +687,8 @@
             // cboxMonday
             // 
             this.cboxMonday.AutoSize = true;
+            this.cboxMonday.Checked = true;
+            this.cboxMonday.CheckState = System.Windows.Forms.CheckState.Checked;
             this.cboxMonday.Enabled = false;
             this.cboxMonday.Location = new System.Drawing.Point(71, 3);
             this.cboxMonday.Name = "cboxMonday";
@@ -682,6 +700,8 @@
             // cboxTuesday
             // 
             this.cboxTuesday.AutoSize = true;
+            this.cboxTuesday.Checked = true;
+            this.cboxTuesday.CheckState = System.Windows.Forms.CheckState.Checked;
             this.cboxTuesday.Enabled = false;
             this.cboxTuesday.Location = new System.Drawing.Point(141, 3);
             this.cboxTuesday.Name = "cboxTuesday";
@@ -693,6 +713,8 @@
             // cboxWednesday
             // 
             this.cboxWednesday.AutoSize = true;
+            this.cboxWednesday.Checked = true;
+            this.cboxWednesday.CheckState = System.Windows.Forms.CheckState.Checked;
             this.cboxWednesday.Enabled = false;
             this.cboxWednesday.Location = new System.Drawing.Point(214, 3);
             this.cboxWednesday.Name = "cboxWednesday";
@@ -704,6 +726,8 @@
             // cboxThursday
             // 
             this.cboxThursday.AutoSize = true;
+            this.cboxThursday.Checked = true;
+            this.cboxThursday.CheckState = System.Windows.Forms.CheckState.Checked;
             this.cboxThursday.Enabled = false;
             this.cboxThursday.Location = new System.Drawing.Point(303, 3);
             this.cboxThursday.Name = "cboxThursday";
@@ -726,6 +750,8 @@
             // cboxFriday
             // 
             this.cboxFriday.AutoSize = true;
+            this.cboxFriday.Checked = true;
+            this.cboxFriday.CheckState = System.Windows.Forms.CheckState.Checked;
             this.cboxFriday.Enabled = false;
             this.cboxFriday.Location = new System.Drawing.Point(379, 3);
             this.cboxFriday.Name = "cboxFriday";
@@ -737,6 +763,8 @@
             // cboxSunday
             // 
             this.cboxSunday.AutoSize = true;
+            this.cboxSunday.Checked = true;
+            this.cboxSunday.CheckState = System.Windows.Forms.CheckState.Checked;
             this.cboxSunday.Enabled = false;
             this.cboxSunday.Location = new System.Drawing.Point(3, 3);
             this.cboxSunday.Name = "cboxSunday";
@@ -769,7 +797,7 @@
             this.boxSODTime.ShowUpDown = true;
             this.boxSODTime.Size = new System.Drawing.Size(92, 20);
             this.boxSODTime.TabIndex = 0;
-            this.boxSODTime.Value = new System.DateTime(2013, 4, 14, 0, 0, 0, 0);
+            this.boxSODTime.Value = new System.DateTime(2013, 4, 30, 9, 0, 0, 0);
             // 
             // tableLayoutPanel13
             // 
@@ -804,6 +832,7 @@
             this.txtDayLength.Name = "txtDayLength";
             this.txtDayLength.Size = new System.Drawing.Size(81, 20);
             this.txtDayLength.TabIndex = 0;
+            this.txtDayLength.Text = "20";
             // 
             // tableLayoutPanel9
             // 
@@ -864,6 +893,7 @@
             this.txtDay1Length.Name = "txtDay1Length";
             this.txtDay1Length.Size = new System.Drawing.Size(77, 20);
             this.txtDay1Length.TabIndex = 0;
+            this.txtDay1Length.Text = "25";
             // 
             // boxTurbo
             // 
@@ -940,7 +970,7 @@
             this.tblRoles.Location = new System.Drawing.Point(3, 3);
             this.tblRoles.Name = "tblRoles";
             this.tblRoles.RowCount = 1;
-            this.tblRoles.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 100F));
+            this.tblRoles.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 101F));
             this.tblRoles.Size = new System.Drawing.Size(1095, 101);
             this.tblRoles.TabIndex = 0;
             // 
@@ -957,7 +987,7 @@
             this.tableLayoutPanel6.RowCount = 2;
             this.tableLayoutPanel6.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.tableLayoutPanel6.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel6.Size = new System.Drawing.Size(129, 94);
+            this.tableLayoutPanel6.Size = new System.Drawing.Size(129, 95);
             this.tableLayoutPanel6.TabIndex = 32;
             // 
             // txtPlayers
@@ -992,7 +1022,7 @@
             this.tableLayoutPanel8.RowCount = 2;
             this.tableLayoutPanel8.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.tableLayoutPanel8.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel8.Size = new System.Drawing.Size(129, 94);
+            this.tableLayoutPanel8.Size = new System.Drawing.Size(129, 95);
             this.tableLayoutPanel8.TabIndex = 39;
             // 
             // btnLoadRoleSet
@@ -1000,7 +1030,7 @@
             this.btnLoadRoleSet.Dock = System.Windows.Forms.DockStyle.Fill;
             this.btnLoadRoleSet.Location = new System.Drawing.Point(3, 50);
             this.btnLoadRoleSet.Name = "btnLoadRoleSet";
-            this.btnLoadRoleSet.Size = new System.Drawing.Size(123, 41);
+            this.btnLoadRoleSet.Size = new System.Drawing.Size(123, 42);
             this.btnLoadRoleSet.TabIndex = 1;
             this.btnLoadRoleSet.Text = "Load Custom...";
             this.btnLoadRoleSet.UseVisualStyleBackColor = true;
@@ -1030,7 +1060,7 @@
             this.tableLayoutPanel7.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.tableLayoutPanel7.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.tableLayoutPanel7.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-            this.tableLayoutPanel7.Size = new System.Drawing.Size(129, 94);
+            this.tableLayoutPanel7.Size = new System.Drawing.Size(129, 95);
             this.tableLayoutPanel7.TabIndex = 33;
             // 
             // txtRoleSetName
@@ -1203,16 +1233,6 @@
             this.saveFileDialog.DefaultExt = "json";
             this.saveFileDialog.Filter = "JSON|*.json*|All files|*.*";
             // 
-            // btnTest
-            // 
-            this.btnTest.Location = new System.Drawing.Point(417, 3);
-            this.btnTest.Name = "btnTest";
-            this.btnTest.Size = new System.Drawing.Size(72, 24);
-            this.btnTest.TabIndex = 3;
-            this.btnTest.Text = "Test Run";
-            this.btnTest.UseVisualStyleBackColor = true;
-            this.btnTest.Click += new System.EventHandler(this.btnTest_Click);
-            // 
             // Raccoon
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1220,6 +1240,7 @@
             this.AutoScroll = true;
             this.ClientSize = new System.Drawing.Size(804, 563);
             this.Controls.Add(this.Teams);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "Raccoon";
             this.Text = "Ricky Raccoon\'s Randomizer of Doom";
             this.tableLayoutPanel2.ResumeLayout(false);
