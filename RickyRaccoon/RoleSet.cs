@@ -345,6 +345,11 @@ Good luck!
 
         public string EditedPM(string gameURL, Team team)
         {
+            string peek = "";
+            if (n0 == "a random villager peek")
+            {
+                peek = "Your n0 random peek is XXX" + Environment.NewLine;
+            }
             string teammates = "";
             if (team.Share == true)
             {
@@ -358,11 +363,11 @@ Good luck!
             if (ExtraFlavor != "") extraflavor = ExtraFlavor + " ";
             return String.Format(@"*************************************************
 You are {0}on the {1} team. Your role is: {2}{3}! You win by {4}. You have {5}.
-
+{6}{7}
 The game thread is here: {6}
 
 Good luck!
-*************************************************", extraflavor, team.Name, subrole, role, team.WinCon, n0, gameURL);
+*************************************************", extraflavor, team.Name, subrole, role, team.WinCon, n0, teammates, peek, gameURL);
         }
         
     }

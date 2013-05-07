@@ -126,7 +126,6 @@ namespace RickyRaccoon
                 MessageBox.Show("Please enter your username and password!");
                 return;
             }
-
         }
 
         private void _forum_LoginEvent(object sender, POG.Forum.LoginEventArgs e)
@@ -154,6 +153,10 @@ namespace RickyRaccoon
                 MessageBox.Show("Please fill in all boxes before submitting");
                 return;
             }
+            if (boxPMsinOP.Checked && MessageBox.Show("Are you sure you want to put the PMs in the OP? This is NOT recommended if this game is a Mish-Mash!", "Continue?", MessageBoxButtons.YesNo) != DialogResult.Yes)
+            {
+                return;
+            }
             if (!makeOP())
                 return;
             if(!testrun)
@@ -168,6 +171,7 @@ namespace RickyRaccoon
                 roster[k] = roster[n];
                 roster[n] = value;
             }
+            
             int curplayer = 0;
             for (int i = 0; i < gamepms.Teams.Count; i++)
             {
@@ -181,48 +185,53 @@ namespace RickyRaccoon
                     curplayer += role.Count;
                 }
             }
+            String roleset = JsonConvert.SerializeObject(gamepms, Formatting.Indented, new JsonSerializerSettings()
+            {
+                ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+            });
+            // Show the dialog and get result.
+            saveFileDialog.FileName = gamepms.Name + DateTime.Now.ToString("MMMddyyyy hhmm") + "randed";
+            
+            DialogResult result = saveFileDialog.ShowDialog();
+            if (result == DialogResult.OK) // Test result.
+            {
+                using (Stream s = File.Open(saveFileDialog.FileName, FileMode.Create))
+                using (StreamWriter sw = new StreamWriter(s))
+                {
+                    sw.Write(roleset);
+                }
+            }
             string pmlist = "";
-            curplayer = 0;
+            
             for (int i = 0; i < gamepms.Teams.Count; i++)
             {
                 for (int j = 0; j < gamepms.Teams[i].Members.Count; j++)
                 {
                     RolePM role = gamepms.Teams[i].Members[j];
-                    if (role.Role == "Vanilla")
+                    string pm = role.FullPM(txtGameURL.Text, gamepms, gamepms.Teams[i], "");
+                    for (int k = 0; k < gamepms.Teams[i].Members[j].Players.Count; k += 8)
                     {
-                        string pm = role.FullPM(txtGameURL.Text, gamepms, gamepms.Teams[i], "");
-                        for (int k = curplayer; k < curplayer + role.Count; k += 8)
-                        {
-                            Console.WriteLine("PM: " + pm);
-                            Console.WriteLine("currentplayer" + k + "-" + (Math.Min(8, curplayer + role.Count - k)));
-                            if (!testrun)
-                            {
-                                _forum.SendPM(null, roster.GetRange(k, Math.Min(8, curplayer + role.Count - k)), txtGameName.Text + " Role PM", pm);
-                                System.Threading.Thread.Sleep(30000);
-                            }
-                            pmlist += String.Join(" ", roster.GetRange(k, Math.Min(8, curplayer + role.Count - k))) + ":" + Environment.NewLine;
-                            pmlist += pm + Environment.NewLine;
-                        }
-                        curplayer += role.Count;
-                    }
-                    else
-                    {
-                        string pm = role.FullPM(txtGameURL.Text, gamepms, gamepms.Teams[i], roster[curplayer]);
                         Console.WriteLine("PM: " + pm);
-                        Console.WriteLine("currentplayer" + curplayer);
+                        Console.WriteLine("currentplayer" + k + "-" + (Math.Min(8, curplayer + gamepms.Teams[i].Members[j].Players.Count - k)));
                         if (!testrun)
                         {
-                            _forum.SendPM(null, new List<string>(new string[] { roster[curplayer] }), txtGameName.Text + " Role PM", pm);
+                            _forum.SendPM(null, gamepms.Teams[i].Members[j].Players.GetRange(k, Math.Min(8, gamepms.Teams[i].Members[j].Players.Count - k)), txtGameName.Text + " Role PM", pm);
                             System.Threading.Thread.Sleep(30000);
                         }
-                        pmlist += roster[curplayer] + ":" + Environment.NewLine;
+                        pmlist += String.Join(" ", gamepms.Teams[i].Members[j].Players.GetRange(k, Math.Min(8, gamepms.Teams[i].Members[j].Players.Count - k))) + ":" + Environment.NewLine;
                         pmlist += pm + Environment.NewLine;
-                        curplayer += 1;
                     }
                 }
             }
             MessageBox.Show(pmlist);
             roster.Sort();
+            for (int i = 0; i < gamepms.Teams.Count; i++)
+            {
+                for (int j = 0; j < gamepms.Teams[i].Members.Count; j++)
+                {
+                    gamepms.Teams[i].Members[j].Players.Clear();
+                }
+            }
         }
 
         private bool makeTurboOP()
@@ -262,16 +271,24 @@ This post was made by Ricky Raccoon. Forward all complaints/suggestions/bugs to 
 
         private bool makeOP()
         {
+            if (!boxTurbo.Checked && !boxLongGame.Checked)
+            {
+                MessageBox.Show("You must select either long game or a turbo!");
+                return false;
+            }
             if (boxTurbo.Checked)
             {
                 return makeTurboOP();
             }
-            string pms = "";
-            for (int i = 0; i < gamepms.Teams.Count; i++)
+            string pms = "PMs:" + Environment.NewLine;
+            if (boxPMsinOP.Checked)
             {
-                for (int j = 0; j < gamepms.Teams[i].Members.Count; j++)
+                for (int i = 0; i < gamepms.Teams.Count; i++)
                 {
-                    pms += "[quote]" + gamepms.Teams[i].Members[j].EditedPM(txtGameURL.Text, gamepms.Teams[i]) + "[/quote]" + Environment.NewLine + Environment.NewLine;
+                    for (int j = 0; j < gamepms.Teams[i].Members.Count; j++)
+                    {
+                        pms += "[quote]" + gamepms.Teams[i].Members[j].EditedPM(txtGameURL.Text, gamepms.Teams[i]) + "[/quote]" + Environment.NewLine + Environment.NewLine;
+                    }
                 }
             }
             string majlynchtext = "";
@@ -295,8 +312,6 @@ Werewolf is a game about lying and catching people lying. It's an adversarial ga
 
 Werewolf is also a community and team-based game. While there are many styles and strategies and reasons for playing and you may choose your own, you are expected to be respectful of the time and energy others put in as players and as moderators. [u]You are expected to play to win. Intentionally sabotaging your team, or choosing strategies with the sole purpose of trolling other players in the game is not allowed.[/u][/indent]
 [b][U]The Setup[/U][/b][indent]
-
-PMs:
 {0}
 
 [U]Voting[/U]
@@ -628,7 +643,9 @@ This post was made by Ricky Raccoon. Forward all complaints/suggestions/bugs to 
                 cboxThursday.Enabled = true;
                 cboxFriday.Enabled = true;
                 cboxSaturday.Enabled = true;
+                boxPMsinOP.Enabled = true;
                 boxTurbo.Checked = false;
+                
             }
             else
             {
@@ -641,6 +658,7 @@ This post was made by Ricky Raccoon. Forward all complaints/suggestions/bugs to 
                 cboxThursday.Enabled = false;
                 cboxFriday.Enabled = false;
                 cboxSaturday.Enabled = false;
+                boxPMsinOP.Enabled = false;
             }
         }
 
