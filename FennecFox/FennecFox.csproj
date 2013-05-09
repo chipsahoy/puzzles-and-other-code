@@ -125,20 +125,8 @@
     <Compile Include="KillSub.Designer.cs">
       <DependentUpon>KillSub.cs</DependentUpon>
     </Compile>
-    <Compile Include="LoginDialog.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="LoginDialog.Designer.cs">
-      <DependentUpon>LoginDialog.cs</DependentUpon>
-    </Compile>
     <Compile Include="NoArrowNavigateDataGridView.cs">
       <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="OpenGame.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="OpenGame.Designer.cs">
-      <DependentUpon>OpenGame.cs</DependentUpon>
     </Compile>
     <Compile Include="PlayerList.cs">
       <SubType>Form</SubType>
@@ -171,14 +159,8 @@
     <EmbeddedResource Include="KillSub.resx">
       <DependentUpon>KillSub.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="LoginDialog.resx">
-      <DependentUpon>LoginDialog.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="Moderate.resx">
       <DependentUpon>Moderate.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="OpenGame.resx">
-      <DependentUpon>OpenGame.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="PlayerList.resx">
       <DependentUpon>PlayerList.cs</DependentUpon>
@@ -229,6 +211,10 @@
     <ProjectReference Include="..\AutocompleteMenu\AutocompleteMenu.csproj">
       <Project>{43CBC9AA-6A8E-463F-83A9-AFF3124AFDB6}</Project>
       <Name>AutocompleteMenu</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\FennecUI\FennecUI.csproj">
+      <Project>{3AA0628E-68D8-402D-B726-6FD4A0BCECEC}</Project>
+      <Name>FennecUI</Name>
     </ProjectReference>
     <ProjectReference Include="..\ForumTypes\ForumTypes.csproj">
       <Project>{3A512A72-44FC-458A-A6FB-36147D6C0CF6}</Project>

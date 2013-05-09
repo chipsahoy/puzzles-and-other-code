@@ -15,15 +15,17 @@ namespace POG.FennecFox
         LobbyReader _lobby;
         String _url;
         BindingList<ForumThread> _threads = new BindingList<ForumThread>();
+        List<String> _gameIcons;
 
         public OpenGame()
         {
             InitializeComponent();
         }
-        public OpenGame(VBulletinForum forum, String lobbyURL) : this()
+        public OpenGame(TwoPlusTwoForum forum, String lobbyURL, IEnumerable<String> gameIcons) : this()
         {
 			_url = lobbyURL; 
             _lobby = forum.Lobby();
+            _gameIcons = gameIcons.ToList();
         }
         public String GetURL(out Boolean turbo)
         {
@@ -36,7 +38,7 @@ namespace POG.FennecFox
         {
             foreach (ForumThread t in e.Threads)
             {
-                if ((t.ThreadIconText == "Spade") || (t.ThreadIconText == "Club"))
+                if (_gameIcons.Contains(t.ThreadIconText))
                 {
                     _threads.Add(t);
                 }
@@ -72,7 +74,7 @@ namespace POG.FennecFox
         private void OpenGame_Load(object sender, EventArgs e)
         {
             _lobby.LobbyPageCompleteEvent += new EventHandler<LobbyPageCompleteEventArgs>(_lobby_LobbyPageCompleteEvent);
-            _lobby.ReadLobby(_url, 1, 1, true);
+            _lobby.ReadLobby(_url, 1, 2, true);
             lbThreads.DataSource = _threads;
             lbThreads.DisplayMember = "Title";
         }

@@ -8,18 +8,19 @@ using System.Text;
 using System.Windows.Forms;
 using POG.Forum;
 using System.Reflection;
+using POG.Utils;
 
 namespace POG.FennecFox
 {
     public partial class LoginDialog : Form
     {
-        private VBulletinForum _forum;
+        private TwoPlusTwoForum _forum;
         public LoginDialog()
         {
             InitializeComponent();
         }
 
-        public LoginDialog(VBulletinForum _forum) : this()
+        public LoginDialog(TwoPlusTwoForum _forum) : this()
         {
             // TODO: Complete member initialization
             this._forum = _forum;
@@ -29,10 +30,8 @@ namespace POG.FennecFox
         {
             txtVersion.Text = String.Format("Fennic Fox Vote Counter Version " + Assembly.GetExecutingAssembly().GetName().Version.ToString());
             _forum.LoginEvent += new EventHandler<LoginEventArgs>(_forum_LoginEvent);
-
-            POG.FennecFox.Properties.Settings.Default.username = String.Empty;
-            POG.FennecFox.Properties.Settings.Default.password = String.Empty;
-            POG.FennecFox.Properties.Settings.Default.Save();
+            PogSettings.Write("username", String.Empty);
+            PogSettings.Write("password", String.Empty);
         }
 
         void _forum_LoginEvent(object sender, LoginEventArgs e)
@@ -54,10 +53,9 @@ namespace POG.FennecFox
                         txtPassword.PasswordChar = '*';
                         if (chkRememberMe.Checked)
                         {
-                            POG.FennecFox.Properties.Settings.Default.username = txtUsername.Text.Trim();
-                            POG.FennecFox.Properties.Settings.Default.password = txtPassword.Text.Trim();
-
-                            POG.FennecFox.Properties.Settings.Default.Save();
+                            PogSettings.Write("username", txtUsername.Text.Trim());
+                            PogSettings.Write("password", txtPassword.Text.Trim());
+                            
                         }
                         DialogResult = System.Windows.Forms.DialogResult.OK;
                     }
