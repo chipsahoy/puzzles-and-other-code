@@ -37,6 +37,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RickyRaccoon", "RickyRaccoo
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MaryMeerkat", "MaryMeerkat\MaryMeerkat.csproj", "{30D87A83-74EE-4324-82C2-DB111A7C8735}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FennecUI", "FennecUI\FennecUI.csproj", "{3AA0628E-68D8-402D-B726-6FD4A0BCECEC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x86 = Debug|x86
@@ -93,6 +95,10 @@ Global
 		{30D87A83-74EE-4324-82C2-DB111A7C8735}.Debug|x86.Build.0 = Debug|x86
 		{30D87A83-74EE-4324-82C2-DB111A7C8735}.Release|x86.ActiveCfg = Release|x86
 		{30D87A83-74EE-4324-82C2-DB111A7C8735}.Release|x86.Build.0 = Release|x86
+		{3AA0628E-68D8-402D-B726-6FD4A0BCECEC}.Debug|x86.ActiveCfg = Debug|x86
+		{3AA0628E-68D8-402D-B726-6FD4A0BCECEC}.Debug|x86.Build.0 = Debug|x86
+		{3AA0628E-68D8-402D-B726-6FD4A0BCECEC}.Release|x86.ActiveCfg = Release|x86
+		{3AA0628E-68D8-402D-B726-6FD4A0BCECEC}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -97,7 +97,7 @@ namespace POG.FennecFox
 		#region generated
 		private void OpenFile(object sender, EventArgs e)
 		{
-			OpenGame frm = new OpenGame(_forum, _forum.ForumURL + _forum.ForumLobby);
+            OpenGame frm = new OpenGame(_forum, _forum.ForumURL + _forum.ForumLobby, new List<String> { "Spade", "Club" });
 			DialogResult dr = frm.ShowDialog();
 			if (dr == System.Windows.Forms.DialogResult.OK)
 			{
