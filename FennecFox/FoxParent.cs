@@ -259,7 +259,7 @@ namespace POG.FennecFox
 			{
 				case Forum.LoginEventType.LoginFailure:
 					{
-						ShowLogin();
+						BeginInvoke(new MethodInvoker(ShowLogin));
 					}
 					break;
 

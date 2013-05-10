@@ -299,29 +299,8 @@ namespace POG.Forum
         internal bool CanUserReceivePM(string name)
         {
             ConnectionSettings cs = _connectionSettings.Clone();
-            cs.Url = _outer.ForumURL + "private.php";
-            String doc = HtmlHelper.GetUrlResponseString(cs);
-            if (doc == null)
-            {
-                return false;
-            }
-            // parse out securitytoken
-            Regex reg = new Regex("var SECURITYTOKEN = \"(.+)\"");
-            String securityToken = "";
-            Match match = reg.Match(doc);
-            if (match.Success)
-            {
-                securityToken = match.Groups[1].Value;
-            }
-            //			var ajax_last_post = 1338251071;
-            String ajaxLastPost = "";
-            reg = new Regex("var ajax_last_post = (.+);");
-            match = reg.Match(doc);
-            if (match.Success)
-            {
-                ajaxLastPost = match.Groups[1].Value;
-            }
-            StringBuilder msg = new StringBuilder();
+			String securityToken = GetSecurityToken(cs);
+			StringBuilder msg = new StringBuilder();
 
             String sTo = name;
             
@@ -376,49 +355,89 @@ namespace POG.Forum
             }
             return false;
         }
+		private String GetSecurityToken(ConnectionSettings cs)
+		{
+			String securityToken = "";
+			cs.Url = _outer.ForumURL + "private.php";
+			String doc = HtmlHelper.GetUrlResponseString(cs);
+			if (doc == null)
+			{
+				return securityToken;
+			}
+			// parse out securitytoken
+			Regex reg = new Regex("var SECURITYTOKEN = \"(.+)\"");
+			Match match = reg.Match(doc);
+			if (match.Success)
+			{
+				securityToken = match.Groups[1].Value;
+			}
+			//			var ajax_last_post = 1338251071;
+			String ajaxLastPost = "";
+			reg = new Regex("var ajax_last_post = (.+);");
+			match = reg.Match(doc);
+			if (match.Success)
+			{
+				ajaxLastPost = match.Groups[1].Value;
+			}
+			return securityToken;
+		}
+		internal Boolean LockThread(Int32 thread, Boolean lockIt)
+		{
+			ConnectionSettings cs = _connectionSettings.Clone();
+			String securityToken = GetSecurityToken(cs);
+			cs.Headers.Add("X-Requested-With", "XMLHttpRequest");
+			cs.Headers.Add("Origin", ForumURL.TrimEnd('/'));
+			cs.Headers.Add("Referer", String.Format("{0}{1}?securitytoken={2}", ForumURL, ForumLobby, securityToken));
+			//cs.Headers.Add("Connection", "keep-alive");
+			StringBuilder msg = new StringBuilder();
+			msg.AppendFormat("{0}={1}&", "securitytoken", securityToken);
+			msg.AppendFormat("{0}={1}&", "do", "updatethreadopen");
+			msg.AppendFormat("{0}={1}&", "t", thread);
+			String src;
+			if (lockIt)
+			{
+				src = String.Format("{0}images/statusicon/thread_dot_new.gif", ForumURL);
+			}
+			else
+			{
+				src = String.Format("{0}images/statusicon/thread_dot_lock_new.gif", ForumURL);
+			}
+			msg.AppendFormat("{0}={1}&", "src", "");
 
+			cs.Url = String.Format("{0}ajax.php?do=updatethreadopen&t={1}", ForumURL, thread);
+			cs.Data = msg.ToString();
+			//Trace.TraceInformation("Posting: " + cs.Data);
+			String resp = HtmlHelper.PostToUrl(cs);
+			if (resp == null)
+			{
+				// failure
+				return false;
+			}
+
+			return true;
+
+		}
         internal Boolean SendPM(IEnumerable<string> To, IEnumerable<string> bcc, string title, string content, bool receipt)
         {
             ConnectionSettings cs = _connectionSettings.Clone();
-            cs.Url = _outer.ForumURL + "private.php";
-            String doc = HtmlHelper.GetUrlResponseString(cs);
-            if (doc == null)
-            {
-                return false;
-            }
-            // parse out securitytoken
-            Regex reg = new Regex("var SECURITYTOKEN = \"(.+)\"");
-            String securityToken = "";
-            Match match = reg.Match(doc);
-            if (match.Success)
-            {
-                securityToken = match.Groups[1].Value;
-            }
-            //			var ajax_last_post = 1338251071;
-            String ajaxLastPost = "";
-            reg = new Regex("var ajax_last_post = (.+);");
-            match = reg.Match(doc);
-            if (match.Success)
-            {
-                ajaxLastPost = match.Groups[1].Value;
-            }
-            /*				<input type="hidden" name="fromquickreply" value="1" />
-                <input type="hidden" name="s" value="" />
-                <input type="hidden" name="securitytoken" value="1338251187-cd0e85748ac090ba7cb5281011b49332c0ba455a" />
-                <input type="hidden" name="do" value="postreply" />
-                <input type="hidden" name="t" value="1204368" id="qr_threadid" />
-                <input type="hidden" name="p" value="who cares" id="qr_postid" />
-                <input type="hidden" name="specifiedpost" value="0" id="qr_specifiedpost" />
-                <input type="hidden" name="parseurl" value="1" />
-                <input type="hidden" name="loggedinuser" value="198669" />
-             * 
-             * openclose=1
-             * open:
-             * POST http://forumserver.twoplustwo.com/postings.php?t=1204368&pollid= 
-             * do=openclosethread&s=&securitytoken=1338253787-f7a244e5e823e6d88002169f4f314e97febf4dce&t=1204368&pollid=
-             * close:
-             * POST /postings.php?t=1204368&pollid= HTTP/1.1
-             * do=openclosethread&s=&securitytoken=1338253981-5657f92aed9e901b4292a60cab0e9efaac4be1fe&t=1204368&pollid=
+			String securityToken = GetSecurityToken(cs);
+			/*				<input type="hidden" name="fromquickreply" value="1" />
+				<input type="hidden" name="s" value="" />
+				<input type="hidden" name="securitytoken" value="1338251187-cd0e85748ac090ba7cb5281011b49332c0ba455a" />
+				<input type="hidden" name="do" value="postreply" />
+				<input type="hidden" name="t" value="1204368" id="qr_threadid" />
+				<input type="hidden" name="p" value="who cares" id="qr_postid" />
+				<input type="hidden" name="specifiedpost" value="0" id="qr_specifiedpost" />
+				<input type="hidden" name="parseurl" value="1" />
+				<input type="hidden" name="loggedinuser" value="198669" />
+			 * 
+			 * openclose=1
+			 * open:
+			 * POST http://forumserver.twoplustwo.com/postings.php?t=1204368&pollid= 
+			 * do=openclosethread&s=&securitytoken=1338253787-f7a244e5e823e6d88002169f4f314e97febf4dce&t=1204368&pollid=
+			 * close:
+			 * POST /postings.php?t=1204368&pollid= HTTP/1.1
+			 * do=openclosethread&s=&securitytoken=1338253981-5657f92aed9e901b4292a60cab0e9efaac4be1fe&t=1204368&pollid=
 */
 
             StringBuilder msg = new StringBuilder();
@@ -468,29 +487,8 @@ namespace POG.Forum
         internal bool DeleteThread(int postId)
         {
             ConnectionSettings cs = _connectionSettings.Clone();
-            cs.Url = _outer.ForumURL + "private.php";
-            String doc = HtmlHelper.GetUrlResponseString(cs);
-            if (doc == null)
-            {
-                return false;
-            }
-            // parse out securitytoken
-            Regex reg = new Regex("var SECURITYTOKEN = \"(.+)\"");
-            String securityToken = "";
-            Match match = reg.Match(doc);
-            if (match.Success)
-            {
-                securityToken = match.Groups[1].Value;
-            }
-            //			var ajax_last_post = 1338251071;
-            String ajaxLastPost = "";
-            reg = new Regex("var ajax_last_post = (.+);");
-            match = reg.Match(doc);
-            if (match.Success)
-            {
-                ajaxLastPost = match.Groups[1].Value;
-            }
-            StringBuilder msg = new StringBuilder();
+			String securityToken = GetSecurityToken(cs);
+			StringBuilder msg = new StringBuilder();
 
             msg.AppendFormat("{0}={1}&", "do", "deletepost");
             msg.AppendFormat("{0}={1}&", "s", "");
@@ -513,28 +511,7 @@ namespace POG.Forum
         {
             String rc = String.Empty;
             ConnectionSettings cs = _connectionSettings.Clone();
-            cs.Url = _outer.ForumURL + "private.php";
-            String doc = HtmlHelper.GetUrlResponseString(cs);
-            if (doc == null)
-            {
-                return rc;
-            }
-            // parse out securitytoken
-            Regex reg = new Regex("var SECURITYTOKEN = \"(.+)\"");
-            String securityToken = "";
-            Match match = reg.Match(doc);
-            if (match.Success)
-            {
-                securityToken = match.Groups[1].Value;
-            }
-            //			var ajax_last_post = 1338251071;
-            String ajaxLastPost = "";
-            reg = new Regex("var ajax_last_post = (.+);");
-            match = reg.Match(doc);
-            if (match.Success)
-            {
-                ajaxLastPost = match.Groups[1].Value;
-            }
+			String securityToken = GetSecurityToken(cs);
             StringBuilder msg = new StringBuilder();
 
             msg.AppendFormat("{0}={1}&", "subject", title);
@@ -614,28 +591,7 @@ loggedinuser 81788
 			 * openclose 1 <-- lock thread
 			 * */
 			ConnectionSettings cs = _connectionSettings.Clone();
-			cs.Url = ForumURL + "private.php";
-			String doc = HtmlHelper.GetUrlResponseString(cs);
-			if (doc == null)
-			{
-				return false;
-			}
-			// parse out securitytoken
-			Regex reg = new Regex("var SECURITYTOKEN = \"(.+)\"");
-			String securityToken = "";
-			Match match = reg.Match(doc);
-			if (match.Success)
-			{
-				securityToken = match.Groups[1].Value;
-			}
-			//			var ajax_last_post = 1338251071;
-			String ajaxLastPost = "";
-			reg = new Regex("var ajax_last_post = (.+);");
-			match = reg.Match(doc);
-			if (match.Success)
-			{
-				ajaxLastPost = match.Groups[1].Value;
-			}
+			String securityToken = GetSecurityToken(cs);
 			/*				<input type="hidden" name="fromquickreply" value="1" />
 				<input type="hidden" name="s" value="" />
 				<input type="hidden" name="securitytoken" value="1338251187-cd0e85748ac090ba7cb5281011b49332c0ba455a" />
@@ -734,28 +690,7 @@ fragment	name
 			 * */
 			List<Poster> posters = new List<Poster>();
 			ConnectionSettings cs = _connectionSettings.Clone();
-			cs.Url = ForumURL + "private.php";
-			String doc = HtmlHelper.GetUrlResponseString(cs);
-			if (doc == null)
-			{
-				return;
-			}
-			// parse out securitytoken
-			Regex reg = new Regex("var SECURITYTOKEN = \"(.+)\"");
-			String securityToken = "";
-			Match match = reg.Match(doc);
-			if (match.Success)
-			{
-				securityToken = match.Groups[1].Value;
-			}
-			//			var ajax_last_post = 1338251071;
-			String ajaxLastPost = "";
-			reg = new Regex("var ajax_last_post = (.+);");
-			match = reg.Match(doc);
-			if (match.Success)
-			{
-				ajaxLastPost = match.Groups[1].Value;
-			}
+			String securityToken = GetSecurityToken(cs);
 			/*
 securitytoken	blah
 do	usersearch
@@ -922,6 +857,11 @@ fragment	name
 		{
             Boolean rc = _inner.SendPM(To, bcc, title, content, receipt);
             return rc;
+		}
+		public Boolean LockThread(Int32 thread, Boolean lockIt)
+		{
+			Boolean rc = _inner.LockThread(thread, lockIt);
+			return rc;
 		}
 		public Boolean MakePost(Int32 threadId, String title, String message, Int32 PostIcon, Boolean LockThread)
 		{
