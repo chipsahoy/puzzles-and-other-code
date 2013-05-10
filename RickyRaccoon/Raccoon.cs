@@ -10,6 +10,7 @@ using System.Text.RegularExpressions;
 using POG.Forum;
 using Newtonsoft.Json;
 using System.IO;
+using POG.Werewolf;
 
 namespace RickyRaccoon
 {
@@ -170,8 +171,7 @@ namespace RickyRaccoon
                 String value = roster[k];
                 roster[k] = roster[n];
                 roster[n] = value;
-            }
-            
+            }            
             int curplayer = 0;
             for (int i = 0; i < gamepms.Teams.Count; i++)
             {
@@ -180,11 +180,12 @@ namespace RickyRaccoon
                     RolePM role = gamepms.Teams[i].Members[j];
                     for (int k = curplayer; k < curplayer + role.Count; k++)
                     {
-                        role.Players.Add(roster[k]);
+                        role.Players.Add(new Player(roster[k]));
                     }
                     curplayer += role.Count;
                 }
             }
+            gamepms.GameName = txtGameName.Text;
             String roleset = JsonConvert.SerializeObject(gamepms, Formatting.Indented, new JsonSerializerSettings()
             {
                 ReferenceLoopHandling = ReferenceLoopHandling.Ignore
@@ -208,18 +209,35 @@ namespace RickyRaccoon
                 for (int j = 0; j < gamepms.Teams[i].Members.Count; j++)
                 {
                     RolePM role = gamepms.Teams[i].Members[j];
-                    string pm = role.FullPM(txtGameURL.Text, gamepms, gamepms.Teams[i], "");
-                    for (int k = 0; k < gamepms.Teams[i].Members[j].Players.Count; k += 8)
+                    if (role.n0 != "a random villager peek" && role.n0 != "a random peek across entire playerlist")
                     {
-                        Console.WriteLine("PM: " + pm);
-                        Console.WriteLine("currentplayer" + k + "-" + (Math.Min(8, curplayer + gamepms.Teams[i].Members[j].Players.Count - k)));
-                        if (!testrun)
+                        string pm = role.FullPM(txtGameURL.Text, gamepms, gamepms.Teams[i], new Player(""));
+                        for (int k = 0; k < gamepms.Teams[i].Members[j].Players.Count; k += 8)
                         {
-                            _forum.SendPM(null, gamepms.Teams[i].Members[j].Players.GetRange(k, Math.Min(8, gamepms.Teams[i].Members[j].Players.Count - k)), txtGameName.Text + " Role PM", pm);
-                            System.Threading.Thread.Sleep(30000);
+                            Console.WriteLine("PM: " + pm);
+                            Console.WriteLine("currentplayer" + k + "-" + (Math.Min(8, curplayer + gamepms.Teams[i].Members[j].Players.Count - k)));
+                            if (!testrun)
+                            {
+                                _forum.SendPM(null, gamepms.Teams[i].Members[j].Players.GetRange(k, Math.Min(8, gamepms.Teams[i].Members[j].Players.Count - k)).Select(player => player.Name), txtGameName.Text + " Role PM", pm);
+                                System.Threading.Thread.Sleep(30000);
+                            }
+                            pmlist += String.Join(" ", gamepms.Teams[i].Members[j].Players.GetRange(k, Math.Min(8, gamepms.Teams[i].Members[j].Players.Count - k)).Select(player => player.Name)) + ":" + Environment.NewLine;
+                            pmlist += pm + Environment.NewLine;
                         }
-                        pmlist += String.Join(" ", gamepms.Teams[i].Members[j].Players.GetRange(k, Math.Min(8, gamepms.Teams[i].Members[j].Players.Count - k))) + ":" + Environment.NewLine;
-                        pmlist += pm + Environment.NewLine;
+                    }
+                    else
+                    {
+                        for (int k = 0; k < gamepms.Teams[i].Members[j].Players.Count; k++)
+                        {
+                            string pm = role.FullPM(txtGameURL.Text, gamepms, gamepms.Teams[i], gamepms.Teams[i].Members[j].Players[k]);
+                            if (!testrun)
+                            {
+                                _forum.SendPM(null, new List<string>(new string[] {gamepms.Teams[i].Members[j].Players[k].Name}), txtGameName.Text + " Role PM", pm);
+                                System.Threading.Thread.Sleep(30000);
+                            }
+                            pmlist += gamepms.Teams[i].Members[j].Players[k].Name + ":" + Environment.NewLine;
+                            pmlist += pm + Environment.NewLine;
+                        }
                     }
                 }
             }
@@ -265,6 +283,7 @@ This post was made by Ricky Raccoon. Forward all complaints/suggestions/bugs to 
             if (!testrun)
             {
                 txtGameURL.Text = _forum.NewThread(59, txtGameName.Text, optext, 18, true);
+                gamepms.GameURL = txtGameURL.Text;
             }
             return true;
         }
@@ -354,6 +373,7 @@ This post was made by Ricky Raccoon. Forward all complaints/suggestions/bugs to 
             if (!testrun)
             {
                 txtGameURL.Text = _forum.NewThread(59, txtGameName.Text, optext, 18, true);
+                gamepms.GameURL = txtGameURL.Text;
             }
             return true;
         }
@@ -367,6 +387,7 @@ This post was made by Ricky Raccoon. Forward all complaints/suggestions/bugs to 
                     dataRoles.Rows[i].Cells["txtFullPM"].Value = rolepms.Teams[i].Members[j].EditedPM(txtGameURL.Text, rolepms.Teams[i]);
                 }
             }
+            rolepms.GameURL = txtGameURL.Text;
         }
 
         private void txtRoleSetName_TextChanged(object sender, EventArgs e)
@@ -401,7 +422,7 @@ This post was made by Ricky Raccoon. Forward all complaints/suggestions/bugs to 
             rolepms = rolepmset;
             for (int i = 0; i < rolepms.Teams.Count(); i++)
             {
-                dataTeams.Rows.Add(rolepms.Teams[i].Name, rolepms.Teams[i].WinCon, rolepms.Teams[i].Hidden, rolepms.Teams[i].Share);
+                dataTeams.Rows.Add(rolepms.Teams[i].Name, rolepms.Teams[i].WinCon, rolepms.Teams[i].Color, rolepms.Teams[i].Hidden, rolepms.Teams[i].Share);
             }
             DataGridViewComboBoxColumn comboboxColumn = (DataGridViewComboBoxColumn)dataRoles.Columns[0];
             DataGridViewComboBoxColumn roleColumn = (DataGridViewComboBoxColumn)dataRoles.Columns[1];
@@ -415,7 +436,7 @@ This post was made by Ricky Raccoon. Forward all complaints/suggestions/bugs to 
                 {
                     if (!roleColumn.Items.Contains(rolepms.Teams[i].Members[j].Role) && rolepms.Teams[i].Members[j].Role.Length > 0) roleColumn.Items.Add(rolepms.Teams[i].Members[j].Role);
                     if (!subRoleColumn.Items.Contains(rolepms.Teams[i].Members[j].SubRole) && rolepms.Teams[i].Members[j].SubRole.Length > 0) subRoleColumn.Items.Add(rolepms.Teams[i].Members[j].SubRole);
-                    dataRoles.Rows.Add(rolepms.Teams[i], rolepms.Teams[i].Members[j].Role, rolepms.Teams[i].Members[j].SubRole, rolepms.Teams[i].Members[j].ExtraFlavor, rolepms.Teams[i].Members[j].n0, "", rolepms.Teams[i].Members[j].Count);
+                    dataRoles.Rows.Add(rolepms.Teams[i], rolepms.Teams[i].Members[j].Role, rolepms.Teams[i].Members[j].SubRole, rolepms.Teams[i].Members[j].Color, rolepms.Teams[i].Members[j].ExtraFlavor, rolepms.Teams[i].Members[j].n0, "", rolepms.Teams[i].Members[j].Count);
                 }
             }
             txtRoleSetName.Text = rolepms.Name;
@@ -539,10 +560,11 @@ This post was made by Ricky Raccoon. Forward all complaints/suggestions/bugs to 
             {
 
                 if (!dataTeams.Columns.Contains("colTeamName")) continue;
-                if (dataTeams.Rows[i].Cells["colTeamName"].Value == null || dataTeams.Rows[i].Cells["colWinCon"].Value == null)
+                if (dataTeams.Rows[i].Cells["colTeamName"].Value == null || dataTeams.Rows[i].Cells["colWinCon"].Value == null || dataTeams.Rows[i].Cells["boxColor"].Value == null)
                     continue;
                 string teamname = dataTeams.Rows[i].Cells["colTeamName"].Value.ToString();
                 string wincon = dataTeams.Rows[i].Cells["colWinCon"].Value.ToString();
+                string color = dataTeams.Rows[i].Cells["boxColor"].Value.ToString();
                 bool hidden = Convert.ToBoolean(dataTeams.Rows[i].Cells["colReveal"].Value);
                 bool share = Convert.ToBoolean(dataTeams.Rows[i].Cells["colShare"].Value);
                 if (i < teams.Count)
@@ -551,10 +573,11 @@ This post was made by Ricky Raccoon. Forward all complaints/suggestions/bugs to 
                     teams[i].WinCon = wincon;
                     teams[i].Hidden = hidden;
                     teams[i].Share = share;
+                    teams[i].Color = color;
                 }
                 else
                 {
-                    Team team = new Team(teamname, wincon, hidden, share);
+                    Team team = new Team(teamname, wincon, hidden, share, color);
                     teams.Add(team);
                 }
             }
@@ -582,11 +605,13 @@ This post was made by Ricky Raccoon. Forward all complaints/suggestions/bugs to 
                 if (dataRoles.Rows[i].Cells["boxSubRole"].Value != null) subrole = dataRoles.Rows[i].Cells["boxSubRole"].Value.ToString();
                 string extraflavor = "";
                 if (dataRoles.Rows[i].Cells["txtExtraFlavor"].Value != null) extraflavor = dataRoles.Rows[i].Cells["txtExtraFlavor"].Value.ToString();
+                string color = "black";
+                if (dataRoles.Rows[i].Cells["boxPlayerColor"].Value != null) color = dataRoles.Rows[i].Cells["boxPlayerColor"].Value.ToString();
                 string n0 = "";
                 if (dataRoles.Rows[i].Cells["boxn0"].Value != null) n0 = dataRoles.Rows[i].Cells["boxn0"].Value.ToString();
                 int count = 0;
                 if (dataRoles.Rows[i].Cells["txtCount"].Value != null) count = Convert.ToInt16(dataRoles.Rows[i].Cells["txtCount"].Value.ToString());
-                RolePM rolepm = new RolePM(role, subrole, extraflavor, n0, count, i);
+                RolePM rolepm = new RolePM(role, subrole, color, extraflavor, n0, count, i);
                 rolepms.setRolePM(rolepm, team, i);
                 playerCount += count;
                 dataRoles.Rows[i].Cells["txtFullPM"].Value = rolepm.EditedPM(txtGameURL.Text, team);

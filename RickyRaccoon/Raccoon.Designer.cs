@@ -93,6 +93,7 @@
             this.label16 = new System.Windows.Forms.Label();
             this.txtDay1Length = new System.Windows.Forms.TextBox();
             this.boxTurbo = new System.Windows.Forms.CheckBox();
+            this.boxPMsinOP = new System.Windows.Forms.CheckBox();
             this.Teams = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.tabPage2 = new System.Windows.Forms.TabPage();
@@ -111,19 +112,19 @@
             this.boxTeam = new System.Windows.Forms.DataGridViewComboBoxColumn();
             this.boxRole = new System.Windows.Forms.DataGridViewComboBoxColumn();
             this.boxSubRole = new System.Windows.Forms.DataGridViewComboBoxColumn();
+            this.boxPlayerColor = new System.Windows.Forms.DataGridViewComboBoxColumn();
             this.txtExtraFlavor = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.boxn0 = new System.Windows.Forms.DataGridViewComboBoxColumn();
             this.txtFullPM = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.txtCount = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.tabPage3 = new System.Windows.Forms.TabPage();
             this.dataTeams = new System.Windows.Forms.DataGridView();
-            this.colTeamName = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.colWinCon = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.colReveal = new System.Windows.Forms.DataGridViewCheckBoxColumn();
-            this.colShare = new System.Windows.Forms.DataGridViewCheckBoxColumn();
             this.openFileDialog = new System.Windows.Forms.OpenFileDialog();
             this.saveFileDialog = new System.Windows.Forms.SaveFileDialog();
-            this.boxPMsinOP = new System.Windows.Forms.CheckBox();
+            this.colTeamName = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colWinCon = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.boxColor = new System.Windows.Forms.DataGridViewComboBoxColumn();
+            this.colShare = new System.Windows.Forms.DataGridViewCheckBoxColumn();
             this.tableLayoutPanel2.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
             this.tableLayoutPanel14.SuspendLayout();
@@ -909,6 +910,17 @@
             this.boxTurbo.UseVisualStyleBackColor = true;
             this.boxTurbo.CheckedChanged += new System.EventHandler(this.boxTurbo_CheckedChanged);
             // 
+            // boxPMsinOP
+            // 
+            this.boxPMsinOP.AutoSize = true;
+            this.boxPMsinOP.Enabled = false;
+            this.boxPMsinOP.Location = new System.Drawing.Point(90, 591);
+            this.boxPMsinOP.Name = "boxPMsinOP";
+            this.boxPMsinOP.Size = new System.Drawing.Size(120, 17);
+            this.boxPMsinOP.TabIndex = 56;
+            this.boxPMsinOP.Text = "Include PMs in OP?";
+            this.boxPMsinOP.UseVisualStyleBackColor = true;
+            // 
             // Teams
             // 
             this.Teams.Controls.Add(this.tabPage1);
@@ -1093,6 +1105,7 @@
             this.boxTeam,
             this.boxRole,
             this.boxSubRole,
+            this.boxPlayerColor,
             this.txtExtraFlavor,
             this.boxn0,
             this.txtFullPM,
@@ -1140,6 +1153,11 @@
             "2x",
             "3x"});
             this.boxSubRole.Name = "boxSubRole";
+            // 
+            // boxPlayerColor
+            // 
+            this.boxPlayerColor.HeaderText = "Color";
+            this.boxPlayerColor.Name = "boxPlayerColor";
             // 
             // txtExtraFlavor
             // 
@@ -1190,7 +1208,7 @@
             this.dataTeams.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.colTeamName,
             this.colWinCon,
-            this.colReveal,
+            this.boxColor,
             this.colShare});
             this.dataTeams.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dataTeams.Location = new System.Drawing.Point(3, 3);
@@ -1199,6 +1217,16 @@
             this.dataTeams.TabIndex = 0;
             this.dataTeams.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataTeams_CellValueChanged);
             this.dataTeams.UserDeletingRow += new System.Windows.Forms.DataGridViewRowCancelEventHandler(this.dataTeams_UserDeletingRow);
+            // 
+            // openFileDialog
+            // 
+            this.openFileDialog.DefaultExt = "json";
+            this.openFileDialog.Filter = "JSON|*.json*|All files|*.*";
+            // 
+            // saveFileDialog
+            // 
+            this.saveFileDialog.DefaultExt = "json";
+            this.saveFileDialog.Filter = "JSON|*.json*|All files|*.*";
             // 
             // colTeamName
             // 
@@ -1215,36 +1243,23 @@
             this.colWinCon.Name = "colWinCon";
             this.colWinCon.Width = 98;
             // 
-            // colReveal
+            // boxColor
             // 
-            this.colReveal.HeaderText = "Reveal Win Con at death?";
-            this.colReveal.Name = "colReveal";
+            this.boxColor.HeaderText = "Color";
+            this.boxColor.Items.AddRange(new object[] {
+            "black",
+            "green",
+            "purple",
+            "red",
+            "blue",
+            "yellow",
+            "orange"});
+            this.boxColor.Name = "boxColor";
             // 
             // colShare
             // 
             this.colShare.HeaderText = "Share Teammates?";
             this.colShare.Name = "colShare";
-            // 
-            // openFileDialog
-            // 
-            this.openFileDialog.DefaultExt = "json";
-            this.openFileDialog.Filter = "JSON|*.json*|All files|*.*";
-            // 
-            // saveFileDialog
-            // 
-            this.saveFileDialog.DefaultExt = "json";
-            this.saveFileDialog.Filter = "JSON|*.json*|All files|*.*";
-            // 
-            // boxPMsinOP
-            // 
-            this.boxPMsinOP.AutoSize = true;
-            this.boxPMsinOP.Enabled = false;
-            this.boxPMsinOP.Location = new System.Drawing.Point(90, 591);
-            this.boxPMsinOP.Name = "boxPMsinOP";
-            this.boxPMsinOP.Size = new System.Drawing.Size(120, 17);
-            this.boxPMsinOP.TabIndex = 56;
-            this.boxPMsinOP.Text = "Include PMs in OP?";
-            this.boxPMsinOP.UseVisualStyleBackColor = true;
             // 
             // Raccoon
             // 
@@ -1372,19 +1387,20 @@
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel15;
         private System.Windows.Forms.Label label16;
         private System.Windows.Forms.TextBox txtDay1Length;
-        private System.Windows.Forms.DataGridViewTextBoxColumn colTeamName;
-        private System.Windows.Forms.DataGridViewTextBoxColumn colWinCon;
-        private System.Windows.Forms.DataGridViewCheckBoxColumn colReveal;
-        private System.Windows.Forms.DataGridViewCheckBoxColumn colShare;
+        private System.Windows.Forms.Button btnTest;
+        private System.Windows.Forms.CheckBox boxPMsinOP;
         private System.Windows.Forms.DataGridViewComboBoxColumn boxTeam;
         private System.Windows.Forms.DataGridViewComboBoxColumn boxRole;
         private System.Windows.Forms.DataGridViewComboBoxColumn boxSubRole;
+        private System.Windows.Forms.DataGridViewComboBoxColumn boxPlayerColor;
         private System.Windows.Forms.DataGridViewTextBoxColumn txtExtraFlavor;
         private System.Windows.Forms.DataGridViewComboBoxColumn boxn0;
         private System.Windows.Forms.DataGridViewTextBoxColumn txtFullPM;
         private System.Windows.Forms.DataGridViewTextBoxColumn txtCount;
-        private System.Windows.Forms.Button btnTest;
-        private System.Windows.Forms.CheckBox boxPMsinOP;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colTeamName;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colWinCon;
+        private System.Windows.Forms.DataGridViewComboBoxColumn boxColor;
+        private System.Windows.Forms.DataGridViewCheckBoxColumn colShare;
 
     }
 }

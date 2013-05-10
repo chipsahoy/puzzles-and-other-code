@@ -71,7 +71,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="RoleSet.cs" />
     <Compile Include="Raccoon.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -80,7 +79,6 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Team.cs" />
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
@@ -114,6 +112,10 @@
     <ProjectReference Include="..\forum\Forum.csproj">
       <Project>{DF0D7868-C4C0-4388-BF11-138E1FC9BF87}</Project>
       <Name>Forum</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\werewolf\werewolf.csproj">
+      <Project>{9082AFAD-DF54-4B4C-B274-FD399FA8D6E2}</Project>
+      <Name>werewolf</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

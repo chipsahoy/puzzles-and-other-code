@@ -52,6 +52,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="SubDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="SubDialog.Designer.cs">
+      <DependentUpon>SubDialog.cs</DependentUpon>
+    </Compile>
     <Compile Include="Meerkat.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -73,6 +79,9 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
+    <EmbeddedResource Include="SubDialog.resx">
+      <DependentUpon>SubDialog.cs</DependentUpon>
+    </EmbeddedResource>
     <None Include="app.config" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
@@ -86,9 +95,25 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\RickyRaccoon\RickyRaccoon.csproj">
-      <Project>{5633B541-E6A9-4C23-8D8D-CBC69B7F1933}</Project>
-      <Name>RickyRaccoon</Name>
+    <ProjectReference Include="..\FennecUI\FennecUI.csproj">
+      <Project>{3AA0628E-68D8-402D-B726-6FD4A0BCECEC}</Project>
+      <Name>FennecUI</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ForumTypes\ForumTypes.csproj">
+      <Project>{3A512A72-44FC-458A-A6FB-36147D6C0CF6}</Project>
+      <Name>ForumTypes</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\forum\Forum.csproj">
+      <Project>{DF0D7868-C4C0-4388-BF11-138E1FC9BF87}</Project>
+      <Name>Forum</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\pogutils\pogutils.csproj">
+      <Project>{D1549E8C-BAB5-4E3B-AE03-DC9895752D31}</Project>
+      <Name>pogutils</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\werewolf\werewolf.csproj">
+      <Project>{9082AFAD-DF54-4B4C-B274-FD399FA8D6E2}</Project>
+      <Name>werewolf</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
