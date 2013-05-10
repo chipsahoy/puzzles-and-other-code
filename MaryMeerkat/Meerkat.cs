@@ -312,7 +312,9 @@ namespace MaryMeerkat
                 {
                     if (role.Players[j].Name == playername)
                     {
-                        role.Players[j].Alive = (bool)dataPlayers.Rows[i].Cells["boxAlive"].Value;
+                        bool temp;
+                        Boolean.TryParse(dataPlayers.Rows[i].Cells["boxAlive"].Value.ToString(), out temp);
+                        role.Players[j].Alive = temp;
                     }
                 }
             }
