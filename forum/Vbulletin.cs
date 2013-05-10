@@ -390,21 +390,13 @@ namespace POG.Forum
 			cs.Headers.Add("Referer", String.Format("{0}{1}?securitytoken={2}", ForumURL, ForumLobby, securityToken));
 			//cs.Headers.Add("Connection", "keep-alive");
 			StringBuilder msg = new StringBuilder();
+			msg.AppendFormat("{0}={1}&", "do", "openclosethread");
+			msg.AppendFormat("{0}={1}&", "s", "");
 			msg.AppendFormat("{0}={1}&", "securitytoken", securityToken);
-			msg.AppendFormat("{0}={1}&", "do", "updatethreadopen");
 			msg.AppendFormat("{0}={1}&", "t", thread);
-			String src;
-			if (lockIt)
-			{
-				src = String.Format("{0}images/statusicon/thread_dot_new.gif", ForumURL);
-			}
-			else
-			{
-				src = String.Format("{0}images/statusicon/thread_dot_lock_new.gif", ForumURL);
-			}
-			msg.AppendFormat("{0}={1}&", "src", "");
+			msg.AppendFormat("{0}={1}&", "pollid", "");
 
-			cs.Url = String.Format("{0}ajax.php?do=updatethreadopen&t={1}", ForumURL, thread);
+			cs.Url = String.Format("{0}postings.php?t={1}&pollid=", ForumURL, thread);
 			cs.Data = msg.ToString();
 			//Trace.TraceInformation("Posting: " + cs.Data);
 			String resp = HtmlHelper.PostToUrl(cs);
