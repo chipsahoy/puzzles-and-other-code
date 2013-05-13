@@ -30,8 +30,8 @@
         {
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.loadGameToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
-            this.loadGameToolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
+            this.saveGameToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.loadGameToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuPlayerList = new System.Windows.Forms.ToolStripMenuItem();
             this.sendPMToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -39,9 +39,18 @@
             this.saveFileDialog = new System.Windows.Forms.SaveFileDialog();
             this.openFileDialog = new System.Windows.Forms.OpenFileDialog();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
+            this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
+            this.label1 = new System.Windows.Forms.Label();
+            this.txtGameURL = new System.Windows.Forms.TextBox();
             this.tab2 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.tableLayoutPanel4 = new System.Windows.Forms.TableLayoutPanel();
             this.dataPlayers = new System.Windows.Forms.DataGridView();
+            this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
+            this.btnSelectAll = new System.Windows.Forms.Button();
+            this.btnDeathReveal = new System.Windows.Forms.Button();
+            this.btnSubOut = new System.Windows.Forms.Button();
+            this.btnPeek = new System.Windows.Forms.Button();
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.dataTeams = new System.Windows.Forms.DataGridView();
             this.txtTeam = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -49,17 +58,8 @@
             this.txtPlayerCount = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.txtAliveCount = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.txtWinCon = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
-            this.label1 = new System.Windows.Forms.Label();
-            this.txtGameURL = new System.Windows.Forms.TextBox();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.lblStatus = new System.Windows.Forms.ToolStripStatusLabel();
-            this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
-            this.btnSelectAll = new System.Windows.Forms.Button();
-            this.btnDeathReveal = new System.Windows.Forms.Button();
-            this.btnSubOut = new System.Windows.Forms.Button();
-            this.btnPeek = new System.Windows.Forms.Button();
-            this.tableLayoutPanel4 = new System.Windows.Forms.TableLayoutPanel();
             this.boxSelect = new System.Windows.Forms.DataGridViewCheckBoxColumn();
             this.txtPlayerName = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.boxTeam = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -69,15 +69,15 @@
             this.txtDeathReason = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.menuStrip1.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
+            this.tableLayoutPanel2.SuspendLayout();
             this.tab2.SuspendLayout();
             this.tabPage1.SuspendLayout();
+            this.tableLayoutPanel4.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataPlayers)).BeginInit();
+            this.tableLayoutPanel3.SuspendLayout();
             this.tabPage2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataTeams)).BeginInit();
-            this.tableLayoutPanel2.SuspendLayout();
             this.statusStrip1.SuspendLayout();
-            this.tableLayoutPanel3.SuspendLayout();
-            this.tableLayoutPanel4.SuspendLayout();
             this.SuspendLayout();
             // 
             // menuStrip1
@@ -94,25 +94,25 @@
             // fileToolStripMenuItem
             // 
             this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.loadGameToolStripMenuItem1,
-            this.loadGameToolStripMenuItem2});
+            this.saveGameToolStripMenuItem,
+            this.loadGameToolStripMenuItem});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
             this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
             this.fileToolStripMenuItem.Text = "File";
             // 
-            // loadGameToolStripMenuItem1
+            // saveGameToolStripMenuItem
             // 
-            this.loadGameToolStripMenuItem1.Name = "loadGameToolStripMenuItem1";
-            this.loadGameToolStripMenuItem1.Size = new System.Drawing.Size(152, 22);
-            this.loadGameToolStripMenuItem1.Text = "Save";
-            this.loadGameToolStripMenuItem1.Click += new System.EventHandler(this.loadGameToolStripMenuItem1_Click);
+            this.saveGameToolStripMenuItem.Name = "saveGameToolStripMenuItem";
+            this.saveGameToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.saveGameToolStripMenuItem.Text = "Save";
+            this.saveGameToolStripMenuItem.Click += new System.EventHandler(this.saveGameToolStripMenuItem_Click);
             // 
-            // loadGameToolStripMenuItem2
+            // loadGameToolStripMenuItem
             // 
-            this.loadGameToolStripMenuItem2.Name = "loadGameToolStripMenuItem2";
-            this.loadGameToolStripMenuItem2.Size = new System.Drawing.Size(152, 22);
-            this.loadGameToolStripMenuItem2.Text = "Load";
-            this.loadGameToolStripMenuItem2.Click += new System.EventHandler(this.loadGameToolStripMenuItem_Click);
+            this.loadGameToolStripMenuItem.Name = "loadGameToolStripMenuItem";
+            this.loadGameToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.loadGameToolStripMenuItem.Text = "Load";
+            this.loadGameToolStripMenuItem.Click += new System.EventHandler(this.loadGameToolStripMenuItem_Click);
             // 
             // helpToolStripMenuItem
             // 
@@ -170,111 +170,6 @@
             this.tableLayoutPanel1.Size = new System.Drawing.Size(770, 495);
             this.tableLayoutPanel1.TabIndex = 1;
             // 
-            // tab2
-            // 
-            this.tab2.Controls.Add(this.tabPage1);
-            this.tab2.Controls.Add(this.tabPage2);
-            this.tab2.Location = new System.Drawing.Point(3, 36);
-            this.tab2.Name = "tab2";
-            this.tab2.SelectedIndex = 0;
-            this.tab2.Size = new System.Drawing.Size(954, 457);
-            this.tab2.TabIndex = 0;
-            // 
-            // tabPage1
-            // 
-            this.tabPage1.Controls.Add(this.tableLayoutPanel4);
-            this.tabPage1.Location = new System.Drawing.Point(4, 22);
-            this.tabPage1.Name = "tabPage1";
-            this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(946, 431);
-            this.tabPage1.TabIndex = 0;
-            this.tabPage1.Text = "Players";
-            this.tabPage1.UseVisualStyleBackColor = true;
-            // 
-            // dataPlayers
-            // 
-            this.dataPlayers.AllowUserToAddRows = false;
-            this.dataPlayers.AllowUserToDeleteRows = false;
-            this.dataPlayers.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataPlayers.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
-            this.boxSelect,
-            this.txtPlayerName,
-            this.boxTeam,
-            this.txtRole,
-            this.boxPlayerColor,
-            this.boxAlive,
-            this.txtDeathReason});
-            this.dataPlayers.Location = new System.Drawing.Point(3, 39);
-            this.dataPlayers.Name = "dataPlayers";
-            this.dataPlayers.Size = new System.Drawing.Size(757, 338);
-            this.dataPlayers.TabIndex = 0;
-            this.dataPlayers.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataPlayers_CellContentClick);
-            this.dataPlayers.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataPlayers_CellValueChanged);
-            // 
-            // tabPage2
-            // 
-            this.tabPage2.Controls.Add(this.dataTeams);
-            this.tabPage2.Location = new System.Drawing.Point(4, 22);
-            this.tabPage2.Name = "tabPage2";
-            this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(946, 431);
-            this.tabPage2.TabIndex = 1;
-            this.tabPage2.Text = "Teams";
-            this.tabPage2.UseVisualStyleBackColor = true;
-            // 
-            // dataTeams
-            // 
-            this.dataTeams.AllowUserToAddRows = false;
-            this.dataTeams.AllowUserToDeleteRows = false;
-            this.dataTeams.AllowUserToOrderColumns = true;
-            this.dataTeams.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataTeams.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
-            this.txtTeam,
-            this.boxColor,
-            this.txtPlayerCount,
-            this.txtAliveCount,
-            this.txtWinCon});
-            this.dataTeams.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.dataTeams.Location = new System.Drawing.Point(3, 3);
-            this.dataTeams.Name = "dataTeams";
-            this.dataTeams.Size = new System.Drawing.Size(940, 425);
-            this.dataTeams.TabIndex = 0;
-            // 
-            // txtTeam
-            // 
-            this.txtTeam.HeaderText = "Team Name";
-            this.txtTeam.Name = "txtTeam";
-            // 
-            // boxColor
-            // 
-            this.boxColor.HeaderText = "Color";
-            this.boxColor.Items.AddRange(new object[] {
-            "black",
-            "green",
-            "purple",
-            "red",
-            "blue",
-            "yellow",
-            "orange"});
-            this.boxColor.Name = "boxColor";
-            // 
-            // txtPlayerCount
-            // 
-            this.txtPlayerCount.HeaderText = "Player Count";
-            this.txtPlayerCount.Name = "txtPlayerCount";
-            this.txtPlayerCount.ReadOnly = true;
-            // 
-            // txtAliveCount
-            // 
-            this.txtAliveCount.HeaderText = "Alive Players";
-            this.txtAliveCount.Name = "txtAliveCount";
-            this.txtAliveCount.ReadOnly = true;
-            // 
-            // txtWinCon
-            // 
-            this.txtWinCon.HeaderText = "Win Condition";
-            this.txtWinCon.Name = "txtWinCon";
-            // 
             // tableLayoutPanel2
             // 
             this.tableLayoutPanel2.ColumnCount = 2;
@@ -306,20 +201,60 @@
             this.txtGameURL.Size = new System.Drawing.Size(333, 20);
             this.txtGameURL.TabIndex = 1;
             // 
-            // statusStrip1
+            // tab2
             // 
-            this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.lblStatus});
-            this.statusStrip1.Location = new System.Drawing.Point(0, 497);
-            this.statusStrip1.Name = "statusStrip1";
-            this.statusStrip1.Size = new System.Drawing.Size(770, 22);
-            this.statusStrip1.TabIndex = 1;
-            this.statusStrip1.Text = "statusStrip1";
+            this.tab2.Controls.Add(this.tabPage1);
+            this.tab2.Controls.Add(this.tabPage2);
+            this.tab2.Location = new System.Drawing.Point(3, 36);
+            this.tab2.Name = "tab2";
+            this.tab2.SelectedIndex = 0;
+            this.tab2.Size = new System.Drawing.Size(767, 457);
+            this.tab2.TabIndex = 0;
             // 
-            // lblStatus
+            // tabPage1
             // 
-            this.lblStatus.Name = "lblStatus";
-            this.lblStatus.Size = new System.Drawing.Size(0, 17);
+            this.tabPage1.Controls.Add(this.tableLayoutPanel4);
+            this.tabPage1.Location = new System.Drawing.Point(4, 22);
+            this.tabPage1.Name = "tabPage1";
+            this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage1.Size = new System.Drawing.Size(759, 431);
+            this.tabPage1.TabIndex = 0;
+            this.tabPage1.Text = "Players";
+            this.tabPage1.UseVisualStyleBackColor = true;
+            // 
+            // tableLayoutPanel4
+            // 
+            this.tableLayoutPanel4.ColumnCount = 1;
+            this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tableLayoutPanel4.Controls.Add(this.dataPlayers, 0, 1);
+            this.tableLayoutPanel4.Controls.Add(this.tableLayoutPanel3, 0, 0);
+            this.tableLayoutPanel4.Location = new System.Drawing.Point(0, 0);
+            this.tableLayoutPanel4.Name = "tableLayoutPanel4";
+            this.tableLayoutPanel4.RowCount = 2;
+            this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel4.Size = new System.Drawing.Size(763, 412);
+            this.tableLayoutPanel4.TabIndex = 3;
+            // 
+            // dataPlayers
+            // 
+            this.dataPlayers.AllowUserToAddRows = false;
+            this.dataPlayers.AllowUserToDeleteRows = false;
+            this.dataPlayers.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dataPlayers.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.boxSelect,
+            this.txtPlayerName,
+            this.boxTeam,
+            this.txtRole,
+            this.boxPlayerColor,
+            this.boxAlive,
+            this.txtDeathReason});
+            this.dataPlayers.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.dataPlayers.Location = new System.Drawing.Point(3, 39);
+            this.dataPlayers.Name = "dataPlayers";
+            this.dataPlayers.Size = new System.Drawing.Size(757, 370);
+            this.dataPlayers.TabIndex = 0;
+            this.dataPlayers.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataPlayers_CellValueChanged);
             // 
             // tableLayoutPanel3
             // 
@@ -379,19 +314,85 @@
             this.btnPeek.UseVisualStyleBackColor = true;
             this.btnPeek.Click += new System.EventHandler(this.btnPeek_Click);
             // 
-            // tableLayoutPanel4
+            // tabPage2
             // 
-            this.tableLayoutPanel4.ColumnCount = 1;
-            this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel4.Controls.Add(this.dataPlayers, 0, 1);
-            this.tableLayoutPanel4.Controls.Add(this.tableLayoutPanel3, 0, 0);
-            this.tableLayoutPanel4.Location = new System.Drawing.Point(0, 0);
-            this.tableLayoutPanel4.Name = "tableLayoutPanel4";
-            this.tableLayoutPanel4.RowCount = 2;
-            this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel4.Size = new System.Drawing.Size(763, 412);
-            this.tableLayoutPanel4.TabIndex = 3;
+            this.tabPage2.Controls.Add(this.dataTeams);
+            this.tabPage2.Location = new System.Drawing.Point(4, 22);
+            this.tabPage2.Name = "tabPage2";
+            this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage2.Size = new System.Drawing.Size(759, 431);
+            this.tabPage2.TabIndex = 1;
+            this.tabPage2.Text = "Teams";
+            this.tabPage2.UseVisualStyleBackColor = true;
+            // 
+            // dataTeams
+            // 
+            this.dataTeams.AllowUserToAddRows = false;
+            this.dataTeams.AllowUserToDeleteRows = false;
+            this.dataTeams.AllowUserToOrderColumns = true;
+            this.dataTeams.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dataTeams.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.txtTeam,
+            this.boxColor,
+            this.txtPlayerCount,
+            this.txtAliveCount,
+            this.txtWinCon});
+            this.dataTeams.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.dataTeams.Location = new System.Drawing.Point(3, 3);
+            this.dataTeams.Name = "dataTeams";
+            this.dataTeams.Size = new System.Drawing.Size(753, 425);
+            this.dataTeams.TabIndex = 0;
+            this.dataTeams.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataTeams_CellValueChanged);
+            // 
+            // txtTeam
+            // 
+            this.txtTeam.HeaderText = "Team Name";
+            this.txtTeam.Name = "txtTeam";
+            // 
+            // boxColor
+            // 
+            this.boxColor.HeaderText = "Color";
+            this.boxColor.Items.AddRange(new object[] {
+            "black",
+            "green",
+            "purple",
+            "red",
+            "blue",
+            "yellow",
+            "orange"});
+            this.boxColor.Name = "boxColor";
+            // 
+            // txtPlayerCount
+            // 
+            this.txtPlayerCount.HeaderText = "Player Count";
+            this.txtPlayerCount.Name = "txtPlayerCount";
+            this.txtPlayerCount.ReadOnly = true;
+            // 
+            // txtAliveCount
+            // 
+            this.txtAliveCount.HeaderText = "Alive Players";
+            this.txtAliveCount.Name = "txtAliveCount";
+            this.txtAliveCount.ReadOnly = true;
+            // 
+            // txtWinCon
+            // 
+            this.txtWinCon.HeaderText = "Win Condition";
+            this.txtWinCon.Name = "txtWinCon";
+            // 
+            // statusStrip1
+            // 
+            this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.lblStatus});
+            this.statusStrip1.Location = new System.Drawing.Point(0, 497);
+            this.statusStrip1.Name = "statusStrip1";
+            this.statusStrip1.Size = new System.Drawing.Size(770, 22);
+            this.statusStrip1.TabIndex = 1;
+            this.statusStrip1.Text = "statusStrip1";
+            // 
+            // lblStatus
+            // 
+            this.lblStatus.Name = "lblStatus";
+            this.lblStatus.Size = new System.Drawing.Size(0, 17);
             // 
             // boxSelect
             // 
@@ -406,6 +407,7 @@
             this.txtPlayerName.DataPropertyName = "Name";
             this.txtPlayerName.HeaderText = "Name";
             this.txtPlayerName.Name = "txtPlayerName";
+            this.txtPlayerName.ReadOnly = true;
             // 
             // boxTeam
             // 
@@ -457,21 +459,22 @@
             this.Controls.Add(this.menuStrip1);
             this.Name = "Meerkat";
             this.Text = "Mary Meerkat, Modder";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Meerkat_FormClosing);
             this.Load += new System.EventHandler(this.Meerkat_Load);
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
             this.tableLayoutPanel1.ResumeLayout(false);
-            this.tab2.ResumeLayout(false);
-            this.tabPage1.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.dataPlayers)).EndInit();
-            this.tabPage2.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.dataTeams)).EndInit();
             this.tableLayoutPanel2.ResumeLayout(false);
             this.tableLayoutPanel2.PerformLayout();
+            this.tab2.ResumeLayout(false);
+            this.tabPage1.ResumeLayout(false);
+            this.tableLayoutPanel4.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.dataPlayers)).EndInit();
+            this.tableLayoutPanel3.ResumeLayout(false);
+            this.tabPage2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.dataTeams)).EndInit();
             this.statusStrip1.ResumeLayout(false);
             this.statusStrip1.PerformLayout();
-            this.tableLayoutPanel3.ResumeLayout(false);
-            this.tableLayoutPanel4.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -483,8 +486,8 @@
         private System.Windows.Forms.ToolStripMenuItem fileToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem helpToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem menuPlayerList;
-        private System.Windows.Forms.ToolStripMenuItem loadGameToolStripMenuItem1;
-        private System.Windows.Forms.ToolStripMenuItem loadGameToolStripMenuItem2;
+        private System.Windows.Forms.ToolStripMenuItem saveGameToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem loadGameToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem sendPMToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem lockThreadToolStripMenuItem;
         private System.Windows.Forms.SaveFileDialog saveFileDialog;

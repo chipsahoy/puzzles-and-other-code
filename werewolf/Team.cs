@@ -7,11 +7,10 @@ namespace POG.Werewolf
     [DataContract()]
     public class Team
     {
-        public Team(string name, string wincon, bool hidden, bool share, string color)
+        public Team(string name, string wincon, bool share, string color)
         {
             Name = name;
             WinCon = wincon;
-            Hidden = hidden;
             Share = share;
             Members = new List<RolePM>();
             Color = color;
@@ -30,12 +29,6 @@ namespace POG.Werewolf
         }
         [DataMember]
         public string WinCon
-        {
-            get;
-            set;
-        }
-        [DataMember]
-        public bool Hidden
         {
             get;
             set;
@@ -60,6 +53,7 @@ namespace POG.Werewolf
             get;
             set;
         }
+
         public override string ToString()
         {
             return Name;

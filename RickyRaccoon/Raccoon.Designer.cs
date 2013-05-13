@@ -114,6 +114,7 @@
             this.boxSubRole = new System.Windows.Forms.DataGridViewComboBoxColumn();
             this.boxPlayerColor = new System.Windows.Forms.DataGridViewComboBoxColumn();
             this.txtExtraFlavor = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.txtRedacted = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.boxn0 = new System.Windows.Forms.DataGridViewComboBoxColumn();
             this.txtFullPM = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.txtCount = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -1099,6 +1100,7 @@
             // 
             // dataRoles
             // 
+            this.dataRoles.AllowUserToOrderColumns = true;
             this.dataRoles.AutoSizeRowsMode = System.Windows.Forms.DataGridViewAutoSizeRowsMode.AllCells;
             this.dataRoles.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dataRoles.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
@@ -1107,6 +1109,7 @@
             this.boxSubRole,
             this.boxPlayerColor,
             this.txtExtraFlavor,
+            this.txtRedacted,
             this.boxn0,
             this.txtFullPM,
             this.txtCount});
@@ -1143,6 +1146,7 @@
             this.boxSubRole.DisplayStyle = System.Windows.Forms.DataGridViewComboBoxDisplayStyle.ComboBox;
             this.boxSubRole.HeaderText = "Sub Role";
             this.boxSubRole.Items.AddRange(new object[] {
+            "",
             "Full",
             "Odd",
             "Even",
@@ -1157,6 +1161,14 @@
             // boxPlayerColor
             // 
             this.boxPlayerColor.HeaderText = "Color";
+            this.boxPlayerColor.Items.AddRange(new object[] {
+            "black",
+            "green",
+            "purple",
+            "red",
+            "blue",
+            "yellow",
+            "orange"});
             this.boxPlayerColor.Name = "boxPlayerColor";
             // 
             // txtExtraFlavor
@@ -1165,6 +1177,11 @@
             this.txtExtraFlavor.DefaultCellStyle = dataGridViewCellStyle1;
             this.txtExtraFlavor.HeaderText = "Extra Flavor";
             this.txtExtraFlavor.Name = "txtExtraFlavor";
+            // 
+            // txtRedacted
+            // 
+            this.txtRedacted.HeaderText = "Redacted Text";
+            this.txtRedacted.Name = "txtRedacted";
             // 
             // boxn0
             // 
@@ -1180,7 +1197,7 @@
             // 
             dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
             this.txtFullPM.DefaultCellStyle = dataGridViewCellStyle2;
-            this.txtFullPM.HeaderText = "Full PM";
+            this.txtFullPM.HeaderText = "Full PM w/o Redacted";
             this.txtFullPM.Name = "txtFullPM";
             this.txtFullPM.ReadOnly = true;
             // 
@@ -1258,7 +1275,7 @@
             // 
             // colShare
             // 
-            this.colShare.HeaderText = "Share Teammates?";
+            this.colShare.HeaderText = "Share Teammates in PM?";
             this.colShare.Name = "colShare";
             // 
             // Raccoon
@@ -1271,6 +1288,7 @@
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "Raccoon";
             this.Text = "Ricky Raccoon\'s Randomizer of Doom";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Raccoon_FormClosing);
             this.tableLayoutPanel2.ResumeLayout(false);
             this.tableLayoutPanel1.ResumeLayout(false);
             this.tableLayoutPanel1.PerformLayout();
@@ -1394,6 +1412,7 @@
         private System.Windows.Forms.DataGridViewComboBoxColumn boxSubRole;
         private System.Windows.Forms.DataGridViewComboBoxColumn boxPlayerColor;
         private System.Windows.Forms.DataGridViewTextBoxColumn txtExtraFlavor;
+        private System.Windows.Forms.DataGridViewTextBoxColumn txtRedacted;
         private System.Windows.Forms.DataGridViewComboBoxColumn boxn0;
         private System.Windows.Forms.DataGridViewTextBoxColumn txtFullPM;
         private System.Windows.Forms.DataGridViewTextBoxColumn txtCount;

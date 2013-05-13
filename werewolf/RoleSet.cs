@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Runtime.Serialization;
+using POG.Forum;
 
 namespace POG.Werewolf
 {
@@ -38,6 +39,7 @@ namespace POG.Werewolf
             get;
             set;
         }
+
         public void setRolePM(RolePM role, Team team, int rolenum)
         {
             for (int i = 0; i < Teams.Count; i++)
@@ -58,6 +60,7 @@ namespace POG.Werewolf
                 }
             }
         }
+
         public void removeRolePM(int rolenum)
         {
             for (int i = 0; i < Teams.Count; i++)
@@ -269,28 +272,10 @@ namespace POG.Werewolf
   }
         };
     }
-    public class Player
-    {
-        public Player(string name)
-        {
-            Name = name;
-        }
-        [DataMember]
-        public string Name
-        {
-            get;
-            set;
-        }
-        [DataMember]
-        public bool Alive
-        {
-            get;
-            set;
-        }
-    }
+
     public class RolePM
     {
-        public RolePM(string role, string subrole, string color, string extraflavor, string _n0, int count, int rolenum)
+        public RolePM(string role, string subrole, string color, string extraflavor, string _n0, int count, int rolenum, string redacted)
         {
             Role = role;
             SubRole = subrole;
@@ -300,6 +285,12 @@ namespace POG.Werewolf
             n0 = _n0;
             Players = new List<Player>();
             Color = color;
+            Redacted = redacted;
+        }
+        public string Redacted
+        {
+            get;
+            set;
         }
         public List<Player> Players
         {
@@ -335,7 +326,7 @@ namespace POG.Werewolf
         {
             get;
             set;
-        }        
+        }
         [DataMember]
         public int Count
         {
@@ -347,10 +338,20 @@ namespace POG.Werewolf
             get;
             set;
         }
+
         public override string ToString()
         {
             return String.Format("{0} {1}", SubRole, Role);
         }
+
+        public string RedactedPM(string gameURL, Team team)
+        {
+            string redactedtext = Redacted;
+            if (Redacted != "")
+                redactedtext += Environment.NewLine;
+            return String.Format("{0}", EditedPM(gameURL, team), redactedtext);
+        }
+
         public string FullPM(string gameURL, RolePMSet gamepms, Team team, Player currentplayer)
         {
             string peek = "";
@@ -415,7 +416,7 @@ namespace POG.Werewolf
             string extraflavor = "";
             if (ExtraFlavor != "") extraflavor = ExtraFlavor + " ";
             return String.Format(@"*************************************************
-You are {0}on the [b][color={1}]{2}[/color][/b] team. Your role is: [b][color={3}]{4}{5}[/color][/b]! You win by {6}. You have {7}.
+You are on the [b][color={1}]{2}[/color][/b] team. Your role is: [b][color={3}]{4}{5}[/color][/b]! {0}You win by {6}. You have {7}.
 {8}{9}
 The game thread is here: {10}
 
@@ -442,12 +443,50 @@ Good luck!
             string extraflavor = "";
             if (ExtraFlavor != "") extraflavor = ExtraFlavor + " ";
             return String.Format(@"*************************************************
-You are {0}on the [b][color={1}]{2}[/color][/b] team. Your role is: [b][color={3}]{4}{5}[/color][/b]! You win by {6}. You have {7}.
+You are on the [b][color={1}]{2}[/color][/b] team. Your role is: [b][color={3}]{4}{5}[/color][/b]! {0}You win by {6}. You have {7}.
 {8}{9}
 The game thread is here: {10}
 
 Good luck!
 *************************************************", extraflavor, team.Color, team.Name, this.Color, subrole, role, team.WinCon, n0, teammates, peek, gameURL);
-        }        
+        }
     }    
+
+    public class Player
+    {
+        public Player(string name, bool alive)
+        {
+            Name = name;
+            Alive = alive;
+        }
+        [DataMember]
+        public string Name
+        {
+            get;
+            set;
+        }
+        [DataMember]
+        public bool Alive
+        {
+            get;
+            set;
+        }
+    }
+
+    public class PMToBeSent
+    {
+        private List<string> Players;
+        private string PMTitle;
+        private string PMText;
+        public PMToBeSent(List<string> players, string pmTitle, string pmText)
+        {
+            Players = players;
+            PMTitle = pmTitle;
+            PMText = pmText;
+        }
+        public void SendPM(VBulletinForum _forum)
+        {
+            _forum.SendPM(null, Players, PMTitle, PMText);
+        }
+    }
 }

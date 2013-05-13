@@ -16,12 +16,12 @@ namespace MaryMeerkat
 {
     public partial class Meerkat : Form
     {
-       
-       private VBulletinForum _forum;
-       private Action<Action> _synchronousInvoker;
-       private Boolean _loggedIn = false;
-       Boolean _inLoginDialog = false;
-       private RolePMSet gamepms;
+        private VBulletinForum _forum;
+        private Action<Action> _synchronousInvoker;
+        private Boolean _loggedIn = false;
+        Boolean _inLoginDialog = false;
+        private RolePMSet gamepms;
+        bool saved = true;
 
         public Meerkat()
         {
@@ -30,6 +30,7 @@ namespace MaryMeerkat
 
         private void Meerkat_Load(object sender, EventArgs e)
         {
+            saved = true;
             ShowLogin();
         }
 
@@ -80,10 +81,45 @@ namespace MaryMeerkat
                     }
                     break;
             }
+            saved = true;
+        }
+
+
+
+        private void SaveGame()
+        {
+            String roleset = JsonConvert.SerializeObject(gamepms, Formatting.Indented, new JsonSerializerSettings()
+            {
+                ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+            });
+            // Show the dialog and get result.
+            saveFileDialog.FileName = gamepms.Name;
+            DialogResult result = saveFileDialog.ShowDialog();
+            if (result == DialogResult.OK) // Test result.
+            {
+                using (Stream s = File.Open(saveFileDialog.FileName, FileMode.Create))
+                using (StreamWriter sw = new StreamWriter(s))
+                {
+                    sw.Write(roleset);
+                }
+            }
+            saved = true;
+        }
+
+        private void saveGameToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            SaveGame();
         }
 
         private void loadGameToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            if (!saved)
+            {
+                if (MessageBox.Show("Do you want to save your progress before loading a new game?", "Save?", MessageBoxButtons.YesNo) == DialogResult.Yes)
+                {
+                    SaveGame();
+                }
+            }
             // Show the dialog and get result.
             DialogResult result = openFileDialog.ShowDialog();
             if (result == DialogResult.OK) // Test result.
@@ -101,6 +137,8 @@ namespace MaryMeerkat
                     return;
                 }
             }
+            dataPlayers_CellValueChanged(null, null);
+            saved = true;
         }
 
         private void resetGameList(RolePMSet pms)
@@ -110,7 +148,7 @@ namespace MaryMeerkat
             gamepms = pms;
             for (int i = 0; i < gamepms.Teams.Count(); i++)
             {
-                dataTeams.Rows.Add(gamepms.Teams[i].Name, gamepms.Teams[i].Color, 0, 0, gamepms.Teams[i].WinCon);
+                dataTeams.Rows.Add(gamepms.Teams[i], gamepms.Teams[i].Color, 0, 0, gamepms.Teams[i].WinCon);
             }
             for (int i = 0; i < gamepms.Teams.Count; i++)
             {
@@ -119,7 +157,7 @@ namespace MaryMeerkat
                     for (int k = 0; k < gamepms.Teams[i].Members[j].Players.Count; k++)
                     {
                         Console.WriteLine(gamepms.Teams[i].Members[j].Players[k].Alive.ToString());
-                        dataPlayers.Rows.Add(false,gamepms.Teams[i].Members[j].Players[k].Name, gamepms.Teams[i], gamepms.Teams[i].Members[j], gamepms.Teams[i].Members[j].Color, gamepms.Teams[i].Members[j].Players[k].Alive.ToString());
+                        dataPlayers.Rows.Add(false, gamepms.Teams[i].Members[j].Players[k].Name, gamepms.Teams[i], gamepms.Teams[i].Members[j], gamepms.Teams[i].Members[j].Color, gamepms.Teams[i].Members[j].Players[k].Alive.ToString());
                     }
                 }
             }
@@ -127,37 +165,14 @@ namespace MaryMeerkat
             lblStatus.Text = "Game Loaded";
         }
 
-        private void loadGameToolStripMenuItem1_Click(object sender, EventArgs e)
-        {
-            String roleset = JsonConvert.SerializeObject(gamepms, Formatting.Indented, new JsonSerializerSettings()
-            {
-                ReferenceLoopHandling = ReferenceLoopHandling.Ignore
-            });
-            // Show the dialog and get result.
-            saveFileDialog.FileName = gamepms.Name;
-            DialogResult result = saveFileDialog.ShowDialog();
-            if (result == DialogResult.OK) // Test result.
-            {
-                using (Stream s = File.Open(saveFileDialog.FileName, FileMode.Create))
-                using (StreamWriter sw = new StreamWriter(s))
-                {
-                    sw.Write(roleset);
-                }
-            }
-        }
 
-        private void dataPlayers_CellContentClick(object sender, DataGridViewCellEventArgs e)
-        {
-            /* not relevant right now, maybe later?
-             */
-        }
 
         private void menuPlayerList_Click(object sender, EventArgs e)
         {
             bool posted = false;
             if (txtGameURL.Text != "")
             {
-               posted = _forum.MakePost(POG.Utils.Misc.TidFromURL(txtGameURL.Text), "Player List", String.Format("[b]Playerlist ([color=red]{0}[/color]):{1}{2}[/b]", gamepms.GetAliveRoster().Count, Environment.NewLine, String.Join(Environment.NewLine, gamepms.GetAliveRoster().Select(player => player.Name))), 0, false);
+                posted = _forum.MakePost(POG.Utils.Misc.TidFromURL(txtGameURL.Text), "Player List", String.Format("[b]Playerlist ([color=red]{0}[/color]):[/b]{1}{2}", gamepms.GetAliveRoster().Count, Environment.NewLine, String.Join(Environment.NewLine, gamepms.GetAliveRoster().Select(player => player.Name))), 0, false);
             }
             if (!posted)
                 MessageBox.Show("Post FAIL. Try checking the URL or waiting 25 seconds?");
@@ -174,12 +189,14 @@ namespace MaryMeerkat
                 lblStatus.Text = "Thread Locked";
         }
 
+
+
         private void btnSelectAll_Click(object sender, EventArgs e)
         {
             bool allselected = true;
             for (int i = 0; i < dataPlayers.Rows.Count; i++)
             {
-                if((bool)dataPlayers.Rows[i].Cells["boxSelect"].Value == false)
+                if ((bool)dataPlayers.Rows[i].Cells["boxSelect"].Value == false)
                     allselected = false;
             }
             for (int i = 0; i < dataPlayers.Rows.Count; i++)
@@ -239,7 +256,7 @@ namespace MaryMeerkat
                 string deathreason = "";
                 if (dataPlayers.Rows[i].Cells["txtDeathReason"].Value != null)
                     deathreason = dataPlayers.Rows[i].Cells["txtDeathReason"].Value.ToString();
-                deathpost += String.Format("[b][color={0}]{1}[/color][/b] is dead! {2} {3} [quote]{4}[/quote]{5}", team.Color, playername, Environment.NewLine, deathreason, role.EditedPM(txtGameURL.Text, team), Environment.NewLine);
+                deathpost += String.Format("[b][color={0}]{1}[/color][/b] is dead! {2} {3} [quote]{4}[/quote]{5}", team.Color, playername, Environment.NewLine, deathreason, role.RedactedPM(txtGameURL.Text, team), Environment.NewLine);
                 dataPlayers.Rows[i].Cells["boxAlive"].Value = "False";
             }
             if (MessageBox.Show(String.Format("Are you sure you want to post this death reveal??? {0} You can't go back after this!", deathpost), "Continue?", MessageBoxButtons.YesNo) != DialogResult.Yes)
@@ -250,7 +267,7 @@ namespace MaryMeerkat
             if (!posted)
                 MessageBox.Show("Post FAIL. Try checking the URL or waiting 25 seconds?");
             else
-            {                
+            {
                 lblStatus.Text = "Death Reveal Posted";
             }
         }
@@ -264,7 +281,7 @@ namespace MaryMeerkat
                 {
                     continue;
                 }
-                
+
                 RolePM role = (RolePM)dataPlayers.Rows[i].Cells["txtRole"].Value;
                 Team team = (Team)dataPlayers.Rows[i].Cells["boxTeam"].Value;
                 string playername = dataPlayers.Rows[i].Cells["txtPlayerName"].Value.ToString();
@@ -287,7 +304,7 @@ namespace MaryMeerkat
             {
                 dialog.Dispose();
                 return;
-            }            
+            }
             if (MessageBox.Show(String.Format("Are you sure you want to pm this peek to {0}??? {1}", peeker, peekpm), "Continue?", MessageBoxButtons.YesNo) != DialogResult.Yes)
             {
                 return;
@@ -301,8 +318,11 @@ namespace MaryMeerkat
             }
         }
 
+
+
         private void dataPlayers_CellValueChanged(object sender, DataGridViewCellEventArgs e)
         {
+            saved = false;
             for (int i = 0; i < dataPlayers.Rows.Count; i++)
             {
                 RolePM role = (RolePM)dataPlayers.Rows[i].Cells["txtRole"].Value;
@@ -316,6 +336,41 @@ namespace MaryMeerkat
                         Boolean.TryParse(dataPlayers.Rows[i].Cells["boxAlive"].Value.ToString(), out temp);
                         role.Players[j].Alive = temp;
                     }
+                }
+            }
+            for (int i = 0; i < dataTeams.Rows.Count; i++)
+            {
+                Team team = (Team)dataTeams.Rows[i].Cells["txtTeam"].Value;
+                int alivecount = 0;
+                int count = 0;
+                for (int j = 0; j < team.Members.Count; j++)
+                {
+                    for (int k = 0; k < team.Members[j].Players.Count; k++)
+                    {
+                        if (team.Members[j].Players[k].Alive)
+                            alivecount++;
+                        count++;
+                    }
+                }
+                dataTeams.Rows[i].Cells["txtAliveCount"].Value = alivecount;
+                dataTeams.Rows[i].Cells["txtPlayerCount"].Value = count;
+            }
+        }
+
+        private void dataTeams_CellValueChanged(object sender, DataGridViewCellEventArgs e)
+        {
+            saved = false;
+        }
+
+
+
+        private void Meerkat_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            if (!saved)
+            {
+                if (MessageBox.Show("Do you want to save your progress before exiting?", "Save?", MessageBoxButtons.YesNo) == DialogResult.Yes)
+                {
+                    SaveGame();
                 }
             }
         }

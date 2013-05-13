@@ -23,7 +23,10 @@ namespace RickyRaccoon
         RolePMSet rolepms = new RolePMSet("", new List<Team>());
         RolePMSet gamepms = new RolePMSet("", new List<Team>());
         bool testrun = true;
-
+        bool saved = true;
+        Processing processing;
+        Timer pmtimer = new Timer();
+        Queue<PMToBeSent> pmstobesent;
 
         public Raccoon()
         {
@@ -31,6 +34,140 @@ namespace RickyRaccoon
             string[] keys = new List<string>(rolepms.DefaultRoleSets.Keys).ToArray();
             boxRoleSetSelect.Items.AddRange(keys);
             boxRoleSetSelectLoad.Items.AddRange(keys);
+            saved = true;
+        }
+
+
+
+        private void boxRoleSetSelect_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            ComboBox roleset = (ComboBox)sender;
+            gamepms = JsonConvert.DeserializeObject<RolePMSet>(rolepms.DefaultRoleSets[roleset.Text]);
+            int playerCount = 0;
+            txtRoleList.Text = "";
+            for (int i = 0; i < gamepms.Teams.Count; i++)
+            {
+                for (int j = 0; j < gamepms.Teams[i].Members.Count; j++)
+                {
+                    string subrole = gamepms.Teams[i].Members[j].SubRole;
+                    if (gamepms.Teams[i].Members[j].SubRole != "") subrole = gamepms.Teams[i].Members[j].SubRole + " ";
+                    string team = gamepms.Teams[i].Name;
+                    if (gamepms.Teams[i].Name != "") team = gamepms.Teams[i].Name + " ";
+                    txtRoleList.Text += gamepms.Teams[i].Members[j].Count + "X " + team + subrole + gamepms.Teams[i].Members[j].Role + " with " + gamepms.Teams[i].Members[j].n0 + Environment.NewLine;
+                    playerCount += gamepms.Teams[i].Members[j].Count;
+                }
+            }
+            txtRoleCount.Text = Convert.ToString(playerCount);
+            if (Convert.ToInt16(txtRoleCount.Text) > 0 && roster.Count > 0 && roster.Count == Convert.ToInt16(txtRoleCount.Text))
+            {
+                btnDoIt.Enabled = true;
+                btnTest.Enabled = true;
+            }
+            else
+            {
+                btnDoIt.Enabled = false;
+                btnTest.Enabled = false;
+            }
+        }
+
+        private void btnLoadRoleSetGame_Click(object sender, EventArgs e)
+        {
+            DialogResult result = openFileDialog.ShowDialog();
+            if (result == DialogResult.OK) // Test result.
+            {
+                string file = openFileDialog.FileName;
+                List<String> rolestxt = new List<string>();
+                try
+                {
+                    gamepms = JsonConvert.DeserializeObject<RolePMSet>(File.ReadAllText(file));
+                }
+                catch (JsonSerializationException error)
+                {
+                    Console.WriteLine(error);
+                    MessageBox.Show("This isn't valid JSON!");
+                    return;
+                }
+                int playerCount = 0;
+                txtRoleList.Text = "";
+                for (int i = 0; i < gamepms.Teams.Count; i++)
+                {
+                    for (int j = 0; j < gamepms.Teams[i].Members.Count; j++)
+                    {
+                        string subrole = gamepms.Teams[i].Members[j].SubRole;
+                        if (gamepms.Teams[i].Members[j].SubRole != "") subrole = gamepms.Teams[i].Members[j].SubRole + " ";
+                        string team = gamepms.Teams[i].Name;
+                        if (gamepms.Teams[i].Name != "") team = gamepms.Teams[i].Name + " ";
+                        txtRoleList.Text += gamepms.Teams[i].Members[j].Count + "X " + team + subrole + gamepms.Teams[i].Members[j].Role + " with " + gamepms.Teams[i].Members[j].n0 + Environment.NewLine;
+                        playerCount += gamepms.Teams[i].Members[j].Count;
+                    }
+                }
+                for (int i = 0; i < gamepms.Teams.Count; i++)
+                {
+                    Console.WriteLine(gamepms.Teams[i].Name + gamepms.Teams[i].Share);
+                }
+                txtRoleCount.Text = Convert.ToString(playerCount);
+                if (Convert.ToInt16(txtRoleCount.Text) > 0 && roster.Count > 0 && roster.Count == Convert.ToInt16(txtRoleCount.Text))
+                {
+                    btnDoIt.Enabled = true;
+                    btnTest.Enabled = true;
+                }
+                else
+                {
+                    btnDoIt.Enabled = false;
+                    btnTest.Enabled = false;
+                }
+            }
+        }
+
+        private void boxTurbo_CheckedChanged(object sender, EventArgs e)
+        {
+            CheckBox turbo = (CheckBox)sender;
+            if (turbo.Checked)
+            {
+                txtDayLength.Enabled = true;
+                txtDay1Length.Enabled = true;
+                txtNightLength.Enabled = true;
+                boxLongGame.Checked = false;
+            }
+            else
+            {
+                txtDayLength.Enabled = false;
+                txtDay1Length.Enabled = false;
+                txtNightLength.Enabled = false;
+            }
+        }
+
+        private void boxLongGame_CheckedChanged(object sender, EventArgs e)
+        {
+            CheckBox longgame = (CheckBox)sender;
+            if (longgame.Checked)
+            {
+                boxEODTime.Enabled = true;
+                boxSODTime.Enabled = true;
+                cboxSunday.Enabled = true;
+                cboxMonday.Enabled = true;
+                cboxTuesday.Enabled = true;
+                cboxWednesday.Enabled = true;
+                cboxThursday.Enabled = true;
+                cboxFriday.Enabled = true;
+                cboxSaturday.Enabled = true;
+                boxPMsinOP.Enabled = true;
+                boxTurbo.Checked = false;
+
+            }
+            else
+            {
+                boxEODTime.Enabled = false;
+                boxSODTime.Enabled = false;
+                cboxSunday.Enabled = false;
+                cboxMonday.Enabled = false;
+                cboxTuesday.Enabled = false;
+                cboxWednesday.Enabled = false;
+                cboxThursday.Enabled = false;
+                cboxFriday.Enabled = false;
+                cboxSaturday.Enabled = false;
+                boxPMsinOP.Enabled = false;
+            }
         }
 
         private void btnPasteList_Click(object sender, EventArgs e)
@@ -106,6 +243,12 @@ namespace RickyRaccoon
                 return;
             }
 
+            processing = new Processing();
+            processing.txtProgress.Text = "Logging in...";
+            processing.barProgress.Maximum = 100;
+            processing.barProgress.Minimum = 0;
+            processing.barProgress.Value = 0;
+            processing.Show();
             _synchronousInvoker = a => Invoke(a);
             String username = txtUsername.Text;
             String password = txtPassword.Text;
@@ -141,14 +284,8 @@ namespace RickyRaccoon
                     MessageBox.Show("Login Success! This may take a while...");
                     break;
             }
-            for (int i = 0; i < roster.Count; i++)
-            {
-                if (!_forum.CanUserReceivePM(roster[i]))
-                {
-                    MessageBox.Show(String.Format("Can't contact {0}, they can't receive PMs! Role PMs being sent cancelled...", roster[i]));
-                    return;
-                }
-            }
+            processing.txtProgress.Text = "Checking preconditions...";
+            processing.barProgress.Value = 5;
             if (boxMajLynch.Text == "" || boxSODTime.Text == "" || boxEODTime.Text == "" || boxWolfChat.Text == "" || roster.Count < 1 || boxMustLynch.Text == "" || txtGameName.Text == "")
             {
                 MessageBox.Show("Please fill in all boxes before submitting");
@@ -158,10 +295,24 @@ namespace RickyRaccoon
             {
                 return;
             }
+            processing.txtProgress.Text = "Checking to see if users can recieve PMs...";
+            processing.barProgress.Value = 10;
+            for (int i = 0; i < roster.Count; i++)
+            {
+                if (!_forum.CanUserReceivePM(roster[i]))
+                {
+                    MessageBox.Show(String.Format("Can't contact {0}, they can't receive PMs! Role PMs being sent cancelled...", roster[i]));
+                    return;
+                }
+            }
+            processing.txtProgress.Text = "Making OP...";
+            processing.barProgress.Value = 20;
             if (!makeOP())
                 return;
             if(!testrun)
                 btnDoIt.Enabled = false;
+            processing.txtProgress.Text = "Randomizing Player List...";
+            processing.barProgress.Value = 30;
             Random rng = new Random();
             int n = Convert.ToInt16(txtRoleCount.Text);
             while (n > 1)
@@ -171,7 +322,9 @@ namespace RickyRaccoon
                 String value = roster[k];
                 roster[k] = roster[n];
                 roster[n] = value;
-            }            
+            }
+            processing.txtProgress.Text = "Assigning Players to Roles...";
+            processing.barProgress.Value = 30;
             int curplayer = 0;
             for (int i = 0; i < gamepms.Teams.Count; i++)
             {
@@ -180,11 +333,13 @@ namespace RickyRaccoon
                     RolePM role = gamepms.Teams[i].Members[j];
                     for (int k = curplayer; k < curplayer + role.Count; k++)
                     {
-                        role.Players.Add(new Player(roster[k]));
+                        role.Players.Add(new Player(roster[k], true));
                     }
                     curplayer += role.Count;
                 }
             }
+            processing.txtProgress.Text = "Saving Rand Results...";
+            processing.barProgress.Value = 40;
             gamepms.GameName = txtGameName.Text;
             String roleset = JsonConvert.SerializeObject(gamepms, Formatting.Indented, new JsonSerializerSettings()
             {
@@ -203,7 +358,10 @@ namespace RickyRaccoon
                 }
             }
             string pmlist = "";
-            
+            processing.txtProgress.Text = "Sending PMs...";
+            processing.barProgress.Value = 50;
+            int pmssent = 0;
+            pmstobesent = new Queue<PMToBeSent>();
             for (int i = 0; i < gamepms.Teams.Count; i++)
             {
                 for (int j = 0; j < gamepms.Teams[i].Members.Count; j++)
@@ -211,18 +369,19 @@ namespace RickyRaccoon
                     RolePM role = gamepms.Teams[i].Members[j];
                     if (role.n0 != "a random villager peek" && role.n0 != "a random peek across entire playerlist")
                     {
-                        string pm = role.FullPM(txtGameURL.Text, gamepms, gamepms.Teams[i], new Player(""));
+                        string pm = role.FullPM(txtGameURL.Text, gamepms, gamepms.Teams[i], new Player("", true));
                         for (int k = 0; k < gamepms.Teams[i].Members[j].Players.Count; k += 8)
                         {
                             Console.WriteLine("PM: " + pm);
                             Console.WriteLine("currentplayer" + k + "-" + (Math.Min(8, curplayer + gamepms.Teams[i].Members[j].Players.Count - k)));
                             if (!testrun)
                             {
-                                _forum.SendPM(null, gamepms.Teams[i].Members[j].Players.GetRange(k, Math.Min(8, gamepms.Teams[i].Members[j].Players.Count - k)).Select(player => player.Name), txtGameName.Text + " Role PM", pm);
-                                System.Threading.Thread.Sleep(30000);
+                                pmstobesent.Enqueue(new PMToBeSent(gamepms.Teams[i].Members[j].Players.GetRange(k, Math.Min(8, gamepms.Teams[i].Members[j].Players.Count - k)).Select(player => player.Name).ToList(), txtGameName.Text + " Role PM", pm));
                             }
                             pmlist += String.Join(" ", gamepms.Teams[i].Members[j].Players.GetRange(k, Math.Min(8, gamepms.Teams[i].Members[j].Players.Count - k)).Select(player => player.Name)) + ":" + Environment.NewLine;
                             pmlist += pm + Environment.NewLine;
+                            pmssent += 1;
+                            processing.txtProgress.Text = String.Format("Sent PM {0}, please wait 30 more seconds for the next PM to be sent...", pmssent);
                         }
                     }
                     else
@@ -232,15 +391,26 @@ namespace RickyRaccoon
                             string pm = role.FullPM(txtGameURL.Text, gamepms, gamepms.Teams[i], gamepms.Teams[i].Members[j].Players[k]);
                             if (!testrun)
                             {
-                                _forum.SendPM(null, new List<string>(new string[] {gamepms.Teams[i].Members[j].Players[k].Name}), txtGameName.Text + " Role PM", pm);
-                                System.Threading.Thread.Sleep(30000);
+                                pmstobesent.Enqueue(new PMToBeSent(new List<string>(new string[] { gamepms.Teams[i].Members[j].Players[k].Name }), txtGameName.Text + " Role PM", pm));
                             }
                             pmlist += gamepms.Teams[i].Members[j].Players[k].Name + ":" + Environment.NewLine;
                             pmlist += pm + Environment.NewLine;
+                            pmssent += 1;
+                            processing.txtProgress.Text = String.Format("Sent PM {0}, please wait 30 more seconds for the next PM to be sent...", pmssent);
                         }
                     }
                 }
             }
+
+            if (!testrun)
+            {
+                pmtimer.Interval = 30000;
+                pmtimer.Tick += new EventHandler(pmtimer_Tick);
+                pmtimer.Enabled = true;
+                pmtimer.Start();
+            }
+            processing.txtProgress.Text = String.Format("Sent All PMs!", pmssent);
+            processing.barProgress.Value = 100;
             MessageBox.Show(pmlist);
             roster.Sort();
             for (int i = 0; i < gamepms.Teams.Count; i++)
@@ -251,6 +421,20 @@ namespace RickyRaccoon
                 }
             }
         }
+
+        void pmtimer_Tick(object sender, EventArgs e)
+        {
+            if (pmstobesent.Count > 0)
+            {
+                PMToBeSent pm = pmstobesent.Dequeue();
+                pm.SendPM(_forum);
+            }
+            else
+            {
+                pmtimer.Stop();
+            }
+        }
+
 
         private bool makeTurboOP()
         {
@@ -378,6 +562,8 @@ This post was made by Ricky Raccoon. Forward all complaints/suggestions/bugs to 
             return true;
         }
 
+
+
         private void txtGameTitle_TextChanged(object sender, EventArgs e)
         {
             for (int i = 0; i < rolepms.Teams.Count; i++)
@@ -395,7 +581,14 @@ This post was made by Ricky Raccoon. Forward all complaints/suggestions/bugs to 
             rolepms.Name = txtRoleSetName.Text;
         }
 
+
+
         private void btnSaveRoleSet_Click(object sender, EventArgs e)
+        {
+            SaveRoleSet();
+        }
+
+        private void SaveRoleSet()
         {
             String roleset = JsonConvert.SerializeObject(rolepms, Formatting.Indented, new JsonSerializerSettings()
             {
@@ -412,7 +605,7 @@ This post was made by Ricky Raccoon. Forward all complaints/suggestions/bugs to 
                     sw.Write(roleset);
                 }
             }
-            Console.WriteLine(result); // <-- For debugging use.
+            saved = true;
         }
 
         private void resetRoleList(RolePMSet rolepmset)
@@ -422,7 +615,7 @@ This post was made by Ricky Raccoon. Forward all complaints/suggestions/bugs to 
             rolepms = rolepmset;
             for (int i = 0; i < rolepms.Teams.Count(); i++)
             {
-                dataTeams.Rows.Add(rolepms.Teams[i].Name, rolepms.Teams[i].WinCon, rolepms.Teams[i].Color, rolepms.Teams[i].Hidden, rolepms.Teams[i].Share);
+                dataTeams.Rows.Add(rolepms.Teams[i].Name, rolepms.Teams[i].WinCon, rolepms.Teams[i].Color, rolepms.Teams[i].Share);
             }
             DataGridViewComboBoxColumn comboboxColumn = (DataGridViewComboBoxColumn)dataRoles.Columns[0];
             DataGridViewComboBoxColumn roleColumn = (DataGridViewComboBoxColumn)dataRoles.Columns[1];
@@ -443,8 +636,29 @@ This post was made by Ricky Raccoon. Forward all complaints/suggestions/bugs to 
             dataRoles_CellValueChanged(null, null);
         }
 
+        private void boxRoleSetSelectLoad_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (!saved)
+            {
+                if (MessageBox.Show("Do you want to save your progress before loading a new file?", "Save?", MessageBoxButtons.YesNo) == DialogResult.Yes)
+                {
+                    SaveRoleSet();
+                }
+            }
+            ComboBox roleset = (ComboBox)sender;
+            resetRoleList(JsonConvert.DeserializeObject<RolePMSet>(rolepms.DefaultRoleSets[roleset.Text]));
+            saved = true;
+        }
+
         private void btnLoadRoleSet_Click(object sender, EventArgs e)
         {
+            if (!saved)
+            {
+                if (MessageBox.Show("Do you want to save your progress before loading a new file?", "Save?", MessageBoxButtons.YesNo) == DialogResult.Yes)
+                {
+                    SaveRoleSet();
+                }
+            }
             // Show the dialog and get result.
             DialogResult result = openFileDialog.ShowDialog();
             if (result == DialogResult.OK) // Test result.
@@ -461,138 +675,19 @@ This post was made by Ricky Raccoon. Forward all complaints/suggestions/bugs to 
                     MessageBox.Show("This isn't valid JSON!");
                     return;
                 }
-
-            }
-            Console.WriteLine(result); // <-- For debugging use.
+                saved = true;
+            }            
         }
 
-        private void boxRoleSetSelect_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            ComboBox roleset = (ComboBox)sender;
-            gamepms = JsonConvert.DeserializeObject<RolePMSet>(rolepms.DefaultRoleSets[roleset.Text]);
-            int playerCount = 0;
-            txtRoleList.Text = "";
-            for (int i = 0; i < gamepms.Teams.Count; i++)
-            {
-                for (int j = 0; j < gamepms.Teams[i].Members.Count; j++)
-                {
-                    string subrole = gamepms.Teams[i].Members[j].SubRole;
-                    if (gamepms.Teams[i].Members[j].SubRole != "") subrole = gamepms.Teams[i].Members[j].SubRole + " ";
-                    string team = gamepms.Teams[i].Name;
-                    if (gamepms.Teams[i].Name != "") team = gamepms.Teams[i].Name + " ";
-                    txtRoleList.Text += gamepms.Teams[i].Members[j].Count + "X " + team + subrole + gamepms.Teams[i].Members[j].Role + " with " + gamepms.Teams[i].Members[j].n0 + Environment.NewLine;
-                    playerCount += gamepms.Teams[i].Members[j].Count;
-                }
-            }
-            txtRoleCount.Text = Convert.ToString(playerCount);
-            if (Convert.ToInt16(txtRoleCount.Text) > 0 && roster.Count > 0 && roster.Count == Convert.ToInt16(txtRoleCount.Text))
-            {
-                btnDoIt.Enabled = true;
-                btnTest.Enabled = true;
-            }
-            else
-            {
-                btnDoIt.Enabled = false;
-                btnTest.Enabled = false;
-            }
-        }
 
-        private void boxRoleSetSelectLoad_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            ComboBox roleset = (ComboBox)sender;
-            resetRoleList(JsonConvert.DeserializeObject<RolePMSet>(rolepms.DefaultRoleSets[roleset.Text]));
-        }
-
-        private void btnLoadRoleSetGame_Click(object sender, EventArgs e)
-        {
-            DialogResult result = openFileDialog.ShowDialog();
-            if (result == DialogResult.OK) // Test result.
-            {
-                string file = openFileDialog.FileName;
-                List<String> rolestxt = new List<string>();
-                try
-                {
-                    gamepms = JsonConvert.DeserializeObject<RolePMSet>(File.ReadAllText(file));
-                }
-                catch (JsonSerializationException error)
-                {
-                    Console.WriteLine(error);
-                    MessageBox.Show("This isn't valid JSON!");
-                    return;
-                }
-                int playerCount = 0;
-                txtRoleList.Text = "";
-                for (int i = 0; i < gamepms.Teams.Count; i++)
-                {
-                    for (int j = 0; j < gamepms.Teams[i].Members.Count; j++)
-                    {
-                        string subrole = gamepms.Teams[i].Members[j].SubRole;
-                        if (gamepms.Teams[i].Members[j].SubRole != "") subrole = gamepms.Teams[i].Members[j].SubRole + " ";
-                        string team = gamepms.Teams[i].Name;
-                        if (gamepms.Teams[i].Name != "") team = gamepms.Teams[i].Name + " ";
-                        txtRoleList.Text += gamepms.Teams[i].Members[j].Count + "X " + team + subrole + gamepms.Teams[i].Members[j].Role + " with " + gamepms.Teams[i].Members[j].n0 + Environment.NewLine;
-                        playerCount += gamepms.Teams[i].Members[j].Count;
-                    }
-                }
-                for (int i = 0; i < gamepms.Teams.Count; i++)
-                {
-                    Console.WriteLine(gamepms.Teams[i].Name + gamepms.Teams[i].Share);
-                }
-                txtRoleCount.Text = Convert.ToString(playerCount);
-                if (Convert.ToInt16(txtRoleCount.Text) > 0 && roster.Count > 0 && roster.Count == Convert.ToInt16(txtRoleCount.Text))
-                {
-                    btnDoIt.Enabled = true;
-                    btnTest.Enabled = true;
-                }
-                else
-                {
-                    btnDoIt.Enabled = false;
-                    btnTest.Enabled = false;
-                }
-            }
-        }
-
-        private void dataTeams_CellValueChanged(object sender, DataGridViewCellEventArgs e)
-        {
-
-            List<Team> teams = rolepms.Teams;
-            for (int i = 0; i < dataTeams.Rows.Count; i++)
-            {
-
-                if (!dataTeams.Columns.Contains("colTeamName")) continue;
-                if (dataTeams.Rows[i].Cells["colTeamName"].Value == null || dataTeams.Rows[i].Cells["colWinCon"].Value == null || dataTeams.Rows[i].Cells["boxColor"].Value == null)
-                    continue;
-                string teamname = dataTeams.Rows[i].Cells["colTeamName"].Value.ToString();
-                string wincon = dataTeams.Rows[i].Cells["colWinCon"].Value.ToString();
-                string color = dataTeams.Rows[i].Cells["boxColor"].Value.ToString();
-                bool hidden = Convert.ToBoolean(dataTeams.Rows[i].Cells["colReveal"].Value);
-                bool share = Convert.ToBoolean(dataTeams.Rows[i].Cells["colShare"].Value);
-                if (i < teams.Count)
-                {
-                    teams[i].Name = teamname;
-                    teams[i].WinCon = wincon;
-                    teams[i].Hidden = hidden;
-                    teams[i].Share = share;
-                    teams[i].Color = color;
-                }
-                else
-                {
-                    Team team = new Team(teamname, wincon, hidden, share, color);
-                    teams.Add(team);
-                }
-            }
-            DataGridViewComboBoxColumn comboboxColumn = (DataGridViewComboBoxColumn)dataRoles.Columns[0];
-            comboboxColumn.DataSource = rolepms.Teams;
-            comboboxColumn.DisplayMember = "Name";
-            comboboxColumn.ValueMember = "Self";
-        }
-
+        
         private void dataRoles_CellValueChanged(object sender, DataGridViewCellEventArgs e)
         {
             //for (int i = rolepms.Roles.Count; i < dataRoles.Rows.Count - 1; i++)
             //{
             //   rolepms.Roles.RemoveAt(i);
             //}
+            saved = false;
             int playerCount = 0;
             for (int i = 0; i < dataRoles.Rows.Count; i++)
             {
@@ -611,12 +706,14 @@ This post was made by Ricky Raccoon. Forward all complaints/suggestions/bugs to 
                 if (dataRoles.Rows[i].Cells["boxn0"].Value != null) n0 = dataRoles.Rows[i].Cells["boxn0"].Value.ToString();
                 int count = 0;
                 if (dataRoles.Rows[i].Cells["txtCount"].Value != null) count = Convert.ToInt16(dataRoles.Rows[i].Cells["txtCount"].Value.ToString());
-                RolePM rolepm = new RolePM(role, subrole, color, extraflavor, n0, count, i);
+                string redacted = "";
+                if (dataRoles.Rows[i].Cells["txtRedacted"].Value != null) redacted = dataRoles.Rows[i].Cells["txtRedacted"].Value.ToString();
+                RolePM rolepm = new RolePM(role, subrole, color, extraflavor, n0, count, i, redacted);
                 rolepms.setRolePM(rolepm, team, i);
                 playerCount += count;
                 dataRoles.Rows[i].Cells["txtFullPM"].Value = rolepm.EditedPM(txtGameURL.Text, team);
             }
-            txtPlayers.Text = Convert.ToString(playerCount);
+            txtPlayers.Text = Convert.ToString(playerCount);            
         }
 
         private void dataRoles_UserDeletingRow(object sender, DataGridViewRowCancelEventArgs e)
@@ -624,67 +721,6 @@ This post was made by Ricky Raccoon. Forward all complaints/suggestions/bugs to 
             int rowIndex = e.Row.Index;
             Console.WriteLine(String.Format("Deleting row: {0}", rowIndex));
             rolepms.removeRolePM(rowIndex);
-        }
-
-        private void dataTeams_UserDeletingRow(object sender, DataGridViewRowCancelEventArgs e)
-        {
-            int rowIndex = e.Row.Index;
-            Team team = rolepms.Teams[rowIndex];
-            if (team.Members.Count > 0)
-                e.Cancel = true;
-            else
-                rolepms.Teams.RemoveAt(rowIndex);
-        }
-
-        private void boxTurbo_CheckedChanged(object sender, EventArgs e)
-        {
-            CheckBox turbo = (CheckBox)sender;
-            if (turbo.Checked)
-            {
-                txtDayLength.Enabled = true;
-                txtDay1Length.Enabled = true;
-                txtNightLength.Enabled = true;
-                boxLongGame.Checked = false;
-            }
-            else
-            {
-                txtDayLength.Enabled = false;
-                txtDay1Length.Enabled = false;
-                txtNightLength.Enabled = false;
-            }
-        }
-
-        private void boxLongGame_CheckedChanged(object sender, EventArgs e)
-        {
-            CheckBox longgame = (CheckBox)sender;
-            if (longgame.Checked)
-            {
-                boxEODTime.Enabled = true;
-                boxSODTime.Enabled = true;
-                cboxSunday.Enabled = true;
-                cboxMonday.Enabled = true;
-                cboxTuesday.Enabled = true;
-                cboxWednesday.Enabled = true;
-                cboxThursday.Enabled = true;
-                cboxFriday.Enabled = true;
-                cboxSaturday.Enabled = true;
-                boxPMsinOP.Enabled = true;
-                boxTurbo.Checked = false;
-                
-            }
-            else
-            {
-                boxEODTime.Enabled = false;
-                boxSODTime.Enabled = false;
-                cboxSunday.Enabled = false;
-                cboxMonday.Enabled = false;
-                cboxTuesday.Enabled = false;
-                cboxWednesday.Enabled = false;
-                cboxThursday.Enabled = false;
-                cboxFriday.Enabled = false;
-                cboxSaturday.Enabled = false;
-                boxPMsinOP.Enabled = false;
-            }
         }
 
         private void dataRoles_EditingControlShowing(object sender, DataGridViewEditingControlShowingEventArgs e)
@@ -700,7 +736,7 @@ This post was made by Ricky Raccoon. Forward all complaints/suggestions/bugs to 
         }
 
         private void dataRoles_CellValidating(object sender, DataGridViewCellValidatingEventArgs e)
-        {            
+        {
             String columnName = this.dataRoles.Columns[e.ColumnIndex].Name;
             Console.WriteLine(columnName);
             if (columnName != "boxRole" && columnName != "boxSubRole") return;
@@ -710,6 +746,64 @@ This post was made by Ricky Raccoon. Forward all complaints/suggestions/bugs to 
                 col.Items.Add(e.FormattedValue);
             }
         }
-    }
+
+
+
+        private void dataTeams_CellValueChanged(object sender, DataGridViewCellEventArgs e)
+        {
+            saved = false;
+            List<Team> teams = rolepms.Teams;
+            for (int i = 0; i < dataTeams.Rows.Count; i++)
+            {
+
+                if (!dataTeams.Columns.Contains("colTeamName")) continue;
+                if (dataTeams.Rows[i].Cells["colTeamName"].Value == null || dataTeams.Rows[i].Cells["colWinCon"].Value == null || dataTeams.Rows[i].Cells["boxColor"].Value == null)
+                    continue;
+                string teamname = dataTeams.Rows[i].Cells["colTeamName"].Value.ToString();
+                string wincon = dataTeams.Rows[i].Cells["colWinCon"].Value.ToString();
+                string color = dataTeams.Rows[i].Cells["boxColor"].Value.ToString();
+                bool share = Convert.ToBoolean(dataTeams.Rows[i].Cells["colShare"].Value);
+                if (i < teams.Count)
+                {
+                    teams[i].Name = teamname;
+                    teams[i].WinCon = wincon;
+                    teams[i].Share = share;
+                    teams[i].Color = color;
+                }
+                else
+                {
+                    Team team = new Team(teamname, wincon, share, color);
+                    teams.Add(team);
+                }
+            }
+            DataGridViewComboBoxColumn comboboxColumn = (DataGridViewComboBoxColumn)dataRoles.Columns[0];
+            comboboxColumn.DataSource = rolepms.Teams;
+            comboboxColumn.DisplayMember = "Name";
+            comboboxColumn.ValueMember = "Self";
+        }
+
+        private void dataTeams_UserDeletingRow(object sender, DataGridViewRowCancelEventArgs e)
+        {
+            int rowIndex = e.Row.Index;
+            Team team = rolepms.Teams[rowIndex];
+            if (team.Members.Count > 0)
+                e.Cancel = true;
+            else
+                rolepms.Teams.RemoveAt(rowIndex);
+        }
+
+        
+
+        private void Raccoon_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            if (!saved)
+            {
+                if (MessageBox.Show("Do you want to save your progress before exiting?", "Save?", MessageBoxButtons.YesNo) == DialogResult.Yes)
+                {
+                    SaveRoleSet();
+                }
+            }
+        }
+     }
 }
 
