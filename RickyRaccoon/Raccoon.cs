@@ -238,7 +238,7 @@ namespace RickyRaccoon
                 return;
             }
 
-            if (MessageBox.Show("Are you sure you want to continue? You can't go back after this!", "Continue?", MessageBoxButtons.YesNo) != DialogResult.Yes)
+            if (MessageBox.Show("Are you sure you want to continue? You can't go back after this! (PMs will be sent and thread will be made even if you close the processing dialog)", "Continue?", MessageBoxButtons.YesNo) != DialogResult.Yes)
             {
                 return;
             }
@@ -272,6 +272,15 @@ namespace RickyRaccoon
             }
         }
 
+        private void ChangeProcessing(string text, int value)
+        {
+            if (!processing.IsDisposed)
+            {
+                processing.txtProgress.Text = text;
+                processing.barProgress.Value = value;
+            }
+        }
+
         private void _forum_LoginEvent(object sender, POG.Forum.LoginEventArgs e)
         {
             switch (e.LoginEventType)
@@ -284,8 +293,7 @@ namespace RickyRaccoon
                     MessageBox.Show("Login Success! This may take a while...");
                     break;
             }
-            processing.txtProgress.Text = "Checking preconditions...";
-            processing.barProgress.Value = 5;
+            ChangeProcessing("Checking preconditions...", 5);
             if (boxMajLynch.Text == "" || boxSODTime.Text == "" || boxEODTime.Text == "" || boxWolfChat.Text == "" || roster.Count < 1 || boxMustLynch.Text == "" || txtGameName.Text == "")
             {
                 MessageBox.Show("Please fill in all boxes before submitting");
@@ -295,8 +303,7 @@ namespace RickyRaccoon
             {
                 return;
             }
-            processing.txtProgress.Text = "Checking to see if users can recieve PMs...";
-            processing.barProgress.Value = 10;
+            ChangeProcessing("Checking to see if users can recieve PMs...", 10);
             for (int i = 0; i < roster.Count; i++)
             {
                 if (!_forum.CanUserReceivePM(roster[i]))
@@ -305,14 +312,13 @@ namespace RickyRaccoon
                     return;
                 }
             }
-            processing.txtProgress.Text = "Making OP...";
-            processing.barProgress.Value = 20;
+            ChangeProcessing("Making OP...", 20);
             if (!makeOP())
                 return;
             if(!testrun)
                 btnDoIt.Enabled = false;
-            processing.txtProgress.Text = "Randomizing Player List...";
-            processing.barProgress.Value = 30;
+            ChangeProcessing("Randomizing Player List...", 30);
+
             Random rng = new Random();
             int n = Convert.ToInt16(txtRoleCount.Text);
             while (n > 1)
@@ -323,8 +329,7 @@ namespace RickyRaccoon
                 roster[k] = roster[n];
                 roster[n] = value;
             }
-            processing.txtProgress.Text = "Assigning Players to Roles...";
-            processing.barProgress.Value = 30;
+            ChangeProcessing("Assigning Players to Roles...", 30);
             int curplayer = 0;
             for (int i = 0; i < gamepms.Teams.Count; i++)
             {
@@ -338,8 +343,7 @@ namespace RickyRaccoon
                     curplayer += role.Count;
                 }
             }
-            processing.txtProgress.Text = "Saving Rand Results...";
-            processing.barProgress.Value = 40;
+            ChangeProcessing("Saving Rand Results...", 40);
             gamepms.GameName = txtGameName.Text;
             String roleset = JsonConvert.SerializeObject(gamepms, Formatting.Indented, new JsonSerializerSettings()
             {
@@ -358,9 +362,7 @@ namespace RickyRaccoon
                 }
             }
             string pmlist = "";
-            processing.txtProgress.Text = "Sending PMs...";
-            processing.barProgress.Value = 50;
-            int pmssent = 0;
+            ChangeProcessing("Sending PMs...", 50);
             pmstobesent = new Queue<PMToBeSent>();
             for (int i = 0; i < gamepms.Teams.Count; i++)
             {
@@ -380,8 +382,6 @@ namespace RickyRaccoon
                             }
                             pmlist += String.Join(" ", gamepms.Teams[i].Members[j].Players.GetRange(k, Math.Min(8, gamepms.Teams[i].Members[j].Players.Count - k)).Select(player => player.Name)) + ":" + Environment.NewLine;
                             pmlist += pm + Environment.NewLine;
-                            pmssent += 1;
-                            processing.txtProgress.Text = String.Format("Sent PM {0}, please wait 30 more seconds for the next PM to be sent...", pmssent);
                         }
                     }
                     else
@@ -395,8 +395,6 @@ namespace RickyRaccoon
                             }
                             pmlist += gamepms.Teams[i].Members[j].Players[k].Name + ":" + Environment.NewLine;
                             pmlist += pm + Environment.NewLine;
-                            pmssent += 1;
-                            processing.txtProgress.Text = String.Format("Sent PM {0}, please wait 30 more seconds for the next PM to be sent...", pmssent);
                         }
                     }
                 }
@@ -409,8 +407,6 @@ namespace RickyRaccoon
                 pmtimer.Enabled = true;
                 pmtimer.Start();
             }
-            processing.txtProgress.Text = String.Format("Sent All PMs!", pmssent);
-            processing.barProgress.Value = 100;
             MessageBox.Show(pmlist);
             roster.Sort();
             for (int i = 0; i < gamepms.Teams.Count; i++)
@@ -427,11 +423,13 @@ namespace RickyRaccoon
             if (pmstobesent.Count > 0)
             {
                 PMToBeSent pm = pmstobesent.Dequeue();
+                ChangeProcessing(String.Format("Sent PM. {0} left...", pmstobesent.Count), 50);
                 pm.SendPM(_forum);
             }
-            else
+            if(pmstobesent.Count == 0)
             {
                 pmtimer.Stop();
+                ChangeProcessing(String.Format("Sent All PMs!", pmstobesent.Count), 100);
             }
         }
 
@@ -615,7 +613,7 @@ This post was made by Ricky Raccoon. Forward all complaints/suggestions/bugs to 
             rolepms = rolepmset;
             for (int i = 0; i < rolepms.Teams.Count(); i++)
             {
-                dataTeams.Rows.Add(rolepms.Teams[i].Name, rolepms.Teams[i].WinCon, rolepms.Teams[i].Color, rolepms.Teams[i].Share);
+                dataTeams.Rows.Add(rolepms.Teams[i].Name, rolepms.Teams[i].WinCon, rolepms.Teams[i].Color, rolepms.Teams[i].Share, 0);
             }
             DataGridViewComboBoxColumn comboboxColumn = (DataGridViewComboBoxColumn)dataRoles.Columns[0];
             DataGridViewComboBoxColumn roleColumn = (DataGridViewComboBoxColumn)dataRoles.Columns[1];
@@ -629,7 +627,7 @@ This post was made by Ricky Raccoon. Forward all complaints/suggestions/bugs to 
                 {
                     if (!roleColumn.Items.Contains(rolepms.Teams[i].Members[j].Role) && rolepms.Teams[i].Members[j].Role.Length > 0) roleColumn.Items.Add(rolepms.Teams[i].Members[j].Role);
                     if (!subRoleColumn.Items.Contains(rolepms.Teams[i].Members[j].SubRole) && rolepms.Teams[i].Members[j].SubRole.Length > 0) subRoleColumn.Items.Add(rolepms.Teams[i].Members[j].SubRole);
-                    dataRoles.Rows.Add(rolepms.Teams[i], rolepms.Teams[i].Members[j].Role, rolepms.Teams[i].Members[j].SubRole, rolepms.Teams[i].Members[j].Color, rolepms.Teams[i].Members[j].ExtraFlavor, rolepms.Teams[i].Members[j].n0, "", rolepms.Teams[i].Members[j].Count);
+                    dataRoles.Rows.Add(rolepms.Teams[i], rolepms.Teams[i].Members[j].Role, rolepms.Teams[i].Members[j].SubRole, rolepms.Teams[i].Members[j].Color, rolepms.Teams[i].Members[j].ExtraFlavor, rolepms.Teams[i].Members[j].Redacted, rolepms.Teams[i].Members[j].n0, "", rolepms.Teams[i].Members[j].Count);
                 }
             }
             txtRoleSetName.Text = rolepms.Name;
@@ -713,7 +711,20 @@ This post was made by Ricky Raccoon. Forward all complaints/suggestions/bugs to 
                 playerCount += count;
                 dataRoles.Rows[i].Cells["txtFullPM"].Value = rolepm.EditedPM(txtGameURL.Text, team);
             }
-            txtPlayers.Text = Convert.ToString(playerCount);            
+            txtPlayers.Text = Convert.ToString(playerCount);
+            for (int i = 0; i < dataTeams.Rows.Count; i++)
+            {
+                if (!dataTeams.Columns.Contains("colTeamName")) continue;
+                if (dataTeams.Rows[i].Cells["colTeamName"].Value == null || dataTeams.Rows[i].Cells["colWinCon"].Value == null || dataTeams.Rows[i].Cells["boxColor"].Value == null)
+                    continue;
+                Team team = rolepms.Teams[i];
+                int count = 0;
+                for (int j = 0; j < team.Members.Count; j++)
+                {
+                    count += team.Members[j].Count;
+                }
+                dataTeams.Rows[i].Cells["txtTeamCount"].Value = count;
+            }
         }
 
         private void dataRoles_UserDeletingRow(object sender, DataGridViewRowCancelEventArgs e)

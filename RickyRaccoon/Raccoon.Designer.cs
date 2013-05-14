@@ -126,6 +126,7 @@
             this.colWinCon = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.boxColor = new System.Windows.Forms.DataGridViewComboBoxColumn();
             this.colShare = new System.Windows.Forms.DataGridViewCheckBoxColumn();
+            this.txtTeamCount = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.tableLayoutPanel2.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
             this.tableLayoutPanel14.SuspendLayout();
@@ -1226,7 +1227,8 @@
             this.colTeamName,
             this.colWinCon,
             this.boxColor,
-            this.colShare});
+            this.colShare,
+            this.txtTeamCount});
             this.dataTeams.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dataTeams.Location = new System.Drawing.Point(3, 3);
             this.dataTeams.Name = "dataTeams";
@@ -1277,6 +1279,12 @@
             // 
             this.colShare.HeaderText = "Share Teammates in PM?";
             this.colShare.Name = "colShare";
+            // 
+            // txtTeamCount
+            // 
+            this.txtTeamCount.HeaderText = "Player Count";
+            this.txtTeamCount.Name = "txtTeamCount";
+            this.txtTeamCount.ReadOnly = true;
             // 
             // Raccoon
             // 
@@ -1420,6 +1428,7 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn colWinCon;
         private System.Windows.Forms.DataGridViewComboBoxColumn boxColor;
         private System.Windows.Forms.DataGridViewCheckBoxColumn colShare;
+        private System.Windows.Forms.DataGridViewTextBoxColumn txtTeamCount;
 
     }
 }

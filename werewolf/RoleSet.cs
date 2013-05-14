@@ -475,7 +475,7 @@ Good luck!
 
     public class PMToBeSent
     {
-        private List<string> Players;
+        public List<string> Players;
         private string PMTitle;
         private string PMText;
         public PMToBeSent(List<string> players, string pmTitle, string pmText)
