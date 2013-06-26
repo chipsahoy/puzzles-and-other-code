@@ -409,6 +409,182 @@ namespace POG.Forum
 			return true;
 
 		}
+        internal bool SendPM(PrivateMessage pm, PMResult callback, bool receipt, object cookie)
+        {
+            if (callback == null)
+            {
+                callback = (a, b, c, d, e) => { };
+            }
+            ConnectionSettings cs = _connectionSettings.Clone();
+            String securityToken = GetSecurityToken(cs);
+            /*				<input type="hidden" name="fromquickreply" value="1" />
+                <input type="hidden" name="s" value="" />
+                <input type="hidden" name="securitytoken" value="1338251187-cd0e85748ac090ba7cb5281011b49332c0ba455a" />
+                <input type="hidden" name="do" value="postreply" />
+                <input type="hidden" name="t" value="1204368" id="qr_threadid" />
+                <input type="hidden" name="p" value="who cares" id="qr_postid" />
+                <input type="hidden" name="specifiedpost" value="0" id="qr_specifiedpost" />
+                <input type="hidden" name="parseurl" value="1" />
+                <input type="hidden" name="loggedinuser" value="198669" />
+             * 
+             * openclose=1
+             * open:
+             * POST http://forumserver.twoplustwo.com/postings.php?t=1204368&pollid= 
+             * do=openclosethread&s=&securitytoken=1338253787-f7a244e5e823e6d88002169f4f314e97febf4dce&t=1204368&pollid=
+             * close:
+             * POST /postings.php?t=1204368&pollid= HTTP/1.1
+             * do=openclosethread&s=&securitytoken=1338253981-5657f92aed9e901b4292a60cab0e9efaac4be1fe&t=1204368&pollid=
+*/
+
+            StringBuilder msg = new StringBuilder();
+
+            String sTo = String.Empty;
+            if (pm.To != null)
+            {
+                sTo = String.Join("; ", pm.To);
+            }
+            String sBCC = String.Empty;
+            if (pm.BCC != null)
+            {
+                sBCC = String.Join("; ", pm.BCC);
+            }
+            msg.AppendFormat("{0}={1}&", "recipients", sTo);
+            msg.AppendFormat("{0}={1}&", "bccrecipients", sBCC);
+            if (pm.Title != String.Empty)
+            {
+                msg.AppendFormat("{0}={1}&", "title", HttpUtility.UrlEncode(pm.Title));
+            }
+            String content = pm.Content.Replace("\r\n", "\n");
+            msg.AppendFormat("{0}={1}&", "message", HttpUtility.UrlEncode(content));
+            msg.AppendFormat("{0}={1}&", "wysiwyg", "0");
+            msg.AppendFormat("{0}={1}&", "iconid", "0");
+            msg.AppendFormat("{0}={1}&", "s", "");
+            msg.AppendFormat("{0}={1}&", "securitytoken", securityToken);
+            msg.AppendFormat("{0}={1}&", "do", "insertpm");
+            msg.AppendFormat("{0}={1}&", "pmid", "");
+            msg.AppendFormat("{0}={1}&", "forward", "");
+            msg.AppendFormat("{0}={1}&", "sbutton", "Submit Button");
+            msg.AppendFormat("{0}={1}&", "receipt", "1");
+            msg.AppendFormat("{0}={1}&", "savecopy", "1");
+            msg.AppendFormat("{0}={1}&", "parseurl", "1");
+
+            cs.Url = String.Format("{0}private.php?do=insertpm&pmid=", _outer.ForumURL);
+            cs.Data = msg.ToString();
+            //Trace.TraceInformation("Posting: " + cs.Data);
+            String resp = HtmlHelper.PostToUrl(cs);
+            if (resp == null)
+            {
+                // failure
+                callback(pm, PrivateMessageError.PMHttpError, String.Empty, null, cookie);
+                return false;
+            }
+            if (resp.Contains(@"you do not have permission to access this page. This could be due to one of several reasons:"))
+            {
+                callback(pm, PrivateMessageError.PMNotAllowed, "New user can't PM.", null, cookie);
+                return false;
+            }
+            var html = new HtmlAgilityPack.HtmlDocument();
+            html.LoadHtml(resp);
+            HtmlAgilityPack.HtmlNode root = html.DocumentNode;
+            HtmlAgilityPack.HtmlNode node = root.SelectSingleNode("//comment()[contains(.,'POSTERROR do not remove this comment')]/following-sibling::ol");
+            if (node != null)
+            {
+                String errorString = "Unknown Error";
+                HtmlAgilityPack.HtmlNode err = node.SelectSingleNode("li");
+                if (err != null)
+                {
+                    HtmlAgilityPack.HtmlNode emsg = err.FirstChild;
+                    errorString = emsg.InnerText;
+                    switch (errorString)
+                    {
+                        case "The following users were not found: ":
+                            {
+                                HtmlAgilityPack.HtmlNode who = emsg.SelectSingleNode("../ol/li[1]");
+                                callback(pm, PrivateMessageError.PMUnknownRecepient, errorString, who.InnerText, cookie);
+                            }
+                            return false;
+
+                        case @"You have reached your stored private message quota and cannot send any further messages until space has been created.":
+                            {
+                                callback(pm, PrivateMessageError.PMSenderFull, errorString, "Out of space", cookie);
+                            }
+                            return false;
+
+                        case @"Please complete both the subject and message fields.":
+                            {
+                                if ((pm.Title == String.Empty) || (pm.Title == null))
+                                {
+                                    callback(pm, PrivateMessageError.PMNoTitle, errorString, null, cookie);
+                                }
+                                else
+                                {
+                                    callback(pm, PrivateMessageError.PMNoBody, errorString, null, cookie);
+                                }
+                            }
+                            return false;
+
+                        case "Invalid recipient username. Please press the back button, enter the correct username and try again.  ":
+                            {
+                                callback(pm, PrivateMessageError.PMNoRecepient, errorString, null, cookie);
+                            }
+                            return false;
+                        
+                        default:
+                            {
+                                String regex = @"This forum requires that you wait (\d*) seconds between sending private messages. Please try again in (\d*) seconds.";
+                                Match m = Regex.Match(errorString, regex);
+                                if (m.Success)
+                                {
+                                    Int32 wait = Int32.Parse(m.Groups[2].Value);
+                                    callback(pm, PrivateMessageError.PMTooSoon, errorString, wait, cookie);
+                                    return false;
+                                }
+                                regex = @"(.+) has chosen not to receive private messages or may not be allowed to receive private messages. Therefore you may not send your message to him/her.";
+                                m = Regex.Match(errorString, regex);
+                                if (m.Success)
+                                {
+                                    String who = m.Groups[1].Value;
+                                    callback(pm, PrivateMessageError.PMRecepientNotAllowed, errorString, who, cookie);
+                                    return false;
+                                }
+                                regex = @"(.+) has exceeded their stored private messages quota and cannot accept further messages until they clear some space.";
+                                m = Regex.Match(errorString, regex);
+                                if (m.Success)
+                                {
+                                    String who = m.Groups[1].Value;
+                                    callback(pm, PrivateMessageError.PMRecepientFull, errorString, who, cookie);
+                                    return false;
+                                }
+                                regex = @"The text that you have entered is too long \((\d*) characters\). Please shorten it to (\d*) characters long.";
+                                m = Regex.Match(errorString, regex);
+                                if (m.Success)
+                                {
+                                    String length = m.Groups[1].Value;
+                                    Int32 max = Int32.Parse(m.Groups[2].Value);
+                                    callback(pm, PrivateMessageError.PMTooLongDidntSend, errorString, max, cookie);
+                                    return false;
+                                }
+                                regex = @"Too many recipients - you are attempting to send to (\d*) users but you are only allowed to send to (\d*) users.";
+                                m = Regex.Match(errorString, regex);
+                                if (m.Success)
+                                {
+                                    String attempt = m.Groups[1].Value;
+                                    Int32 max = Int32.Parse(m.Groups[2].Value);
+                                    callback(pm, PrivateMessageError.PMTooManyRecepients, errorString, max, cookie);
+                                    return false;
+                                }
+
+                            }
+                            break;
+                    }
+                }
+                callback(pm, PrivateMessageError.PMUnknownError, errorString, null, cookie);
+                return false;
+            }
+            callback(pm, PrivateMessageError.PMSuccess, String.Empty, null, cookie);
+            return true;
+        }
+
         internal Boolean SendPM(IEnumerable<string> To, IEnumerable<string> bcc, string title, string content, bool receipt)
         {
             ConnectionSettings cs = _connectionSettings.Clone();
@@ -764,6 +940,7 @@ fragment	name
                 return rc;
             }
         }
+
     }
 	public class VBulletinForum
 	{
@@ -850,6 +1027,11 @@ fragment	name
             Boolean rc = _inner.SendPM(To, bcc, title, content, receipt);
             return rc;
 		}
+        public Boolean SendPM(PrivateMessage pm, PMResult callback = null, Boolean receipt = true, object cookie = null)
+        {
+            Boolean rc = _inner.SendPM(pm, callback, receipt, cookie);
+            return rc;
+        }
 		public Boolean LockThread(Int32 thread, Boolean lockIt)
 		{
 			Boolean rc = _inner.LockThread(thread, lockIt);
