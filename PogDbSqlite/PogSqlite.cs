@@ -846,7 +846,7 @@ ORDER BY Poster.postername ASC;";
 			//Trace.TraceInformation("after GetPlayerList {0}", watch.Elapsed.ToString());
 			return players;
 		}
-		public IEnumerable<VoterInfo> GetVotes(Int32 threadId, Int32 startPost, DateTime endTime, object game)
+		public IEnumerable<VoterInfo> GetVotes(Int32 threadId, Int32 startPost, DateTime endTime, Boolean lockedVotes, object game)
 		{
 			String sql = 
 @"
@@ -879,7 +879,42 @@ WHERE (GameRole.threadid = @p2)
 GROUP BY Poster.postername
 ;
 ";
-			SortableBindingList<VoterInfo> voters = new SortableBindingList<VoterInfo>();
+            String sqlLocked =
+@"
+SELECT GameRole.roleid, Player.posterid, Poster.postername, 
+(SELECT COUNT(*)  
+	FROM Post WHERE
+	(GameRole.threadid = @p2)
+	AND ((Player.endtime IS NULL) OR (player.endtime > @p4))
+	AND (Post.threadid = GameRole.threadid)
+	AND (Post.posterid = Player.posterid)
+	AND (Post.postnumber >= @p4) 
+	AND (Post.posttime <= @p3)
+) AS postcount,
+(SELECT MIN(Post.postid)
+	FROM Bolded, Post WHERE
+	(GameRole.threadid = @p2)
+	AND ((Player.endtime IS NULL) OR (player.endtime > @p4))
+	AND (Post.threadid = GameRole.threadid)
+	AND (Bolded.postid = Post.postid)
+	AND (Post.posterid = Player.posterid)
+	AND (Post.postnumber >= @p4) 
+	AND (Post.posttime <= @p3)
+	AND (Bolded.ignore = 0)
+) AS bolded
+FROM GameRole 
+JOIN Player ON (GameRole.roleid = Player.roleid)
+JOIN Poster ON (Poster.posterid = Player.posterid)
+WHERE (GameRole.threadid = @p2)
+	AND ((Player.endtime IS NULL) OR (player.endtime > @p4))
+GROUP BY Poster.postername
+;
+";
+            if (lockedVotes)
+            {
+                sql = sqlLocked;
+            }
+            SortableBindingList<VoterInfo> voters = new SortableBindingList<VoterInfo>();
 			Stopwatch watch = new Stopwatch();
 			watch.Start();
 			using (SQLiteConnection dbRead = new SQLiteConnection(_connect))
@@ -924,7 +959,23 @@ SELECT Bolded.bolded, Bolded.position, Post.postnumber, Post.posttime
 	LIMIT 1
 ; 
 ";
-				using (SQLiteCommand cmd = new SQLiteCommand(sql, dbRead))
+                sqlLocked =
+@"
+SELECT Bolded.bolded, Bolded.position, Post.postnumber, Post.posttime
+	FROM Bolded
+	JOIN Post ON (Bolded.postid = Post.postid)
+	WHERE
+	(Bolded.postid = @p1)
+	AND (Bolded.ignore = 0)
+	ORDER BY Bolded.position ASC
+	LIMIT 1
+; 
+";
+                if (lockedVotes)
+                {
+                    sql = sqlLocked;
+                }
+                using (SQLiteCommand cmd = new SQLiteCommand(sql, dbRead))
 				{
 					foreach (VoterInfo v in voters)
 					{

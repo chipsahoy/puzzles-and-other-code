@@ -44,12 +44,8 @@
             this.dtEndTime = new System.Windows.Forms.TextBox();
             this.btnEditDay = new System.Windows.Forms.Button();
             this.btnRoster = new System.Windows.Forms.Button();
-            this.label3 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.txtLastPost = new System.Windows.Forms.TextBox();
-            this.btnIgnore = new System.Windows.Forms.Button();
-            this.btnUnignore = new System.Windows.Forms.Button();
-            this.udDay = new System.Windows.Forms.NumericUpDown();
             this.txtCountDown = new System.Windows.Forms.TextBox();
             this.btnGetPosts = new System.Windows.Forms.Button();
             this.btnPostIt = new System.Windows.Forms.Button();
@@ -57,10 +53,11 @@
             this.grdVotes = new System.Windows.Forms.DataGridView();
             this.lblDaysToEOD = new System.Windows.Forms.Label();
             this.btnMod = new System.Windows.Forms.Button();
+            this.chkLockedVotes = new System.Windows.Forms.CheckBox();
+            this.btnFixVote = new System.Windows.Forms.Button();
             this.contextMenuStrip1.SuspendLayout();
             this.statusBrowser.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.udDay)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.grdVotes)).BeginInit();
             this.SuspendLayout();
             // 
@@ -79,7 +76,6 @@
             this.mnuHide.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.H)));
             this.mnuHide.Size = new System.Drawing.Size(154, 22);
             this.mnuHide.Text = "Hide";
-            this.mnuHide.Click += new System.EventHandler(this.mnuHide_Click);
             // 
             // mnuUnhide
             // 
@@ -88,7 +84,6 @@
             this.mnuUnhide.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.U)));
             this.mnuUnhide.Size = new System.Drawing.Size(154, 22);
             this.mnuUnhide.Text = "Unhide";
-            this.mnuUnhide.Click += new System.EventHandler(this.mnuUnhide_Click);
             // 
             // statusBrowser
             // 
@@ -127,19 +122,17 @@
             this.tableLayoutPanel1.Controls.Add(this.dtEndTime, 2, 2);
             this.tableLayoutPanel1.Controls.Add(this.btnEditDay, 3, 1);
             this.tableLayoutPanel1.Controls.Add(this.btnRoster, 3, 2);
-            this.tableLayoutPanel1.Controls.Add(this.label3, 4, 1);
             this.tableLayoutPanel1.Controls.Add(this.label2, 0, 5);
             this.tableLayoutPanel1.Controls.Add(this.txtLastPost, 1, 5);
-            this.tableLayoutPanel1.Controls.Add(this.btnIgnore, 2, 5);
-            this.tableLayoutPanel1.Controls.Add(this.btnUnignore, 3, 5);
-            this.tableLayoutPanel1.Controls.Add(this.udDay, 4, 2);
             this.tableLayoutPanel1.Controls.Add(this.txtCountDown, 8, 5);
             this.tableLayoutPanel1.Controls.Add(this.btnGetPosts, 7, 1);
             this.tableLayoutPanel1.Controls.Add(this.btnPostIt, 8, 1);
             this.tableLayoutPanel1.Controls.Add(this.btnCopyIt, 8, 2);
             this.tableLayoutPanel1.Controls.Add(this.grdVotes, 0, 3);
             this.tableLayoutPanel1.Controls.Add(this.lblDaysToEOD, 7, 5);
-            this.tableLayoutPanel1.Controls.Add(this.btnMod, 4, 5);
+            this.tableLayoutPanel1.Controls.Add(this.chkLockedVotes, 4, 1);
+            this.tableLayoutPanel1.Controls.Add(this.btnFixVote, 4, 2);
+            this.tableLayoutPanel1.Controls.Add(this.btnMod, 7, 2);
             this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 0);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
@@ -227,17 +220,6 @@
             this.btnRoster.UseVisualStyleBackColor = true;
             this.btnRoster.Click += new System.EventHandler(this.btnRoster_Click);
             // 
-            // label3
-            // 
-            this.label3.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(370, 16);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(29, 13);
-            this.label3.TabIndex = 40;
-            this.label3.Text = "Day:";
-            this.label3.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-            // 
             // label2
             // 
             this.label2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
@@ -260,54 +242,9 @@
             this.txtLastPost.TabStop = false;
             this.txtLastPost.Text = "0";
             // 
-            // btnIgnore
-            // 
-            this.btnIgnore.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnIgnore.Location = new System.Drawing.Point(228, 361);
-            this.btnIgnore.Name = "btnIgnore";
-            this.btnIgnore.Size = new System.Drawing.Size(65, 23);
-            this.btnIgnore.TabIndex = 10;
-            this.btnIgnore.Text = "Hide";
-            this.btnIgnore.UseVisualStyleBackColor = true;
-            this.btnIgnore.Click += new System.EventHandler(this.btnIgnore_Click);
-            // 
-            // btnUnignore
-            // 
-            this.btnUnignore.Location = new System.Drawing.Point(299, 361);
-            this.btnUnignore.Name = "btnUnignore";
-            this.btnUnignore.Size = new System.Drawing.Size(65, 23);
-            this.btnUnignore.TabIndex = 15;
-            this.btnUnignore.Text = "Unhide";
-            this.btnUnignore.UseVisualStyleBackColor = true;
-            this.btnUnignore.Click += new System.EventHandler(this.btnUnignore_Click);
-            // 
-            // udDay
-            // 
-            this.udDay.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.udDay.Location = new System.Drawing.Point(370, 33);
-            this.udDay.Maximum = new decimal(new int[] {
-            20,
-            0,
-            0,
-            0});
-            this.udDay.Minimum = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            this.udDay.Name = "udDay";
-            this.udDay.Size = new System.Drawing.Size(37, 20);
-            this.udDay.TabIndex = 39;
-            this.udDay.Value = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            this.udDay.ValueChanged += new System.EventHandler(this.udDay_ValueChanged);
-            // 
             // txtCountDown
             // 
-            this.txtCountDown.Location = new System.Drawing.Point(602, 361);
+            this.txtCountDown.Location = new System.Drawing.Point(587, 361);
             this.txtCountDown.Name = "txtCountDown";
             this.txtCountDown.ReadOnly = true;
             this.txtCountDown.Size = new System.Drawing.Size(65, 20);
@@ -315,7 +252,7 @@
             // 
             // btnGetPosts
             // 
-            this.btnGetPosts.Location = new System.Drawing.Point(531, 2);
+            this.btnGetPosts.Location = new System.Drawing.Point(516, 2);
             this.btnGetPosts.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.btnGetPosts.Name = "btnGetPosts";
             this.btnGetPosts.Size = new System.Drawing.Size(65, 23);
@@ -326,7 +263,8 @@
             // 
             // btnPostIt
             // 
-            this.btnPostIt.Location = new System.Drawing.Point(602, 2);
+            this.btnPostIt.Enabled = false;
+            this.btnPostIt.Location = new System.Drawing.Point(587, 2);
             this.btnPostIt.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.btnPostIt.Name = "btnPostIt";
             this.btnPostIt.Size = new System.Drawing.Size(65, 23);
@@ -337,7 +275,7 @@
             // 
             // btnCopyIt
             // 
-            this.btnCopyIt.Location = new System.Drawing.Point(602, 31);
+            this.btnCopyIt.Location = new System.Drawing.Point(587, 31);
             this.btnCopyIt.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.btnCopyIt.Name = "btnCopyIt";
             this.btnCopyIt.Size = new System.Drawing.Size(65, 23);
@@ -371,7 +309,7 @@
             // 
             this.lblDaysToEOD.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.lblDaysToEOD.AutoSize = true;
-            this.lblDaysToEOD.Location = new System.Drawing.Point(546, 366);
+            this.lblDaysToEOD.Location = new System.Drawing.Point(531, 366);
             this.lblDaysToEOD.Name = "lblDaysToEOD";
             this.lblDaysToEOD.Size = new System.Drawing.Size(50, 13);
             this.lblDaysToEOD.TabIndex = 43;
@@ -381,13 +319,36 @@
             // 
             // btnMod
             // 
-            this.btnMod.Location = new System.Drawing.Point(370, 361);
+            this.btnMod.Location = new System.Drawing.Point(516, 32);
             this.btnMod.Name = "btnMod";
             this.btnMod.Size = new System.Drawing.Size(65, 23);
             this.btnMod.TabIndex = 44;
             this.btnMod.Text = "Mod...";
             this.btnMod.UseVisualStyleBackColor = true;
             this.btnMod.Click += new System.EventHandler(this.btnMod_Click);
+            // 
+            // chkLockedVotes
+            // 
+            this.chkLockedVotes.AutoSize = true;
+            this.tableLayoutPanel1.SetColumnSpan(this.chkLockedVotes, 3);
+            this.chkLockedVotes.Location = new System.Drawing.Point(370, 3);
+            this.chkLockedVotes.Name = "chkLockedVotes";
+            this.chkLockedVotes.Size = new System.Drawing.Size(92, 17);
+            this.chkLockedVotes.TabIndex = 45;
+            this.chkLockedVotes.Text = "Locked Votes";
+            this.chkLockedVotes.UseVisualStyleBackColor = true;
+            this.chkLockedVotes.CheckedChanged += new System.EventHandler(this.chkLockedVotes_CheckedChanged);
+            // 
+            // btnFixVote
+            // 
+            this.tableLayoutPanel1.SetColumnSpan(this.btnFixVote, 2);
+            this.btnFixVote.Location = new System.Drawing.Point(370, 32);
+            this.btnFixVote.Name = "btnFixVote";
+            this.btnFixVote.Size = new System.Drawing.Size(90, 23);
+            this.btnFixVote.TabIndex = 46;
+            this.btnFixVote.Text = "Fix this vote...";
+            this.btnFixVote.UseVisualStyleBackColor = true;
+            this.btnFixVote.Click += new System.EventHandler(this.btnFixVote_Click);
             // 
             // FormVoteCounter
             // 
@@ -404,7 +365,6 @@
             this.statusBrowser.PerformLayout();
             this.tableLayoutPanel1.ResumeLayout(false);
             this.tableLayoutPanel1.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.udDay)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.grdVotes)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -420,8 +380,6 @@
         private System.Windows.Forms.ToolStripStatusLabel statusText;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
         private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.Button btnUnignore;
-        private System.Windows.Forms.Button btnIgnore;
         private System.Windows.Forms.Label label18;
         private System.Windows.Forms.DataGridView grdVotes;
         private System.Windows.Forms.TextBox txtCountDown;
@@ -434,12 +392,12 @@
         private System.Windows.Forms.Button btnGetPosts;
         private System.Windows.Forms.Button btnEditDay;
         private System.Windows.Forms.Button btnRoster;
-        private System.Windows.Forms.NumericUpDown udDay;
-        private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Button btnPostIt;
         private System.Windows.Forms.Button btnCopyIt;
         private System.Windows.Forms.Label lblDaysToEOD;
         private System.Windows.Forms.Button btnMod;
+        private System.Windows.Forms.CheckBox chkLockedVotes;
+        private System.Windows.Forms.Button btnFixVote;
 
 
     }

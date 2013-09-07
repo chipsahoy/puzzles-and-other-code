@@ -86,19 +86,6 @@ namespace POG.FennecFox
 			bs.DataSource = _voteCount.LivePlayers;
 			grdVotes.DataSource = null;
 
-			//bs = new BindingSource();
-			//bs.DataSource = m_game;
-			List<String> validVotes = new List<string>();
-			String notVoting = "not voting";
-			validVotes.Add(notVoting);
-			validVotes.Add(_voteCount.ErrorVote);
-			validVotes.AddRange(_voteCount.ValidVotes.ToArray());
-			validVotes.Add("");
-			DataGridViewComboBoxColumn colCB = (DataGridViewComboBoxColumn)grdVotes.Columns[(Int32)CounterColumn.VotesFor];
-			colCB.DataSource = validVotes.ToArray();
-			colCB.DefaultCellStyle.NullValue = notVoting;
-
-			//colCB.DataSource = bs;
 			grdVotes.DataSource = bs;
 			grdVotes.Sort(grdVotes.Columns[(Int32)CounterColumn.PostTime], ListSortDirection.Descending);
 		}
@@ -157,14 +144,11 @@ namespace POG.FennecFox
 			col.Resizable = DataGridViewTriState.False;
 			grdVotes.Columns.Insert((Int32)CounterColumn.PostTime, col);
 
-			DataGridViewComboBoxColumn colCB = new DataGridViewComboBoxColumn();
-			colCB.DataPropertyName = "Votee";
-			colCB.HeaderText = "Votes For";
-			colCB.DisplayStyleForCurrentCellOnly = true;
-			colCB.AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-			colCB.Resizable = DataGridViewTriState.False;
-
-			grdVotes.Columns.Insert((Int32)CounterColumn.VotesFor, colCB);
+            col = new DataGridViewTextBoxColumn();
+            col.DataPropertyName = "Votee";
+			col.HeaderText = "Votes For";
+            col.ReadOnly = true;
+			grdVotes.Columns.Insert((Int32)CounterColumn.VotesFor, col);
 
 			col = new DataGridViewTextBoxColumn();
 			col.DataPropertyName = "Bolded";
@@ -270,10 +254,6 @@ namespace POG.FennecFox
 			{
 				statusText.Text = _voteCount.Status; // no direct binding support in status strip.
 			}
-			if (e.PropertyName == "Day")
-			{
-				udDay.Value = _voteCount.Day;
-			}
 		}
 
 		private void _timerEODCountdown_Tick(object sender, EventArgs e)
@@ -356,55 +336,6 @@ namespace POG.FennecFox
 			}
 		}
 
-		public void HideVote(string player)
-		{
-			_voteCount.IgnoreVote(player);
-		}
-
-		public void UnhideVote(string player)
-		{
-			_voteCount.UnIgnoreVote(player);
-		}
-
-		private void btnIgnore_Click(object sender, EventArgs e)
-		{
-			if (grdVotes.SelectedRows.Count < 1)
-			{
-				return;
-			}
-
-			var item = grdVotes.SelectedRows[0];
-			if (item != null)
-			{
-				var player = (String)item.Cells[(Int32)CounterColumn.Player].Value;
-				HideVote(player);
-			}
-		}
-
-		private void btnUnignore_Click(object sender, EventArgs e)
-		{
-			if (grdVotes.SelectedRows.Count < 1)
-			{
-				return;
-			}
-			var item = grdVotes.SelectedRows[0];
-			if (item != null)
-			{
-				var player = (String)item.Cells[(Int32)CounterColumn.Player].Value;
-				UnhideVote(player);
-			}
-		}
-
-		private void mnuHide_Click(object sender, EventArgs e)
-		{
-			btnIgnore_Click(sender, e);
-		}
-
-		private void mnuUnhide_Click(object sender, EventArgs e)
-		{
-			btnUnignore_Click(sender, e);
-		}
-
 		private void BindToNewGame(String url)
 		{
 			url = Utils.Misc.NormalizeUrl(url);
@@ -425,8 +356,9 @@ namespace POG.FennecFox
 			txtEndPost.DataBindings.Add("Text", _voteCount, "EndPost", false, DataSourceUpdateMode.OnPropertyChanged);
 			_voteCount.ChangeDay(_day);
 			_voteCount.Refresh();
-			_voteCount.CheckThread();
-		}
+            EnableButtons(false);
+            _voteCount.CheckThread(() => { EnableButtons(true); });
+        }
 
 		private void UnbindFromGame()
 		{
@@ -448,7 +380,8 @@ namespace POG.FennecFox
 		{
 			if (_voteCount != null)
 			{
-				_voteCount.CheckThread();
+                EnableButtons(false);
+                _voteCount.CheckThread(() => { EnableButtons(true); });
 			}
 		}
 
@@ -483,27 +416,6 @@ namespace POG.FennecFox
 			}
 		}
 
-		private void udDay_ValueChanged(object sender, EventArgs e)
-		{
-			Int32 day = (Int32)udDay.Value;
-			DateTime? startTime;
-			Int32 startPost;
-			DateTime endTime;
-			Int32 endPost;
-			if (_voteCount.GetDayBoundaries(day, out startTime, out startPost, out endTime, out endPost))
-			{
-				_day = day;
-				_voteCount.ChangeDay(day);
-			}
-			else
-			{
-				if (_voteCount.GetDayBoundaries(_day, out startTime, out startPost, out endTime, out endPost))
-				{
-					udDay.Value = _day;
-				}
-				this.statusText.Text = "Not a valid day! Use edit day button to add it first.";               
-			}
-		}
 
 		private void btnCopyIt_Click(object sender, EventArgs e)
 		{
@@ -569,6 +481,40 @@ namespace POG.FennecFox
 				_moderator.LockThread = autoLock;
 			}
 		}
+
+        private void chkLockedVotes_CheckedChanged(object sender, EventArgs e)
+        {
+            if (_voteCount != null)
+            {
+                _voteCount.LockedVotes = chkLockedVotes.Checked;
+            }
+        }
+        void EnableButtons(Boolean enabled)
+        {
+            chkLockedVotes.Enabled = enabled;
+            btnCopyIt.Enabled = enabled;
+            btnEditDay.Enabled = enabled;
+            btnFixVote.Enabled = enabled;
+            btnGetPosts.Enabled = enabled;
+            btnMod.Enabled = enabled;
+            btnPostIt.Enabled = enabled;
+            btnRoster.Enabled = enabled;
+        }
+        private void btnFixVote_Click(object sender, EventArgs e)
+        {
+			if (grdVotes.SelectedRows.Count < 1)
+			{
+				return;
+			}
+			var item = grdVotes.SelectedRows[0];
+			if (item != null)
+			{
+				var player = (String)item.Cells[(Int32)CounterColumn.Player].Value;
+                FixVote dlg = new FixVote(_voteCount, player);
+                DialogResult dr = dlg.ShowDialog();
+                
+            }
+        }
 	}
 
 }

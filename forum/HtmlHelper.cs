@@ -58,6 +58,7 @@ namespace POG.Forum
             {
                 // Prepare web request...
                 HttpWebRequest myRequest = (HttpWebRequest)WebRequest.Create(settings.Url);
+                myRequest.ServicePoint.ConnectionLimit = 20;
                 myRequest.Proxy = null;
 
                 // DEBUG ONLY
@@ -85,15 +86,16 @@ namespace POG.Forum
 
                 /* DEBUG ONLY, to handle HTTPS through fiddler.  also uncomment "proxy" above. */
 
-#if DEBUG
-                ServicePointManager.SecurityProtocol = SecurityProtocolType.Ssl3;
-                ServicePointManager.ServerCertificateValidationCallback +=
-                    delegate(object sender, X509Certificate certificate, X509Chain chain,
-                    SslPolicyErrors sslPolicyErrors)
-                    {
-                        return true;
-                    };
-#endif
+                if (FIDDLER)
+                {
+                    ServicePointManager.SecurityProtocol = SecurityProtocolType.Ssl3;
+                    ServicePointManager.ServerCertificateValidationCallback +=
+                        delegate(object sender, X509Certificate certificate, X509Chain chain,
+                        SslPolicyErrors sslPolicyErrors)
+                        {
+                            return true;
+                        };
+                }
 
                 foreach (KeyValuePair<String, String> header in settings.Headers)
                 {
@@ -144,11 +146,12 @@ namespace POG.Forum
                     // Send the data.
                     newStream.Write(dataBytes, 0, dataBytes.Length);
                 }
-
                 using (HttpWebResponse objResponse = (HttpWebResponse)myRequest.GetResponse())
                 {
                     responseStream = new MemoryStream();
-                    CopyStream(objResponse.GetResponseStream(), responseStream);
+                    var rs = objResponse.GetResponseStream();
+                    CopyStream(rs, responseStream);
+                    rs.Close();
                     responseStream.Seek(0, SeekOrigin.Begin);
                 }
             }

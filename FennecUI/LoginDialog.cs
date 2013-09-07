@@ -26,7 +26,14 @@ namespace POG.FennecFox
             // TODO: Complete member initialization
             this._forum = _forum;
         }
-
+        public String Username
+        {
+            get
+            {
+                return txtUsername.Text;
+            }
+        }
+        
         private void LoginDialog_Load(object sender, EventArgs e)
         {
             txtVersion.Text = String.Format("Fennic Fox Vote Counter Version " + Assembly.GetExecutingAssembly().GetName().Version.ToString());

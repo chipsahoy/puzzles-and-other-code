@@ -5,6 +5,7 @@ using System.Text;
 
 namespace POG.Forum
 {
+    public delegate void PMReadPageResult(PMFolderPage page, String errMessage, object cookie);
     public delegate void PMResult(PrivateMessage pm, PrivateMessageError err, String errMessage, object value, object cookie);
     public enum PrivateMessageError
     {
@@ -81,6 +82,100 @@ namespace POG.Forum
         {
             get;
             private set;
+        }
+    }
+    public class PMHeader
+    {
+        public Int32 Id
+        {
+            get;
+            private set;
+        }
+        public Boolean Unread
+        {
+            get;
+            private set;
+        }
+        public DateTime Timestamp
+        {
+            get;
+            private set;
+        }
+        public Poster Sender
+        {
+            get;
+            private set;
+        }
+        public String Title
+        {
+            get;
+            private set;
+        }
+        public String FirstLine
+        {
+            get;
+            private set;
+        }
+    }
+    public class PMFolderPage
+    {
+        public Int32 Capacity
+        {
+            get;
+            private set;
+        }
+        public Int32 TotalMessages
+        {
+            get;
+            private set;
+        }
+        IEnumerable<Int32> FolderIds
+        {
+            get
+            {
+                return null;
+            }
+        }
+        public Int32 FolderIndex
+        {
+            get;
+            private set;
+        }
+        public String Name
+        {
+            get;
+            private set;
+        }
+        public Int32 Count
+        {
+            get;
+            private set;
+        }
+        public Int32 UnreadCount
+        {
+            get;
+            private set;
+        }
+        public Int32 Page
+        {
+            get;
+            private set;
+        }
+        public Int32 MessagesThisPage
+        {
+            get;
+            private set;
+        }
+        public PMHeader this[Int32 ix]
+        {
+            get
+            {
+                return null;
+            }
+        }
+        public String GetFolderName(Int32 folderId)
+        {
+            return String.Empty;
         }
     }
 }

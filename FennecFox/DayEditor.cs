@@ -24,8 +24,7 @@ namespace POG.FennecFox
             InitializeComponent();
             dtEodTime.Format = DateTimePickerFormat.Custom;
             dtEodTime.CustomFormat = Application.CurrentCulture.DateTimeFormat.ShortTimePattern;
-
-            udDay.Value = _voteCount.Day;
+    
             udStartPost.Value = Math.Max(1, _voteCount.StartPost);
             DateTime eod = _voteCount.EndTime;
             dtEodDate.Value = eod;
@@ -34,7 +33,7 @@ namespace POG.FennecFox
         }
         public void GetDayBoundaries(out Int32 day, out Int32 startPost, out DateTime endTime)
         {
-            day = (Int32)udDay.Value;
+            day = 1;
             startPost = (Int32)udStartPost.Value;
             DateTime eodDate = dtEodDate.Value;
             DateTime eodTime = dtEodTime.Value;
@@ -42,49 +41,20 @@ namespace POG.FennecFox
                     eodTime.Hour, eodTime.Minute, 0, DateTimeKind.Local);
         }
 
-        private void udDay_ValueChanged(object sender, EventArgs e)
+        private void btnStartNow_Click(object sender, EventArgs e)
         {
-            if (_voteCount != null)
-            {
-                Int32 day = (Int32)udDay.Value;
-                DateTime? startTime;
-				Int32 startPost;
-                DateTime endTime;
-                Int32 endPost;
-                if (_voteCount.GetDayBoundaries(day, out startTime, out startPost, out endTime, out endPost))
-                {
-                    udStartPost.Value = startPost;
-                    dtEodDate.Value = endTime;
-                    dtEodTime.Value = endTime;
-                }
-                else
-                {
-                    // try to load previous day
-                    if ((day > 1) && _voteCount.GetDayBoundaries(day - 1, out startTime, out startPost, out endTime, out endPost))
-                    {
-                        udStartPost.Value = endPost + 1;
-                        DateTime eod;
-                        if (_voteCount.Turbo)
-                        {
-                            eod = endTime.AddMinutes(25);
-                        }
-                        else
-                        {
-                            eod = endTime.AddDays(1);
-                        }
-                        dtEodDate.Value = eod;
-                        dtEodTime.Value = eod;
-                    }
-                    else
-                    {
-                        udStartPost.Value = 1;
-                        DateTime now = DateTime.Now;
-                        DateTime eod = new DateTime(now.Year, now.Month, now.Day, 18, 0, 0);
-                        dtEodDate.Value = eod;
-                        dtEodTime.Value = eod;
-                    }
-                }
-            }
+            udStartPost.Value = Math.Max(1, _voteCount.LastPost);
         }
+
+        private void btnPlusDay_Click(object sender, EventArgs e)
+        {
+            dtEodDate.Value = dtEodDate.Value.AddDays(1);
+        }
+
+        private void btnPlusTwenty_Click(object sender, EventArgs e)
+        {
+            dtEodTime.Value = dtEodTime.Value.AddMinutes(20);
+        }
+
     }
 }

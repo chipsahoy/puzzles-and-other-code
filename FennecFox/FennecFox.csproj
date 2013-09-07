@@ -93,6 +93,12 @@
     <Compile Include="AboutFennec.Designer.cs">
       <DependentUpon>AboutFennec.cs</DependentUpon>
     </Compile>
+    <Compile Include="FixVote.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FixVote.Designer.cs">
+      <DependentUpon>FixVote.cs</DependentUpon>
+    </Compile>
     <Compile Include="Moderate.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -151,6 +157,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="FennecFox.resx">
       <DependentUpon>FennecFox.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FixVote.resx">
+      <DependentUpon>FixVote.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="FoxParent.resx">
       <DependentUpon>FoxParent.cs</DependentUpon>

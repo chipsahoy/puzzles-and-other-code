@@ -787,7 +787,7 @@ loggedinuser 81788
 				msg.AppendFormat("{0}={1}&", "title", HttpUtility.UrlEncodeUnicode(title));
 			}
             msg.AppendFormat("{0}={1}&", "ajax", "1");
-            msg.AppendFormat("{0}={1}&", "ajax_lastpost", "1");
+            //msg.AppendFormat("{0}={1}&", "ajax_lastpost", "1"); // Need real last post number or else all posts are returned.
             msg.AppendFormat("{0}={1}&", "message_backup", HttpUtility.UrlEncodeUnicode(content));
             msg.AppendFormat("{0}={1}&", "message", HttpUtility.UrlEncodeUnicode(content));
             msg.AppendFormat("{0}={1}&", "wysiwyg", "0");
@@ -1022,6 +1022,11 @@ fragment	name
 		{
 			_inner.Logout();
 		}
+        public Boolean CheckPMs(Int32 folder, Int32 page, PMReadPageResult callback)
+        {
+            return true;
+        }
+        [Obsolete]
 		public Boolean SendPM(IEnumerable<String> To, IEnumerable<String> bcc, String title, String content, Boolean receipt = true)
 		{
             Boolean rc = _inner.SendPM(To, bcc, title, content, receipt);

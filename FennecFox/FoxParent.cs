@@ -9,6 +9,7 @@ using System.Windows.Forms;
 using System.Runtime.InteropServices;
 using POG.Forum;
 using POG.Werewolf;
+using POG.Utils;
 using System.Collections.Specialized;
 
 namespace POG.FennecFox
@@ -30,12 +31,6 @@ namespace POG.FennecFox
 		{
             _forumName = forumName;
             InitializeComponent();
-			if (POG.FennecFox.Properties.Settings.Default.updateSettings)
-			{
-				POG.FennecFox.Properties.Settings.Default.Upgrade();
-				POG.FennecFox.Properties.Settings.Default.updateSettings = false;
-				POG.FennecFox.Properties.Settings.Default.Save();
-			}
 		}
 		void FoxParent_Load(object sender, EventArgs e)
 		{
@@ -71,8 +66,8 @@ namespace POG.FennecFox
 			_forum = new VBulletinForum(_synchronousInvoker, host, vbVersion, lobby);
 			_forum.LoginEvent += new EventHandler<LoginEventArgs>(_forum_LoginEvent);
 
-			String username = POG.FennecFox.Properties.Settings.Default.username;
-			String password = POG.FennecFox.Properties.Settings.Default.password;
+			String username = PogSettings.Read("username", String.Empty);
+			String password = PogSettings.Read("password", String.Empty);
 			if ((username != String.Empty) && (password != String.Empty))
 			{
 				_forum.Login(username, password);
@@ -86,11 +81,11 @@ namespace POG.FennecFox
 		private void ShowNewForm(object sender, EventArgs e)
 		{
 		}
-		private void ShowCounter(String url, Boolean turbo, Int32 day)
+		private void ShowCounter(String url, String OP, Boolean turbo, Int32 day)
 		{
 			Form childForm = new FormVoteCounter(_forum, _synchronousInvoker, _db, url, turbo, day, _language);
 			childForm.MdiParent = this;
-			childForm.Text = "Window " + childFormNumber++;
+			childForm.Text = OP;
 			childForm.Show();
 		}
 
@@ -102,10 +97,11 @@ namespace POG.FennecFox
 			if (dr == System.Windows.Forms.DialogResult.OK)
 			{
 				Boolean turbo;
-				String url = frm.GetURL(out turbo);
+                String op;
+				String url = frm.GetURL(out op, out turbo);
 				if (url.Length > 0)
 				{
-					ShowCounter(url, turbo, 1);
+					ShowCounter(url, op, turbo, 1);
 				}
 			}
 		}
@@ -268,7 +264,8 @@ namespace POG.FennecFox
 						_loggedIn = true;
 						openToolStripButton.Enabled = true;
 						tsBtnLogout.Enabled = true;
-					}
+                        this.Text = String.Format("Fennec Fox Vote Counter -- Logged in as {0}", e.Username);
+                    }
 					break;
 
 				case Forum.LoginEventType.LogoutSuccess:

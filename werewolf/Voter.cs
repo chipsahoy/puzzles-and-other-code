@@ -50,11 +50,15 @@ namespace POG.Werewolf
 			}
 			set
 			{
-				String content = Bolded;
-				if (content != "")
-				{
-					_game.AddVoteAlias(content, value);
-				}
+                String votee = Votee;
+                if (value != votee)
+                {
+                    String content = Bolded;
+                    if (content != "")
+                    {
+                        _game.AddVoteAlias(content, value);
+                    }
+                }
 			}
 		}
 

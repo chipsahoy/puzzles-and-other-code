@@ -36,6 +36,7 @@ namespace POG.Werewolf
 		DateTime _endTime;
 		Int32? _endPost;
 		Int32 _day = 1;
+        String _postableCount;
 
 		public readonly String ErrorVote = "Error!";
 		public readonly String Unvote = "unvote";
@@ -101,7 +102,8 @@ namespace POG.Werewolf
 				if (v.Name == player)
 				{
 					_db.SetIgnoreOnBold(v.PostId, v.BoldPosition, true);
-					break;
+                    ReadAllFromDB();
+                    break;
 				}
 			}
 		}
@@ -113,7 +115,8 @@ namespace POG.Werewolf
 				if (v.Name == player)
 				{
 					_db.WriteUnhide(_threadId, player, v.PostId, _endTime);
-					break;
+                    ReadAllFromDB();
+                    break;
 				}
 			}
 		}
@@ -132,6 +135,7 @@ namespace POG.Werewolf
 			{
 				_checkingThread = true;
 				Status = "Checking for new posts...";
+                _postableCount = String.Empty;
 				_thread.ReadPages(_url, lastPage, Int32.MaxValue, callback);
 			}
 			else
@@ -163,198 +167,10 @@ namespace POG.Werewolf
 		{
 			_db.WriteAlias(_threadId, bolded, GetPlayerId(votee));
 		}
-		public string GetPostableVoteCount()
-		{
-            string sError = "Error";
-            string sNotVoting = "not voting";
-            int? endPost = EndPost;
-			int end;
-			if (endPost != null)
-			{
-				end = endPost.Value;
-			}
-			else
-			{
-				end = LastPost;
-			}
-            String sStart = "[color=black][b]Votes from post {0} to post {1}";
-            String sTimeToNight = "Night in {0}{1}";
-            String sNight = "It is night";
-            String startTable = "[table=head][b]Votes[/b]\t[b]Lynch[/b]\t[b]Voters[/b]";
-            String sWagonLine = "{0} \t [b]{1}[/b] \t {2}";
-            String sNoVoteLine = "{0} \t {1} \t {2}";
-            String showNotVoting = sNotVoting;
-            String sErrorLine = "{0} \t [color=red][b]{1}[/b][/color] \t {2}";
-            String redError = sError;
-            String sGoodBad = "[highlight][color=green]:{0} good[/color] [color=red]:{1} bad[/color][/highlight]";
-            String sOneDay = "1 day ";
-            String sDays = "{0} days ";
-
-            switch (_language)
-            {
-                case Language.Estonian:
-                    {
-                        sStart = "[color=black][b]Hääled seisuga post {0} kuni {1}";
-                        sTimeToNight = "Öö saabub {0}{1} pärast";
-                        sNight = "On öö";
-                        startTable = "[table= class: grid][tr][td][b]Hääli[/b][/td][td][b]Lynch[/b][/td][td][b]Hääletajad[/b][/td][/tr]";
-                        sWagonLine = "[tr][td]{0} [/td][td] [b]{1}[/b] [/td][td] {2}[/td][/tr]";
-                        sNoVoteLine = "[tr][td]{0} [/td][td] {1} [/td][td] {2}[/td][/tr]";
-                        sErrorLine = "[tr][td]{0} [/td][td] [color=red][b]{1}[/b][/color] [/td][td] {2}[/td][/tr]";
-                        showNotVoting = "ei ole hääletanud";
-                        redError = "Viga";
-                        sGoodBad = "[highlight][color=green]:{0}  loeb[/color] [color=red]:{1} ei loe[/color][/highlight]";
-                        sOneDay = "1 päeva ja ";
-                        sDays = "{0} päeva ja ";
-                    }
-                    break;
-            }
-            var sb = new StringBuilder();
-            sb.AppendFormat(sStart, StartPost, end);
-			sb.AppendLine();
-
-			TimeSpan ts = TimeUntilNight;
-			Boolean almostNight = false;
-			if (ts > TimeSpan.FromSeconds(0))
-			{
-				String days;
-				switch (ts.Days)
-				{
-					case 0:
-						{
-							days = "";
-							if (ts.TotalMinutes <= 30)
-							{
-								almostNight = true;
-							}
-						}
-						break;
-
-					case 1:
-						{
-							days = sOneDay;
-						}
-						break;
-
-					default:
-						{
-							days = String.Format(sDays, ts.Days);
-						}
-						break;
-				}
-                sb.AppendFormat(sTimeToNight, days, ts.ToString(@"hh\:mm\:ss"));
-			}
-			else
-			{
-                sb.Append(sNight);
-			}
-
-			sb.AppendLine("[/b][/color]").AppendLine("---")
-            .AppendLine(startTable);
-
-			Dictionary<String, List<Voter>> wagons = new Dictionary<string, List<Voter>>();
-			List<Voter> listError = new List<Voter>();
-			List<Voter> listNoLynch = new List<Voter>();
-			List<Voter> listUnvote = new List<Voter>();
-			List<Voter> listNotVoting = new List<Voter>();
-			wagons.Add(sError, listError);
-			wagons.Add(NoLynch, listNoLynch);
-			wagons.Add(Unvote, listUnvote);
-			wagons.Add(sNotVoting, listNotVoting);
-			// for each live player
-			List<Voter> posters;
-			posters = new List<Voter>(_livePlayers);
-			foreach (Voter p in posters)
-			{
-				wagons.Add(p.Name, new List<Voter>());
-			}
-			List<String> legalVoters = new List<string>()
-			{
-			};
-			// find out who they are voting, add vote to that wagon.
-			foreach (Voter p in posters)
-			{
-				if (!(legalVoters.Contains(p.Name)))
-				{
-//                    continue;
-				}
-				String votee = p.Votee;
-				if (votee == ErrorVote)
-				{
-					wagons["Error"].Add(p);
-				}
-				else if (votee == "")
-				{
-					wagons["not voting"].Add(p);
-				}
-				else
-				{
-					wagons[votee].Add(p);
-				}
-			}
-			
-			// sort wagons by count
-			wagons.Remove(NoLynch);
-			wagons.Remove(Unvote);
-			wagons.Remove(sNotVoting);
-			wagons.Remove(sError);
-			foreach (var wagon in wagons)
-			{
-				Voter v = VoterByName(wagon.Key);
-				if (v != null)
-				{
-					v.VoteCount = wagon.Value.Count;
-				}
-			}
-			var sortedWagons = (from wagon in wagons where (wagon.Value.Count > 0) orderby wagon.Value.Count descending select wagon).ToDictionary(pair => pair.Key, pair => pair.Value);
-			// build string with wagons followed by optional {unvote, no lynch, not voting}
-			foreach (var wagon in sortedWagons)
-			{
-				sb
-                    .AppendFormat(sWagonLine, wagon.Value.Count, wagon.Key,
-									VoteLinks(wagon.Value, true))
-					.AppendLine();
-			}
-			if (listNoLynch.Count > 0)
-			{
-				sb
-                    .AppendFormat(sNoVoteLine, listNoLynch.Count, NoLynch,
-									VoteLinks(listNoLynch, true))
-					.AppendLine();
-			}
-			if (listUnvote.Count > 0)
-			{
-				sb
-                    .AppendFormat(sNoVoteLine, listUnvote.Count, Unvote,
-									VoteLinks(listUnvote, true))
-					.AppendLine();
-			}
-			if (listNotVoting.Count > 0)
-			{
-				sb
-                    .AppendFormat(sNoVoteLine, listNotVoting.Count, showNotVoting,
-									VoteLinks(listNotVoting, false))
-					.AppendLine();
-			}
-			if (listError.Count > 0)
-			{
-				sb
-                    .AppendFormat(sErrorLine, listError.Count, redError,
-									VoteLinks(listError, true))
-					.AppendLine();
-			}
-			sb.AppendLine("[/table]");
-			if (almostNight)
-			{
-				DateTime et = _endTime;
-				int good = et.Minute;
-				int bad = (good + 1) % 60;
-				sb.AppendLine();
-                sb.AppendFormat(sGoodBad,
-						good.ToString("00"), bad.ToString("00"));
-			}
-			return sb.ToString();
-		}
+        public string GetPostableVoteCount()
+        {
+            return _postableCount;
+        }
 
 		private Voter VoterByName(string p)
 		{
@@ -547,6 +363,23 @@ namespace POG.Werewolf
 				return _census;
 			}
 		}
+        [System.ComponentModel.Bindable(true)]
+        Boolean _lockedVotes;
+        public Boolean LockedVotes
+        {
+            get
+            {
+                return _lockedVotes;
+            }
+            set
+            {
+                if (_lockedVotes != value)
+                {
+                    _lockedVotes = value;
+                    ReadAllFromDB();
+                }
+            }
+        }
 		#endregion
 		#region Events
 		public event PropertyChangedEventHandler PropertyChanged;
@@ -583,7 +416,207 @@ namespace POG.Werewolf
 
 		#endregion
 		#region private methods
-		void ReadAllFromDB()
+        private void CreatePostableVoteCount()
+        {
+            string sError = "Error";
+            string sNotVoting = "not voting";
+            int? endPost = EndPost;
+            int end;
+            if (endPost != null)
+            {
+                end = endPost.Value;
+            }
+            else
+            {
+                end = LastPost;
+            }
+            String sStart = "[color=black][b]Votes from post {0} to post {1}";
+            String sTimeToNight = "Night in {0}";
+            String sNight = "It is night";
+            String startTable = "[table=head][b]Votes[/b]\t[b]Lynch[/b]\t[b]Voters[/b]";
+            String sWagonLine = "{0} \t [b]{1}[/b] \t {2}";
+            String sNoVoteLine = "{0} \t {1} \t {2}";
+            String showNotVoting = sNotVoting;
+            String sErrorLine = "{0} \t [color=red][b]{1}[/b][/color] \t {2}";
+            String redError = sError;
+            String sGoodBad = "[highlight][color=green]:{0} good[/color] [color=red]:{1} bad[/color][/highlight]";
+            String sOneDay = "1 day ";
+            String sDays = "{0} days ";
+
+            switch (_language)
+            {
+                case Language.Estonian:
+                    {
+                        sStart = "[color=black][b]Hääled seisuga post {0} kuni {1}";
+                        sTimeToNight = "Öö saabub {0} pärast";
+                        sNight = "On öö";
+                        startTable = "[table= class: grid][tr][td][b]Hääli[/b][/td][td][b]Lynch[/b][/td][td][b]Hääletajad[/b][/td][/tr]";
+                        sWagonLine = "[tr][td]{0} [/td][td] [b]{1}[/b] [/td][td] {2}[/td][/tr]";
+                        sNoVoteLine = "[tr][td]{0} [/td][td] {1} [/td][td] {2}[/td][/tr]";
+                        sErrorLine = "[tr][td]{0} [/td][td] [color=red][b]{1}[/b][/color] [/td][td] {2}[/td][/tr]";
+                        showNotVoting = "ei ole hääletanud";
+                        redError = "Viga";
+                        sGoodBad = "[highlight][color=green]:{0}  loeb[/color] [color=red]:{1} ei loe[/color][/highlight]";
+                        sOneDay = "1 päeva ja ";
+                        sDays = "{0} päeva ja ";
+                    }
+                    break;
+            }
+            var sb = new StringBuilder();
+            sb.AppendFormat(sStart, StartPost, end);
+            sb.AppendLine();
+
+            TimeSpan ts = TimeUntilNight;
+            Boolean almostNight = false;
+            if (ts > TimeSpan.FromSeconds(0))
+            {
+                String days;
+                switch (ts.Days)
+                {
+                    case 0:
+                        {
+                            days = "";
+                            if (ts.TotalMinutes <= 30)
+                            {
+                                almostNight = true;
+                            }
+                        }
+                        break;
+
+                    case 1:
+                        {
+                            days = sOneDay;
+                        }
+                        break;
+
+                    default:
+                        {
+                            days = String.Format(sDays, ts.Days);
+                        }
+                        break;
+                }
+                if (ts.TotalHours < 72.0)
+                {
+                    String formatted = (int)ts.TotalHours + ts.ToString(@"\:mm\:ss");
+                    sb.AppendFormat(sTimeToNight, formatted);
+                }
+                else
+                {
+                    sb.AppendFormat(sTimeToNight, days);
+                }
+            }
+            else
+            {
+                sb.Append(sNight);
+            }
+
+            sb.AppendLine("[/b][/color]").AppendLine("---")
+            .AppendLine(startTable);
+
+            Dictionary<String, List<Voter>> wagons = new Dictionary<string, List<Voter>>();
+            List<Voter> listError = new List<Voter>();
+            List<Voter> listNoLynch = new List<Voter>();
+            List<Voter> listUnvote = new List<Voter>();
+            List<Voter> listNotVoting = new List<Voter>();
+            wagons.Add(sError, listError);
+            wagons.Add(NoLynch, listNoLynch);
+            wagons.Add(Unvote, listUnvote);
+            wagons.Add(sNotVoting, listNotVoting);
+            // for each live player
+            List<Voter> posters;
+            posters = new List<Voter>(_livePlayers);
+            foreach (Voter p in posters)
+            {
+                wagons.Add(p.Name, new List<Voter>());
+            }
+            List<String> legalVoters = new List<string>()
+            {
+            };
+            // find out who they are voting, add vote to that wagon.
+            foreach (Voter p in posters)
+            {
+                if (!(legalVoters.Contains(p.Name)))
+                {
+                    //                    continue;
+                }
+                String votee = p.Votee;
+                if (votee == ErrorVote)
+                {
+                    wagons["Error"].Add(p);
+                }
+                else if (votee == "")
+                {
+                    wagons["not voting"].Add(p);
+                }
+                else
+                {
+                    wagons[votee].Add(p);
+                }
+            }
+
+            // sort wagons by count
+            wagons.Remove(NoLynch);
+            wagons.Remove(Unvote);
+            wagons.Remove(sNotVoting);
+            wagons.Remove(sError);
+            foreach (var wagon in wagons)
+            {
+                Voter v = VoterByName(wagon.Key);
+                if (v != null)
+                {
+                    v.VoteCount = wagon.Value.Count;
+                }
+            }
+            var sortedWagons = (from wagon in wagons where (wagon.Value.Count > 0) orderby wagon.Value.Count descending select wagon).ToDictionary(pair => pair.Key, pair => pair.Value);
+            // build string with wagons followed by optional {unvote, no lynch, not voting}
+            foreach (var wagon in sortedWagons)
+            {
+                sb
+                    .AppendFormat(sWagonLine, wagon.Value.Count, wagon.Key,
+                                    VoteLinks(wagon.Value, true))
+                    .AppendLine();
+            }
+            if (listNoLynch.Count > 0)
+            {
+                sb
+                    .AppendFormat(sNoVoteLine, listNoLynch.Count, NoLynch,
+                                    VoteLinks(listNoLynch, true))
+                    .AppendLine();
+            }
+            if (listUnvote.Count > 0)
+            {
+                sb
+                    .AppendFormat(sNoVoteLine, listUnvote.Count, Unvote,
+                                    VoteLinks(listUnvote, true))
+                    .AppendLine();
+            }
+            if (listNotVoting.Count > 0)
+            {
+                sb
+                    .AppendFormat(sNoVoteLine, listNotVoting.Count, showNotVoting,
+                                    VoteLinks(listNotVoting, false))
+                    .AppendLine();
+            }
+            if (listError.Count > 0)
+            {
+                sb
+                    .AppendFormat(sErrorLine, listError.Count, redError,
+                                    VoteLinks(listError, true))
+                    .AppendLine();
+            }
+            sb.AppendLine("[/table]");
+            if (almostNight)
+            {
+                DateTime et = _endTime;
+                int good = et.Minute;
+                int bad = (good + 1) % 60;
+                sb.AppendLine();
+                sb.AppendFormat(sGoodBad,
+                        good.ToString("00"), bad.ToString("00"));
+            }
+            _postableCount = sb.ToString();
+        }
+        void ReadAllFromDB()
 		{
 			Int32 startPost;
 			DateTime endTime;
@@ -594,7 +627,7 @@ namespace POG.Werewolf
 			EndTime = endTime;
 			EndPost = endPost;
 			SortableBindingList<Voter> livePlayers = new SortableBindingList<Voter>();
-			foreach (VoterInfo vi in _db.GetVotes(_threadId, startPost, _endTime.ToUniversalTime(), this))
+			foreach (VoterInfo vi in _db.GetVotes(_threadId, startPost, _endTime.ToUniversalTime(), _lockedVotes, this))
 			{
 				Voter v = new Voter(vi, this);
 				livePlayers.Add(v);
@@ -610,7 +643,7 @@ namespace POG.Werewolf
 			{
 				LastPost = 0;
 			}
-			GetPostableVoteCount(); // updates counts.
+			CreatePostableVoteCount(); // updates counts.
 
 		}
 

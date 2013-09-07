@@ -16,6 +16,7 @@ namespace POG.FennecFox
         String _url;
         BindingList<ForumThread> _threads = new BindingList<ForumThread>();
         List<String> _gameIcons;
+        String _OP;
 
         public OpenGame()
         {
@@ -28,9 +29,10 @@ namespace POG.FennecFox
             _lobby = forum.Lobby();
             _gameIcons = gameIcons.ToList();
         }
-        public String GetURL(out Boolean turbo)
+        public String GetURL(out String OP, out Boolean turbo)
         {
             turbo = chkTurbo.Checked;
+            OP = _OP;
             String rc = txtURL.Text;
             return rc;
         }
@@ -55,6 +57,7 @@ namespace POG.FennecFox
                 ForumThread t = lbThreads.Items[ix] as ForumThread;
                 if (t != null)
                 {
+                    _OP = t.OP.Name;
                     txtURL.Text = t.URL;
                     if (t.ThreadIconText == "Club")
                     {
