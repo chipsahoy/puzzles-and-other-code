@@ -442,6 +442,7 @@ namespace POG.Werewolf
             String sGoodBad = "[highlight][color=green]:{0} good[/color] [color=red]:{1} bad[/color][/highlight]";
             String sOneDay = "1 day ";
             String sDays = "{0} days ";
+            String sLockedVotes = "[highlight][color=red]Caution! Votes today are locked in. No vote changing or unvoting today.[/color][/highlight]";
 
             switch (_language)
             {
@@ -605,6 +606,11 @@ namespace POG.Werewolf
                     .AppendLine();
             }
             sb.AppendLine("[/table]");
+            if (_lockedVotes)
+            {
+                sb.AppendLine();
+                sb.Append(sLockedVotes);
+            }
             if (almostNight)
             {
                 DateTime et = _endTime;

@@ -65,8 +65,8 @@ namespace POG.FennecFox
             {
                 _voteCount.UnIgnoreVote(_player);
             }
-            Refresh();
             _voteCount.Refresh();
+            Refresh();
         }
 
         private void btnOK_Click(object sender, EventArgs e)
