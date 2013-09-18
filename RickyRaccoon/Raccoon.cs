@@ -314,7 +314,7 @@ namespace RickyRaccoon
             }
             ChangeProcessing("Making OP...", 20);
             if (!makeOP())
-                return;
+               return;
             if(!testrun)
                 btnDoIt.Enabled = false;
             ChangeProcessing("Randomizing Player List...", 30);
@@ -342,25 +342,7 @@ namespace RickyRaccoon
                     }
                     curplayer += role.Count;
                 }
-            }
-            ChangeProcessing("Saving Rand Results...", 40);
-            gamepms.GameName = txtGameName.Text;
-            String roleset = JsonConvert.SerializeObject(gamepms, Formatting.Indented, new JsonSerializerSettings()
-            {
-                ReferenceLoopHandling = ReferenceLoopHandling.Ignore
-            });
-            // Show the dialog and get result.
-            saveFileDialog.FileName = gamepms.Name + DateTime.Now.ToString("MMMddyyyy hhmm") + "randed";
-            
-            DialogResult result = saveFileDialog.ShowDialog();
-            if (result == DialogResult.OK) // Test result.
-            {
-                using (Stream s = File.Open(saveFileDialog.FileName, FileMode.Create))
-                using (StreamWriter sw = new StreamWriter(s))
-                {
-                    sw.Write(roleset);
-                }
-            }
+            }            
             string pmlist = "";
             ChangeProcessing("Sending PMs...", 50);
             pmstobesent = new Queue<PMToBeSent>();
@@ -371,11 +353,9 @@ namespace RickyRaccoon
                     RolePM role = gamepms.Teams[i].Members[j];
                     if (role.n0 != "a random villager peek" && role.n0 != "a random peek across entire playerlist")
                     {
-                        string pm = role.FullPM(txtGameURL.Text, gamepms, gamepms.Teams[i], new Player("", true));
+                        string pm = role.FullPM(txtGameURL.Text, gamepms, gamepms.Teams[i], new Player("", true), true);
                         for (int k = 0; k < gamepms.Teams[i].Members[j].Players.Count; k += 8)
                         {
-                            Console.WriteLine("PM: " + pm);
-                            Console.WriteLine("currentplayer" + k + "-" + (Math.Min(8, curplayer + gamepms.Teams[i].Members[j].Players.Count - k)));
                             if (!testrun)
                             {
                                 pmstobesent.Enqueue(new PMToBeSent(gamepms.Teams[i].Members[j].Players.GetRange(k, Math.Min(8, gamepms.Teams[i].Members[j].Players.Count - k)).Select(player => player.Name).ToList(), txtGameName.Text + " Role PM", pm));
@@ -388,7 +368,7 @@ namespace RickyRaccoon
                     {
                         for (int k = 0; k < gamepms.Teams[i].Members[j].Players.Count; k++)
                         {
-                            string pm = role.FullPM(txtGameURL.Text, gamepms, gamepms.Teams[i], gamepms.Teams[i].Members[j].Players[k]);
+                            string pm = role.FullPM(txtGameURL.Text, gamepms, gamepms.Teams[i], gamepms.Teams[i].Members[j].Players[k], true);
                             if (!testrun)
                             {
                                 pmstobesent.Enqueue(new PMToBeSent(new List<string>(new string[] { gamepms.Teams[i].Members[j].Players[k].Name }), txtGameName.Text + " Role PM", pm));
@@ -399,15 +379,38 @@ namespace RickyRaccoon
                     }
                 }
             }
+            ChangeProcessing("Saving Rand Results...", 90);
+            gamepms.GameName = txtGameName.Text;
+            String roleset = JsonConvert.SerializeObject(gamepms, Formatting.Indented, new JsonSerializerSettings()
+            {
+                ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+            });
+            // Show the dialog and get result.
+            saveFileDialog.FileName = gamepms.Name + DateTime.Now.ToString("MMMddyyyy hhmm") + "randed";
 
+            DialogResult result = saveFileDialog.ShowDialog();
+            if (result == DialogResult.OK) // Test result.
+            {
+                using (Stream s = File.Open(saveFileDialog.FileName, FileMode.Create))
+                using (StreamWriter sw = new StreamWriter(s))
+                {
+                    sw.Write(roleset);
+                }
+            }
             if (!testrun)
             {
-                pmtimer.Interval = 30000;
+                if(boxMod.Checked)
+                    pmtimer.Interval = 1;
+                else
+                    pmtimer.Interval = 30000;
                 pmtimer.Tick += new EventHandler(pmtimer_Tick);
                 pmtimer.Enabled = true;
                 pmtimer.Start();
             }
-            MessageBox.Show(pmlist);
+            else ChangeProcessing(String.Format("Test success! You can close the processing window at any time.", pmstobesent.Count), 100);
+            PMs pmform = new PMs();
+            pmform.txtPMs.Text = pmlist;
+            pmform.ShowDialog();
             roster.Sort();
             for (int i = 0; i < gamepms.Teams.Count; i++)
             {

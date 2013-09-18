@@ -46,11 +46,19 @@
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.tableLayoutPanel4 = new System.Windows.Forms.TableLayoutPanel();
             this.dataPlayers = new System.Windows.Forms.DataGridView();
+            this.boxSelect = new System.Windows.Forms.DataGridViewCheckBoxColumn();
+            this.txtPlayerName = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.boxTeam = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.txtRole = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.boxPlayerColor = new System.Windows.Forms.DataGridViewComboBoxColumn();
+            this.boxAlive = new System.Windows.Forms.DataGridViewComboBoxColumn();
+            this.txtDeathReason = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
             this.btnSelectAll = new System.Windows.Forms.Button();
             this.btnDeathReveal = new System.Windows.Forms.Button();
             this.btnSubOut = new System.Windows.Forms.Button();
             this.btnPeek = new System.Windows.Forms.Button();
+            this.btnResend = new System.Windows.Forms.Button();
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.dataTeams = new System.Windows.Forms.DataGridView();
             this.txtTeam = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -60,13 +68,6 @@
             this.txtWinCon = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.lblStatus = new System.Windows.Forms.ToolStripStatusLabel();
-            this.boxSelect = new System.Windows.Forms.DataGridViewCheckBoxColumn();
-            this.txtPlayerName = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.boxTeam = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.txtRole = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.boxPlayerColor = new System.Windows.Forms.DataGridViewComboBoxColumn();
-            this.boxAlive = new System.Windows.Forms.DataGridViewComboBoxColumn();
-            this.txtDeathReason = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.menuStrip1.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
             this.tableLayoutPanel2.SuspendLayout();
@@ -103,14 +104,14 @@
             // saveGameToolStripMenuItem
             // 
             this.saveGameToolStripMenuItem.Name = "saveGameToolStripMenuItem";
-            this.saveGameToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.saveGameToolStripMenuItem.Size = new System.Drawing.Size(100, 22);
             this.saveGameToolStripMenuItem.Text = "Save";
             this.saveGameToolStripMenuItem.Click += new System.EventHandler(this.saveGameToolStripMenuItem_Click);
             // 
             // loadGameToolStripMenuItem
             // 
             this.loadGameToolStripMenuItem.Name = "loadGameToolStripMenuItem";
-            this.loadGameToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.loadGameToolStripMenuItem.Size = new System.Drawing.Size(100, 22);
             this.loadGameToolStripMenuItem.Text = "Load";
             this.loadGameToolStripMenuItem.Click += new System.EventHandler(this.loadGameToolStripMenuItem_Click);
             // 
@@ -256,17 +257,74 @@
             this.dataPlayers.TabIndex = 0;
             this.dataPlayers.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataPlayers_CellValueChanged);
             // 
+            // boxSelect
+            // 
+            this.boxSelect.HeaderText = "";
+            this.boxSelect.Name = "boxSelect";
+            this.boxSelect.Resizable = System.Windows.Forms.DataGridViewTriState.True;
+            this.boxSelect.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Automatic;
+            this.boxSelect.Width = 20;
+            // 
+            // txtPlayerName
+            // 
+            this.txtPlayerName.DataPropertyName = "Name";
+            this.txtPlayerName.HeaderText = "Name";
+            this.txtPlayerName.Name = "txtPlayerName";
+            this.txtPlayerName.ReadOnly = true;
+            // 
+            // boxTeam
+            // 
+            this.boxTeam.HeaderText = "Team";
+            this.boxTeam.Name = "boxTeam";
+            this.boxTeam.ReadOnly = true;
+            this.boxTeam.Resizable = System.Windows.Forms.DataGridViewTriState.True;
+            this.boxTeam.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            // 
+            // txtRole
+            // 
+            this.txtRole.HeaderText = "Role";
+            this.txtRole.Name = "txtRole";
+            this.txtRole.ReadOnly = true;
+            // 
+            // boxPlayerColor
+            // 
+            this.boxPlayerColor.HeaderText = "Color";
+            this.boxPlayerColor.Items.AddRange(new object[] {
+            "black",
+            "green",
+            "purple",
+            "red",
+            "blue",
+            "yellow",
+            "orange"});
+            this.boxPlayerColor.Name = "boxPlayerColor";
+            // 
+            // boxAlive
+            // 
+            this.boxAlive.HeaderText = "Alive?";
+            this.boxAlive.Items.AddRange(new object[] {
+            "True",
+            "False"});
+            this.boxAlive.Name = "boxAlive";
+            // 
+            // txtDeathReason
+            // 
+            this.txtDeathReason.HeaderText = "Death Reason";
+            this.txtDeathReason.Name = "txtDeathReason";
+            // 
             // tableLayoutPanel3
             // 
-            this.tableLayoutPanel3.ColumnCount = 4;
-            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 16F));
-            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 22.6F));
-            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 16.2F));
-            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 45.2F));
+            this.tableLayoutPanel3.ColumnCount = 5;
+            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel3.Controls.Add(this.btnSelectAll, 0, 0);
             this.tableLayoutPanel3.Controls.Add(this.btnDeathReveal, 1, 0);
             this.tableLayoutPanel3.Controls.Add(this.btnSubOut, 2, 0);
             this.tableLayoutPanel3.Controls.Add(this.btnPeek, 3, 0);
+            this.tableLayoutPanel3.Controls.Add(this.btnResend, 4, 0);
             this.tableLayoutPanel3.Location = new System.Drawing.Point(3, 3);
             this.tableLayoutPanel3.Name = "tableLayoutPanel3";
             this.tableLayoutPanel3.RowCount = 1;
@@ -288,17 +346,17 @@
             // 
             this.btnDeathReveal.Location = new System.Drawing.Point(83, 3);
             this.btnDeathReveal.Name = "btnDeathReveal";
-            this.btnDeathReveal.Size = new System.Drawing.Size(106, 23);
+            this.btnDeathReveal.Size = new System.Drawing.Size(113, 23);
             this.btnDeathReveal.TabIndex = 1;
-            this.btnDeathReveal.Text = "Post Death Reveal";
+            this.btnDeathReveal.Text = "Post Death Reveals";
             this.btnDeathReveal.UseVisualStyleBackColor = true;
             this.btnDeathReveal.Click += new System.EventHandler(this.btnDeathReveal_Click);
             // 
             // btnSubOut
             // 
-            this.btnSubOut.Location = new System.Drawing.Point(196, 3);
+            this.btnSubOut.Location = new System.Drawing.Point(202, 3);
             this.btnSubOut.Name = "btnSubOut";
-            this.btnSubOut.Size = new System.Drawing.Size(74, 23);
+            this.btnSubOut.Size = new System.Drawing.Size(71, 23);
             this.btnSubOut.TabIndex = 2;
             this.btnSubOut.Text = "Substitute";
             this.btnSubOut.UseVisualStyleBackColor = true;
@@ -306,13 +364,23 @@
             // 
             // btnPeek
             // 
-            this.btnPeek.Location = new System.Drawing.Point(277, 3);
+            this.btnPeek.Location = new System.Drawing.Point(279, 3);
             this.btnPeek.Name = "btnPeek";
             this.btnPeek.Size = new System.Drawing.Size(75, 23);
             this.btnPeek.TabIndex = 3;
-            this.btnPeek.Text = "Peek Player";
+            this.btnPeek.Text = "Peek Players";
             this.btnPeek.UseVisualStyleBackColor = true;
             this.btnPeek.Click += new System.EventHandler(this.btnPeek_Click);
+            // 
+            // btnResend
+            // 
+            this.btnResend.Location = new System.Drawing.Point(360, 3);
+            this.btnResend.Name = "btnResend";
+            this.btnResend.Size = new System.Drawing.Size(81, 23);
+            this.btnResend.TabIndex = 4;
+            this.btnResend.Text = "Resend Role PMs";
+            this.btnResend.UseVisualStyleBackColor = true;
+            this.btnResend.Click += new System.EventHandler(this.btnResend_Click);
             // 
             // tabPage2
             // 
@@ -394,61 +462,6 @@
             this.lblStatus.Name = "lblStatus";
             this.lblStatus.Size = new System.Drawing.Size(0, 17);
             // 
-            // boxSelect
-            // 
-            this.boxSelect.HeaderText = "";
-            this.boxSelect.Name = "boxSelect";
-            this.boxSelect.Resizable = System.Windows.Forms.DataGridViewTriState.True;
-            this.boxSelect.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Automatic;
-            this.boxSelect.Width = 20;
-            // 
-            // txtPlayerName
-            // 
-            this.txtPlayerName.DataPropertyName = "Name";
-            this.txtPlayerName.HeaderText = "Name";
-            this.txtPlayerName.Name = "txtPlayerName";
-            this.txtPlayerName.ReadOnly = true;
-            // 
-            // boxTeam
-            // 
-            this.boxTeam.HeaderText = "Team";
-            this.boxTeam.Name = "boxTeam";
-            this.boxTeam.ReadOnly = true;
-            this.boxTeam.Resizable = System.Windows.Forms.DataGridViewTriState.True;
-            this.boxTeam.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
-            // 
-            // txtRole
-            // 
-            this.txtRole.HeaderText = "Role";
-            this.txtRole.Name = "txtRole";
-            this.txtRole.ReadOnly = true;
-            // 
-            // boxPlayerColor
-            // 
-            this.boxPlayerColor.HeaderText = "Color";
-            this.boxPlayerColor.Items.AddRange(new object[] {
-            "black",
-            "green",
-            "purple",
-            "red",
-            "blue",
-            "yellow",
-            "orange"});
-            this.boxPlayerColor.Name = "boxPlayerColor";
-            // 
-            // boxAlive
-            // 
-            this.boxAlive.HeaderText = "Alive?";
-            this.boxAlive.Items.AddRange(new object[] {
-            "True",
-            "False"});
-            this.boxAlive.Name = "boxAlive";
-            // 
-            // txtDeathReason
-            // 
-            this.txtDeathReason.HeaderText = "Death Reason";
-            this.txtDeathReason.Name = "txtDeathReason";
-            // 
             // Meerkat
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -521,6 +534,7 @@
         private System.Windows.Forms.DataGridViewComboBoxColumn boxPlayerColor;
         private System.Windows.Forms.DataGridViewComboBoxColumn boxAlive;
         private System.Windows.Forms.DataGridViewTextBoxColumn txtDeathReason;
+        private System.Windows.Forms.Button btnResend;
     }
 }
 

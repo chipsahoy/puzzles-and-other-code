@@ -22,6 +22,8 @@ namespace MaryMeerkat
         Boolean _inLoginDialog = false;
         private RolePMSet gamepms;
         bool saved = true;
+        Timer pmtimer = new Timer();
+        Queue<PMToBeSent> pmstobesent;
 
         public Meerkat()
         {
@@ -222,7 +224,7 @@ namespace MaryMeerkat
                     Team team = (Team)dataPlayers.Rows[i].Cells["boxTeam"].Value;
                     string playername = dataPlayers.Rows[i].Cells["txtPlayerName"].Value.ToString();
                     bool posted = _forum.MakePost(POG.Utils.Misc.TidFromURL(txtGameURL.Text), "Sub Post", String.Format("[b][color=red]{0} is subbing in for {1}![/color][/b]", subin, playername), 0, false);
-                    bool pmsent = _forum.SendPM(new List<string>(new string[] { subin }), null, "Sub Role PM", String.Format("You are subbing in for {0}. Your role is: [quote]{1}[/quote]", playername, role.FullPM(txtGameURL.Text, gamepms, team, null)), false);
+                    bool pmsent = _forum.SendPM(new List<string>(new string[] { subin }), null, "Sub Role PM", String.Format("You are subbing in for {0}. Your role is: [quote]{1}[/quote]", playername, role.FullPM(txtGameURL.Text, gamepms, team, null, false)), false);
                     for (int j = 0; j < role.Players.Count; j++)
                     {
                         if (role.Players[j].Name == playername)
@@ -269,6 +271,48 @@ namespace MaryMeerkat
             else
             {
                 lblStatus.Text = "Death Reveal Posted";
+            }
+        }
+
+        private void btnResend_Click(object sender, EventArgs e)
+        {
+            pmstobesent = new Queue<PMToBeSent>();
+            for (int i = 0; i < dataPlayers.Rows.Count; i++)
+            {
+                if ((bool)dataPlayers.Rows[i].Cells["boxSelect"].Value == false)
+                {
+                    continue;
+                }
+                RolePM role = (RolePM)dataPlayers.Rows[i].Cells["txtRole"].Value;
+                Team team = (Team)dataPlayers.Rows[i].Cells["boxTeam"].Value;
+                Player player = null;
+                for (int j = 0; j < role.Players.Count; j++)
+                {
+                    if (role.Players[j].Name == dataPlayers.Rows[i].Cells["txtPlayerName"].Value.ToString())
+                        player = role.Players[j];
+                }
+                string pm = role.FullPM(txtGameURL.Text, gamepms, team, player, false);
+                pmstobesent.Enqueue(new PMToBeSent(new List<string>(new string[] { player.Name }), gamepms.GameName + " Role PM", pm));
+            }
+            lblStatus.Text = "Sending PMs...";
+            pmtimer.Interval = 30000;
+            pmtimer.Tick += new EventHandler(pmtimer_Tick);
+            pmtimer.Enabled = true;
+            pmtimer.Start();
+        }
+
+        void pmtimer_Tick(object sender, EventArgs e)
+        {
+            if (pmstobesent.Count > 0)
+            {
+                PMToBeSent pm = pmstobesent.Dequeue();
+                lblStatus.Text = String.Format("Sent PM. {0} left...", pmstobesent.Count);
+                pm.SendPM(_forum);
+            }
+            if (pmstobesent.Count == 0)
+            {
+                pmtimer.Stop();
+                lblStatus.Text = "Sent All PMs!";
             }
         }
 
@@ -374,5 +418,7 @@ namespace MaryMeerkat
                 }
             }
         }
+
+
     }
 }

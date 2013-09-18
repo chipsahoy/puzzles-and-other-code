@@ -286,6 +286,7 @@ namespace POG.Werewolf
             Players = new List<Player>();
             Color = color;
             Redacted = redacted;
+            peeks = new List<Player>();
         }
         public string Redacted
         {
@@ -333,7 +334,14 @@ namespace POG.Werewolf
             get;
             set;
         }
+        [DataMember]
         public string n0
+        {
+            get;
+            set;
+        }
+        [DataMember]
+        public List<Player> peeks
         {
             get;
             set;
@@ -348,16 +356,17 @@ namespace POG.Werewolf
         {
             string redactedtext = Redacted;
             if (Redacted != "")
-                redactedtext += Environment.NewLine;
-            return String.Format("{0}", EditedPM(gameURL, team), redactedtext);
+                redactedtext = String.Format("{1}[REDACTED]{0}[/REDACTED]{1}", redactedtext, Environment.NewLine);
+            return String.Format("{0}{1}", EditedPM(gameURL, team), redactedtext);
         }
 
-        public string FullPM(string gameURL, RolePMSet gamepms, Team team, Player currentplayer)
+        public string FullPM(string gameURL, RolePMSet gamepms, Team team, Player currentplayer, bool isn0)
         {
             string peek = "";
             string peektype = "";
-            if (n0 == "a random villager peek")
+            if (isn0 && n0 == "a random villager peek")
             {
+                Console.WriteLine(n0);
                 List<Player> villagers = new List<Player>();
                 for (int k = 0; k < gamepms.Teams.Count; k++)
                 {
@@ -371,28 +380,26 @@ namespace POG.Werewolf
                 Random random = new Random();
                 int index = random.Next(villagers.Count);
                 peek = villagers[index].Name;
-                peektype = "villager";
             }
-            else if (n0 == "a random peek across entire playerlist")
+            else if (isn0 && n0 == "a random peek across entire playerlist")
             {
                 Random random = new Random();
                 List<Player> roster = gamepms.GetRoster();
                 roster.Remove(currentplayer);
                 int index = random.Next(roster.Count);
-                peek = roster[index].Name;
-                peektype = "ERROR";
-                for (int k = 0; k < gamepms.Teams.Count; k++)
+                peek = roster[index].Name;         
+            }
+                for (int j = 0; j < gamepms.Teams.Count; j++)
                 {
-                    for (int l = 0; l < gamepms.Teams[k].Members.Count; l++)
+                    for (int k = 0; k < gamepms.Teams[j].Members.Count; k++)
                     {
-                        for (int m = 0; m < gamepms.Teams[k].Members[l].Players.Count; m++)
+                        for (int l = 0; l < gamepms.Teams[j].Members[k].Players.Count; l++)
                         {
-                            if (gamepms.Teams[k].Members[l].Players[m].Name == peek)
-                                peektype = gamepms.Teams[k].Name;
+                            if (gamepms.Teams[j].Members[k].Players[l].Name == peek)
+                                peektype = gamepms.Teams[j].Name;
                         }
                     }
                 }
-            }
             if (peek != "") peek = String.Format("Your n0 random peek is {0}, {1}", peek, peektype);
             string teammates = "";
             if (team.Share == true)

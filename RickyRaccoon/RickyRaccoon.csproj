@@ -71,6 +71,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="PMs.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="PMs.Designer.cs">
+      <DependentUpon>PMs.cs</DependentUpon>
+    </Compile>
     <Compile Include="Processing.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -85,6 +91,9 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="PMs.resx">
+      <DependentUpon>PMs.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Processing.resx">
       <DependentUpon>Processing.cs</DependentUpon>
     </EmbeddedResource>

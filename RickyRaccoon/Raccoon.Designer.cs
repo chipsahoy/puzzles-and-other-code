@@ -28,9 +28,9 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle7 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle8 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle9 = new System.Windows.Forms.DataGridViewCellStyle();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Raccoon));
             this.label10 = new System.Windows.Forms.Label();
             this.label9 = new System.Windows.Forms.Label();
@@ -94,6 +94,8 @@
             this.txtDay1Length = new System.Windows.Forms.TextBox();
             this.boxTurbo = new System.Windows.Forms.CheckBox();
             this.boxPMsinOP = new System.Windows.Forms.CheckBox();
+            this.label7 = new System.Windows.Forms.Label();
+            this.boxMod = new System.Windows.Forms.CheckBox();
             this.Teams = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.tabPage2 = new System.Windows.Forms.TabPage();
@@ -120,13 +122,13 @@
             this.txtCount = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.tabPage3 = new System.Windows.Forms.TabPage();
             this.dataTeams = new System.Windows.Forms.DataGridView();
-            this.openFileDialog = new System.Windows.Forms.OpenFileDialog();
-            this.saveFileDialog = new System.Windows.Forms.SaveFileDialog();
             this.colTeamName = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colWinCon = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.boxColor = new System.Windows.Forms.DataGridViewComboBoxColumn();
             this.colShare = new System.Windows.Forms.DataGridViewCheckBoxColumn();
             this.txtTeamCount = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.openFileDialog = new System.Windows.Forms.OpenFileDialog();
+            this.saveFileDialog = new System.Windows.Forms.SaveFileDialog();
             this.tableLayoutPanel2.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
             this.tableLayoutPanel14.SuspendLayout();
@@ -391,8 +393,8 @@
             this.tableLayoutPanel1.Controls.Add(this.boxMustLynch, 1, 21);
             this.tableLayoutPanel1.Controls.Add(this.label13, 0, 22);
             this.tableLayoutPanel1.Controls.Add(this.boxWolfChat, 1, 22);
-            this.tableLayoutPanel1.Controls.Add(this.label14, 0, 23);
-            this.tableLayoutPanel1.Controls.Add(this.txtOP, 1, 23);
+            this.tableLayoutPanel1.Controls.Add(this.label14, 0, 24);
+            this.tableLayoutPanel1.Controls.Add(this.txtOP, 1, 24);
             this.tableLayoutPanel1.Controls.Add(this.label15, 0, 5);
             this.tableLayoutPanel1.Controls.Add(this.txtGameName, 1, 5);
             this.tableLayoutPanel1.Controls.Add(this.tableLayoutPanel5, 1, 8);
@@ -406,10 +408,13 @@
             this.tableLayoutPanel1.Controls.Add(this.tableLayoutPanel15, 1, 13);
             this.tableLayoutPanel1.Controls.Add(this.boxTurbo, 0, 13);
             this.tableLayoutPanel1.Controls.Add(this.boxPMsinOP, 1, 19);
+            this.tableLayoutPanel1.Controls.Add(this.label7, 0, 23);
+            this.tableLayoutPanel1.Controls.Add(this.boxMod, 1, 23);
             this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel1.Location = new System.Drawing.Point(3, 3);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
-            this.tableLayoutPanel1.RowCount = 24;
+            this.tableLayoutPanel1.RowCount = 25;
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
@@ -543,7 +548,7 @@
             // 
             this.label14.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.label14.AutoSize = true;
-            this.label14.Location = new System.Drawing.Point(62, 692);
+            this.label14.Location = new System.Drawing.Point(62, 715);
             this.label14.Name = "label14";
             this.label14.Size = new System.Drawing.Size(22, 13);
             this.label14.TabIndex = 36;
@@ -551,7 +556,7 @@
             // 
             // txtOP
             // 
-            this.txtOP.Location = new System.Drawing.Point(90, 695);
+            this.txtOP.Location = new System.Drawing.Point(90, 718);
             this.txtOP.Multiline = true;
             this.txtOP.Name = "txtOP";
             this.txtOP.ReadOnly = true;
@@ -923,6 +928,26 @@
             this.boxPMsinOP.Text = "Include PMs in OP?";
             this.boxPMsinOP.UseVisualStyleBackColor = true;
             // 
+            // label7
+            // 
+            this.label7.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(29, 692);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(55, 13);
+            this.label7.TabIndex = 57;
+            this.label7.Text = "Mod Only:";
+            // 
+            // boxMod
+            // 
+            this.boxMod.AutoSize = true;
+            this.boxMod.Location = new System.Drawing.Point(90, 695);
+            this.boxMod.Name = "boxMod";
+            this.boxMod.Size = new System.Drawing.Size(335, 17);
+            this.boxMod.TabIndex = 58;
+            this.boxMod.Text = "Are you a mod? (Can you send PMs more than every 35 seconds)";
+            this.boxMod.UseVisualStyleBackColor = true;
+            // 
             // Teams
             // 
             this.Teams.Controls.Add(this.tabPage1);
@@ -1174,8 +1199,8 @@
             // 
             // txtExtraFlavor
             // 
-            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.txtExtraFlavor.DefaultCellStyle = dataGridViewCellStyle1;
+            dataGridViewCellStyle7.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.txtExtraFlavor.DefaultCellStyle = dataGridViewCellStyle7;
             this.txtExtraFlavor.HeaderText = "Extra Flavor";
             this.txtExtraFlavor.Name = "txtExtraFlavor";
             // 
@@ -1196,8 +1221,8 @@
             // 
             // txtFullPM
             // 
-            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.txtFullPM.DefaultCellStyle = dataGridViewCellStyle2;
+            dataGridViewCellStyle8.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.txtFullPM.DefaultCellStyle = dataGridViewCellStyle8;
             this.txtFullPM.HeaderText = "Full PM w/o Redacted";
             this.txtFullPM.Name = "txtFullPM";
             this.txtFullPM.ReadOnly = true;
@@ -1237,16 +1262,6 @@
             this.dataTeams.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataTeams_CellValueChanged);
             this.dataTeams.UserDeletingRow += new System.Windows.Forms.DataGridViewRowCancelEventHandler(this.dataTeams_UserDeletingRow);
             // 
-            // openFileDialog
-            // 
-            this.openFileDialog.DefaultExt = "json";
-            this.openFileDialog.Filter = "JSON|*.json*|All files|*.*";
-            // 
-            // saveFileDialog
-            // 
-            this.saveFileDialog.DefaultExt = "json";
-            this.saveFileDialog.Filter = "JSON|*.json*|All files|*.*";
-            // 
             // colTeamName
             // 
             this.colTeamName.DataPropertyName = "colTeamName";
@@ -1256,8 +1271,8 @@
             // colWinCon
             // 
             this.colWinCon.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
-            dataGridViewCellStyle3.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.colWinCon.DefaultCellStyle = dataGridViewCellStyle3;
+            dataGridViewCellStyle9.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.colWinCon.DefaultCellStyle = dataGridViewCellStyle9;
             this.colWinCon.HeaderText = "Win Condition";
             this.colWinCon.Name = "colWinCon";
             this.colWinCon.Width = 98;
@@ -1285,6 +1300,16 @@
             this.txtTeamCount.HeaderText = "Player Count";
             this.txtTeamCount.Name = "txtTeamCount";
             this.txtTeamCount.ReadOnly = true;
+            // 
+            // openFileDialog
+            // 
+            this.openFileDialog.DefaultExt = "json";
+            this.openFileDialog.Filter = "JSON|*.json*|All files|*.*";
+            // 
+            // saveFileDialog
+            // 
+            this.saveFileDialog.DefaultExt = "json";
+            this.saveFileDialog.Filter = "JSON|*.json*|All files|*.*";
             // 
             // Raccoon
             // 
@@ -1429,6 +1454,8 @@
         private System.Windows.Forms.DataGridViewComboBoxColumn boxColor;
         private System.Windows.Forms.DataGridViewCheckBoxColumn colShare;
         private System.Windows.Forms.DataGridViewTextBoxColumn txtTeamCount;
+        private System.Windows.Forms.Label label7;
+        private System.Windows.Forms.CheckBox boxMod;
 
     }
 }
