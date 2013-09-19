@@ -34,13 +34,13 @@
         "Entry"
         {
         "MsmKey" = "8:_23F556695BD20885D1ED94B67B199EEB"
-        "OwnerKey" = "8:_E2B4E1DBCC7B41C4BAD710BF8E1C15C4"
+        "OwnerKey" = "8:_9D159AEB4DD54FB7AFD8717C3E3179FA"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
         "MsmKey" = "8:_23F556695BD20885D1ED94B67B199EEB"
-        "OwnerKey" = "8:_9D159AEB4DD54FB7AFD8717C3E3179FA"
+        "OwnerKey" = "8:_E2B4E1DBCC7B41C4BAD710BF8E1C15C4"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -52,13 +52,7 @@
         "Entry"
         {
         "MsmKey" = "8:_32DA5E9343B782999FBBFDDBEB7CAA7E"
-        "OwnerKey" = "8:_CEA697127832E9ADEAA4E504A0914376"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_32DA5E9343B782999FBBFDDBEB7CAA7E"
-        "OwnerKey" = "8:_9D159AEB4DD54FB7AFD8717C3E3179FA"
+        "OwnerKey" = "8:_5877C7EDD93F5FE81B079A1C09ECA14D"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -70,7 +64,13 @@
         "Entry"
         {
         "MsmKey" = "8:_32DA5E9343B782999FBBFDDBEB7CAA7E"
-        "OwnerKey" = "8:_5877C7EDD93F5FE81B079A1C09ECA14D"
+        "OwnerKey" = "8:_9D159AEB4DD54FB7AFD8717C3E3179FA"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_32DA5E9343B782999FBBFDDBEB7CAA7E"
+        "OwnerKey" = "8:_CEA697127832E9ADEAA4E504A0914376"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -106,7 +106,7 @@
         "Entry"
         {
         "MsmKey" = "8:_78E7FB54D6DB4E8462F26951C7E306ED"
-        "OwnerKey" = "8:_E2B4E1DBCC7B41C4BAD710BF8E1C15C4"
+        "OwnerKey" = "8:_9D159AEB4DD54FB7AFD8717C3E3179FA"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -118,7 +118,7 @@
         "Entry"
         {
         "MsmKey" = "8:_78E7FB54D6DB4E8462F26951C7E306ED"
-        "OwnerKey" = "8:_9D159AEB4DD54FB7AFD8717C3E3179FA"
+        "OwnerKey" = "8:_E2B4E1DBCC7B41C4BAD710BF8E1C15C4"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -136,7 +136,7 @@
         "Entry"
         {
         "MsmKey" = "8:_AFE2F1B9B2F31766069082B3F6E3E200"
-        "OwnerKey" = "8:_E2B4E1DBCC7B41C4BAD710BF8E1C15C4"
+        "OwnerKey" = "8:_9D159AEB4DD54FB7AFD8717C3E3179FA"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -148,7 +148,7 @@
         "Entry"
         {
         "MsmKey" = "8:_AFE2F1B9B2F31766069082B3F6E3E200"
-        "OwnerKey" = "8:_9D159AEB4DD54FB7AFD8717C3E3179FA"
+        "OwnerKey" = "8:_E2B4E1DBCC7B41C4BAD710BF8E1C15C4"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -160,13 +160,13 @@
         "Entry"
         {
         "MsmKey" = "8:_B53336A527A4C6E2246D195B9CEFF4E4"
-        "OwnerKey" = "8:_CEA697127832E9ADEAA4E504A0914376"
+        "OwnerKey" = "8:_9D159AEB4DD54FB7AFD8717C3E3179FA"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
         "MsmKey" = "8:_B53336A527A4C6E2246D195B9CEFF4E4"
-        "OwnerKey" = "8:_9D159AEB4DD54FB7AFD8717C3E3179FA"
+        "OwnerKey" = "8:_CEA697127832E9ADEAA4E504A0914376"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -208,31 +208,7 @@
         "Entry"
         {
         "MsmKey" = "8:_DE9D654551B85829C88D849A814AA1DB"
-        "OwnerKey" = "8:_CA08EDD07BB5299E11A2A4E744ED0A55"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_DE9D654551B85829C88D849A814AA1DB"
-        "OwnerKey" = "8:_E2B4E1DBCC7B41C4BAD710BF8E1C15C4"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_DE9D654551B85829C88D849A814AA1DB"
-        "OwnerKey" = "8:_CEA697127832E9ADEAA4E504A0914376"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_DE9D654551B85829C88D849A814AA1DB"
-        "OwnerKey" = "8:_B53336A527A4C6E2246D195B9CEFF4E4"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_DE9D654551B85829C88D849A814AA1DB"
-        "OwnerKey" = "8:_22EA7E5AAE313A5EEB0CEA4388C35A5E"
+        "OwnerKey" = "8:_78E7FB54D6DB4E8462F26951C7E306ED"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -244,7 +220,31 @@
         "Entry"
         {
         "MsmKey" = "8:_DE9D654551B85829C88D849A814AA1DB"
-        "OwnerKey" = "8:_78E7FB54D6DB4E8462F26951C7E306ED"
+        "OwnerKey" = "8:_22EA7E5AAE313A5EEB0CEA4388C35A5E"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_DE9D654551B85829C88D849A814AA1DB"
+        "OwnerKey" = "8:_B53336A527A4C6E2246D195B9CEFF4E4"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_DE9D654551B85829C88D849A814AA1DB"
+        "OwnerKey" = "8:_CEA697127832E9ADEAA4E504A0914376"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_DE9D654551B85829C88D849A814AA1DB"
+        "OwnerKey" = "8:_E2B4E1DBCC7B41C4BAD710BF8E1C15C4"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_DE9D654551B85829C88D849A814AA1DB"
+        "OwnerKey" = "8:_CA08EDD07BB5299E11A2A4E744ED0A55"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -268,79 +268,7 @@
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_E2B4E1DBCC7B41C4BAD710BF8E1C15C4"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_CA08EDD07BB5299E11A2A4E744ED0A55"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_0E6799A9DB9C98D2DE23F1CC01B2703D"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_A8D31EA07F8A473E9612873DEBDAA3F2"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_CEA697127832E9ADEAA4E504A0914376"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_22EA7E5AAE313A5EEB0CEA4388C35A5E"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_B53336A527A4C6E2246D195B9CEFF4E4"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_547D244EE77293AEB5014B1DB91818EB"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_5877C7EDD93F5FE81B079A1C09ECA14D"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_78E7FB54D6DB4E8462F26951C7E306ED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_32DA5E9343B782999FBBFDDBEB7CAA7E"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_AFE2F1B9B2F31766069082B3F6E3E200"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_23F556695BD20885D1ED94B67B199EEB"
+        "OwnerKey" = "8:_C931A50D33028A9CA0D874C45D37CFA3"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -352,7 +280,79 @@
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_C931A50D33028A9CA0D874C45D37CFA3"
+        "OwnerKey" = "8:_23F556695BD20885D1ED94B67B199EEB"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_AFE2F1B9B2F31766069082B3F6E3E200"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_32DA5E9343B782999FBBFDDBEB7CAA7E"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_78E7FB54D6DB4E8462F26951C7E306ED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_5877C7EDD93F5FE81B079A1C09ECA14D"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_547D244EE77293AEB5014B1DB91818EB"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_B53336A527A4C6E2246D195B9CEFF4E4"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_22EA7E5AAE313A5EEB0CEA4388C35A5E"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_CEA697127832E9ADEAA4E504A0914376"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_A8D31EA07F8A473E9612873DEBDAA3F2"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_0E6799A9DB9C98D2DE23F1CC01B2703D"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_CA08EDD07BB5299E11A2A4E744ED0A55"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_E2B4E1DBCC7B41C4BAD710BF8E1C15C4"
         "MsmSig" = "8:_UNDEFINED"
         }
     }
@@ -467,11 +467,6 @@
             "AssemblyAsmDisplayName" = "8:pogutils, Version=2.0.5008.503, Culture=neutral, processorArchitecture=x86"
                 "ScatterAssemblies"
                 {
-                    "_0E6799A9DB9C98D2DE23F1CC01B2703D"
-                    {
-                    "Name" = "8:pogutils.dll"
-                    "Attributes" = "3:512"
-                    }
                 }
             "SourcePath" = "8:pogutils.dll"
             "TargetName" = "8:"
@@ -498,11 +493,6 @@
             "AssemblyAsmDisplayName" = "8:PogDbSqlite, Version=2.0.5008.504, Culture=neutral, processorArchitecture=x86"
                 "ScatterAssemblies"
                 {
-                    "_22EA7E5AAE313A5EEB0CEA4388C35A5E"
-                    {
-                    "Name" = "8:PogDbSqlite.dll"
-                    "Attributes" = "3:512"
-                    }
                 }
             "SourcePath" = "8:PogDbSqlite.dll"
             "TargetName" = "8:"
@@ -529,11 +519,6 @@
             "AssemblyAsmDisplayName" = "8:HtmlAgilityPack, Version=1.4.0.0, Culture=neutral, PublicKeyToken=bd319b19eaf3b43a, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
-                    "_23F556695BD20885D1ED94B67B199EEB"
-                    {
-                    "Name" = "8:HtmlAgilityPack.dll"
-                    "Attributes" = "3:512"
-                    }
                 }
             "SourcePath" = "8:HtmlAgilityPack.dll"
             "TargetName" = "8:"
@@ -560,11 +545,6 @@
             "AssemblyAsmDisplayName" = "8:pogutils, Version=2.0.5008.503, Culture=neutral, processorArchitecture=x86"
                 "ScatterAssemblies"
                 {
-                    "_32DA5E9343B782999FBBFDDBEB7CAA7E"
-                    {
-                    "Name" = "8:pogutils.dll"
-                    "Attributes" = "3:512"
-                    }
                 }
             "SourcePath" = "8:pogutils.dll"
             "TargetName" = "8:"
@@ -611,11 +591,6 @@
             "AssemblyAsmDisplayName" = "8:System.Data.SQLite, Version=1.0.84.0, Culture=neutral, PublicKeyToken=db937bc2d44ff139, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
-                    "_547D244EE77293AEB5014B1DB91818EB"
-                    {
-                    "Name" = "8:System.Data.SQLite.dll"
-                    "Attributes" = "3:512"
-                    }
                 }
             "SourcePath" = "8:System.Data.SQLite.dll"
             "TargetName" = "8:"
@@ -642,11 +617,6 @@
             "AssemblyAsmDisplayName" = "8:FennecUI, Version=2.0.5008.505, Culture=neutral, processorArchitecture=x86"
                 "ScatterAssemblies"
                 {
-                    "_5877C7EDD93F5FE81B079A1C09ECA14D"
-                    {
-                    "Name" = "8:FennecUI.dll"
-                    "Attributes" = "3:512"
-                    }
                 }
             "SourcePath" = "8:FennecUI.dll"
             "TargetName" = "8:"
@@ -673,11 +643,6 @@
             "AssemblyAsmDisplayName" = "8:vbulletin, Version=2.0.5008.504, Culture=neutral, processorArchitecture=x86"
                 "ScatterAssemblies"
                 {
-                    "_78E7FB54D6DB4E8462F26951C7E306ED"
-                    {
-                    "Name" = "8:vbulletin.dll"
-                    "Attributes" = "3:512"
-                    }
                 }
             "SourcePath" = "8:vbulletin.dll"
             "TargetName" = "8:"
@@ -704,11 +669,6 @@
             "AssemblyAsmDisplayName" = "8:Newtonsoft.Json, Version=4.5.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
-                    "_AFE2F1B9B2F31766069082B3F6E3E200"
-                    {
-                    "Name" = "8:Newtonsoft.Json.dll"
-                    "Attributes" = "3:512"
-                    }
                 }
             "SourcePath" = "8:Newtonsoft.Json.dll"
             "TargetName" = "8:"
@@ -735,11 +695,6 @@
             "AssemblyAsmDisplayName" = "8:WerewolfTypes, Version=2.0.5008.504, Culture=neutral, processorArchitecture=x86"
                 "ScatterAssemblies"
                 {
-                    "_B53336A527A4C6E2246D195B9CEFF4E4"
-                    {
-                    "Name" = "8:WerewolfTypes.dll"
-                    "Attributes" = "3:512"
-                    }
                 }
             "SourcePath" = "8:WerewolfTypes.dll"
             "TargetName" = "8:"
@@ -786,11 +741,6 @@
             "AssemblyAsmDisplayName" = "8:AutocompleteMenu, Version=2.0.5008.503, Culture=neutral, processorArchitecture=x86"
                 "ScatterAssemblies"
                 {
-                    "_C931A50D33028A9CA0D874C45D37CFA3"
-                    {
-                    "Name" = "8:AutocompleteMenu.dll"
-                    "Attributes" = "3:512"
-                    }
                 }
             "SourcePath" = "8:AutocompleteMenu.dll"
             "TargetName" = "8:"
@@ -817,11 +767,6 @@
             "AssemblyAsmDisplayName" = "8:WerewolfTypes, Version=2.0.5008.504, Culture=neutral, processorArchitecture=x86"
                 "ScatterAssemblies"
                 {
-                    "_CA08EDD07BB5299E11A2A4E744ED0A55"
-                    {
-                    "Name" = "8:WerewolfTypes.dll"
-                    "Attributes" = "3:512"
-                    }
                 }
             "SourcePath" = "8:WerewolfTypes.dll"
             "TargetName" = "8:"
@@ -848,11 +793,6 @@
             "AssemblyAsmDisplayName" = "8:werewolf, Version=2.0.5008.505, Culture=neutral, processorArchitecture=x86"
                 "ScatterAssemblies"
                 {
-                    "_CEA697127832E9ADEAA4E504A0914376"
-                    {
-                    "Name" = "8:werewolf.dll"
-                    "Attributes" = "3:512"
-                    }
                 }
             "SourcePath" = "8:werewolf.dll"
             "TargetName" = "8:"
@@ -879,11 +819,6 @@
             "AssemblyAsmDisplayName" = "8:ForumTypes, Version=2.0.5008.503, Culture=neutral, processorArchitecture=x86"
                 "ScatterAssemblies"
                 {
-                    "_DE9D654551B85829C88D849A814AA1DB"
-                    {
-                    "Name" = "8:ForumTypes.dll"
-                    "Attributes" = "3:512"
-                    }
                 }
             "SourcePath" = "8:ForumTypes.dll"
             "TargetName" = "8:"
@@ -1023,15 +958,15 @@
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:FennecFox"
-        "ProductCode" = "8:{E1BD7428-5F35-4571-A9F8-3E847EAFC836}"
-        "PackageCode" = "8:{1F28E9F3-4A86-4E51-AAF3-3EA08B488525}"
+        "ProductCode" = "8:{A5A77D3D-C167-413E-8107-27AC914C1F26}"
+        "PackageCode" = "8:{DB877CC3-FF21-412C-9828-F68DA9B5EA8F}"
         "UpgradeCode" = "8:{6FA378AC-1D8C-4F10-AD8C-831DCAE5C6BF}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:FALSE"
-        "ProductVersion" = "8:1.1.49"
+        "ProductVersion" = "8:1.1.50"
         "Manufacturer" = "8:POG"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:"
@@ -1699,7 +1634,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_9D159AEB4DD54FB7AFD8717C3E3179FA"
             {
-            "SourcePath" = "8:..\\FennecFox\\obj\\x86\\Debug\\FennecFox.exe"
+            "SourcePath" = "8:..\\FennecFox\\obj\\x86\\Release\\FennecFox.exe"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_7C9DB022BBCE42118E5A2BD274AFF1BA"
@@ -1727,7 +1662,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_A8D31EA07F8A473E9612873DEBDAA3F2"
             {
-            "SourcePath" = "8:..\\MaryMeerkat\\obj\\x86\\Debug\\MaryMeerkat.exe"
+            "SourcePath" = "8:..\\MaryMeerkat\\obj\\x86\\Release\\MaryMeerkat.exe"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_7C9DB022BBCE42118E5A2BD274AFF1BA"
@@ -1755,7 +1690,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_E2B4E1DBCC7B41C4BAD710BF8E1C15C4"
             {
-            "SourcePath" = "8:..\\RickyRaccoon\\obj\\x86\\Debug\\RickyRaccoon.exe"
+            "SourcePath" = "8:..\\RickyRaccoon\\obj\\x86\\Release\\RickyRaccoon.exe"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_7C9DB022BBCE42118E5A2BD274AFF1BA"
