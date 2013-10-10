@@ -838,8 +838,7 @@ loggedinuser 81788
 		{
 			Event<String, Action<String, IEnumerable<Poster>>> evt = new Event<string, Action<String, IEnumerable<Poster>>>("GetPostersLike", name, callback);
 			PostEvent(evt);
-		}
-		
+		}		
 
 		void DoGetPostersLike(string name, Action<String, IEnumerable<Poster> > callback)
 		{
@@ -866,8 +865,8 @@ fragment	name
 */
 			StringBuilder msg = new StringBuilder();
 			msg.AppendFormat("{0}={1}&", "securitytoken", securityToken);
-			msg.AppendFormat("{0}={1}&", "do", "usersearch");
-			msg.AppendFormat("{0}={1}&", "fragment", name);
+            msg.AppendFormat("{0}={1}&", "do", "usersearch");
+            msg.AppendFormat("{0}={1}&", "fragment", HttpUtility.UrlEncode(name, Encoding.GetEncoding(1252)));
 			cs.Url = String.Format("{0}/ajax.php?do=usersearch", ForumURL);
 			cs.Data = msg.ToString();
 			//Trace.TraceInformation("Posting: " + cs.Data);
@@ -909,7 +908,9 @@ fragment	name
 					if (sid != null)
 					{
 						Int32 id = Int32.Parse(sid);
+                        //Trace.TraceInformation(node.InnerText);
 						String poster = node.InnerText;
+                        //Trace.TraceInformation(poster);
 						if (poster.Contains("amp"))
 						{
 							poster = HtmlAgilityPack.HtmlEntity.DeEntitize(poster);

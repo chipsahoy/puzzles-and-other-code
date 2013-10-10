@@ -37,7 +37,7 @@ namespace POG.Forum
             {
                 if (settings.Message == null)
                 {
-                    using (StreamReader sr = new StreamReader(stream))
+                    using (StreamReader sr = new StreamReader(stream, Encoding.GetEncoding(1252)))
                     {
                         strResponse = sr.ReadToEnd();
                     }
