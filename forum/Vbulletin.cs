@@ -328,30 +328,24 @@ namespace POG.Forum
 
             cs.Url = String.Format("{0}private.php?do=insertpm&pmid=", _outer.ForumURL);
             cs.Data = msg.ToString();
-            //Trace.TraceInformation("Posting: " + cs.Data);
+            Trace.TraceInformation("Posting: " + cs.Data);
             String resp = HtmlHelper.PostToUrl(cs);
             if (resp == null)
             {
                 // failure
+                Trace.TraceInformation("Response was null");
                 return false;
             }
             // Parse out response.
-            var html = new HtmlAgilityPack.HtmlDocument();
-            html.LoadHtml(resp);
-            HtmlAgilityPack.HtmlNode root = html.DocumentNode;
-            if (root == null)
+            if (resp.Contains(@"<tr>
+	<td class=""tcat"">
+		
+			Preview
+		
+	</td>
+</tr>"))
             {
-                return false;
-            }
-            HtmlAgilityPack.HtmlNode status = root.SelectSingleNode("/html[1]/body[1]/table[2]/tr[2]/td[1]/td[1]/div[1]/div[1]/div[1]/table[2]/tr[1]/td[3]/table[1]/tr[1]/td");
-            if (status != null)
-            {
-                String result = status.InnerText.Trim();
-                // Error looks like "The following errors occurred with your submission:"
-                if (result.Contains("Preview"))
-                {
                     return true;
-                }
             }
             return false;
         }
