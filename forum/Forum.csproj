@@ -64,6 +64,7 @@
     <Compile Include="ConnectionSettings.cs" />
     <Compile Include="LobbyReader.cs" />
     <Compile Include="PageErrorEventArgs.cs" />
+    <Compile Include="PlayerInEventArgs.cs" />
     <Compile Include="ReadCompleteEventArgs.cs" />
     <Compile Include="ThreadReader.cs" />
     <Compile Include="Vbulletin.cs" />

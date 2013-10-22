@@ -11,6 +11,7 @@ using POG.Forum;
 using System.Diagnostics;
 using Apache.NMS.ActiveMQ.Commands;
 using Newtonsoft.Json;
+using POG.Database;
 
 
 namespace POG.Database
@@ -22,6 +23,8 @@ namespace POG.Database
 		ISession _session;
 		IMessageConsumer _lobbyRequestsQueue;
         IMessageConsumer _threadRequestsQueue;
+        IMessageConsumer _randRequestsQueue;
+        IMessageConsumer _playerInQueue;
 		IMessageProducer _postsQueue;
         IMessageProducer _lobbyQueue;
         //IDestination _readQueue;
@@ -116,6 +119,55 @@ namespace POG.Database
         public CheckMyStats()
         {
         }
+
+        public void RickyLogin(string name)
+        {
+            Uri connecturi = new Uri("failover:tcp://mq.checkmywwstats.com:61616");
+			Trace.TraceInformation("About to connect to " + connecturi);
+			// NOTE: ensure the nmsprovider-activemq.config file exists in the executable folder.
+			IConnectionFactory factory = new Apache.NMS.ActiveMQ.ConnectionFactory(connecturi);
+			_connection = factory.CreateConnection();
+			_session = _connection.CreateSession();
+			// Examples for getting a destination:
+			//
+			// Hard coded destinations:
+			//    IDestination destination = session.GetQueue("FOO.BAR");
+			//    Debug.Assert(destination is IQueue);
+			//    IDestination destination = session.GetTopic("FOO.BAR");
+			//    Debug.Assert(destination is ITopic);
+			//
+			// Embedded destination type in the name:
+			//    IDestination destination = SessionUtil.GetDestination(session, "queue://FOO.BAR");
+			//    Debug.Assert(destination is IQueue);
+			//    IDestination destination = SessionUtil.GetDestination(session, "topic://FOO.BAR");
+			//    Debug.Assert(destination is ITopic);
+			//
+			// Defaults to queue if type is not specified:
+			//    IDestination destination = SessionUtil.GetDestination(session, "FOO.BAR");
+			//    Debug.Assert(destination is IQueue);
+			//
+			// .NET 3.5 Supports Extension methods for a simplified syntax:
+			//    IDestination destination = session.GetDestination("queue://FOO.BAR");
+			//    Debug.Assert(destination is IQueue);
+			//    IDestination destination = session.GetDestination("topic://FOO.BAR");
+			//    Debug.Assert(destination is ITopic);
+            //_readQueue = _session.CreateTemporaryQueue();
+            DoLogin(name);
+
+            IDestination destination = SessionUtil.GetDestination(_session, "queue://rickyraccoon.rand");
+            _randRequestsQueue = _session.CreateConsumer(destination);
+
+            destination = SessionUtil.GetDestination(_session, "queue://rickyraccoon.playerin");
+            _playerInQueue = _session.CreateConsumer(destination);
+
+			// Start the connection so that messages will be processed.
+			_connection.Start();
+
+
+            _randRequestsQueue.Listener += new MessageListener(OnRandMessage);
+            _playerInQueue.Listener += new MessageListener(OnPlayerInMessage);
+        }
+
         public void Login(String name)
 		{
 			Uri connecturi = new Uri("failover:tcp://mq.checkmywwstats.com:61616");
@@ -157,7 +209,7 @@ namespace POG.Database
             _threadRequestsQueue = _session.CreateConsumer(destination);
 
             destination = SessionUtil.GetDestination(_session, "queue://fennecfox.posts");
-            _postsQueue = _session.CreateProducer(destination);
+            _postsQueue = _session.CreateProducer(destination);            
 
             destination = SessionUtil.GetDestination(_session, "queue://fennecfox.lobby");
             _lobbyQueue = _session.CreateProducer(destination);
@@ -218,9 +270,66 @@ namespace POG.Database
 			}
 		}
 
+        protected void OnRandMessage(IMessage receivedMsg)
+        {
+            ITextMessage message;
+            message = receivedMsg as ITextMessage;
+            if (message == null)
+            {
+                Trace.TraceInformation("No message received!");
+            }
+            else
+            {
+                String playerlist = (String)message.Properties["playerlist"];
+                String gamename = (String)message.Properties["gamename"];
+                String username = (String)message.Properties["username"];
+                String password = (String)message.Properties["password"];
+                Int32 signupthreadid = Convert.ToInt32(message.Properties["signupthreadid"]);
+                Trace.TraceInformation(receivedMsg.ToString());
+                OnRandReadEvent(new RandReadEventArgs(playerlist, gamename, username, password, signupthreadid));
+                //OnMessage(receivedMsg);
+            }
+        }
+
+        protected void OnPlayerInMessage(IMessage receivedMsg)
+        {
+            ITextMessage message;
+            message = receivedMsg as ITextMessage;
+            if (message == null)
+            {
+                Trace.TraceInformation("No message received!");
+            }
+            else
+            {
+                String playername = (String)message.Properties["playername"];
+                Boolean inGame = Convert.ToBoolean(message.Properties["inGame"]);
+                Trace.TraceInformation(receivedMsg.ToString());
+                OnPlayerInEvent(new PlayerInEventArgs(playername, inGame));
+                //OnMessage(receivedMsg);
+            }
+        }
+
         public void Logout(string _username)
         {
             throw new NotImplementedException();
+        }
+        public event EventHandler<RandReadEventArgs> RandReadEvent;
+        protected void OnRandReadEvent(RandReadEventArgs e)
+        {
+            var handler = RandReadEvent;
+            if (handler != null)
+            {
+                handler(this, e);
+            }
+        }
+        public event EventHandler<PlayerInEventArgs> PlayerInEvent;
+        protected void OnPlayerInEvent(PlayerInEventArgs e)
+        {
+            var handler = PlayerInEvent;
+            if (handler != null)
+            {
+                handler(this, e);
+            }
         }
         public event EventHandler<LobbyReadEventArgs> LobbyReadEvent;
         protected void OnLobbyReadEvent(LobbyReadEventArgs e)

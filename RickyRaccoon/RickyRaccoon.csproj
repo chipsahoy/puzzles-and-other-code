@@ -123,6 +123,10 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\checkmywwstats\checkmywwstats.csproj">
+      <Project>{C1C1B5FD-7C05-467A-BE22-F6670E013D05}</Project>
+      <Name>checkmywwstats</Name>
+    </ProjectReference>
     <ProjectReference Include="..\ForumTypes\ForumTypes.csproj">
       <Project>{3A512A72-44FC-458A-A6FB-36147D6C0CF6}</Project>
       <Name>ForumTypes</Name>

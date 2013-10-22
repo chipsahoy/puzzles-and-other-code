@@ -28,9 +28,9 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle7 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle8 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle9 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Raccoon));
             this.label10 = new System.Windows.Forms.Label();
             this.label9 = new System.Windows.Forms.Label();
@@ -96,6 +96,7 @@
             this.boxPMsinOP = new System.Windows.Forms.CheckBox();
             this.label7 = new System.Windows.Forms.Label();
             this.boxMod = new System.Windows.Forms.CheckBox();
+            this.boxRicky = new System.Windows.Forms.CheckBox();
             this.Teams = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.tabPage2 = new System.Windows.Forms.TabPage();
@@ -193,7 +194,7 @@
             // 
             this.label4.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(26, 228);
+            this.label4.Location = new System.Drawing.Point(26, 251);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(58, 13);
             this.label4.TabIndex = 11;
@@ -201,7 +202,7 @@
             // 
             // txtRoleList
             // 
-            this.txtRoleList.Location = new System.Drawing.Point(90, 306);
+            this.txtRoleList.Location = new System.Drawing.Point(90, 329);
             this.txtRoleList.Multiline = true;
             this.txtRoleList.Name = "txtRoleList";
             this.txtRoleList.ReadOnly = true;
@@ -223,7 +224,7 @@
             // 
             this.label5.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(33, 303);
+            this.label5.Location = new System.Drawing.Point(33, 326);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(51, 13);
             this.label5.TabIndex = 16;
@@ -258,7 +259,7 @@
             // 
             // txtPlayerList
             // 
-            this.txtPlayerList.Location = new System.Drawing.Point(90, 231);
+            this.txtPlayerList.Location = new System.Drawing.Point(90, 254);
             this.txtPlayerList.Multiline = true;
             this.txtPlayerList.Name = "txtPlayerList";
             this.txtPlayerList.ReadOnly = true;
@@ -371,49 +372,51 @@
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel1.Controls.Add(this.tableLayoutPanel14, 1, 15);
+            this.tableLayoutPanel1.Controls.Add(this.tableLayoutPanel14, 1, 16);
             this.tableLayoutPanel1.Controls.Add(this.label1, 0, 3);
             this.tableLayoutPanel1.Controls.Add(this.label3, 0, 1);
             this.tableLayoutPanel1.Controls.Add(this.txtPlayerCount, 1, 1);
             this.tableLayoutPanel1.Controls.Add(this.tableLayoutPanel2, 1, 0);
             this.tableLayoutPanel1.Controls.Add(this.txtGameURL, 1, 3);
-            this.tableLayoutPanel1.Controls.Add(this.txtPlayerList, 1, 9);
+            this.tableLayoutPanel1.Controls.Add(this.txtPlayerList, 1, 10);
             this.tableLayoutPanel1.Controls.Add(this.txtPassword, 1, 7);
             this.tableLayoutPanel1.Controls.Add(this.RoleCount, 0, 2);
             this.tableLayoutPanel1.Controls.Add(this.txtRoleCount, 1, 2);
-            this.tableLayoutPanel1.Controls.Add(this.label5, 0, 10);
+            this.tableLayoutPanel1.Controls.Add(this.label5, 0, 11);
             this.tableLayoutPanel1.Controls.Add(this.label2, 0, 6);
-            this.tableLayoutPanel1.Controls.Add(this.txtRoleList, 1, 10);
-            this.tableLayoutPanel1.Controls.Add(this.label4, 0, 9);
+            this.tableLayoutPanel1.Controls.Add(this.txtRoleList, 1, 11);
+            this.tableLayoutPanel1.Controls.Add(this.label4, 0, 10);
             this.tableLayoutPanel1.Controls.Add(this.txtUsername, 1, 6);
             this.tableLayoutPanel1.Controls.Add(this.Password, 0, 7);
-            this.tableLayoutPanel1.Controls.Add(this.label11, 0, 20);
-            this.tableLayoutPanel1.Controls.Add(this.boxMajLynch, 1, 20);
-            this.tableLayoutPanel1.Controls.Add(this.label12, 0, 21);
-            this.tableLayoutPanel1.Controls.Add(this.boxMustLynch, 1, 21);
-            this.tableLayoutPanel1.Controls.Add(this.label13, 0, 22);
-            this.tableLayoutPanel1.Controls.Add(this.boxWolfChat, 1, 22);
-            this.tableLayoutPanel1.Controls.Add(this.label14, 0, 24);
-            this.tableLayoutPanel1.Controls.Add(this.txtOP, 1, 24);
+            this.tableLayoutPanel1.Controls.Add(this.label11, 0, 21);
+            this.tableLayoutPanel1.Controls.Add(this.boxMajLynch, 1, 21);
+            this.tableLayoutPanel1.Controls.Add(this.label12, 0, 22);
+            this.tableLayoutPanel1.Controls.Add(this.boxMustLynch, 1, 22);
+            this.tableLayoutPanel1.Controls.Add(this.label13, 0, 23);
+            this.tableLayoutPanel1.Controls.Add(this.boxWolfChat, 1, 23);
+            this.tableLayoutPanel1.Controls.Add(this.label14, 0, 25);
+            this.tableLayoutPanel1.Controls.Add(this.txtOP, 1, 25);
             this.tableLayoutPanel1.Controls.Add(this.label15, 0, 5);
             this.tableLayoutPanel1.Controls.Add(this.txtGameName, 1, 5);
-            this.tableLayoutPanel1.Controls.Add(this.tableLayoutPanel5, 1, 8);
-            this.tableLayoutPanel1.Controls.Add(this.label6, 0, 8);
-            this.tableLayoutPanel1.Controls.Add(this.tableLayoutPanel10, 1, 16);
-            this.tableLayoutPanel1.Controls.Add(this.tableLayoutPanel11, 1, 17);
-            this.tableLayoutPanel1.Controls.Add(this.tableLayoutPanel12, 1, 18);
-            this.tableLayoutPanel1.Controls.Add(this.tableLayoutPanel13, 1, 14);
+            this.tableLayoutPanel1.Controls.Add(this.tableLayoutPanel5, 1, 9);
+            this.tableLayoutPanel1.Controls.Add(this.label6, 0, 9);
+            this.tableLayoutPanel1.Controls.Add(this.tableLayoutPanel10, 1, 17);
+            this.tableLayoutPanel1.Controls.Add(this.tableLayoutPanel11, 1, 18);
+            this.tableLayoutPanel1.Controls.Add(this.tableLayoutPanel12, 1, 19);
+            this.tableLayoutPanel1.Controls.Add(this.tableLayoutPanel13, 1, 15);
             this.tableLayoutPanel1.Controls.Add(this.tableLayoutPanel9, 0, 0);
-            this.tableLayoutPanel1.Controls.Add(this.boxLongGame, 0, 16);
-            this.tableLayoutPanel1.Controls.Add(this.tableLayoutPanel15, 1, 13);
-            this.tableLayoutPanel1.Controls.Add(this.boxTurbo, 0, 13);
-            this.tableLayoutPanel1.Controls.Add(this.boxPMsinOP, 1, 19);
-            this.tableLayoutPanel1.Controls.Add(this.label7, 0, 23);
-            this.tableLayoutPanel1.Controls.Add(this.boxMod, 1, 23);
+            this.tableLayoutPanel1.Controls.Add(this.boxLongGame, 0, 17);
+            this.tableLayoutPanel1.Controls.Add(this.tableLayoutPanel15, 1, 14);
+            this.tableLayoutPanel1.Controls.Add(this.boxTurbo, 0, 14);
+            this.tableLayoutPanel1.Controls.Add(this.boxPMsinOP, 1, 20);
+            this.tableLayoutPanel1.Controls.Add(this.label7, 0, 24);
+            this.tableLayoutPanel1.Controls.Add(this.boxMod, 1, 24);
+            this.tableLayoutPanel1.Controls.Add(this.boxRicky, 1, 8);
             this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel1.Location = new System.Drawing.Point(3, 3);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
-            this.tableLayoutPanel1.RowCount = 25;
+            this.tableLayoutPanel1.RowCount = 26;
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
@@ -450,7 +453,7 @@
             this.tableLayoutPanel14.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel14.Controls.Add(this.label20, 0, 0);
             this.tableLayoutPanel14.Controls.Add(this.txtNightLength, 1, 0);
-            this.tableLayoutPanel14.Location = new System.Drawing.Point(90, 450);
+            this.tableLayoutPanel14.Location = new System.Drawing.Point(90, 473);
             this.tableLayoutPanel14.Name = "tableLayoutPanel14";
             this.tableLayoutPanel14.RowCount = 1;
             this.tableLayoutPanel14.RowStyles.Add(new System.Windows.Forms.RowStyle());
@@ -480,7 +483,7 @@
             // 
             this.label11.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.label11.AutoSize = true;
-            this.label11.Location = new System.Drawing.Point(6, 611);
+            this.label11.Location = new System.Drawing.Point(6, 634);
             this.label11.Name = "label11";
             this.label11.Size = new System.Drawing.Size(78, 13);
             this.label11.TabIndex = 30;
@@ -492,7 +495,7 @@
             this.boxMajLynch.Items.AddRange(new object[] {
             "Majority Lynch",
             "No Majority Lynch"});
-            this.boxMajLynch.Location = new System.Drawing.Point(90, 614);
+            this.boxMajLynch.Location = new System.Drawing.Point(90, 637);
             this.boxMajLynch.Name = "boxMajLynch";
             this.boxMajLynch.Size = new System.Drawing.Size(320, 21);
             this.boxMajLynch.TabIndex = 9;
@@ -502,7 +505,7 @@
             // 
             this.label12.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.label12.AutoSize = true;
-            this.label12.Location = new System.Drawing.Point(19, 638);
+            this.label12.Location = new System.Drawing.Point(19, 661);
             this.label12.Name = "label12";
             this.label12.Size = new System.Drawing.Size(65, 13);
             this.label12.TabIndex = 32;
@@ -515,7 +518,7 @@
             "Standard voting rules apply",
             "Once you vote, you may not unvote, but may switch",
             "Once you vote, your vote is locked, and you may not switch or unvote"});
-            this.boxMustLynch.Location = new System.Drawing.Point(90, 641);
+            this.boxMustLynch.Location = new System.Drawing.Point(90, 664);
             this.boxMustLynch.Name = "boxMustLynch";
             this.boxMustLynch.Size = new System.Drawing.Size(320, 21);
             this.boxMustLynch.TabIndex = 10;
@@ -525,7 +528,7 @@
             // 
             this.label13.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.label13.AutoSize = true;
-            this.label13.Location = new System.Drawing.Point(27, 665);
+            this.label13.Location = new System.Drawing.Point(27, 688);
             this.label13.Name = "label13";
             this.label13.Size = new System.Drawing.Size(57, 13);
             this.label13.TabIndex = 34;
@@ -538,7 +541,7 @@
             "24 Hours",
             "Only During Night",
             "24 Hours Except Within 1 Hour of EOD"});
-            this.boxWolfChat.Location = new System.Drawing.Point(90, 668);
+            this.boxWolfChat.Location = new System.Drawing.Point(90, 691);
             this.boxWolfChat.Name = "boxWolfChat";
             this.boxWolfChat.Size = new System.Drawing.Size(320, 21);
             this.boxWolfChat.TabIndex = 11;
@@ -548,7 +551,7 @@
             // 
             this.label14.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.label14.AutoSize = true;
-            this.label14.Location = new System.Drawing.Point(62, 715);
+            this.label14.Location = new System.Drawing.Point(62, 738);
             this.label14.Name = "label14";
             this.label14.Size = new System.Drawing.Size(22, 13);
             this.label14.TabIndex = 36;
@@ -556,7 +559,7 @@
             // 
             // txtOP
             // 
-            this.txtOP.Location = new System.Drawing.Point(90, 718);
+            this.txtOP.Location = new System.Drawing.Point(90, 741);
             this.txtOP.Multiline = true;
             this.txtOP.Name = "txtOP";
             this.txtOP.ReadOnly = true;
@@ -589,7 +592,7 @@
             this.tableLayoutPanel5.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel5.Controls.Add(this.btnLoadRoleSetGame, 1, 0);
             this.tableLayoutPanel5.Controls.Add(this.boxRoleSetSelect, 0, 0);
-            this.tableLayoutPanel5.Location = new System.Drawing.Point(90, 195);
+            this.tableLayoutPanel5.Location = new System.Drawing.Point(90, 218);
             this.tableLayoutPanel5.Name = "tableLayoutPanel5";
             this.tableLayoutPanel5.RowCount = 1;
             this.tableLayoutPanel5.RowStyles.Add(new System.Windows.Forms.RowStyle());
@@ -623,7 +626,7 @@
             this.label6.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.label6.AutoSize = true;
             this.label6.BackColor = System.Drawing.Color.Transparent;
-            this.label6.Location = new System.Drawing.Point(33, 192);
+            this.label6.Location = new System.Drawing.Point(33, 215);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(51, 13);
             this.label6.TabIndex = 41;
@@ -637,7 +640,7 @@
             this.tableLayoutPanel10.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel10.Controls.Add(this.boxEODTime, 1, 0);
             this.tableLayoutPanel10.Controls.Add(this.label8, 0, 0);
-            this.tableLayoutPanel10.Location = new System.Drawing.Point(90, 482);
+            this.tableLayoutPanel10.Location = new System.Drawing.Point(90, 505);
             this.tableLayoutPanel10.Name = "tableLayoutPanel10";
             this.tableLayoutPanel10.RowCount = 1;
             this.tableLayoutPanel10.RowStyles.Add(new System.Windows.Forms.RowStyle());
@@ -664,7 +667,7 @@
             this.tableLayoutPanel11.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel11.Controls.Add(this.tableLayoutPanel3, 1, 0);
             this.tableLayoutPanel11.Controls.Add(this.label9, 0, 0);
-            this.tableLayoutPanel11.Location = new System.Drawing.Point(90, 514);
+            this.tableLayoutPanel11.Location = new System.Drawing.Point(90, 537);
             this.tableLayoutPanel11.Name = "tableLayoutPanel11";
             this.tableLayoutPanel11.RowCount = 1;
             this.tableLayoutPanel11.RowStyles.Add(new System.Windows.Forms.RowStyle());
@@ -792,7 +795,7 @@
             this.tableLayoutPanel12.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel12.Controls.Add(this.boxSODTime, 1, 0);
             this.tableLayoutPanel12.Controls.Add(this.label10, 0, 0);
-            this.tableLayoutPanel12.Location = new System.Drawing.Point(90, 559);
+            this.tableLayoutPanel12.Location = new System.Drawing.Point(90, 582);
             this.tableLayoutPanel12.Name = "tableLayoutPanel12";
             this.tableLayoutPanel12.RowCount = 1;
             this.tableLayoutPanel12.RowStyles.Add(new System.Windows.Forms.RowStyle());
@@ -818,7 +821,7 @@
             this.tableLayoutPanel13.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel13.Controls.Add(this.label19, 0, 0);
             this.tableLayoutPanel13.Controls.Add(this.txtDayLength, 1, 0);
-            this.tableLayoutPanel13.Location = new System.Drawing.Point(90, 418);
+            this.tableLayoutPanel13.Location = new System.Drawing.Point(90, 441);
             this.tableLayoutPanel13.Name = "tableLayoutPanel13";
             this.tableLayoutPanel13.RowCount = 1;
             this.tableLayoutPanel13.RowStyles.Add(new System.Windows.Forms.RowStyle());
@@ -843,7 +846,7 @@
             this.txtDayLength.Name = "txtDayLength";
             this.txtDayLength.Size = new System.Drawing.Size(81, 20);
             this.txtDayLength.TabIndex = 0;
-            this.txtDayLength.Text = "20";
+            this.txtDayLength.Text = "17";
             // 
             // tableLayoutPanel9
             // 
@@ -863,7 +866,7 @@
             // boxLongGame
             // 
             this.boxLongGame.AutoSize = true;
-            this.boxLongGame.Location = new System.Drawing.Point(3, 482);
+            this.boxLongGame.Location = new System.Drawing.Point(3, 505);
             this.boxLongGame.Name = "boxLongGame";
             this.boxLongGame.Size = new System.Drawing.Size(81, 17);
             this.boxLongGame.TabIndex = 54;
@@ -879,7 +882,7 @@
             this.tableLayoutPanel15.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel15.Controls.Add(this.label16, 0, 0);
             this.tableLayoutPanel15.Controls.Add(this.txtDay1Length, 1, 0);
-            this.tableLayoutPanel15.Location = new System.Drawing.Point(90, 386);
+            this.tableLayoutPanel15.Location = new System.Drawing.Point(90, 409);
             this.tableLayoutPanel15.Name = "tableLayoutPanel15";
             this.tableLayoutPanel15.RowCount = 1;
             this.tableLayoutPanel15.RowStyles.Add(new System.Windows.Forms.RowStyle());
@@ -904,12 +907,12 @@
             this.txtDay1Length.Name = "txtDay1Length";
             this.txtDay1Length.Size = new System.Drawing.Size(77, 20);
             this.txtDay1Length.TabIndex = 0;
-            this.txtDay1Length.Text = "25";
+            this.txtDay1Length.Text = "22";
             // 
             // boxTurbo
             // 
             this.boxTurbo.AutoSize = true;
-            this.boxTurbo.Location = new System.Drawing.Point(3, 386);
+            this.boxTurbo.Location = new System.Drawing.Point(3, 409);
             this.boxTurbo.Name = "boxTurbo";
             this.boxTurbo.Size = new System.Drawing.Size(54, 17);
             this.boxTurbo.TabIndex = 53;
@@ -921,7 +924,7 @@
             // 
             this.boxPMsinOP.AutoSize = true;
             this.boxPMsinOP.Enabled = false;
-            this.boxPMsinOP.Location = new System.Drawing.Point(90, 591);
+            this.boxPMsinOP.Location = new System.Drawing.Point(90, 614);
             this.boxPMsinOP.Name = "boxPMsinOP";
             this.boxPMsinOP.Size = new System.Drawing.Size(120, 17);
             this.boxPMsinOP.TabIndex = 56;
@@ -932,7 +935,7 @@
             // 
             this.label7.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(29, 692);
+            this.label7.Location = new System.Drawing.Point(29, 715);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(55, 13);
             this.label7.TabIndex = 57;
@@ -941,12 +944,22 @@
             // boxMod
             // 
             this.boxMod.AutoSize = true;
-            this.boxMod.Location = new System.Drawing.Point(90, 695);
+            this.boxMod.Location = new System.Drawing.Point(90, 718);
             this.boxMod.Name = "boxMod";
             this.boxMod.Size = new System.Drawing.Size(335, 17);
             this.boxMod.TabIndex = 58;
             this.boxMod.Text = "Are you a mod? (Can you send PMs more than every 35 seconds)";
             this.boxMod.UseVisualStyleBackColor = true;
+            // 
+            // boxRicky
+            // 
+            this.boxRicky.AutoSize = true;
+            this.boxRicky.Location = new System.Drawing.Point(90, 195);
+            this.boxRicky.Name = "boxRicky";
+            this.boxRicky.Size = new System.Drawing.Size(264, 17);
+            this.boxRicky.TabIndex = 59;
+            this.boxRicky.Text = "Use RickyRaccoon to make thread and send PMs";
+            this.boxRicky.UseVisualStyleBackColor = true;
             // 
             // Teams
             // 
@@ -1199,8 +1212,8 @@
             // 
             // txtExtraFlavor
             // 
-            dataGridViewCellStyle7.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.txtExtraFlavor.DefaultCellStyle = dataGridViewCellStyle7;
+            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.txtExtraFlavor.DefaultCellStyle = dataGridViewCellStyle1;
             this.txtExtraFlavor.HeaderText = "Extra Flavor";
             this.txtExtraFlavor.Name = "txtExtraFlavor";
             // 
@@ -1221,8 +1234,8 @@
             // 
             // txtFullPM
             // 
-            dataGridViewCellStyle8.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.txtFullPM.DefaultCellStyle = dataGridViewCellStyle8;
+            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.txtFullPM.DefaultCellStyle = dataGridViewCellStyle2;
             this.txtFullPM.HeaderText = "Full PM w/o Redacted";
             this.txtFullPM.Name = "txtFullPM";
             this.txtFullPM.ReadOnly = true;
@@ -1271,8 +1284,8 @@
             // colWinCon
             // 
             this.colWinCon.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
-            dataGridViewCellStyle9.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.colWinCon.DefaultCellStyle = dataGridViewCellStyle9;
+            dataGridViewCellStyle3.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.colWinCon.DefaultCellStyle = dataGridViewCellStyle3;
             this.colWinCon.HeaderText = "Win Condition";
             this.colWinCon.Name = "colWinCon";
             this.colWinCon.Width = 98;
@@ -1456,6 +1469,7 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn txtTeamCount;
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.CheckBox boxMod;
+        private System.Windows.Forms.CheckBox boxRicky;
 
     }
 }

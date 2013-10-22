@@ -409,7 +409,7 @@ namespace POG.Werewolf
                 {
                     for (int j = 0; j < team.Members[i].Count; j++)
                     {
-                        teammates += team.Members[i].Players[j].Name + Environment.NewLine;
+                        teammates += team.Members[i].Players[j].Name + " - " + team.Members[i].Role +  Environment.NewLine;
                     }
                 }
             }

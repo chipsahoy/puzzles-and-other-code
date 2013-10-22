@@ -62,7 +62,9 @@
     </Compile>
     <Compile Include="CheckMyStats.cs" />
     <Compile Include="LobbyReadEventArgs.cs" />
+    <Compile Include="PlayerInEventArgs.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RandReadEventArgs.cs" />
     <Compile Include="ThreadReadEventArgs.cs" />
   </ItemGroup>
   <ItemGroup>

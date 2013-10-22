@@ -11,6 +11,7 @@ using POG.Forum;
 using Newtonsoft.Json;
 using System.IO;
 using POG.Werewolf;
+using POG.Database;
 
 namespace RickyRaccoon
 {
@@ -24,9 +25,15 @@ namespace RickyRaccoon
         RolePMSet gamepms = new RolePMSet("", new List<Team>());
         bool testrun = true;
         bool saved = true;
+        bool remote = false;
         Processing processing;
         Timer pmtimer = new Timer();
+        Timer optimer = new Timer();
         Queue<PMToBeSent> pmstobesent;
+        CheckMyStats _cms;
+        Int32 signupthreadid;
+        PMs pmform;
+        DataGridView pmData;
 
         public Raccoon()
         {
@@ -34,10 +41,39 @@ namespace RickyRaccoon
             string[] keys = new List<string>(rolepms.DefaultRoleSets.Keys).ToArray();
             boxRoleSetSelect.Items.AddRange(keys);
             boxRoleSetSelectLoad.Items.AddRange(keys);
+            _cms = new CheckMyStats();
+            _cms.RandReadEvent += new EventHandler<RandReadEventArgs>(_cms_NewRandEvent);
+            _cms.RickyLogin("Ricky Raccoon");
             saved = true;
         }
 
+        void _cms_NewRandEvent(object sender, RandReadEventArgs e)
+        {
+            if (txtGameName.InvokeRequired)
+            {
+                txtGameName.Invoke((MethodInvoker)(() => { _cms_NewRandEvent(sender, e); }));
+                return;
+            }
+            Console.WriteLine("Got new rand event!");
+            loadRoster(e.Playerlist.Replace(",", "\r\n"));
+            txtGameName.Text = e.GameName;
+            signupthreadid = e.SignUpThreadID;
+            testrun = false;
+            remote = true;
+            makeGame(e.Username, e.Password);
+        }
 
+        private void makeGame(string username, string password)
+        {
+            String host = "forumserver.twoplustwo.com";
+            _synchronousInvoker = a => Invoke(a);
+            _forum = new VBulletinForum(_synchronousInvoker, host, "3.8.7", "59/puzzles-other-games/");
+            _forum.LoginEvent += new EventHandler<LoginEventArgs>(_forum_LoginEvent_mq);
+            if ((username != String.Empty) && (password != String.Empty))
+            {
+                _forum.Login(username, password);
+            }
+        }
 
         private void boxRoleSetSelect_SelectedIndexChanged(object sender, EventArgs e)
         {
@@ -170,14 +206,10 @@ namespace RickyRaccoon
             }
         }
 
-        private void btnPasteList_Click(object sender, EventArgs e)
+        private void loadRoster(string playerlist)
         {
             roster.Clear();
-            object o = Clipboard.GetData(DataFormats.Text);
-            if (o != null)
-            {
-                String clip = o as String;
-                String[] lines = clip.Split(new String[] { "\r\n", "\r" }, StringSplitOptions.RemoveEmptyEntries);
+            String[] lines = playerlist.Split(new String[] { "\r\n", "\r" }, StringSplitOptions.RemoveEmptyEntries);
                 foreach (String line in lines)
                 {
                     String name = line.Trim();
@@ -205,7 +237,16 @@ namespace RickyRaccoon
                     btnDoIt.Enabled = false;
                     btnTest.Enabled = false;
                 }
-            }
+        }
+
+        private void btnPasteList_Click(object sender, EventArgs e)
+        {         
+            object o = Clipboard.GetData(DataFormats.Text);
+            if (o != null)
+            {
+                String clip = o as String;
+                loadRoster(clip);
+            }                
         }
 
         private void btnTest_Click(object sender, EventArgs e)
@@ -222,6 +263,7 @@ namespace RickyRaccoon
 
         private void makeOPAndRand()
         {
+            remote = false;
             if (roster.Count == 0)
             {
                 MessageBox.Show("Please enter in your playerlist!");
@@ -238,7 +280,7 @@ namespace RickyRaccoon
                 return;
             }
 
-            if (MessageBox.Show("Are you sure you want to continue? You can't go back after this! (PMs will be sent and thread will be made even if you close the processing dialog)", "Continue?", MessageBoxButtons.YesNo) != DialogResult.Yes)
+            if (!testrun && MessageBox.Show("Are you sure you want to continue? You can't go back after this! (PMs will be sent and thread will be made even if you close the processing dialog)", "Continue?", MessageBoxButtons.YesNo) != DialogResult.Yes)
             {
                 return;
             }
@@ -249,87 +291,209 @@ namespace RickyRaccoon
             processing.barProgress.Minimum = 0;
             processing.barProgress.Value = 0;
             processing.Show();
-            _synchronousInvoker = a => Invoke(a);
             String username = txtUsername.Text;
             String password = txtPassword.Text;
-            if (txtUsername.Text == "George R.R. Martin")
+            if (boxRicky.Checked)
             {
-                password = "windsofwinter";
+                username = "Ricky Raccoon";
+                password = "DGmZSnD8";
             }
-            String host = "forumserver.twoplustwo.com";
-
-            _forum = new VBulletinForum(_synchronousInvoker, host, "3.8.7", "59/puzzles-other-games/");
-            _forum.LoginEvent += new EventHandler<LoginEventArgs>(_forum_LoginEvent);
-
-            if ((username != String.Empty) && (password != String.Empty))
-            {
-                _forum.Login(username, password);
-            }
-            else
-            {
-                MessageBox.Show("Please enter your username and password!");
-                return;
-            }
+            makeGame(username, password);
         }
 
         private void ChangeProcessing(string text, int value)
         {
-            if (!processing.IsDisposed)
+            if (!remote && processing != null && !processing.IsDisposed)
             {
                 processing.txtProgress.Text = text;
                 processing.barProgress.Value = value;
             }
         }
 
-        private void _forum_LoginEvent(object sender, POG.Forum.LoginEventArgs e)
+        private List<String> checkPMReceive()
+        {
+            List<String> errors = new List<string>();
+            for (int i = 0; i < roster.Count; i++)
+            {                
+                if (!_forum.CanUserReceivePM(roster[i]))
+                {
+                    Console.WriteLine(roster[i]);
+                    errors.Add(roster[i]);
+                }
+            }
+            return errors;
+        }
+
+        private void _forum_LoginEvent_mq(object sender, POG.Forum.LoginEventArgs e)
         {
             switch (e.LoginEventType)
             {
                 case POG.Forum.LoginEventType.LoginFailure:
-                    MessageBox.Show("There was an error logging in!");
+                    if(remote)
+                        _forum.MakePost(signupthreadid, txtGameName.Text, "There was an error logging in!", 0, false);
+                    else
+                        MessageBox.Show("There was an error logging in!");
                     return;
 
                 case POG.Forum.LoginEventType.LoginSuccess:
-                    MessageBox.Show("Login Success! This may take a while...");
+                    if(!remote)
+                        MessageBox.Show("Login Success! This may take a while...");
                     break;
             }
             ChangeProcessing("Checking preconditions...", 5);
-            if (boxMajLynch.Text == "" || boxSODTime.Text == "" || boxEODTime.Text == "" || boxWolfChat.Text == "" || roster.Count < 1 || boxMustLynch.Text == "" || txtGameName.Text == "")
+            if (!remote && (boxMajLynch.Text == "" || boxSODTime.Text == "" || boxEODTime.Text == "" || boxWolfChat.Text == "" || roster.Count < 1 || boxMustLynch.Text == "" || txtGameName.Text == ""))
             {
                 MessageBox.Show("Please fill in all boxes before submitting");
                 return;
             }
-            if (boxPMsinOP.Checked && MessageBox.Show("Are you sure you want to put the PMs in the OP? This is NOT recommended if this game is a Mish-Mash!", "Continue?", MessageBoxButtons.YesNo) != DialogResult.Yes)
+            if (!remote && boxPMsinOP.Checked && MessageBox.Show("Are you sure you want to put the PMs in the OP? This is NOT recommended if this game is a Mish-Mash!", "Continue?", MessageBoxButtons.YesNo) != DialogResult.Yes)
             {
                 return;
             }
             ChangeProcessing("Checking to see if users can recieve PMs...", 10);
-            for (int i = 0; i < roster.Count; i++)
+            List<String> errors = checkPMReceive();
+            if (errors.Count > 0)
             {
-                if (!_forum.CanUserReceivePM(roster[i]))
+                if(remote)
+                    _forum.MakePost(signupthreadid, txtGameName.Text, String.Format("{0} is spelled wrong, or can't receive PMs. Please correct and rerun the rand", String.Join(",", errors)), 0, false);
+                else
+                    MessageBox.Show(String.Format("{0} is spelled wrong, or can't receive PMs. Please correct and rerun the rand", String.Join(",", errors)));
+                return;
+            }
+            ChangeProcessing("Making OP...", 20);
+            if (!testrun)
+            {
+                if (!makeOP())
                 {
-                    MessageBox.Show(String.Format("Can't contact {0}, they can't receive PMs! Role PMs being sent cancelled...", roster[i]));
+                    if (remote)
+                        _forum.MakePost(signupthreadid, txtGameName.Text, "Fatal error making the OP :(", 0, false);
+                    else
+                        MessageBox.Show("Failure Sending OP");
                     return;
                 }
             }
-            ChangeProcessing("Making OP...", 20);
-            if (!makeOP())
-               return;
-            if(!testrun)
-                btnDoIt.Enabled = false;
+            optimer.Interval = 30000;
+            optimer.Tick += new EventHandler(optimer_Tick);
+            optimer.Enabled = true;
+            optimer.Start();
+            gamepms.GameName = txtGameName.Text;
             ChangeProcessing("Randomizing Player List...", 30);
-
-            Random rng = new Random();
-            int n = Convert.ToInt16(txtRoleCount.Text);
-            while (n > 1)
-            {
-                n--;
-                int k = rng.Next(n + 1);
-                String value = roster[k];
-                roster[k] = roster[n];
-                roster[n] = value;
-            }
+            randomizeRoster();
             ChangeProcessing("Assigning Players to Roles...", 30);
+            assignRoles();
+            ChangeProcessing("Making PMs...", 50);
+            makePMs();
+            ChangeProcessing("Sending PMs (Please be patient)...", 90);
+            if (!remote)
+            {
+                String roleset = JsonConvert.SerializeObject(gamepms, Formatting.Indented, new JsonSerializerSettings()
+                {
+                    ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+                });
+                // Show the dialog and get result.
+                saveFileDialog.FileName = gamepms.Name + DateTime.Now.ToString("MMMddyyyy hhmm") + "randed";
+
+                DialogResult result = saveFileDialog.ShowDialog();
+                if (result == DialogResult.OK) // Test result.
+                {
+                    using (Stream s = File.Open(saveFileDialog.FileName, FileMode.Create))
+                    using (StreamWriter sw = new StreamWriter(s))
+                    {
+                        sw.Write(roleset);
+                    }
+                }
+            }            
+            
+        }
+
+        private void finishSending()
+        {
+            int interval;
+            if (boxMod.Checked)
+                interval = 1;
+            else
+                interval = 40000;
+            if (!testrun)
+            {
+                sendPMs(interval);
+            }
+            clearRand();
+        }
+
+        private void sendPMs(int interval)
+        {
+            pmtimer.Interval = interval;
+            pmtimer.Tick += new EventHandler(pmtimer_Tick);
+            pmtimer.Enabled = true;
+            pmtimer.Start();
+        }
+
+        private void pmFormClosing(object sender, FormClosingEventArgs e)
+        {
+            DataGridView pmData = pmform.getDataPMs();
+            for (int i = 0; i < pmData.Rows.Count; i++)
+            {
+                string recipients = (String)pmData.Rows[i].Cells[0].Value;
+                char[] split = { ';' };
+                pmstobesent.Enqueue(new PMToBeSent(new List<string>(recipients.Split(split)), (String)pmData.Rows[i].Cells[1].Value, (String)pmData.Rows[i].Cells[2].Value));
+            }
+            finishSending();
+        }
+
+        private void makePMs()
+        {
+            if (!remote)
+            {
+                pmform = new PMs();
+                pmData = pmform.getDataPMs();
+                pmData.AllowUserToAddRows = false;
+                pmform.FormClosing += pmFormClosing;
+                pmform.Show();
+            }
+            pmstobesent = new Queue<PMToBeSent>();
+            for (int i = 0; i < gamepms.Teams.Count; i++)
+            {
+                for (int j = 0; j < gamepms.Teams[i].Members.Count; j++)
+                {
+                    RolePM role = gamepms.Teams[i].Members[j];
+                    if (role.n0 != "a random villager peek" && role.n0 != "a random peek across entire playerlist")
+                    {
+                        string pm = role.FullPM(txtGameURL.Text, gamepms, gamepms.Teams[i], new Player("", true), true);
+                        for (int k = 0; k < gamepms.Teams[i].Members[j].Players.Count; k += 8)
+                        {
+                            if (!remote)
+                            {
+                                Console.WriteLine("not seer");
+                                Console.WriteLine(String.Join(";", gamepms.Teams[i].Members[j].Players.GetRange(k, Math.Min(8, gamepms.Teams[i].Members[j].Players.Count - k)).Select(player => player.Name)) + pm);
+                                pmData.Rows.Add(String.Join(";", gamepms.Teams[i].Members[j].Players.GetRange(k, Math.Min(8, gamepms.Teams[i].Members[j].Players.Count - k)).Select(player => player.Name)), txtGameName.Text + " Role PM", pm);
+                            }
+                            else 
+                                pmstobesent.Enqueue(new PMToBeSent(gamepms.Teams[i].Members[j].Players.GetRange(k, Math.Min(8, gamepms.Teams[i].Members[j].Players.Count - k)).Select(player => player.Name).ToList(), txtGameName.Text + " Role PM", pm));
+                       }
+                    }
+                    else
+                    {
+                        for (int k = 0; k < gamepms.Teams[i].Members[j].Players.Count; k++)
+                        {
+                            string pm = role.FullPM(txtGameURL.Text, gamepms, gamepms.Teams[i], gamepms.Teams[i].Members[j].Players[k], true);
+                            if (!remote)
+                            {
+                                Console.WriteLine("seer");
+                                Console.WriteLine(gamepms.Teams[i].Members[j].Players[k].Name + pm);
+                                pmData.Rows.Add(gamepms.Teams[i].Members[j].Players[k].Name, txtGameName.Text + " Role PM", pm);
+                            }
+                            else 
+                                pmstobesent.Enqueue(new PMToBeSent(new List<string>(new string[] { gamepms.Teams[i].Members[j].Players[k].Name }), txtGameName.Text + " Role PM", pm));
+                        }
+                    }
+                }
+            }
+            if (remote)
+                finishSending();
+        }
+
+        private void assignRoles()
+        {
             int curplayer = 0;
             for (int i = 0; i < gamepms.Teams.Count; i++)
             {
@@ -342,75 +506,25 @@ namespace RickyRaccoon
                     }
                     curplayer += role.Count;
                 }
-            }            
-            string pmlist = "";
-            ChangeProcessing("Sending PMs...", 50);
-            pmstobesent = new Queue<PMToBeSent>();
-            for (int i = 0; i < gamepms.Teams.Count; i++)
-            {
-                for (int j = 0; j < gamepms.Teams[i].Members.Count; j++)
-                {
-                    RolePM role = gamepms.Teams[i].Members[j];
-                    if (role.n0 != "a random villager peek" && role.n0 != "a random peek across entire playerlist")
-                    {
-                        string pm = role.FullPM(txtGameURL.Text, gamepms, gamepms.Teams[i], new Player("", true), true);
-                        for (int k = 0; k < gamepms.Teams[i].Members[j].Players.Count; k += 8)
-                        {
-                            if (!testrun)
-                            {
-                                pmstobesent.Enqueue(new PMToBeSent(gamepms.Teams[i].Members[j].Players.GetRange(k, Math.Min(8, gamepms.Teams[i].Members[j].Players.Count - k)).Select(player => player.Name).ToList(), txtGameName.Text + " Role PM", pm));
-                            }
-                            pmlist += String.Join(" ", gamepms.Teams[i].Members[j].Players.GetRange(k, Math.Min(8, gamepms.Teams[i].Members[j].Players.Count - k)).Select(player => player.Name)) + ":" + Environment.NewLine;
-                            pmlist += pm + Environment.NewLine;
-                        }
-                    }
-                    else
-                    {
-                        for (int k = 0; k < gamepms.Teams[i].Members[j].Players.Count; k++)
-                        {
-                            string pm = role.FullPM(txtGameURL.Text, gamepms, gamepms.Teams[i], gamepms.Teams[i].Members[j].Players[k], true);
-                            if (!testrun)
-                            {
-                                pmstobesent.Enqueue(new PMToBeSent(new List<string>(new string[] { gamepms.Teams[i].Members[j].Players[k].Name }), txtGameName.Text + " Role PM", pm));
-                            }
-                            pmlist += gamepms.Teams[i].Members[j].Players[k].Name + ":" + Environment.NewLine;
-                            pmlist += pm + Environment.NewLine;
-                        }
-                    }
-                }
             }
-            ChangeProcessing("Saving Rand Results...", 90);
-            gamepms.GameName = txtGameName.Text;
-            String roleset = JsonConvert.SerializeObject(gamepms, Formatting.Indented, new JsonSerializerSettings()
-            {
-                ReferenceLoopHandling = ReferenceLoopHandling.Ignore
-            });
-            // Show the dialog and get result.
-            saveFileDialog.FileName = gamepms.Name + DateTime.Now.ToString("MMMddyyyy hhmm") + "randed";
+        }
 
-            DialogResult result = saveFileDialog.ShowDialog();
-            if (result == DialogResult.OK) // Test result.
+        private void randomizeRoster()
+        {
+            Random rng = new Random();
+            int n = Convert.ToInt16(txtRoleCount.Text);
+            while (n > 1)
             {
-                using (Stream s = File.Open(saveFileDialog.FileName, FileMode.Create))
-                using (StreamWriter sw = new StreamWriter(s))
-                {
-                    sw.Write(roleset);
-                }
+                n--;
+                int k = rng.Next(n + 1);
+                String value = roster[k];
+                roster[k] = roster[n];
+                roster[n] = value;
             }
-            if (!testrun)
-            {
-                if(boxMod.Checked)
-                    pmtimer.Interval = 1;
-                else
-                    pmtimer.Interval = 30000;
-                pmtimer.Tick += new EventHandler(pmtimer_Tick);
-                pmtimer.Enabled = true;
-                pmtimer.Start();
-            }
-            else ChangeProcessing(String.Format("Test success! You can close the processing window at any time.", pmstobesent.Count), 100);
-            PMs pmform = new PMs();
-            pmform.txtPMs.Text = pmlist;
-            pmform.ShowDialog();
+        }
+
+        private void clearRand()
+        {
             roster.Sort();
             for (int i = 0; i < gamepms.Teams.Count; i++)
             {
@@ -421,18 +535,32 @@ namespace RickyRaccoon
             }
         }
 
+        void optimer_Tick(object sender, EventArgs e)
+        {           
+           optimer.Stop();
+           _forum.MakePost(signupthreadid, "RANDING", "Randing STFU!!!", 0, false);    
+        }
+
         void pmtimer_Tick(object sender, EventArgs e)
         {
+            Console.WriteLine(pmstobesent.Count);
             if (pmstobesent.Count > 0)
             {
                 PMToBeSent pm = pmstobesent.Dequeue();
                 ChangeProcessing(String.Format("Sent PM. {0} left...", pmstobesent.Count), 50);
-                pm.SendPM(_forum);
+                if (!testrun)
+                {
+                    pm.SendPM(_forum);
+                }
             }
             if(pmstobesent.Count == 0)
             {
                 pmtimer.Stop();
                 ChangeProcessing(String.Format("Sent All PMs!", pmstobesent.Count), 100);
+                if (testrun)
+                {
+                    ChangeProcessing(String.Format("Test success! You can close the processing window at any time.", pmstobesent.Count), 100);
+                }
             }
         }
 
@@ -485,6 +613,7 @@ This post was made by Ricky Raccoon. Forward all complaints/suggestions/bugs to 
                 return makeTurboOP();
             }
             string pms = "PMs:" + Environment.NewLine;
+            string textrolelist = "";
             if (boxPMsinOP.Checked)
             {
                 for (int i = 0; i < gamepms.Teams.Count; i++)
@@ -494,6 +623,7 @@ This post was made by Ricky Raccoon. Forward all complaints/suggestions/bugs to 
                         pms += "[quote]" + gamepms.Teams[i].Members[j].EditedPM(txtGameURL.Text, gamepms.Teams[i]) + "[/quote]" + Environment.NewLine + Environment.NewLine;
                     }
                 }
+                textrolelist = txtRoleList.Text;
             }
             string majlynchtext = "";
             string lynchdays = "";
@@ -516,7 +646,7 @@ Werewolf is a game about lying and catching people lying. It's an adversarial ga
 
 Werewolf is also a community and team-based game. While there are many styles and strategies and reasons for playing and you may choose your own, you are expected to be respectful of the time and energy others put in as players and as moderators. [u]You are expected to play to win. Intentionally sabotaging your team, or choosing strategies with the sole purpose of trolling other players in the game is not allowed.[/u][/indent]
 [b][U]The Setup[/U][/b][indent]
-{0}
+{0}{1}
 
 [U]Voting[/U]
 
@@ -553,7 +683,7 @@ You will receive your PMs shortly.
 
 This post was made by Ricky Raccoon. Forward all complaints/suggestions/bugs to Krayz or Chips Ahoy
 
-[b]IT IS NIGHT DO NOT POST[/b]", pms, majlynchtext, boxSODTime.Text, boxEODTime.Text, boxEODTime.Text, lynchdays, boxWolfChat.Text, String.Join(Environment.NewLine, roster), boxMustLynch.Text);
+[b]IT IS NIGHT DO NOT POST[/b]", textrolelist, pms, majlynchtext, boxSODTime.Text, boxEODTime.Text, boxEODTime.Text, lynchdays, boxWolfChat.Text, String.Join(Environment.NewLine, roster), boxMustLynch.Text);
             txtOP.Text = optext;
             if (!testrun)
             {
