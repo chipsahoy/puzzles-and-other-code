@@ -71,6 +71,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="OP.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="OP.Designer.cs">
+      <DependentUpon>OP.cs</DependentUpon>
+    </Compile>
     <Compile Include="PMs.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -91,6 +97,9 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="OP.resx">
+      <DependentUpon>OP.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="PMs.resx">
       <DependentUpon>PMs.cs</DependentUpon>
     </EmbeddedResource>

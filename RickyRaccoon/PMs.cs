@@ -11,6 +11,7 @@ namespace RickyRaccoon
 {
     public partial class PMs : Form
     {
+        public bool savePMs = false;
         public PMs()
         {
             InitializeComponent();
@@ -26,7 +27,13 @@ namespace RickyRaccoon
             return dataPMs;
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        private void btnSavePMs_Click(object sender, EventArgs e)
+        {
+            savePMs = true;
+            this.Close();
+        }
+
+        private void btnSend_Click(object sender, EventArgs e)
         {
             this.Close();
         }

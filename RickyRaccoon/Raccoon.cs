@@ -33,6 +33,7 @@ namespace RickyRaccoon
         CheckMyStats _cms;
         Int32 signupthreadid;
         PMs pmform;
+        OP opform;
         DataGridView pmData;
 
         public Raccoon()
@@ -263,6 +264,8 @@ namespace RickyRaccoon
 
         private void makeOPAndRand()
         {
+            btnDoIt.Enabled = false;
+            btnTest.Enabled = false;
             remote = false;
             if (roster.Count == 0)
             {
@@ -361,49 +364,14 @@ namespace RickyRaccoon
                 return;
             }
             ChangeProcessing("Making OP...", 20);
-            if (!testrun)
+            if (!makeOP())
             {
-                if (!makeOP())
-                {
-                    if (remote)
-                        _forum.MakePost(signupthreadid, txtGameName.Text, "Fatal error making the OP :(", 0, false);
-                    else
-                        MessageBox.Show("Failure Sending OP");
-                    return;
-                }
+                if (remote)
+                   _forum.MakePost(signupthreadid, txtGameName.Text, "Fatal error making the OP :(", 0, false);
+                else
+                   MessageBox.Show("Failure Sending OP");
+                return;
             }
-            optimer.Interval = 30000;
-            optimer.Tick += new EventHandler(optimer_Tick);
-            optimer.Enabled = true;
-            optimer.Start();
-            gamepms.GameName = txtGameName.Text;
-            ChangeProcessing("Randomizing Player List...", 30);
-            randomizeRoster();
-            ChangeProcessing("Assigning Players to Roles...", 30);
-            assignRoles();
-            ChangeProcessing("Making PMs...", 50);
-            makePMs();
-            ChangeProcessing("Sending PMs (Please be patient)...", 90);
-            if (!remote)
-            {
-                String roleset = JsonConvert.SerializeObject(gamepms, Formatting.Indented, new JsonSerializerSettings()
-                {
-                    ReferenceLoopHandling = ReferenceLoopHandling.Ignore
-                });
-                // Show the dialog and get result.
-                saveFileDialog.FileName = gamepms.Name + DateTime.Now.ToString("MMMddyyyy hhmm") + "randed";
-
-                DialogResult result = saveFileDialog.ShowDialog();
-                if (result == DialogResult.OK) // Test result.
-                {
-                    using (Stream s = File.Open(saveFileDialog.FileName, FileMode.Create))
-                    using (StreamWriter sw = new StreamWriter(s))
-                    {
-                        sw.Write(roleset);
-                    }
-                }
-            }            
-            
         }
 
         private void finishSending()
@@ -431,6 +399,28 @@ namespace RickyRaccoon
         private void pmFormClosing(object sender, FormClosingEventArgs e)
         {
             DataGridView pmData = pmform.getDataPMs();
+            if (pmform.savePMs)
+            {
+                if (!remote)
+                {
+                    String roleset = JsonConvert.SerializeObject(gamepms, Formatting.Indented, new JsonSerializerSettings()
+                    {
+                        ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+                    });
+                    // Show the dialog and get result.
+                    saveFileDialog.FileName = gamepms.Name + DateTime.Now.ToString("MMMddyyyy hhmm") + "randed";
+
+                    DialogResult result = saveFileDialog.ShowDialog();
+                    if (result == DialogResult.OK) // Test result.
+                    {
+                        using (Stream s = File.Open(saveFileDialog.FileName, FileMode.Create))
+                        using (StreamWriter sw = new StreamWriter(s))
+                        {
+                            sw.Write(roleset);
+                        }
+                    }
+                }
+            }
             for (int i = 0; i < pmData.Rows.Count; i++)
             {
                 string recipients = (String)pmData.Rows[i].Cells[0].Value;
@@ -438,6 +428,26 @@ namespace RickyRaccoon
                 pmstobesent.Enqueue(new PMToBeSent(new List<string>(recipients.Split(split)), (String)pmData.Rows[i].Cells[1].Value, (String)pmData.Rows[i].Cells[2].Value));
             }
             finishSending();
+        }
+
+        private void opFormClosing(object sender, FormClosingEventArgs e)
+        {
+            if (opform.cancelRand)
+                return;
+            else if (opform.makeOP && !testrun)
+            {
+                string optext = opform.getOPTextBox().Text;
+                txtGameURL.Text = _forum.NewThread(59, txtGameName.Text, optext, 18, true);
+                gamepms.GameURL = txtGameURL.Text;
+            }
+            gamepms.GameName = txtGameName.Text;
+            ChangeProcessing("Randomizing Player List...", 30);
+            randomizeRoster();
+            ChangeProcessing("Assigning Players to Roles...", 30);
+            assignRoles();
+            ChangeProcessing("Making PMs...", 50);
+            makePMs();
+            ChangeProcessing("Sending PMs (Please be patient)...", 90);
         }
 
         private void makePMs()
@@ -593,11 +603,10 @@ This post was made by Ricky Raccoon. Forward all complaints/suggestions/bugs to 
 
 [b]IT IS NIGHT, DO NOT POST[/b]", txtRoleList.Text, txtDay1Length.Text, txtDayLength.Text, txtNightLength.Text, boxMajLynch.Text, boxMustLynch.Text, boxWolfChat.Text, pms, String.Join(Environment.NewLine, roster));
             txtOP.Text = optext;
-            if (!testrun)
-            {
-                txtGameURL.Text = _forum.NewThread(59, txtGameName.Text, optext, 18, true);
-                gamepms.GameURL = txtGameURL.Text;
-            }
+                opform = new OP();
+                opform.getOPTextBox().Text = optext;
+                opform.FormClosing += opFormClosing;
+                opform.Show();
             return true;
         }
 
@@ -685,15 +694,12 @@ This post was made by Ricky Raccoon. Forward all complaints/suggestions/bugs to 
 
 [b]IT IS NIGHT DO NOT POST[/b]", textrolelist, pms, majlynchtext, boxSODTime.Text, boxEODTime.Text, boxEODTime.Text, lynchdays, boxWolfChat.Text, String.Join(Environment.NewLine, roster), boxMustLynch.Text);
             txtOP.Text = optext;
-            if (!testrun)
-            {
-                txtGameURL.Text = _forum.NewThread(59, txtGameName.Text, optext, 18, true);
-                gamepms.GameURL = txtGameURL.Text;
-            }
+                opform = new OP();
+                opform.getOPTextBox().Text = optext;
+                opform.FormClosing += opFormClosing;
+                opform.Show();
             return true;
         }
-
-
 
         private void txtGameTitle_TextChanged(object sender, EventArgs e)
         {
