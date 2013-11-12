@@ -5,6 +5,7 @@ using System.Text;
 
 namespace POG.Forum
 {
+    public delegate void PMReadMessageResult(Int32 id, PrivateMessage pm, object cookie);
     public delegate void PMReadPageResult(PMFolderPage page, String errMessage, object cookie);
     public delegate void PMResult(PrivateMessage pm, PrivateMessageError err, String errMessage, object value, object cookie);
     public enum PrivateMessageError
@@ -86,6 +87,15 @@ namespace POG.Forum
     }
     public class PMHeader
     {
+        public PMHeader(Int32 id, DateTimeOffset timestamp, String sender, String title, String firstLine, Boolean unread)
+        {
+            Id = id;
+            Unread = unread;
+            Timestamp = timestamp;
+            Sender = sender;
+            Title = title;
+            FirstLine = firstLine;
+        }
         public Int32 Id
         {
             get;
@@ -96,12 +106,12 @@ namespace POG.Forum
             get;
             private set;
         }
-        public DateTime Timestamp
+        public DateTimeOffset Timestamp
         {
             get;
             private set;
         }
-        public Poster Sender
+        public String Sender
         {
             get;
             private set;
@@ -119,6 +129,19 @@ namespace POG.Forum
     }
     public class PMFolderPage
     {
+        List<PMHeader> _messages;
+        public PMFolderPage(Int32 capacity, Int32 totalMessages, String folderName, Int32 folderIndex, Int32 count, Int32 unreadCount, Int32 page,
+            IEnumerable<PMHeader> messages)
+        {
+            Capacity = capacity;
+            TotalMessages = totalMessages;
+            FolderIndex = folderIndex;
+            Name = folderName;
+            Count = count;
+            UnreadCount = unreadCount;
+            Page = page;
+            _messages = messages.ToList();
+        }
         public Int32 Capacity
         {
             get;
@@ -128,13 +151,6 @@ namespace POG.Forum
         {
             get;
             private set;
-        }
-        IEnumerable<Int32> FolderIds
-        {
-            get
-            {
-                return null;
-            }
         }
         public Int32 FolderIndex
         {
@@ -163,19 +179,18 @@ namespace POG.Forum
         }
         public Int32 MessagesThisPage
         {
-            get;
-            private set;
+            get
+            {
+                Int32 rc = _messages.Count;
+                return rc;
+            }
         }
         public PMHeader this[Int32 ix]
         {
             get
             {
-                return null;
+                return _messages[ix];
             }
-        }
-        public String GetFolderName(Int32 folderId)
-        {
-            return String.Empty;
         }
     }
 }

@@ -1329,5 +1329,29 @@ LIMIT 1
 			//Trace.TraceInformation("after GetPostBeforeTime {0}", watch.Elapsed.ToString());
 			return postNumber;
 		}
+        public void ChangeBolded(int _threadId, string player, string oldbold, string newbold)
+        {
+            Stopwatch watch = new Stopwatch();
+            watch.Start();
+            using (SQLiteConnection dbWrite = new SQLiteConnection(_connect))
+            {
+                dbWrite.Open();
+                using (SQLiteTransaction trans = dbWrite.BeginTransaction())
+                {
+                    String sql = @"UPDATE Bolded SET bolded = @p2 WHERE bolded = @p4;";
+
+                    using (SQLiteCommand cmd = new SQLiteCommand(sql, dbWrite, trans))
+                    {
+                        cmd.Parameters.Add(new SQLiteParameter("@p2", newbold));
+                        cmd.Parameters.Add(new SQLiteParameter("@p4", oldbold));
+
+                        int e = cmd.ExecuteNonQuery();
+                    }
+                    trans.Commit();
+                }
+            }
+            watch.Stop();
+            //Trace.TraceInformation("after GetPost {0}", watch.Elapsed.ToString());
+        }
 	}
 }

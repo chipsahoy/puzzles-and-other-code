@@ -832,7 +832,133 @@ loggedinuser 81788
 		{
 			Event<String, Action<String, IEnumerable<Poster>>> evt = new Event<string, Action<String, IEnumerable<Poster>>>("GetPostersLike", name, callback);
 			PostEvent(evt);
-		}		
+		}
+        internal void ReadPM(Int32 id, object cookie, PMReadMessageResult callback)
+        {
+            // http://forumserver.twoplustwo.com/private.php?do=showpm&pmid=9971981
+            ConnectionSettings cs = _connectionSettings.Clone();
+            String securityToken = GetSecurityToken(cs);
+            cs.Url = String.Format("{0}/private.php?do=showpm&pmid={1}", ForumURL, id);
+            StringBuilder msg = new StringBuilder();
+            cs.Data = msg.ToString();
+            String resp = HtmlHelper.GetUrlResponseString(cs);
+            if (resp == null)
+            {
+                // failure
+                return;
+            }
+            var html = new HtmlAgilityPack.HtmlDocument();
+            html.LoadHtml(resp);
+            HtmlAgilityPack.HtmlNode root = html.DocumentNode;
+            RemoveComments(root);
+
+            HtmlAgilityPack.HtmlNode timeNode = root.SelectNodes("//div[@class='smallfont'][@align='center']").Last();
+            DateTimeOffset serverTime = DateTime.Now;
+            if (timeNode != null)
+            {
+                String timeText = timeNode.InnerText;
+                serverTime = Utils.Misc.ParsePageTime(timeText, DateTime.UtcNow);
+            }
+            List<String> sTo = new List<String>();
+            var nodesTo = root.SelectNodes("//table[@class='tborder']/tr[2]/td[@class='alt1']/span");
+            if (nodesTo != null)
+            {
+                foreach (var to in nodesTo)
+                {
+                    String recepient = to.InnerText;
+                    sTo.Add(recepient);
+                }
+            }
+            var nodePM = root.SelectSingleNode("//table[@id='post']");
+            var nodeTime = nodePM.SelectSingleNode("tr[1]/td[1]").InnerText.Trim();
+            DateTimeOffset ts = Misc.ParseItemTimeEnglish(serverTime, nodeTime);
+            var nodeSender = nodePM.SelectSingleNode("tr[2]/td[1]/div[1]/a").InnerText.Trim();
+            var nodeTitle = nodePM.SelectSingleNode("tr[2]/td[2]/div[1]").InnerText.Trim();
+            var nodeBody = nodePM.SelectSingleNode("tr[2]/td[2]/div[2]").InnerHtml.Trim();
+            PrivateMessage pm = new PrivateMessage(sTo, null, nodeTitle, nodeBody, ts.UtcDateTime);
+            callback(id, pm, cookie);
+        }
+        protected void RemoveComments(HtmlAgilityPack.HtmlNode node)
+        {
+            foreach (var n in node.SelectNodes("//comment()") ?? new HtmlAgilityPack.HtmlNodeCollection(node))
+            {
+                n.Remove();
+            }
+        }
+
+        internal bool CheckPMs(int folder, int page, object cookie, PMReadPageResult callback)
+        {
+            /*
+                http://forumserver.twoplustwo.com/private.php?folderid=0&pp=50&sort=date&page=1
+            */
+            ConnectionSettings cs = _connectionSettings.Clone();
+            String securityToken = GetSecurityToken(cs);
+            cs.Url = String.Format("{0}/private.php?folderid={1}&pp=50&sort=date&page={2}", ForumURL, folder, page);
+            StringBuilder msg = new StringBuilder();
+            cs.Data = msg.ToString();
+            String resp = HtmlHelper.GetUrlResponseString(cs);
+            if (resp == null)
+            {
+                // failure
+                return false;
+            }
+            var html = new HtmlAgilityPack.HtmlDocument();
+            html.LoadHtml(resp);
+            HtmlAgilityPack.HtmlNode root = html.DocumentNode;
+            HtmlAgilityPack.HtmlNode timeNode = root.SelectNodes("//div[@class='smallfont'][@align='center']").Last();
+            DateTimeOffset serverTime = DateTime.Now;
+            if (timeNode != null)
+            {
+                String timeText = timeNode.InnerText;
+                serverTime = Utils.Misc.ParsePageTime(timeText, DateTime.UtcNow);
+            }
+            Int32 foldercount = 0;
+            String folderName = String.Empty;
+            Int32 totalmessages = 0;
+            Int32 totalcapacity = 0;
+            Int32 unreadCount = 0;
+
+            var pmstatus = root.SelectSingleNode("//div[@class='smallfont']/div").InnerText;
+            Match m = Regex.Match(pmstatus, @"Private Messages: Unread (\d*)");
+            if (m.Success)
+            {
+                unreadCount = Int32.Parse(m.Groups[1].Value);
+            }
+
+            HtmlAgilityPack.HtmlNode node = root.SelectSingleNode("//tbody[@id='collapseobj_pmlistinfo']//fieldset");
+            m = Regex.Match(node.InnerText, @"(.*) contains (\d*) messages.You have (\d{1,3}(?:(?:,\d{3})+|\d*)) messages stored, of a total (\d{1,3}(?:(?:,\d{3})+|\d*))");
+            if (m.Success)
+            {
+                folderName = m.Groups[1].Value.Trim();
+                foldercount = Int32.Parse(m.Groups[2].Value, NumberStyles.AllowThousands);
+                totalmessages = Int32.Parse(m.Groups[3].Value, NumberStyles.AllowThousands);
+                totalcapacity = Int32.Parse(m.Groups[4].Value, NumberStyles.AllowThousands);
+            }
+            var nodes = root.SelectNodes("//tbody[contains(@id, 'collapseobj_pmf')]/tr");
+            List<PMHeader> headers = new List<PMHeader>();
+            foreach (var row in nodes)
+            {
+                Boolean unread = false;
+                var icon = row.SelectSingleNode("td[1]/img");
+                if (icon.Attributes["src"].Value.EndsWith("new.gif"))
+                {
+                    unread = true;
+                }
+                var pm = row.SelectSingleNode("td[3]");
+                String mid = pm.Attributes["id"].Value.Substring(1);
+                Int32 id = Int32.Parse(mid);
+                String timestamp = pm.SelectSingleNode("div[1]/div[1]").InnerText;
+                DateTimeOffset ts = Misc.ParseItemTimeEnglish(serverTime, timestamp);
+                var sender = pm.SelectSingleNode("div[1]//span[@style='cursor:pointer']").InnerText;
+                var title = pm.SelectSingleNode("div[1]//a[@rel='nofollow']").InnerText;
+                var preview = pm.SelectSingleNode("div[2]").InnerText.Trim();
+                PMHeader header = new PMHeader(id, ts, sender, title, preview, unread);
+                headers.Add(header);
+            }
+            PMFolderPage folderpage = new PMFolderPage(totalcapacity, totalmessages, folderName, folder, foldercount, unreadCount, page, headers);
+            callback(folderpage, String.Empty, cookie);
+            return true;
+        }
 
 		void DoGetPostersLike(string name, Action<String, IEnumerable<Poster> > callback)
 		{
@@ -902,9 +1028,7 @@ fragment	name
 					if (sid != null)
 					{
 						Int32 id = Int32.Parse(sid);
-                        //Trace.TraceInformation(node.InnerText);
 						String poster = node.InnerText;
-                        //Trace.TraceInformation(poster);
 						if (poster.Contains("amp"))
 						{
 							poster = HtmlAgilityPack.HtmlEntity.DeEntitize(poster);
@@ -935,6 +1059,7 @@ fragment	name
                 return rc;
             }
         }
+
 
     }
 	public class VBulletinForum
@@ -1017,9 +1142,14 @@ fragment	name
 		{
 			_inner.Logout();
 		}
-        public Boolean CheckPMs(Int32 folder, Int32 page, PMReadPageResult callback)
+        public Boolean CheckPMs(Int32 folder, Int32 page, object cookie, PMReadPageResult callback)
         {
-            return true;
+            Boolean rc = _inner.CheckPMs(folder, page, cookie, callback);
+            return rc;
+        }
+        public void ReadPM(Int32 id, object cookie, PMReadMessageResult callback)
+        {
+            _inner.ReadPM(id, cookie, callback);
         }
         [Obsolete]
 		public Boolean SendPM(IEnumerable<String> To, IEnumerable<String> bcc, String title, String content, Boolean receipt = true)

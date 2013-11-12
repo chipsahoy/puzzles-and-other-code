@@ -71,7 +71,24 @@ namespace Forum.Test
             Assert.NotNull(SetupTwoPlusTwo.LoggedIn);
             Assert.AreEqual(SetupTwoPlusTwo.LoggedIn.Value, true);
         }
-
+        [Test]
+        public void Test00ReadInbox()
+        {
+            bool rc = SetupTwoPlusTwo.Forum.CheckPMs(0, 1, null, (page, errMessage, cookie) =>
+                {
+                    Console.WriteLine("{0} {1} {2}", page.TotalMessages, page.UnreadCount, page.Name);
+                    for (int i = 0; i < page.MessagesThisPage; i++)
+                    {
+                        PMHeader header = page[i];
+                        Console.WriteLine("{0}: {1}", header.Sender, header.FirstLine);
+                        SetupTwoPlusTwo.Forum.ReadPM(header.Id, null, (id, pm, cookie2) =>
+                            {
+                            }
+                        );
+                    }
+                }
+            );
+        }
         [Test]
         public void Test01PMInvalidTo()
         {

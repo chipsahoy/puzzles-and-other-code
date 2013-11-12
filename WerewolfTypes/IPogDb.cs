@@ -31,5 +31,7 @@ namespace POG.Werewolf
 		void AddPosters(IEnumerable<Poster> posters);
 
 		int GetPostBeforeTime(Int32 threadId, DateTime startTime);
-	}
+
+        void ChangeBolded(int _threadId, string player, string oldbold, string newbold);
+    }
 }
