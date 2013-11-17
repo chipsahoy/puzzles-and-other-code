@@ -850,8 +850,7 @@ loggedinuser 81788
             var html = new HtmlAgilityPack.HtmlDocument();
             html.LoadHtml(resp);
             HtmlAgilityPack.HtmlNode root = html.DocumentNode;
-            RemoveComments(root);
-
+            ThreadReader.RemoveComments(root);
             HtmlAgilityPack.HtmlNode timeNode = root.SelectNodes("//div[@class='smallfont'][@align='center']").Last();
             DateTimeOffset serverTime = DateTime.Now;
             if (timeNode != null)
@@ -874,16 +873,11 @@ loggedinuser 81788
             DateTimeOffset ts = Misc.ParseItemTimeEnglish(serverTime, nodeTime);
             var nodeSender = nodePM.SelectSingleNode("tr[2]/td[1]/div[1]/a").InnerText.Trim();
             var nodeTitle = nodePM.SelectSingleNode("tr[2]/td[2]/div[1]").InnerText.Trim();
-            var nodeBody = nodePM.SelectSingleNode("tr[2]/td[2]/div[2]").InnerHtml.Trim();
-            PrivateMessage pm = new PrivateMessage(sTo, null, nodeTitle, nodeBody, ts.UtcDateTime);
+            var nodeBody = nodePM.SelectSingleNode("tr[2]/td[2]/div[2]");
+            ThreadReader.RemoveQuotes(nodeBody);
+            var body = nodeBody.InnerText.Trim();
+            PrivateMessage pm = new PrivateMessage(nodeSender, sTo, nodeTitle, body, ts.UtcDateTime, id);
             callback(id, pm, cookie);
-        }
-        protected void RemoveComments(HtmlAgilityPack.HtmlNode node)
-        {
-            foreach (var n in node.SelectNodes("//comment()") ?? new HtmlAgilityPack.HtmlNodeCollection(node))
-            {
-                n.Remove();
-            }
         }
 
         internal bool CheckPMs(int folder, int page, object cookie, PMReadPageResult callback)
@@ -951,7 +945,12 @@ loggedinuser 81788
                 DateTimeOffset ts = Misc.ParseItemTimeEnglish(serverTime, timestamp);
                 var sender = pm.SelectSingleNode("div[1]//span[@style='cursor:pointer']").InnerText;
                 var title = pm.SelectSingleNode("div[1]//a[@rel='nofollow']").InnerText;
-                var preview = pm.SelectSingleNode("div[2]").InnerText.Trim();
+                var previewNode = pm.SelectSingleNode("div[2]");
+                String preview = String.Empty;
+                if (previewNode != null)
+                {
+                    preview = previewNode.InnerText.Trim();
+                }
                 PMHeader header = new PMHeader(id, ts, sender, title, preview, unread);
                 headers.Add(header);
             }

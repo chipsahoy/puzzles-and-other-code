@@ -468,7 +468,7 @@ namespace POG.Forum
                     html.OuterHtml, bolded, edit);
             return p;
         }
-        protected void RemoveComments(HtmlAgilityPack.HtmlNode node)
+        public static void RemoveComments(HtmlAgilityPack.HtmlNode node)
         {
             foreach (var n in node.SelectNodes("//comment()") ?? new HtmlAgilityPack.HtmlNodeCollection(node))
             {
@@ -539,7 +539,7 @@ namespace POG.Forum
             //}
             return bolded;
         }
-        static void RemoveQuotes(HtmlAgilityPack.HtmlNode node)
+        public static void RemoveQuotes(HtmlAgilityPack.HtmlNode node)
         {
             foreach (var n in node.SelectNodes("descendant::td[@class='alt2']") ?? new HtmlAgilityPack.HtmlNodeCollection(node))
             {
@@ -548,7 +548,7 @@ namespace POG.Forum
             }
         }
 
-        static void RemoveColors(HtmlAgilityPack.HtmlNode node, IEnumerable<String> exemptList)
+        public static void RemoveColors(HtmlAgilityPack.HtmlNode node, IEnumerable<String> exemptList)
         {
             foreach (var n in node.SelectNodes("descendant::font") ?? new HtmlAgilityPack.HtmlNodeCollection(node))
             {
@@ -561,7 +561,7 @@ namespace POG.Forum
             }
         }
 
-        static void RemoveNewlines(HtmlAgilityPack.HtmlNode node)
+        public static void RemoveNewlines(HtmlAgilityPack.HtmlNode node)
         {
             foreach (var n in node.SelectNodes("descendant::br") ?? new HtmlAgilityPack.HtmlNodeCollection(node))
             {

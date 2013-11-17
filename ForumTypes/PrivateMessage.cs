@@ -2,12 +2,15 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Runtime.InteropServices;
 
 namespace POG.Forum
 {
     public delegate void PMReadMessageResult(Int32 id, PrivateMessage pm, object cookie);
     public delegate void PMReadPageResult(PMFolderPage page, String errMessage, object cookie);
     public delegate void PMResult(PrivateMessage pm, PrivateMessageError err, String errMessage, object value, object cookie);
+    [ComVisible(true)]
+    [Guid("86863B24-FB86-4577-ABF4-A17D4B6109EB")]
     public enum PrivateMessageError
     {
         PMSuccess = 0,
@@ -26,12 +29,33 @@ namespace POG.Forum
         PMNoTitle = 13,
         PMNoBody = 14,
     }
+    [ComVisible(true)]
+    [Guid("26D3E7F9-E146-4E18-8086-8F81C4D70250")]
     public class PrivateMessage
     {
-        List<String> to;
-        List<String> bcc;
-        public PrivateMessage(IEnumerable<String> sTo, IEnumerable<String> sBcc, String title, String content, DateTime? ts = null)
+        List<String> to = new List<string>();
+        List<String> bcc = new List<string>();
+        public PrivateMessage(String from, IEnumerable<String> sTo, String title, String content, DateTime ts, Int32 id)
         {
+            // pm we received
+            Id = id;
+            From = from;
+            if (title == null)
+            {
+                title = String.Empty;
+            }
+            Title = title;
+            if (content == null)
+            {
+                content = String.Empty;
+            }
+            Content = content;
+            TimeStamp = ts;
+        }
+        public PrivateMessage(IEnumerable<String> sTo, IEnumerable<String> sBcc, String title, String content, DateTime? ts = null, Int32? id = null)
+        {
+            // pm we send / sent
+            From = "Me";
             if (sTo == null)
             {
                 sTo = new List<String>();
@@ -54,6 +78,10 @@ namespace POG.Forum
             }
             Content = content;
             TimeStamp = ts;
+            if (id != null)
+            {
+                Id = id.Value;
+            }
         }
         public IEnumerable<String> To
         {
@@ -84,7 +112,13 @@ namespace POG.Forum
             get;
             private set;
         }
+
+        public String From { get; private set; }
+
+        public int Id { get; private set; }
     }
+    [ComVisible(true)]
+    [Guid("9268C65E-3F4A-4F20-8682-5F422C7B84E6")]
     public class PMHeader
     {
         public PMHeader(Int32 id, DateTimeOffset timestamp, String sender, String title, String firstLine, Boolean unread)
@@ -127,6 +161,8 @@ namespace POG.Forum
             private set;
         }
     }
+    [ComVisible(true)]
+    [Guid("F1237A44-2B20-4F28-B130-69DFD420A706")]
     public class PMFolderPage
     {
         List<PMHeader> _messages;
