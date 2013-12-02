@@ -46,6 +46,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Forum.Test", "test\Forum.Te
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "bugsbunny", "bugsbunny\bugsbunny.csproj", "{81BE69CF-37DB-4C03-AC6C-E0A5975E4A12}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TatianaTiger", "TatianaTiger\TatianaTiger.csproj", "{169B41D0-A6BA-430A-B3A5-B60E80A0091D}"
+EndProject
 Global
 	GlobalSection(TestCaseManagementSettings) = postSolution
 		CategoryFile = FennecFox.vsmdi
@@ -219,6 +221,16 @@ Global
 		{81BE69CF-37DB-4C03-AC6C-E0A5975E4A12}.Release|Mixed Platforms.Build.0 = Release|x86
 		{81BE69CF-37DB-4C03-AC6C-E0A5975E4A12}.Release|x86.ActiveCfg = Release|x86
 		{81BE69CF-37DB-4C03-AC6C-E0A5975E4A12}.Release|x86.Build.0 = Release|x86
+		{169B41D0-A6BA-430A-B3A5-B60E80A0091D}.Debug|Any CPU.ActiveCfg = Debug|x86
+		{169B41D0-A6BA-430A-B3A5-B60E80A0091D}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
+		{169B41D0-A6BA-430A-B3A5-B60E80A0091D}.Debug|Mixed Platforms.Build.0 = Debug|x86
+		{169B41D0-A6BA-430A-B3A5-B60E80A0091D}.Debug|x86.ActiveCfg = Debug|x86
+		{169B41D0-A6BA-430A-B3A5-B60E80A0091D}.Debug|x86.Build.0 = Debug|x86
+		{169B41D0-A6BA-430A-B3A5-B60E80A0091D}.Release|Any CPU.ActiveCfg = Release|x86
+		{169B41D0-A6BA-430A-B3A5-B60E80A0091D}.Release|Mixed Platforms.ActiveCfg = Release|x86
+		{169B41D0-A6BA-430A-B3A5-B60E80A0091D}.Release|Mixed Platforms.Build.0 = Release|x86
+		{169B41D0-A6BA-430A-B3A5-B60E80A0091D}.Release|x86.ActiveCfg = Release|x86
+		{169B41D0-A6BA-430A-B3A5-B60E80A0091D}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

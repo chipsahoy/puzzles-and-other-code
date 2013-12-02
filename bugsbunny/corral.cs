@@ -214,7 +214,13 @@ namespace POG.Automation
             }
             else
             {
-                _minTime = DateTime.MinValue;
+                DateTime now = DateTime.UtcNow;
+                DateTime start = new DateTime(now.Year, now.Month, now.Day, 13, 0, 0, DateTimeKind.Utc);
+                if(start > now)
+                {
+                    start = start.AddDays(-1);
+                }
+                _minTime = start;
             }
             if (timeStop != null)
             {
@@ -222,7 +228,7 @@ namespace POG.Automation
             }
             else
             {
-                _maxTime = DateTime.MaxValue;
+                _maxTime = _minTime.AddHours(24);
             }
 
             _timer.Interval = GetTimerInterval();
@@ -249,7 +255,7 @@ namespace POG.Automation
                 for (int i = 0; i < folderpage.MessagesThisPage; i++)
                 {
                     PMHeader header = folderpage[i];
-                    if (header.Unread && (_minTime <= header.Timestamp) && (_maxTime >= header.Timestamp))
+                    if ((_minTime <= header.Timestamp) && (_maxTime >= header.Timestamp) && (header.Id > _lastPMProcessed))
                     {
                         _forum.ReadPM(header.Id, null, (id, pm, cake) =>
                         {
@@ -446,7 +452,7 @@ namespace POG.Automation
             Int32 postNumber = post.PostNumber;
             foreach (Bold b in post.Bolded)
             {
-                String content = b.Content.Trim();
+                String content = b.Content.Trim().ToLower();
                 String shoot = "shoot ";
                 if (content.StartsWith(shoot))
                 {

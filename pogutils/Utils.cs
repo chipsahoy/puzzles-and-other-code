@@ -12,6 +12,25 @@ namespace POG.Utils
 {
     public class Misc
     {
+        [ThreadStatic] static Random _random;
+        public static Random RNG
+        {
+            get
+            {
+                if (_random == null)
+                {
+                    _random = new Random(unchecked(Environment.TickCount * 31 + Thread.CurrentThread.ManagedThreadId));
+                }
+                return _random;
+            }
+        }
+        public static T RandomItemFromList<T>(IEnumerable<T> seq)
+        {
+            List<T> list = seq.ToList();
+            Int32 ix = RNG.Next(list.Count);
+            return list[ix];
+        }
+
         public delegate DateTimeOffset ParseItemTimeDelegate(DateTimeOffset pageTime, String date);
         public static Int32 TidFromURL(String url)
         {

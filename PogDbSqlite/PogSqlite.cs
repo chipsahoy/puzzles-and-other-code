@@ -533,7 +533,65 @@ VALUES(@p1, @p2, @p3, @p4);";
 
 			//Trace.TraceInformation("after ReplacePlayerList {0}", watch.Elapsed.ToString());
 		}
-
+        Int32 GetRoleId(int threadId, string name)
+        {
+            string sql = @"
+SELECT GameRole.roleid
+FROM GameRole, Player, Poster
+WHERE
+Poster.postername = @p1
+AND
+Player.posterid = Poster.posterid
+AND
+GameRole.roleid = Player.roleid
+AND
+GameRole.threadId = @p2
+";
+            Int32 id = -1;
+            Stopwatch watch = new Stopwatch();
+            watch.Start();
+            using (SQLiteConnection dbRead = new SQLiteConnection(_connect))
+            {
+                dbRead.Open();
+                using (SQLiteCommand cmd = new SQLiteCommand(sql, dbRead))
+                {
+                    cmd.Parameters.Add(new SQLiteParameter("@p1", name));
+                    cmd.Parameters.Add(new SQLiteParameter("@p2", threadId));
+                    using (SQLiteDataReader r = cmd.ExecuteReader())
+                    {
+                        if (r.Read())
+                        {
+                            id = r.GetInt32(0);
+                        }
+                    }
+                }
+            }
+            watch.Stop();
+            //Trace.TraceInformation("After GetPlayerId {0}", watch.Elapsed.ToString());
+            return id;
+        }
+        public void KillPlayer(int threadId, string name, int postNumber)
+        {
+            Int32 id = GetRoleId(threadId, name);
+            string sql =
+@"DELETE FROM GameRole
+WHERE
+roleid = @p1
+;";
+            Stopwatch watch = new Stopwatch();
+            watch.Start();
+            using (SQLiteConnection dbWrite = new SQLiteConnection(_connect))
+            {
+                dbWrite.Open();
+                using (SQLiteCommand cmd = new SQLiteCommand(sql, dbWrite))
+                {
+                    cmd.Parameters.Add(new SQLiteParameter("@p1", id));
+                    int e = cmd.ExecuteNonQuery();
+                }
+            }
+            watch.Stop();
+        }
+        
 		public Int32 GetPlayerId(string player)
 		{
 			String sql = 

@@ -38,6 +38,9 @@ namespace POG.Werewolf
 		Int32 _day = 1;
         String _postableCount;
 
+        List<String> _leaders =  new List<string>();
+        Int32 _leaderVotes = 0;
+
 		public readonly String ErrorVote = "Error!";
 		public readonly String Unvote = "unvote";
 		public readonly String NoLynch = "no lynch";
@@ -120,7 +123,11 @@ namespace POG.Werewolf
 				}
 			}
 		}
-
+        public void KillPlayer(String name)
+        {
+            _db.KillPlayer(_threadId, name, LastPost);
+            ReadAllFromDB();
+        }
 		public void Refresh()
 		{
 			ReadAllFromDB();
@@ -146,17 +153,6 @@ namespace POG.Werewolf
 		public void CheckThread()
 		{
 			CheckThread(null);
-		}
-		public void SetPlayerList(IEnumerable<String> rawList)
-		{
-			//_db.ReplacePlayerList(_threadId, rawList);
-			ReadAllFromDB();
-		}
-		public void KillPlayer(String player, String cause, DateTimeOffset when, String team)
-		{
-		}
-		public void SubPlayer(String old, String newPlayer, DateTimeOffset when)
-		{
 		}
 		public IEnumerable<String> GetPlayerList()
 		{
@@ -380,6 +376,22 @@ namespace POG.Werewolf
                 }
             }
         }
+        Boolean _majorityLynch;
+        public Boolean MajorityLynch
+        {
+            get
+            {
+                return _majorityLynch;
+            }
+            set
+            {
+                if (_majorityLynch != value)
+                {
+                    _majorityLynch = value;
+                    ReadAllFromDB();
+                }
+            }
+        }
 		#endregion
 		#region Events
 		public event PropertyChangedEventHandler PropertyChanged;
@@ -418,6 +430,9 @@ namespace POG.Werewolf
 		#region private methods
         private void CreatePostableVoteCount()
         {
+            _leaders.Clear();
+            _leaderVotes = 0;
+
             string sError = "Error";
             string sNotVoting = "not voting";
             int? endPost = EndPost;
@@ -556,10 +571,20 @@ namespace POG.Werewolf
             }
 
             // sort wagons by count
-            wagons.Remove(NoLynch);
+ 
             wagons.Remove(Unvote);
             wagons.Remove(sNotVoting);
             wagons.Remove(sError);
+
+            _leaderVotes = wagons.Max(w => w.Value.Count);
+            _leaders = (from w in wagons where w.Value.Count == _leaderVotes select w.Key).ToList();
+            if ((_leaderVotes == 0))
+            {
+                _leaders = (from p in LivePlayers select p.Name).ToList();
+            }
+            wagons.Remove(NoLynch);
+
+
             foreach (var wagon in wagons)
             {
                 Voter v = VoterByName(wagon.Key);
@@ -763,5 +788,11 @@ namespace POG.Werewolf
 				return _forumURL;
 			}
 		}
-	}
+
+        public IEnumerable<string> GetVoteLeaders(out Int32 cnt)
+        {
+            cnt = _leaderVotes;
+            return _leaders;
+        }
+    }
 }

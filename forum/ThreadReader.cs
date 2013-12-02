@@ -493,7 +493,12 @@ namespace POG.Forum
                     if (bold.Length > 0)
                     {
                         //System.Trace.TraceInformation("{0}\t{1}\t{2}", PostNumber, Poster, bold);
-                        bolded.Add(new Bold(bold));
+                        Bold b = new Bold(bold);
+                        if (bold.Trim().ToLower().StartsWith("shoot"))
+                        {
+                            b.Ignore = true;
+                        }
+                        bolded.Add(b);
                     }
                 }
             }

@@ -77,7 +77,13 @@ namespace POG.Forum
 			LobbyReader lr = new LobbyReader(_connectionSettings, _synchronousInvoker);
 			return lr;
 		}
-
+        internal String Username
+        {
+            get
+            {
+                return _username;
+            }
+        }
 		public Int32 PostsPerPage {
 			get
 			{
@@ -375,7 +381,35 @@ namespace POG.Forum
 			}
 			return securityToken;
 		}
-		internal Boolean LockThread(Int32 thread, Boolean lockIt)
+        internal Boolean LockThread(Int32 thread, Boolean lockIt)
+        {
+            ConnectionSettings cs = _connectionSettings.Clone();
+            String securityToken = GetSecurityToken(cs);
+            cs.Headers.Add("X-Requested-With", "XMLHttpRequest");
+            cs.Headers.Add("Origin", ForumURL.TrimEnd('/'));
+            cs.Headers.Add("Referer", String.Format("{0}{1}", ForumURL, ForumLobby));
+            //cs.Headers.Add("Connection", "keep-alive");
+            StringBuilder msg = new StringBuilder();
+            msg.AppendFormat("{0}={1}&", "do", "updatethreadopen");
+            String lockString = lockIt ? "" : "_lock"; // src is what we have, we are asking for opposite.
+            String src = String.Format("{0}images/statusicon/thread_dot_hot{1}.gif", ForumURL, lockString);
+            msg.AppendFormat("{0}={1}&", "src", src);
+            msg.AppendFormat("{0}={1}&", "securitytoken", securityToken);
+            msg.AppendFormat("{0}={1}&", "t", thread);
+
+            cs.Url = String.Format("{0}ajax.php?do=updatethreadopen&t={1}", ForumURL, thread);
+            cs.Data = msg.ToString();
+            //Trace.TraceInformation("Posting: " + cs.Data);
+            String resp = HtmlHelper.PostToUrl(cs); 
+            if (resp == null)
+            {
+                // failure
+                return false;
+            }
+
+            return true;
+        }
+		internal Boolean LockThreadOld(Int32 thread, Boolean lockIt)
 		{
 			ConnectionSettings cs = _connectionSettings.Clone();
 			String securityToken = GetSecurityToken(cs);
@@ -1121,7 +1155,13 @@ fragment	name
 				return _inner.PostsPerPage;
 			}
 		}
-
+        public String Username
+        {
+            get
+            {
+                return _inner.Username;
+            }
+        }
 		#region public methods
 		public ThreadReader Reader()
 		{
