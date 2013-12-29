@@ -32,8 +32,9 @@ namespace POG.Werewolf
 
 		int GetPostBeforeTime(Int32 threadId, DateTime startTime);
 
-        void ChangeBolded(int _threadId, string player, string oldbold, string newbold);
+		void ChangeBolded(int _threadId, string player, string oldbold, string newbold);
 
-        void KillPlayer(int threadId, string name, int postNumber);
-    }
+		void KillPlayer(int threadId, string name, int postNumber);
+		void SubPlayer(int threadId, string oldName, string newName);
+	}
 }

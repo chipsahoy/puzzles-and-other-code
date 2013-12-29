@@ -156,6 +156,7 @@ namespace TatianaTiger
 							else
 							{
 								_threadTitle = String.Format("Turbo Game {0:yy.MM.dd HH:mm}", DateTime.Now.ToUniversalTime());
+								QueueAnnouncement("Next time give your turbo a title by including 'title MY CUSTOM TITLE' as the first line of your PM.");
 							}
 							if (CheckCanReceivePM())
 							{
@@ -211,19 +212,13 @@ namespace TatianaTiger
 						List<String> vanillas = (from p in _players where (p.Team == "Village") && (p.Role == "vanilla") select p.Name).ToList();
 						List<string> wolves = (from p in _players where p.Team == "Wolf" select p.Name).ToList();
 
-						String wolfMsg = "You are the wolves:\r\n";
-						foreach (var w in wolves)
-						{
-							wolfMsg += w + "\r\n";
-						}
-						wolfMsg += "\r\nEach night send a PM with the exact name of the player you want to kill.\r\n";
-						wolfMsg += "If the game is hopeless send a PM that only says 'resign'.";
+						String seerMsg = MakeSeerPmMessage();
+						String wolfMsg = MakeWolfPmMessage();
+						String vanillaMsg = MakeVanillaPmMessage();
 
-						String seerMsg = String.Format("You are the seer. Your random n0 villager peek is {0}\r\n", _peek);
-						seerMsg += "\r\nEach night send a PM with the exact name of the player you want to peek.\r\n";
 						PrivateMessage pmSeer = new PrivateMessage(null, seers, "Turbo Role PM", seerMsg);
 						PrivateMessage pmWolf = new PrivateMessage(wolves, null, "Turbo Role PM", wolfMsg);
-						PrivateMessage pmVanilla = new PrivateMessage(null, vanillas, "Turbo Role PM", "You are a vanilla villager.");
+						PrivateMessage pmVanilla = new PrivateMessage(null, vanillas, "Turbo Role PM", vanillaMsg);
 						List<PrivateMessage> pms = new List<PrivateMessage>();
 						pms.Add(pmSeer);
 						pms.Add(pmWolf);
@@ -243,6 +238,30 @@ namespace TatianaTiger
 			}
 			return StateTop;
 		}
+		String MakeSeerPmMessage()
+		{
+			String seerMsg = String.Format("You are the seer. Your random n0 villager peek is {0}\r\n", _peek);
+			seerMsg += "\r\nEach night send a PM with the exact name of the player you want to peek.\r\n";
+			return seerMsg;
+		}
+		String MakeWolfPmMessage()
+		{
+			List<string> wolves = (from p in _players where p.Team == "Wolf" select p.Name).ToList();
+			String wolfMsg = "You are the wolves:\r\n";
+			foreach (var w in wolves)
+			{
+				wolfMsg += w + "\r\n";
+			}
+			wolfMsg += "\r\nEach night send a PM with the exact name of the player you want to kill.\r\n";
+			wolfMsg += "If the game is hopeless send a PM that only says 'resign'.";
+			return wolfMsg;
+		}
+		String MakeVanillaPmMessage()
+		{
+			String rc = "You are a vanilla villager.";
+			return rc;
+		}
+
 		Boolean _hyper = false;
 		State StatePlaying(Event e)
 		{
@@ -264,7 +283,10 @@ namespace TatianaTiger
 						_count = null;
 						_day = 0;
 						_kill = "";
-						_pmQueue.Clear();
+						lock (_pmQueue)
+						{
+							_pmQueue.Clear();
+						}
 						_EarliestPMTime = TruncateSeconds(DateTime.Now);
 					}
 					break;
@@ -343,10 +365,54 @@ namespace TatianaTiger
 					}
 					break;
 
+				case "SubPM":
+					{
+						PrivateMessage pm = (e as Event<PrivateMessage>).Param;
+						Player role = ParseSubPM(pm);
+						if (role == null)
+						{
+							QueuePM(new string[] { pm.From }, pm.Title,
+								String.Format("I couldn't find the player you are asking to sub in for: '{0}'", pm.Content));
+							break;
+						}
+						List<String> notify = new List<string>() { role.Name, pm.From };
+						StringBuilder sb = new StringBuilder();
+						String subMsg = String.Format("[b]{0}[/b] is subbing in for [b]{1}[/b]\n\n", pm.From, role.Name);
+						_count.SubPlayer(role.Name, pm.From);
+						QueueAnnouncement(subMsg);
+						sb.AppendLine(subMsg);
+						sb.AppendLine("Role Info:\n");
+						if (role.Team == "wolf")
+						{
+							sb.AppendLine(MakeWolfPmMessage());
+						}
+						else
+						{
+							if (role.Role == "seer")
+							{
+								sb.AppendLine(MakeSeerPmMessage());
+								sb.AppendLine("\r\n[u]Peeks:[/u]\r\n");
+								foreach (var peek in _peeks)
+								{
+									var p = LookupPlayer(peek);
+									sb.AppendFormat("{0} : {1} {2}\r\n", p.Name, p.Team, p.Role);
+								}
+
+							}
+							else
+							{
+								sb.AppendLine(MakeVanillaPmMessage());
+							}
+						}
+						PrivateMessage pmSub = new PrivateMessage(notify, null, "Substitution in Turbo", sb.ToString());
+						QueuePM(pmSub);
+					}
+					break;
+
 				case "DeadPM":
 					{
 						PrivateMessage pm = (e as Event<PrivateMessage>).Param;
-						QueuePM(new string[] { pm.From }, pm.Title, 
+						QueuePM(new string[] { pm.From }, pm.Title,
 							"Thank you for your pm. Unfortunately, you are dead in this game so I can't help you.");
 					}
 					break;
@@ -458,7 +524,8 @@ namespace TatianaTiger
 				case "CountUpdated":
 					{
 						Trace.TraceInformation("Deciding to post another vote count.");
-						String postableCount = _count.GetPostableVoteCount();
+						String announce = GetAnnouncements();
+						String postableCount = announce +  _count.GetPostableVoteCount();
 						Int32 count;
 						List<String> leaders = _count.GetVoteLeaders(out count).ToList();
 
@@ -526,6 +593,10 @@ namespace TatianaTiger
 							if (movers.Any())
 							{
 								// vote leader changed.
+								postCount = true;
+							}
+							if (announce.Length > 0)
+							{
 								postCount = true;
 							}
 							if (postCount)
@@ -781,6 +852,11 @@ namespace TatianaTiger
 				var player = LookupPlayer(pm.From);
 				if (player == null)
 				{
+					if (pm.Title.ToLowerInvariant().Trim().StartsWith("sub"))
+					{
+						PostEvent(new Event<PrivateMessage>("SubPM", pm));
+						continue;
+					}
 					PostEvent(new Event<PrivateMessage>("StrangerPM", pm));
 					continue;
 				}
@@ -912,6 +988,11 @@ namespace TatianaTiger
 		void AnnounceDay(Int32 day)
 		{
 			var sb = new StringBuilder();
+			String announce = GetAnnouncements();
+			if (announce != "")
+			{
+				sb.AppendLine(announce);
+			}
 			if (_killMessage != "")
 			{
 				sb.AppendLine(_killMessage);
@@ -938,6 +1019,12 @@ namespace TatianaTiger
 			else
 			{
 				sb.AppendLine("No majority lynch today.");
+			}
+			if (day == 0)
+			{
+				sb.Append("\n\n[sub]Note: [b][color=red]Error[/color][/b] vote can be fixed by sending me a PM with title 'correction' and body x=y. ");
+				sb.AppendLine(@"Where x is what the person bolded and y is the player they meant to vote. This is useful at must lynch.[/sub]");
+				sb.AppendLine("[sub]Note: You can sub by sending me a PM with title 'sub'. Put the player you are replacing in the body.[/sub]\n");
 			}
 			if ((_count != null) && _count.LockedVotes)
 			{
@@ -1077,22 +1164,70 @@ namespace TatianaTiger
 		}
 		void UnqueuePM()
 		{
-			if (_pmQueue.Count > 0)
+			PrivateMessage pm = null;
+			lock (_pmQueue)
 			{
-				PrivateMessage pm = _pmQueue.Dequeue();
+				if (_pmQueue.Count > 0)
+				{
+					pm = _pmQueue.Dequeue();
+				}
+			}
+			if(pm != null)
+			{
 				SendPM(pm);
-				SetPMTimer();
+				SetPMTimer();			
 			}
 		}
 		void QueuePM(PrivateMessage pm)
 		{
-			_pmQueue.Enqueue(pm);
+			lock (_pmQueue)
+			{
+				_pmQueue.Enqueue(pm);
+			}
 			SetPMTimer();
 		}
 		private void QueuePM(IEnumerable<string> bcc, string title, string msg)
 		{
 			PrivateMessage pm = new PrivateMessage(null, bcc, title, msg);
 			QueuePM(pm);
+		}
+		List<String> _annoucementQueue = new List<string>();
+		void QueueAnnouncement(string msg)
+		{
+			lock (_annoucementQueue)
+			{
+				_annoucementQueue.Add(msg);
+			}
+		}
+		String GetAnnouncements()
+		{
+			StringBuilder rc = new StringBuilder();
+			lock (_annoucementQueue)
+			{
+				foreach (var msg in _annoucementQueue)
+				{
+					rc.AppendLine(msg);
+				}
+				_annoucementQueue.Clear();
+			}
+			return rc.ToString();
+		}
+		private Player ParseSubPM(PrivateMessage pm)
+		{
+			List<String> rawList = pm.Content.Split(
+				new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries)
+				.Select(p => p.Trim())
+				.Distinct().ToList();
+			foreach (var line in rawList)
+			{
+				var player = LookupPlayer(line);
+				if ((player != null) && (player.Dead == false))
+				{
+					_peek = player.Name;
+					return player;
+				}
+			}
+			return null;
 		}
 		private bool ParsePeekPM(PrivateMessage pm)
 		{

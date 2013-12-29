@@ -533,9 +533,9 @@ VALUES(@p1, @p2, @p3, @p4);";
 
 			//Trace.TraceInformation("after ReplacePlayerList {0}", watch.Elapsed.ToString());
 		}
-        Int32 GetRoleId(int threadId, string name)
-        {
-            string sql = @"
+		Int32 GetRoleId(int threadId, string name)
+		{
+			string sql = @"
 SELECT GameRole.roleid
 FROM GameRole, Player, Poster
 WHERE
@@ -547,51 +547,106 @@ GameRole.roleid = Player.roleid
 AND
 GameRole.threadId = @p2
 ";
-            Int32 id = -1;
-            Stopwatch watch = new Stopwatch();
-            watch.Start();
-            using (SQLiteConnection dbRead = new SQLiteConnection(_connect))
-            {
-                dbRead.Open();
-                using (SQLiteCommand cmd = new SQLiteCommand(sql, dbRead))
-                {
-                    cmd.Parameters.Add(new SQLiteParameter("@p1", name));
-                    cmd.Parameters.Add(new SQLiteParameter("@p2", threadId));
-                    using (SQLiteDataReader r = cmd.ExecuteReader())
-                    {
-                        if (r.Read())
-                        {
-                            id = r.GetInt32(0);
-                        }
-                    }
-                }
-            }
-            watch.Stop();
-            //Trace.TraceInformation("After GetPlayerId {0}", watch.Elapsed.ToString());
-            return id;
-        }
-        public void KillPlayer(int threadId, string name, int postNumber)
-        {
-            Int32 id = GetRoleId(threadId, name);
-            string sql =
+			Int32 id = -1;
+			Stopwatch watch = new Stopwatch();
+			watch.Start();
+			using (SQLiteConnection dbRead = new SQLiteConnection(_connect))
+			{
+				dbRead.Open();
+				using (SQLiteCommand cmd = new SQLiteCommand(sql, dbRead))
+				{
+					cmd.Parameters.Add(new SQLiteParameter("@p1", name));
+					cmd.Parameters.Add(new SQLiteParameter("@p2", threadId));
+					using (SQLiteDataReader r = cmd.ExecuteReader())
+					{
+						if (r.Read())
+						{
+							id = r.GetInt32(0);
+						}
+					}
+				}
+			}
+			watch.Stop();
+			//Trace.TraceInformation("After GetPlayerId {0}", watch.Elapsed.ToString());
+			return id;
+		}
+
+		public void SubPlayer(int threadId, string oldName, string newName)
+		{
+			string sqlRoleId = @"
+SELECT GameRole.roleid
+FROM GameRole, Poster, Player
+WHERE
+GameRole.threadId = @p1
+AND
+Poster.postername = @p2
+AND
+Player.posterid = Poster.posterid
+AND
+GameRole.roleid = Player.roleid
+";
+			string sqlUpdate = @"
+UPDATE Player
+SET posterid = @p1
+WHERE
+roleid = @p2
+";
+			Int32 newPosterId = GetPlayerId(newName);
+			Stopwatch watch = new Stopwatch();
+			watch.Start();
+			using (SQLiteConnection dbRead = new SQLiteConnection(_connect))
+			{
+				dbRead.Open();
+				Int32 roleId = -1;
+				using (SQLiteCommand cmd = new SQLiteCommand(sqlRoleId, dbRead))
+				{
+					cmd.Parameters.Add(new SQLiteParameter("@p1", threadId));
+					cmd.Parameters.Add(new SQLiteParameter("@p2", oldName));
+					using (SQLiteDataReader r = cmd.ExecuteReader())
+					{
+						if (r.Read())
+						{
+							roleId = r.GetInt32(0);
+						}
+					}
+				}
+				using (SQLiteCommand cmd = new SQLiteCommand(sqlUpdate, dbRead))
+				{
+					cmd.Parameters.Add(new SQLiteParameter("@p1", newPosterId));
+					cmd.Parameters.Add(new SQLiteParameter("@p2", roleId));
+					int rows = cmd.ExecuteNonQuery();
+					if (rows != 1)
+					{
+						Trace.TraceError("*** Sub UPDATE failed. '{0}' for '{1}'. query: {2}\n", oldName, newName, cmd.CommandText);
+					}
+				}
+			}
+			watch.Stop();
+			//Trace.TraceInformation("After SubPlayer {0}", watch.Elapsed.ToString());
+		}
+
+		public void KillPlayer(int threadId, string name, int postNumber)
+		{
+			Int32 id = GetRoleId(threadId, name);
+			string sql =
 @"DELETE FROM GameRole
 WHERE
 roleid = @p1
 ;";
-            Stopwatch watch = new Stopwatch();
-            watch.Start();
-            using (SQLiteConnection dbWrite = new SQLiteConnection(_connect))
-            {
-                dbWrite.Open();
-                using (SQLiteCommand cmd = new SQLiteCommand(sql, dbWrite))
-                {
-                    cmd.Parameters.Add(new SQLiteParameter("@p1", id));
-                    int e = cmd.ExecuteNonQuery();
-                }
-            }
-            watch.Stop();
-        }
-        
+			Stopwatch watch = new Stopwatch();
+			watch.Start();
+			using (SQLiteConnection dbWrite = new SQLiteConnection(_connect))
+			{
+				dbWrite.Open();
+				using (SQLiteCommand cmd = new SQLiteCommand(sql, dbWrite))
+				{
+					cmd.Parameters.Add(new SQLiteParameter("@p1", id));
+					int e = cmd.ExecuteNonQuery();
+				}
+			}
+			watch.Stop();
+		}
+		
 		public Int32 GetPlayerId(string player)
 		{
 			String sql = 
@@ -937,7 +992,7 @@ WHERE (GameRole.threadid = @p2)
 GROUP BY Poster.postername
 ;
 ";
-            String sqlLocked =
+			String sqlLocked =
 @"
 SELECT GameRole.roleid, Player.posterid, Poster.postername, 
 (SELECT COUNT(*)  
@@ -968,11 +1023,11 @@ WHERE (GameRole.threadid = @p2)
 GROUP BY Poster.postername
 ;
 ";
-            if (lockedVotes)
-            {
-                sql = sqlLocked;
-            }
-            SortableBindingList<VoterInfo> voters = new SortableBindingList<VoterInfo>();
+			if (lockedVotes)
+			{
+				sql = sqlLocked;
+			}
+			SortableBindingList<VoterInfo> voters = new SortableBindingList<VoterInfo>();
 			Stopwatch watch = new Stopwatch();
 			watch.Start();
 			using (SQLiteConnection dbRead = new SQLiteConnection(_connect))
@@ -1017,7 +1072,7 @@ SELECT Bolded.bolded, Bolded.position, Post.postnumber, Post.posttime
 	LIMIT 1
 ; 
 ";
-                sqlLocked =
+				sqlLocked =
 @"
 SELECT Bolded.bolded, Bolded.position, Post.postnumber, Post.posttime
 	FROM Bolded
@@ -1029,11 +1084,11 @@ SELECT Bolded.bolded, Bolded.position, Post.postnumber, Post.posttime
 	LIMIT 1
 ; 
 ";
-                if (lockedVotes)
-                {
-                    sql = sqlLocked;
-                }
-                using (SQLiteCommand cmd = new SQLiteCommand(sql, dbRead))
+				if (lockedVotes)
+				{
+					sql = sqlLocked;
+				}
+				using (SQLiteCommand cmd = new SQLiteCommand(sql, dbRead))
 				{
 					foreach (VoterInfo v in voters)
 					{
@@ -1387,29 +1442,29 @@ LIMIT 1
 			//Trace.TraceInformation("after GetPostBeforeTime {0}", watch.Elapsed.ToString());
 			return postNumber;
 		}
-        public void ChangeBolded(int _threadId, string player, string oldbold, string newbold)
-        {
-            Stopwatch watch = new Stopwatch();
-            watch.Start();
-            using (SQLiteConnection dbWrite = new SQLiteConnection(_connect))
-            {
-                dbWrite.Open();
-                using (SQLiteTransaction trans = dbWrite.BeginTransaction())
-                {
-                    String sql = @"UPDATE Bolded SET bolded = @p2 WHERE bolded = @p4;";
+		public void ChangeBolded(int _threadId, string player, string oldbold, string newbold)
+		{
+			Stopwatch watch = new Stopwatch();
+			watch.Start();
+			using (SQLiteConnection dbWrite = new SQLiteConnection(_connect))
+			{
+				dbWrite.Open();
+				using (SQLiteTransaction trans = dbWrite.BeginTransaction())
+				{
+					String sql = @"UPDATE Bolded SET bolded = @p2 WHERE bolded = @p4;";
 
-                    using (SQLiteCommand cmd = new SQLiteCommand(sql, dbWrite, trans))
-                    {
-                        cmd.Parameters.Add(new SQLiteParameter("@p2", newbold));
-                        cmd.Parameters.Add(new SQLiteParameter("@p4", oldbold));
+					using (SQLiteCommand cmd = new SQLiteCommand(sql, dbWrite, trans))
+					{
+						cmd.Parameters.Add(new SQLiteParameter("@p2", newbold));
+						cmd.Parameters.Add(new SQLiteParameter("@p4", oldbold));
 
-                        int e = cmd.ExecuteNonQuery();
-                    }
-                    trans.Commit();
-                }
-            }
-            watch.Stop();
-            //Trace.TraceInformation("after GetPost {0}", watch.Elapsed.ToString());
-        }
+						int e = cmd.ExecuteNonQuery();
+					}
+					trans.Commit();
+				}
+			}
+			watch.Stop();
+			//Trace.TraceInformation("after GetPost {0}", watch.Elapsed.ToString());
+		}
 	}
 }
