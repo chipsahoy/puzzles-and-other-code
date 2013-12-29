@@ -28,6 +28,7 @@ namespace TatianaTiger
 		List<String> _PMSent = new List<string>();
 		List<Player> _players = new List<Player>();
 		List<String> _peeks = new List<string>();
+		List<String> _subbedPlayers;
 		String _peek;
 		String _killMessage;
 		DateTime _nextNight;
@@ -269,6 +270,7 @@ namespace TatianaTiger
 			{
 				case "EventEnter":
 					{
+						_subbedPlayers = new List<string>();
 					}
 					break;
 				case "EventExit":
@@ -368,6 +370,12 @@ namespace TatianaTiger
 				case "SubPM":
 					{
 						PrivateMessage pm = (e as Event<PrivateMessage>).Param;
+						if ((LookupPlayer(pm.From) != null) || (_subbedPlayers.Contains(pm.From)))
+						{
+							QueuePM(new string[] { pm.From }, pm.Title,
+								String.Format("Sorry, I can't sub you back in."));
+							break;
+						}
 						Player role = ParseSubPM(pm);
 						if (role == null)
 						{
@@ -379,6 +387,8 @@ namespace TatianaTiger
 						StringBuilder sb = new StringBuilder();
 						String subMsg = String.Format("[b]{0}[/b] is subbing in for [b]{1}[/b]\n\n", pm.From, role.Name);
 						_count.SubPlayer(role.Name, pm.From);
+						_subbedPlayers.Add(role.Name);
+						role.Name = pm.From;
 						QueueAnnouncement(subMsg);
 						sb.AppendLine(subMsg);
 						sb.AppendLine("Role Info:\n");
@@ -849,14 +859,14 @@ namespace TatianaTiger
 					PostEvent(new Event<PrivateMessage>("CorrectionPM", pm));
 					continue;
 				}
+				if (pm.Title.ToLowerInvariant().Trim().StartsWith("sub"))
+				{
+					PostEvent(new Event<PrivateMessage>("SubPM", pm));
+					continue;
+				}
 				var player = LookupPlayer(pm.From);
 				if (player == null)
 				{
-					if (pm.Title.ToLowerInvariant().Trim().StartsWith("sub"))
-					{
-						PostEvent(new Event<PrivateMessage>("SubPM", pm));
-						continue;
-					}
 					PostEvent(new Event<PrivateMessage>("StrangerPM", pm));
 					continue;
 				}
