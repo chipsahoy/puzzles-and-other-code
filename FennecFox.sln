@@ -42,8 +42,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FennecUI", "FennecUI\Fennec
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{1AA004BD-A158-45B6-B729-26E98215C4C7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Forum.Test", "test\Forum.Test\Forum.Test.csproj", "{D2B63EF7-BD3F-4F99-8E4A-5A6C96BB084D}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "bugsbunny", "bugsbunny\bugsbunny.csproj", "{81BE69CF-37DB-4C03-AC6C-E0A5975E4A12}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TatianaTiger", "TatianaTiger\TatianaTiger.csproj", "{169B41D0-A6BA-430A-B3A5-B60E80A0091D}"
@@ -201,16 +199,6 @@ Global
 		{3AA0628E-68D8-402D-B726-6FD4A0BCECEC}.Release|Mixed Platforms.Build.0 = Release|x86
 		{3AA0628E-68D8-402D-B726-6FD4A0BCECEC}.Release|x86.ActiveCfg = Release|x86
 		{3AA0628E-68D8-402D-B726-6FD4A0BCECEC}.Release|x86.Build.0 = Release|x86
-		{D2B63EF7-BD3F-4F99-8E4A-5A6C96BB084D}.Debug|Any CPU.ActiveCfg = Debug|x86
-		{D2B63EF7-BD3F-4F99-8E4A-5A6C96BB084D}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
-		{D2B63EF7-BD3F-4F99-8E4A-5A6C96BB084D}.Debug|Mixed Platforms.Build.0 = Debug|x86
-		{D2B63EF7-BD3F-4F99-8E4A-5A6C96BB084D}.Debug|x86.ActiveCfg = Debug|x86
-		{D2B63EF7-BD3F-4F99-8E4A-5A6C96BB084D}.Debug|x86.Build.0 = Debug|x86
-		{D2B63EF7-BD3F-4F99-8E4A-5A6C96BB084D}.Release|Any CPU.ActiveCfg = Release|x86
-		{D2B63EF7-BD3F-4F99-8E4A-5A6C96BB084D}.Release|Mixed Platforms.ActiveCfg = Release|x86
-		{D2B63EF7-BD3F-4F99-8E4A-5A6C96BB084D}.Release|Mixed Platforms.Build.0 = Release|x86
-		{D2B63EF7-BD3F-4F99-8E4A-5A6C96BB084D}.Release|x86.ActiveCfg = Release|x86
-		{D2B63EF7-BD3F-4F99-8E4A-5A6C96BB084D}.Release|x86.Build.0 = Release|x86
 		{81BE69CF-37DB-4C03-AC6C-E0A5975E4A12}.Debug|Any CPU.ActiveCfg = Debug|x86
 		{81BE69CF-37DB-4C03-AC6C-E0A5975E4A12}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
 		{81BE69CF-37DB-4C03-AC6C-E0A5975E4A12}.Debug|Mixed Platforms.Build.0 = Debug|x86

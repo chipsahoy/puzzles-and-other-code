@@ -19,7 +19,7 @@ namespace POG.FennecFox
 		private const int WM_SETREDRAW = 11;
 
 		[DllImport("user32.dll")]
-		public static extern int SendMessage(IntPtr hWnd, Int32 wMsg, bool wParam, Int32 lParam); private int childFormNumber = 0;
+		public static extern int SendMessage(IntPtr hWnd, Int32 wMsg, bool wParam, Int32 lParam); 
 
 		private VBulletinForum _forum;
         Language _language = Language.English;

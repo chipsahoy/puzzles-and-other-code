@@ -493,7 +493,8 @@ Good luck!
         }
         public void SendPM(VBulletinForum _forum)
         {
-            _forum.SendPM(null, Players, PMTitle, PMText);
+			PrivateMessage pm = new PrivateMessage(null, Players, PMTitle, PMText);
+			_forum.SendPM(pm);
         }
     }
 }

@@ -962,32 +962,35 @@ loggedinuser 81788
                 totalmessages = Int32.Parse(m.Groups[3].Value, NumberStyles.AllowThousands);
                 totalcapacity = Int32.Parse(m.Groups[4].Value, NumberStyles.AllowThousands);
             }
-            var nodes = root.SelectNodes("//tbody[contains(@id, 'collapseobj_pmf')]/tr");
-            List<PMHeader> headers = new List<PMHeader>();
-            foreach (var row in nodes)
-            {
-                Boolean unread = false;
-                var icon = row.SelectSingleNode("td[1]/img");
-                if (icon.Attributes["src"].Value.EndsWith("new.gif"))
-                {
-                    unread = true;
-                }
-                var pm = row.SelectSingleNode("td[3]");
-                String mid = pm.Attributes["id"].Value.Substring(1);
-                Int32 id = Int32.Parse(mid);
-                String timestamp = pm.SelectSingleNode("div[1]/div[1]").InnerText;
-                DateTimeOffset ts = Misc.ParseItemTimeEnglish(serverTime, timestamp);
-                var sender = pm.SelectSingleNode("div[1]//span[@style='cursor:pointer']").InnerText;
-                var title = pm.SelectSingleNode("div[1]//a[@rel='nofollow']").InnerText;
-                var previewNode = pm.SelectSingleNode("div[2]");
-                String preview = String.Empty;
-                if (previewNode != null)
-                {
-                    preview = previewNode.InnerText.Trim();
-                }
-                PMHeader header = new PMHeader(id, ts, sender, title, preview, unread);
-                headers.Add(header);
-            }
+			List<PMHeader> headers = new List<PMHeader>();
+			var nodes = root.SelectNodes("//tbody[contains(@id, 'collapseobj_pmf')]/tr");
+			if (nodes != null)
+			{
+				foreach (var row in nodes)
+				{
+					Boolean unread = false;
+					var icon = row.SelectSingleNode("td[1]/img");
+					if (icon.Attributes["src"].Value.EndsWith("new.gif"))
+					{
+						unread = true;
+					}
+					var pm = row.SelectSingleNode("td[3]");
+					String mid = pm.Attributes["id"].Value.Substring(1);
+					Int32 id = Int32.Parse(mid);
+					String timestamp = pm.SelectSingleNode("div[1]/div[1]").InnerText;
+					DateTimeOffset ts = Misc.ParseItemTimeEnglish(serverTime, timestamp);
+					var sender = pm.SelectSingleNode("div[1]//span[@style='cursor:pointer']").InnerText;
+					var title = pm.SelectSingleNode("div[1]//a[@rel='nofollow']").InnerText;
+					var previewNode = pm.SelectSingleNode("div[2]");
+					String preview = String.Empty;
+					if (previewNode != null)
+					{
+						preview = previewNode.InnerText.Trim();
+					}
+					PMHeader header = new PMHeader(id, ts, sender, title, preview, unread);
+					headers.Add(header);
+				}
+			}
             PMFolderPage folderpage = new PMFolderPage(totalcapacity, totalmessages, folderName, folder, foldercount, unreadCount, page, headers);
             callback(folderpage, String.Empty, cookie);
             return true;

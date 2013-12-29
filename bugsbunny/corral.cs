@@ -242,6 +242,7 @@ namespace POG.Automation
         {
             DateTime now = DateTime.Now;
             double rc = ((60 - now.Second) * 1000) - now.Millisecond;
+			if (rc < 1000) rc += (60 * 1000);
             return rc;
         }
         void PollPostsPMs()
