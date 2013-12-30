@@ -16,36 +16,36 @@ using System.Web;
 
 namespace POG.Forum
 {
-    internal class VBulletin_4_2_0 : VBulletinSM
-    {
-        internal VBulletin_4_2_0(VBulletinForum outer, StateMachineHost host, String forum, String lobby, Action<Action> synchronousInvoker) :
-            base(outer, host, forum, lobby, synchronousInvoker)
-        {
-        }
-        internal override ThreadReader Reader()
-        {
-            ThreadReader t = new ThreadReader_4_2_0(_connectionSettings, _synchronousInvoker);
-            return t;
-        }
-        internal override LobbyReader Lobby()
-        {
-            LobbyReader lr = new LobbyReaderEstonia(_connectionSettings, _synchronousInvoker);
-            return lr;
-        }
-        protected override String GetOurUserId(ConnectionSettings cs)
-        {
-            String rc = cs.CC.GetCookies(new System.Uri(ForumURL))["bb_userid"].Value;
-            return rc;
-        }
-    }
-    internal class VBulletin_3_8_7 : VBulletinSM
-    {
-        internal VBulletin_3_8_7(VBulletinForum outer, StateMachineHost host, String forum, String lobby, Action<Action> synchronousInvoker) :
-            base(outer, host, forum, lobby, synchronousInvoker)
-        {
-        }
-    }
-    internal class VBulletinSM : StateMachine
+	internal class VBulletin_4_2_0 : VBulletinSM
+	{
+		internal VBulletin_4_2_0(VBulletinForum outer, StateMachineHost host, String forum, String lobby, Action<Action> synchronousInvoker) :
+			base(outer, host, forum, lobby, synchronousInvoker)
+		{
+		}
+		internal override ThreadReader Reader()
+		{
+			ThreadReader t = new ThreadReader_4_2_0(_connectionSettings, _synchronousInvoker);
+			return t;
+		}
+		internal override LobbyReader Lobby()
+		{
+			LobbyReader lr = new LobbyReaderEstonia(_connectionSettings, _synchronousInvoker);
+			return lr;
+		}
+		protected override String GetOurUserId(ConnectionSettings cs)
+		{
+			String rc = cs.CC.GetCookies(new System.Uri(ForumURL))["bb_userid"].Value;
+			return rc;
+		}
+	}
+	internal class VBulletin_3_8_7 : VBulletinSM
+	{
+		internal VBulletin_3_8_7(VBulletinForum outer, StateMachineHost host, String forum, String lobby, Action<Action> synchronousInvoker) :
+			base(outer, host, forum, lobby, synchronousInvoker)
+		{
+		}
+	}
+	internal class VBulletinSM : StateMachine
 	{
 		#region members
 		VBulletinForum _outer;
@@ -61,9 +61,9 @@ namespace POG.Forum
 		{
 			_outer = outer;
 			_synchronousInvoker = synchronousInvoker;
-            ForumHost = forum;
-            ForumLobby = lobby;
-            _connectionSettings = new ConnectionSettings(ForumURL);
+			ForumHost = forum;
+			ForumLobby = lobby;
+			_connectionSettings = new ConnectionSettings(ForumURL);
 			SetInitialState(StateLoggedOut);
 		}
 		#region Properties
@@ -77,13 +77,13 @@ namespace POG.Forum
 			LobbyReader lr = new LobbyReader(_connectionSettings, _synchronousInvoker);
 			return lr;
 		}
-        internal String Username
-        {
-            get
-            {
-                return _username;
-            }
-        }
+		internal String Username
+		{
+			get
+			{
+				return _username;
+			}
+		}
 		public Int32 PostsPerPage {
 			get
 			{
@@ -193,8 +193,8 @@ namespace POG.Forum
 				Cookie cReferrer = new Cookie("DOAReferrer", ForumURL, "/", host);
 				_connectionSettings.CC.Add(cReferrer);
 			}
-            Cookie cLanguage = new Cookie("bb_languageid", "2", "/", ForumHost); // Estonian!
-            _connectionSettings.CC.Add(cLanguage);
+			Cookie cLanguage = new Cookie("bb_languageid", "2", "/", ForumHost); // Estonian!
+			_connectionSettings.CC.Add(cLanguage);
 			_username = null;
 			String hashedPassword = SecurityUtils.md5(password);
 
@@ -302,59 +302,59 @@ namespace POG.Forum
 			Boolean rc = DoMakePost(threadId, title, content, lockit, icon);
 			return rc;
 		}
-        internal bool CanUserReceivePM(string name)
-        {
-            ConnectionSettings cs = _connectionSettings.Clone();
+		internal bool CanUserReceivePM(string name)
+		{
+			ConnectionSettings cs = _connectionSettings.Clone();
 			String securityToken = GetSecurityToken(cs);
 			StringBuilder msg = new StringBuilder();
 
-            String sTo = name;
-            
-            String sBCC = String.Empty;
-            msg.AppendFormat("{0}={1}&", "recipients", sTo);
-            msg.AppendFormat("{0}={1}&", "bccrecipients", sBCC);
-            String title = "test";
-            if (title != String.Empty)
-            {
-                msg.AppendFormat("{0}={1}&", "title", HttpUtility.UrlEncode(title));
-            }
-            String content = "test";
-            content = content.Replace("\r\n", "\n");
-            msg.AppendFormat("{0}={1}&", "message", HttpUtility.UrlEncode(content));
-            msg.AppendFormat("{0}={1}&", "wysiwyg", "0");
-            msg.AppendFormat("{0}={1}&", "iconid", "0");
-            msg.AppendFormat("{0}={1}&", "s", "");
-            msg.AppendFormat("{0}={1}&", "securitytoken", securityToken);
-            msg.AppendFormat("{0}={1}&", "do", "insertpm");
-            msg.AppendFormat("{0}={1}&", "pmid", "");
-            msg.AppendFormat("{0}={1}&", "forward", "");
-            msg.AppendFormat("{0}={1}&", "preview", "Preview Message");
-            msg.AppendFormat("{0}={1}&", "savecopy", "1");
-            msg.AppendFormat("{0}={1}&", "parseurl", "1");
+			String sTo = name;
+			
+			String sBCC = String.Empty;
+			msg.AppendFormat("{0}={1}&", "recipients", sTo);
+			msg.AppendFormat("{0}={1}&", "bccrecipients", sBCC);
+			String title = "test";
+			if (title != String.Empty)
+			{
+				msg.AppendFormat("{0}={1}&", "title", HttpUtility.UrlEncode(title));
+			}
+			String content = "test";
+			content = content.Replace("\r\n", "\n");
+			msg.AppendFormat("{0}={1}&", "message", HttpUtility.UrlEncode(content));
+			msg.AppendFormat("{0}={1}&", "wysiwyg", "0");
+			msg.AppendFormat("{0}={1}&", "iconid", "0");
+			msg.AppendFormat("{0}={1}&", "s", "");
+			msg.AppendFormat("{0}={1}&", "securitytoken", securityToken);
+			msg.AppendFormat("{0}={1}&", "do", "insertpm");
+			msg.AppendFormat("{0}={1}&", "pmid", "");
+			msg.AppendFormat("{0}={1}&", "forward", "");
+			msg.AppendFormat("{0}={1}&", "preview", "Preview Message");
+			msg.AppendFormat("{0}={1}&", "savecopy", "1");
+			msg.AppendFormat("{0}={1}&", "parseurl", "1");
 
-            cs.Url = String.Format("{0}private.php?do=insertpm&pmid=", _outer.ForumURL);
-            cs.Data = msg.ToString();
-            Trace.TraceInformation("Posting: " + cs.Data);
-            String resp = HtmlHelper.PostToUrl(cs);
-            if (resp == null)
-            {
-                // failure
-                Trace.TraceInformation("Response was null");
-                return false;
-            }
-            // Parse out response.
-            if (resp.Contains(@"<tr>
+			cs.Url = String.Format("{0}private.php?do=insertpm&pmid=", _outer.ForumURL);
+			cs.Data = msg.ToString();
+			Trace.TraceInformation("Posting: " + cs.Data);
+			String resp = HtmlHelper.PostToUrl(cs);
+			if (resp == null)
+			{
+				// failure
+				Trace.TraceInformation("Response was null");
+				return false;
+			}
+			// Parse out response.
+			if (resp.Contains(@"<tr>
 	<td class=""tcat"">
 		
 			Preview
 		
 	</td>
 </tr>"))
-            {
-                    return true;
-            }
-            return false;
-        }
+			{
+					return true;
+			}
+			return false;
+		}
 		private String GetSecurityToken(ConnectionSettings cs)
 		{
 			String securityToken = "";
@@ -381,34 +381,34 @@ namespace POG.Forum
 			}
 			return securityToken;
 		}
-        internal Boolean LockThread(Int32 thread, Boolean lockIt)
-        {
-            ConnectionSettings cs = _connectionSettings.Clone();
-            String securityToken = GetSecurityToken(cs);
-            cs.Headers.Add("X-Requested-With", "XMLHttpRequest");
-            cs.Headers.Add("Origin", ForumURL.TrimEnd('/'));
-            cs.Headers.Add("Referer", String.Format("{0}{1}", ForumURL, ForumLobby));
-            //cs.Headers.Add("Connection", "keep-alive");
-            StringBuilder msg = new StringBuilder();
-            msg.AppendFormat("{0}={1}&", "do", "updatethreadopen");
-            String lockString = lockIt ? "" : "_lock"; // src is what we have, we are asking for opposite.
-            String src = String.Format("{0}images/statusicon/thread_dot_hot{1}.gif", ForumURL, lockString);
-            msg.AppendFormat("{0}={1}&", "src", src);
-            msg.AppendFormat("{0}={1}&", "securitytoken", securityToken);
-            msg.AppendFormat("{0}={1}&", "t", thread);
+		internal Boolean LockThread(Int32 thread, Boolean lockIt)
+		{
+			ConnectionSettings cs = _connectionSettings.Clone();
+			String securityToken = GetSecurityToken(cs);
+			cs.Headers.Add("X-Requested-With", "XMLHttpRequest");
+			cs.Headers.Add("Origin", ForumURL.TrimEnd('/'));
+			cs.Headers.Add("Referer", String.Format("{0}{1}", ForumURL, ForumLobby));
+			//cs.Headers.Add("Connection", "keep-alive");
+			StringBuilder msg = new StringBuilder();
+			msg.AppendFormat("{0}={1}&", "do", "updatethreadopen");
+			String lockString = lockIt ? "" : "_lock"; // src is what we have, we are asking for opposite.
+			String src = String.Format("{0}images/statusicon/thread_dot_hot{1}.gif", ForumURL, lockString);
+			msg.AppendFormat("{0}={1}&", "src", src);
+			msg.AppendFormat("{0}={1}&", "securitytoken", securityToken);
+			msg.AppendFormat("{0}={1}&", "t", thread);
 
-            cs.Url = String.Format("{0}ajax.php?do=updatethreadopen&t={1}", ForumURL, thread);
-            cs.Data = msg.ToString();
-            //Trace.TraceInformation("Posting: " + cs.Data);
-            String resp = HtmlHelper.PostToUrl(cs); 
-            if (resp == null)
-            {
-                // failure
-                return false;
-            }
+			cs.Url = String.Format("{0}ajax.php?do=updatethreadopen&t={1}", ForumURL, thread);
+			cs.Data = msg.ToString();
+			//Trace.TraceInformation("Posting: " + cs.Data);
+			String resp = HtmlHelper.PostToUrl(cs); 
+			if (resp == null)
+			{
+				// failure
+				return false;
+			}
 
-            return true;
-        }
+			return true;
+		}
 		internal Boolean LockThreadOld(Int32 thread, Boolean lockIt)
 		{
 			ConnectionSettings cs = _connectionSettings.Clone();
@@ -437,185 +437,13 @@ namespace POG.Forum
 			return true;
 
 		}
-        internal bool SendPM(PrivateMessage pm, PMResult callback, bool receipt, object cookie)
-        {
-            if (callback == null)
-            {
-                callback = (a, b, c, d, e) => { };
-            }
-            ConnectionSettings cs = _connectionSettings.Clone();
-            String securityToken = GetSecurityToken(cs);
-            /*				<input type="hidden" name="fromquickreply" value="1" />
-                <input type="hidden" name="s" value="" />
-                <input type="hidden" name="securitytoken" value="1338251187-cd0e85748ac090ba7cb5281011b49332c0ba455a" />
-                <input type="hidden" name="do" value="postreply" />
-                <input type="hidden" name="t" value="1204368" id="qr_threadid" />
-                <input type="hidden" name="p" value="who cares" id="qr_postid" />
-                <input type="hidden" name="specifiedpost" value="0" id="qr_specifiedpost" />
-                <input type="hidden" name="parseurl" value="1" />
-                <input type="hidden" name="loggedinuser" value="198669" />
-             * 
-             * openclose=1
-             * open:
-             * POST http://forumserver.twoplustwo.com/postings.php?t=1204368&pollid= 
-             * do=openclosethread&s=&securitytoken=1338253787-f7a244e5e823e6d88002169f4f314e97febf4dce&t=1204368&pollid=
-             * close:
-             * POST /postings.php?t=1204368&pollid= HTTP/1.1
-             * do=openclosethread&s=&securitytoken=1338253981-5657f92aed9e901b4292a60cab0e9efaac4be1fe&t=1204368&pollid=
-*/
-
-            StringBuilder msg = new StringBuilder();
-
-            String sTo = String.Empty;
-            if (pm.To != null)
-            {
-                sTo = String.Join("; ", pm.To);
-            }
-            String sBCC = String.Empty;
-            if (pm.BCC != null)
-            {
-                sBCC = String.Join("; ", pm.BCC);
-            }
-            msg.AppendFormat("{0}={1}&", "recipients", sTo);
-            msg.AppendFormat("{0}={1}&", "bccrecipients", sBCC);
-            if (pm.Title != String.Empty)
-            {
-                msg.AppendFormat("{0}={1}&", "title", HttpUtility.UrlEncode(pm.Title));
-            }
-            String content = pm.Content.Replace("\r\n", "\n");
-            msg.AppendFormat("{0}={1}&", "message", HttpUtility.UrlEncode(content));
-            msg.AppendFormat("{0}={1}&", "wysiwyg", "0");
-            msg.AppendFormat("{0}={1}&", "iconid", "0");
-            msg.AppendFormat("{0}={1}&", "s", "");
-            msg.AppendFormat("{0}={1}&", "securitytoken", securityToken);
-            msg.AppendFormat("{0}={1}&", "do", "insertpm");
-            msg.AppendFormat("{0}={1}&", "pmid", "");
-            msg.AppendFormat("{0}={1}&", "forward", "");
-            msg.AppendFormat("{0}={1}&", "sbutton", "Submit Button");
-            msg.AppendFormat("{0}={1}&", "receipt", "1");
-            msg.AppendFormat("{0}={1}&", "savecopy", "1");
-            msg.AppendFormat("{0}={1}&", "parseurl", "1");
-
-            cs.Url = String.Format("{0}private.php?do=insertpm&pmid=", _outer.ForumURL);
-            cs.Data = msg.ToString();
-            //Trace.TraceInformation("Posting: " + cs.Data);
-            String resp = HtmlHelper.PostToUrl(cs);
-            if (resp == null)
-            {
-                // failure
-                callback(pm, PrivateMessageError.PMHttpError, String.Empty, null, cookie);
-                return false;
-            }
-            if (resp.Contains(@"you do not have permission to access this page. This could be due to one of several reasons:"))
-            {
-                callback(pm, PrivateMessageError.PMNotAllowed, "New user can't PM.", null, cookie);
-                return false;
-            }
-            var html = new HtmlAgilityPack.HtmlDocument();
-            html.LoadHtml(resp);
-            HtmlAgilityPack.HtmlNode root = html.DocumentNode;
-            HtmlAgilityPack.HtmlNode node = root.SelectSingleNode("//comment()[contains(.,'POSTERROR do not remove this comment')]/following-sibling::ol");
-            if (node != null)
-            {
-                String errorString = "Unknown Error";
-                HtmlAgilityPack.HtmlNode err = node.SelectSingleNode("li");
-                if (err != null)
-                {
-                    HtmlAgilityPack.HtmlNode emsg = err.FirstChild;
-                    errorString = emsg.InnerText;
-                    switch (errorString)
-                    {
-                        case "The following users were not found: ":
-                            {
-                                HtmlAgilityPack.HtmlNode who = emsg.SelectSingleNode("../ol/li[1]");
-                                callback(pm, PrivateMessageError.PMUnknownRecepient, errorString, who.InnerText, cookie);
-                            }
-                            return false;
-
-                        case @"You have reached your stored private message quota and cannot send any further messages until space has been created.":
-                            {
-                                callback(pm, PrivateMessageError.PMSenderFull, errorString, "Out of space", cookie);
-                            }
-                            return false;
-
-                        case @"Please complete both the subject and message fields.":
-                            {
-                                if ((pm.Title == String.Empty) || (pm.Title == null))
-                                {
-                                    callback(pm, PrivateMessageError.PMNoTitle, errorString, null, cookie);
-                                }
-                                else
-                                {
-                                    callback(pm, PrivateMessageError.PMNoBody, errorString, null, cookie);
-                                }
-                            }
-                            return false;
-
-                        case "Invalid recipient username. Please press the back button, enter the correct username and try again.  ":
-                            {
-                                callback(pm, PrivateMessageError.PMNoRecepient, errorString, null, cookie);
-                            }
-                            return false;
-                        
-                        default:
-                            {
-                                String regex = @"This forum requires that you wait (\d*) seconds between sending private messages. Please try again in (\d*) seconds.";
-                                Match m = Regex.Match(errorString, regex);
-                                if (m.Success)
-                                {
-                                    Int32 wait = Int32.Parse(m.Groups[2].Value);
-                                    callback(pm, PrivateMessageError.PMTooSoon, errorString, wait, cookie);
-                                    return false;
-                                }
-                                regex = @"(.+) has chosen not to receive private messages or may not be allowed to receive private messages. Therefore you may not send your message to him/her.";
-                                m = Regex.Match(errorString, regex);
-                                if (m.Success)
-                                {
-                                    String who = m.Groups[1].Value;
-                                    callback(pm, PrivateMessageError.PMRecepientNotAllowed, errorString, who, cookie);
-                                    return false;
-                                }
-                                regex = @"(.+) has exceeded their stored private messages quota and cannot accept further messages until they clear some space.";
-                                m = Regex.Match(errorString, regex);
-                                if (m.Success)
-                                {
-                                    String who = m.Groups[1].Value;
-                                    callback(pm, PrivateMessageError.PMRecepientFull, errorString, who, cookie);
-                                    return false;
-                                }
-                                regex = @"The text that you have entered is too long \((\d*) characters\). Please shorten it to (\d*) characters long.";
-                                m = Regex.Match(errorString, regex);
-                                if (m.Success)
-                                {
-                                    String length = m.Groups[1].Value;
-                                    Int32 max = Int32.Parse(m.Groups[2].Value);
-                                    callback(pm, PrivateMessageError.PMTooLongDidntSend, errorString, max, cookie);
-                                    return false;
-                                }
-                                regex = @"Too many recipients - you are attempting to send to (\d*) users but you are only allowed to send to (\d*) users.";
-                                m = Regex.Match(errorString, regex);
-                                if (m.Success)
-                                {
-                                    String attempt = m.Groups[1].Value;
-                                    Int32 max = Int32.Parse(m.Groups[2].Value);
-                                    callback(pm, PrivateMessageError.PMTooManyRecepients, errorString, max, cookie);
-                                    return false;
-                                }
-
-                            }
-                            break;
-                    }
-                }
-                callback(pm, PrivateMessageError.PMUnknownError, errorString, null, cookie);
-                return false;
-            }
-            callback(pm, PrivateMessageError.PMSuccess, String.Empty, null, cookie);
-            return true;
-        }
-
-        internal Boolean SendPM(IEnumerable<string> To, IEnumerable<string> bcc, string title, string content, bool receipt)
-        {
-            ConnectionSettings cs = _connectionSettings.Clone();
+		internal bool SendPM(PrivateMessage pm, PMResult callback, bool receipt, object cookie)
+		{
+			if (callback == null)
+			{
+				callback = (a, b, c, d, e) => { };
+			}
+			ConnectionSettings cs = _connectionSettings.Clone();
 			String securityToken = GetSecurityToken(cs);
 			/*				<input type="hidden" name="fromquickreply" value="1" />
 				<input type="hidden" name="s" value="" />
@@ -636,120 +464,292 @@ namespace POG.Forum
 			 * do=openclosethread&s=&securitytoken=1338253981-5657f92aed9e901b4292a60cab0e9efaac4be1fe&t=1204368&pollid=
 */
 
-            StringBuilder msg = new StringBuilder();
+			StringBuilder msg = new StringBuilder();
 
-            String sTo = String.Empty;
-            if (To != null)
-            {
-                sTo = String.Join("; ", To);
-            }
-            String sBCC = String.Empty;
-            if (bcc != null)
-            {
-                sBCC = String.Join("; ", bcc);
-            }
-            msg.AppendFormat("{0}={1}&", "recipients", sTo);
-            msg.AppendFormat("{0}={1}&", "bccrecipients", sBCC);
-            if (title != String.Empty)
-            {
-                msg.AppendFormat("{0}={1}&", "title", HttpUtility.UrlEncode(title));
-            }
-            content = content.Replace("\r\n", "\n");
-            msg.AppendFormat("{0}={1}&", "message", HttpUtility.UrlEncode(content));
-            msg.AppendFormat("{0}={1}&", "wysiwyg", "0");
-            msg.AppendFormat("{0}={1}&", "iconid", "0");
-            msg.AppendFormat("{0}={1}&", "s", "");
-            msg.AppendFormat("{0}={1}&", "securitytoken", securityToken);
-            msg.AppendFormat("{0}={1}&", "do", "insertpm");
-            msg.AppendFormat("{0}={1}&", "pmid", "");
-            msg.AppendFormat("{0}={1}&", "forward", "");
-            msg.AppendFormat("{0}={1}&", "sbutton", "Submit Button");
-            msg.AppendFormat("{0}={1}&", "receipt", "1");
-            msg.AppendFormat("{0}={1}&", "savecopy", "1");
-            msg.AppendFormat("{0}={1}&", "parseurl", "1");
+			String sTo = String.Empty;
+			if (pm.To != null)
+			{
+				sTo = String.Join("; ", pm.To);
+			}
+			String sBCC = String.Empty;
+			if (pm.BCC != null)
+			{
+				sBCC = String.Join("; ", pm.BCC);
+			}
+			msg.AppendFormat("{0}={1}&", "recipients", sTo);
+			msg.AppendFormat("{0}={1}&", "bccrecipients", sBCC);
+			if (pm.Title != String.Empty)
+			{
+				msg.AppendFormat("{0}={1}&", "title", HttpUtility.UrlEncode(pm.Title));
+			}
+			String content = pm.Content.Replace("\r\n", "\n");
+			msg.AppendFormat("{0}={1}&", "message", HttpUtility.UrlEncode(content));
+			msg.AppendFormat("{0}={1}&", "wysiwyg", "0");
+			msg.AppendFormat("{0}={1}&", "iconid", "0");
+			msg.AppendFormat("{0}={1}&", "s", "");
+			msg.AppendFormat("{0}={1}&", "securitytoken", securityToken);
+			msg.AppendFormat("{0}={1}&", "do", "insertpm");
+			msg.AppendFormat("{0}={1}&", "pmid", "");
+			msg.AppendFormat("{0}={1}&", "forward", "");
+			msg.AppendFormat("{0}={1}&", "sbutton", "Submit Button");
+			msg.AppendFormat("{0}={1}&", "receipt", "1");
+			msg.AppendFormat("{0}={1}&", "savecopy", "1");
+			msg.AppendFormat("{0}={1}&", "parseurl", "1");
 
-            cs.Url = String.Format("{0}private.php?do=insertpm&pmid=", _outer.ForumURL);
-            cs.Data = msg.ToString();
-            //Trace.TraceInformation("Posting: " + cs.Data);
-            String resp = HtmlHelper.PostToUrl(cs);
-            if (resp == null)
-            {
-                // failure
-                return false;
-            }
+			cs.Url = String.Format("{0}private.php?do=insertpm&pmid=", _outer.ForumURL);
+			cs.Data = msg.ToString();
+			//Trace.TraceInformation("Posting: " + cs.Data);
+			String resp = HtmlHelper.PostToUrl(cs);
+			if (resp == null)
+			{
+				// failure
+				callback(pm, PrivateMessageError.PMHttpError, String.Empty, null, cookie);
+				return false;
+			}
+			if (resp.Contains(@"you do not have permission to access this page. This could be due to one of several reasons:"))
+			{
+				callback(pm, PrivateMessageError.PMNotAllowed, "New user can't PM.", null, cookie);
+				return false;
+			}
+			var html = new HtmlAgilityPack.HtmlDocument();
+			html.LoadHtml(resp);
+			HtmlAgilityPack.HtmlNode root = html.DocumentNode;
+			HtmlAgilityPack.HtmlNode node = root.SelectSingleNode("//comment()[contains(.,'POSTERROR do not remove this comment')]/following-sibling::ol");
+			if (node != null)
+			{
+				String errorString = "Unknown Error";
+				HtmlAgilityPack.HtmlNode err = node.SelectSingleNode("li");
+				if (err != null)
+				{
+					HtmlAgilityPack.HtmlNode emsg = err.FirstChild;
+					errorString = emsg.InnerText;
+					switch (errorString)
+					{
+						case "The following users were not found: ":
+							{
+								HtmlAgilityPack.HtmlNode who = emsg.SelectSingleNode("../ol/li[1]");
+								callback(pm, PrivateMessageError.PMUnknownRecepient, errorString, who.InnerText, cookie);
+							}
+							return false;
 
-            return true;
-        }
-        internal bool DeleteThread(int postId)
-        {
-            ConnectionSettings cs = _connectionSettings.Clone();
+						case @"You have reached your stored private message quota and cannot send any further messages until space has been created.":
+							{
+								callback(pm, PrivateMessageError.PMSenderFull, errorString, "Out of space", cookie);
+							}
+							return false;
+
+						case @"Please complete both the subject and message fields.":
+							{
+								if ((pm.Title == String.Empty) || (pm.Title == null))
+								{
+									callback(pm, PrivateMessageError.PMNoTitle, errorString, null, cookie);
+								}
+								else
+								{
+									callback(pm, PrivateMessageError.PMNoBody, errorString, null, cookie);
+								}
+							}
+							return false;
+
+						case "Invalid recipient username. Please press the back button, enter the correct username and try again.  ":
+							{
+								callback(pm, PrivateMessageError.PMNoRecepient, errorString, null, cookie);
+							}
+							return false;
+						
+						default:
+							{
+								String regex = @"This forum requires that you wait (\d*) seconds between sending private messages. Please try again in (\d*) seconds.";
+								Match m = Regex.Match(errorString, regex);
+								if (m.Success)
+								{
+									Int32 wait = Int32.Parse(m.Groups[2].Value);
+									callback(pm, PrivateMessageError.PMTooSoon, errorString, wait, cookie);
+									return false;
+								}
+								regex = @"(.+) has chosen not to receive private messages or may not be allowed to receive private messages. Therefore you may not send your message to him/her.";
+								m = Regex.Match(errorString, regex);
+								if (m.Success)
+								{
+									String who = m.Groups[1].Value;
+									callback(pm, PrivateMessageError.PMRecepientNotAllowed, errorString, who, cookie);
+									return false;
+								}
+								regex = @"(.+) has exceeded their stored private messages quota and cannot accept further messages until they clear some space.";
+								m = Regex.Match(errorString, regex);
+								if (m.Success)
+								{
+									String who = m.Groups[1].Value;
+									callback(pm, PrivateMessageError.PMRecepientFull, errorString, who, cookie);
+									return false;
+								}
+								regex = @"The text that you have entered is too long \((\d*) characters\). Please shorten it to (\d*) characters long.";
+								m = Regex.Match(errorString, regex);
+								if (m.Success)
+								{
+									String length = m.Groups[1].Value;
+									Int32 max = Int32.Parse(m.Groups[2].Value);
+									callback(pm, PrivateMessageError.PMTooLongDidntSend, errorString, max, cookie);
+									return false;
+								}
+								regex = @"Too many recipients - you are attempting to send to (\d*) users but you are only allowed to send to (\d*) users.";
+								m = Regex.Match(errorString, regex);
+								if (m.Success)
+								{
+									String attempt = m.Groups[1].Value;
+									Int32 max = Int32.Parse(m.Groups[2].Value);
+									callback(pm, PrivateMessageError.PMTooManyRecepients, errorString, max, cookie);
+									return false;
+								}
+
+							}
+							break;
+					}
+				}
+				callback(pm, PrivateMessageError.PMUnknownError, errorString, null, cookie);
+				return false;
+			}
+			callback(pm, PrivateMessageError.PMSuccess, String.Empty, null, cookie);
+			return true;
+		}
+
+		internal Boolean SendPM(IEnumerable<string> To, IEnumerable<string> bcc, string title, string content, bool receipt)
+		{
+			ConnectionSettings cs = _connectionSettings.Clone();
+			String securityToken = GetSecurityToken(cs);
+			/*				<input type="hidden" name="fromquickreply" value="1" />
+				<input type="hidden" name="s" value="" />
+				<input type="hidden" name="securitytoken" value="1338251187-cd0e85748ac090ba7cb5281011b49332c0ba455a" />
+				<input type="hidden" name="do" value="postreply" />
+				<input type="hidden" name="t" value="1204368" id="qr_threadid" />
+				<input type="hidden" name="p" value="who cares" id="qr_postid" />
+				<input type="hidden" name="specifiedpost" value="0" id="qr_specifiedpost" />
+				<input type="hidden" name="parseurl" value="1" />
+				<input type="hidden" name="loggedinuser" value="198669" />
+			 * 
+			 * openclose=1
+			 * open:
+			 * POST http://forumserver.twoplustwo.com/postings.php?t=1204368&pollid= 
+			 * do=openclosethread&s=&securitytoken=1338253787-f7a244e5e823e6d88002169f4f314e97febf4dce&t=1204368&pollid=
+			 * close:
+			 * POST /postings.php?t=1204368&pollid= HTTP/1.1
+			 * do=openclosethread&s=&securitytoken=1338253981-5657f92aed9e901b4292a60cab0e9efaac4be1fe&t=1204368&pollid=
+*/
+
+			StringBuilder msg = new StringBuilder();
+
+			String sTo = String.Empty;
+			if (To != null)
+			{
+				sTo = String.Join("; ", To);
+			}
+			String sBCC = String.Empty;
+			if (bcc != null)
+			{
+				sBCC = String.Join("; ", bcc);
+			}
+			msg.AppendFormat("{0}={1}&", "recipients", sTo);
+			msg.AppendFormat("{0}={1}&", "bccrecipients", sBCC);
+			if (title != String.Empty)
+			{
+				msg.AppendFormat("{0}={1}&", "title", HttpUtility.UrlEncode(title));
+			}
+			content = content.Replace("\r\n", "\n");
+			msg.AppendFormat("{0}={1}&", "message", HttpUtility.UrlEncode(content));
+			msg.AppendFormat("{0}={1}&", "wysiwyg", "0");
+			msg.AppendFormat("{0}={1}&", "iconid", "0");
+			msg.AppendFormat("{0}={1}&", "s", "");
+			msg.AppendFormat("{0}={1}&", "securitytoken", securityToken);
+			msg.AppendFormat("{0}={1}&", "do", "insertpm");
+			msg.AppendFormat("{0}={1}&", "pmid", "");
+			msg.AppendFormat("{0}={1}&", "forward", "");
+			msg.AppendFormat("{0}={1}&", "sbutton", "Submit Button");
+			msg.AppendFormat("{0}={1}&", "receipt", "1");
+			msg.AppendFormat("{0}={1}&", "savecopy", "1");
+			msg.AppendFormat("{0}={1}&", "parseurl", "1");
+
+			cs.Url = String.Format("{0}private.php?do=insertpm&pmid=", _outer.ForumURL);
+			cs.Data = msg.ToString();
+			//Trace.TraceInformation("Posting: " + cs.Data);
+			String resp = HtmlHelper.PostToUrl(cs);
+			if (resp == null)
+			{
+				// failure
+				return false;
+			}
+
+			return true;
+		}
+		internal bool DeleteThread(int postId)
+		{
+			ConnectionSettings cs = _connectionSettings.Clone();
 			String securityToken = GetSecurityToken(cs);
 			StringBuilder msg = new StringBuilder();
 
-            msg.AppendFormat("{0}={1}&", "do", "deletepost");
-            msg.AppendFormat("{0}={1}&", "s", "");
-            msg.AppendFormat("{0}={1}&", "securitytoken", securityToken);
-            msg.AppendFormat("{0}={1}&", "postid", postId.ToString());
-            msg.AppendFormat("{0}={1}&", "deletepost", "delete");
-            msg.AppendFormat("{0}={1}&", "reason", "");
-            cs.Url = String.Format("{0}editpost.php", _outer.ForumURL);
-            cs.Data = msg.ToString();
-            //Trace.TraceInformation("Posting: " + cs.Data);
-            String resp = HtmlHelper.PostToUrl(cs);
-            if (resp == null)
-            {
-                // failure
-                return false;
-            }
-            return true;
-        }
-        internal String NewThread(Int32 forum, String title, String body, Int32 icon, Boolean lockit)
-        {
-            String rc = String.Empty;
-            ConnectionSettings cs = _connectionSettings.Clone();
+			msg.AppendFormat("{0}={1}&", "do", "deletepost");
+			msg.AppendFormat("{0}={1}&", "s", "");
+			msg.AppendFormat("{0}={1}&", "securitytoken", securityToken);
+			msg.AppendFormat("{0}={1}&", "postid", postId.ToString());
+			msg.AppendFormat("{0}={1}&", "deletepost", "delete");
+			msg.AppendFormat("{0}={1}&", "reason", "");
+			cs.Url = String.Format("{0}editpost.php", _outer.ForumURL);
+			cs.Data = msg.ToString();
+			//Trace.TraceInformation("Posting: " + cs.Data);
+			String resp = HtmlHelper.PostToUrl(cs);
+			if (resp == null)
+			{
+				// failure
+				return false;
+			}
+			return true;
+		}
+		internal String NewThread(Int32 forum, String title, String body, Int32 icon, Boolean lockit)
+		{
+			String rc = String.Empty;
+			ConnectionSettings cs = _connectionSettings.Clone();
 			String securityToken = GetSecurityToken(cs);
-            StringBuilder msg = new StringBuilder();
+			StringBuilder msg = new StringBuilder();
 
-            msg.AppendFormat("{0}={1}&", "subject", title);
-            msg.AppendFormat("{0}={1}&", "message", body);
-            msg.AppendFormat("{0}={1}&", "wysiwyg", "0");
-            msg.AppendFormat("{0}={1}&", "iconid", icon.ToString());
-            msg.AppendFormat("{0}={1}&", "s", "");
-            msg.AppendFormat("{0}={1}&", "securitytoken", securityToken);
-            msg.AppendFormat("{0}={1}&", "f", forum.ToString());
-            msg.AppendFormat("{0}={1}&", "do", "postthread");
-            msg.AppendFormat("{0}={1}&", "posthash", String.Empty);
-            msg.AppendFormat("{0}={1}&", "poststarttime", String.Empty);
-            if (lockit)
-            {
-                msg.AppendFormat("{0}={1}&", "openclose", "1");
-            }
-            msg.AppendFormat("{0}={1}", "loggedinuser", GetOurUserId(cs));
-            msg.AppendFormat("{0}={1}&", "sbutton", "Submit New Thread");
-            msg.AppendFormat("{0}={1}&", "parseurl", "1");
-            msg.AppendFormat("{0}={1}&", "emailupdate", "0");
-            msg.AppendFormat("{0}={1}&", "polloptions", "4");
-            cs.Url = String.Format("{0}newthread.php?do=postthread&f=", _outer.ForumURL, forum);
-            cs.Data = msg.ToString();
-            //Trace.TraceInformation("Posting: " + cs.Data);
-            String resp = HtmlHelper.PostToUrl(cs);
-            if (resp == null)
-            {
-                // failure
-                return rc;
-            }
-            var html = new HtmlAgilityPack.HtmlDocument();
-            html.LoadHtml(resp);
-            HtmlAgilityPack.HtmlNode root = html.DocumentNode;
-            HtmlAgilityPack.HtmlNode link = root.SelectSingleNode("html/head/link[@rel='canonical']");
-            if (link != null)
-            {
-                String url = link.Attributes["href"].Value;
-                rc = url;
-            }
-            return rc;
-        }
-        Boolean DoMakePost(Int32 threadId, String title, String content, Boolean lockit, Int32 icon)
+			msg.AppendFormat("{0}={1}&", "subject", title);
+			msg.AppendFormat("{0}={1}&", "message", body);
+			msg.AppendFormat("{0}={1}&", "wysiwyg", "0");
+			msg.AppendFormat("{0}={1}&", "iconid", icon.ToString());
+			msg.AppendFormat("{0}={1}&", "s", "");
+			msg.AppendFormat("{0}={1}&", "securitytoken", securityToken);
+			msg.AppendFormat("{0}={1}&", "f", forum.ToString());
+			msg.AppendFormat("{0}={1}&", "do", "postthread");
+			msg.AppendFormat("{0}={1}&", "posthash", String.Empty);
+			msg.AppendFormat("{0}={1}&", "poststarttime", String.Empty);
+			if (lockit)
+			{
+				msg.AppendFormat("{0}={1}&", "openclose", "1");
+			}
+			msg.AppendFormat("{0}={1}", "loggedinuser", GetOurUserId(cs));
+			msg.AppendFormat("{0}={1}&", "sbutton", "Submit New Thread");
+			msg.AppendFormat("{0}={1}&", "parseurl", "1");
+			msg.AppendFormat("{0}={1}&", "emailupdate", "0");
+			msg.AppendFormat("{0}={1}&", "polloptions", "4");
+			cs.Url = String.Format("{0}newthread.php?do=postthread&f=", _outer.ForumURL, forum);
+			cs.Data = msg.ToString();
+			//Trace.TraceInformation("Posting: " + cs.Data);
+			String resp = HtmlHelper.PostToUrl(cs);
+			if (resp == null)
+			{
+				// failure
+				return rc;
+			}
+			var html = new HtmlAgilityPack.HtmlDocument();
+			html.LoadHtml(resp);
+			HtmlAgilityPack.HtmlNode root = html.DocumentNode;
+			HtmlAgilityPack.HtmlNode link = root.SelectSingleNode("html/head/link[@rel='canonical']");
+			if (link != null)
+			{
+				String url = link.Attributes["href"].Value;
+				rc = url;
+			}
+			return rc;
+		}
+		Boolean DoMakePost(Int32 threadId, String title, String content, Boolean lockit, Int32 icon)
 		{
 			/* headers
 				POST /newreply.php?do=postreply&t=1198532 HTTP/1.1
@@ -814,21 +814,21 @@ loggedinuser 81788
 			{
 				msg.AppendFormat("{0}={1}&", "title", HttpUtility.UrlEncodeUnicode(title));
 			}
-            msg.AppendFormat("{0}={1}&", "ajax", "1");
-            //msg.AppendFormat("{0}={1}&", "ajax_lastpost", "1"); // Need real last post number or else all posts are returned.
-            msg.AppendFormat("{0}={1}&", "message_backup", HttpUtility.UrlEncodeUnicode(content));
-            msg.AppendFormat("{0}={1}&", "message", HttpUtility.UrlEncodeUnicode(content));
-            msg.AppendFormat("{0}={1}&", "wysiwyg", "0");
+			msg.AppendFormat("{0}={1}&", "ajax", "1");
+			//msg.AppendFormat("{0}={1}&", "ajax_lastpost", "1"); // Need real last post number or else all posts are returned.
+			msg.AppendFormat("{0}={1}&", "message_backup", HttpUtility.UrlEncodeUnicode(content));
+			msg.AppendFormat("{0}={1}&", "message", HttpUtility.UrlEncodeUnicode(content));
+			msg.AppendFormat("{0}={1}&", "wysiwyg", "0");
 			if (icon != 0)
 			{
 				msg.AppendFormat("{0}={1}&", "iconid", icon.ToString());
 			}
 			msg.AppendFormat("{0}={1}&", "s", "");
-            msg.AppendFormat("{0}={1}&", "do", "postreply");
+			msg.AppendFormat("{0}={1}&", "do", "postreply");
 			msg.AppendFormat("{0}={1}&", "t", threadId.ToString());
 			msg.AppendFormat("{0}={1}&", "p", "");
-            msg.AppendFormat("{0}={1}&", "specifiedpost", "0");
-            msg.AppendFormat("{0}={1}&", "parseurl", "1");
+			msg.AppendFormat("{0}={1}&", "specifiedpost", "0");
+			msg.AppendFormat("{0}={1}&", "parseurl", "1");
 			msg.AppendFormat("{0}={1}&", "posthash", "invalid posthash");
 			msg.AppendFormat("{0}={1}&", "poststarttime", "0");
 			msg.AppendFormat("{0}={1}&", "multiquoteempty", "");
@@ -843,7 +843,7 @@ loggedinuser 81788
 			msg.AppendFormat("{0}={1}", "loggedinuser", GetOurUserId(cs));
 			cs.Url = String.Format("{0}newreply.php?do=postreply&t={1}", ForumURL, threadId);
 			cs.Data = msg.ToString();
-            cs.Headers.Add("X-Requested-With", "XMLHttpRequest");
+			cs.Headers.Add("X-Requested-With", "XMLHttpRequest");
 			//Trace.TraceInformation("Posting: " + cs.Data);
 			String resp = HtmlHelper.PostToUrl(cs);
 			if (resp == null)
@@ -855,11 +855,11 @@ loggedinuser 81788
 			return true;
 		}
 
-        protected virtual String GetOurUserId(ConnectionSettings cs)
-        {
-            String rc = cs.CC.GetCookies(new System.Uri(ForumURL))["bbuserid"].Value;
-            return rc;
-        }
+		protected virtual String GetOurUserId(ConnectionSettings cs)
+		{
+			String rc = cs.CC.GetCookies(new System.Uri(ForumURL))["bbuserid"].Value;
+			return rc;
+		}
 
 
 		internal void GetPostersLike(String name, Action<String, IEnumerable<Poster>> callback)
@@ -867,101 +867,101 @@ loggedinuser 81788
 			Event<String, Action<String, IEnumerable<Poster>>> evt = new Event<string, Action<String, IEnumerable<Poster>>>("GetPostersLike", name, callback);
 			PostEvent(evt);
 		}
-        internal void ReadPM(Int32 id, object cookie, PMReadMessageResult callback)
-        {
-            // http://forumserver.twoplustwo.com/private.php?do=showpm&pmid=9971981
-            ConnectionSettings cs = _connectionSettings.Clone();
-            String securityToken = GetSecurityToken(cs);
-            cs.Url = String.Format("{0}/private.php?do=showpm&pmid={1}", ForumURL, id);
-            StringBuilder msg = new StringBuilder();
-            cs.Data = msg.ToString();
-            String resp = HtmlHelper.GetUrlResponseString(cs);
-            if (resp == null)
-            {
-                // failure
-                return;
-            }
-            var html = new HtmlAgilityPack.HtmlDocument();
-            html.LoadHtml(resp);
-            HtmlAgilityPack.HtmlNode root = html.DocumentNode;
-            ThreadReader.RemoveComments(root);
-            HtmlAgilityPack.HtmlNode timeNode = root.SelectNodes("//div[@class='smallfont'][@align='center']").Last();
-            DateTimeOffset serverTime = DateTime.Now;
-            if (timeNode != null)
-            {
-                String timeText = timeNode.InnerText;
-                serverTime = Utils.Misc.ParsePageTime(timeText, DateTime.UtcNow);
-            }
-            List<String> sTo = new List<String>();
-            var nodesTo = root.SelectNodes("//table[@class='tborder']/tr[2]/td[@class='alt1']/span");
-            if (nodesTo != null)
-            {
-                foreach (var to in nodesTo)
-                {
-                    String recepient = to.InnerText;
-                    sTo.Add(recepient);
-                }
-            }
-            var nodePM = root.SelectSingleNode("//table[@id='post']");
-            var nodeTime = nodePM.SelectSingleNode("tr[1]/td[1]").InnerText.Trim();
-            DateTimeOffset ts = Misc.ParseItemTimeEnglish(serverTime, nodeTime);
-            var nodeSender = nodePM.SelectSingleNode("tr[2]/td[1]/div[1]/a").InnerText.Trim();
-            var nodeTitle = nodePM.SelectSingleNode("tr[2]/td[2]/div[1]").InnerText.Trim();
-            var nodeBody = nodePM.SelectSingleNode("tr[2]/td[2]/div[2]");
-            ThreadReader.RemoveQuotes(nodeBody);
-            var body = nodeBody.InnerText.Trim();
-            PrivateMessage pm = new PrivateMessage(nodeSender, sTo, nodeTitle, body, ts.UtcDateTime, id);
-            callback(id, pm, cookie);
-        }
+		internal void ReadPM(Int32 id, object cookie, PMReadMessageResult callback)
+		{
+			// http://forumserver.twoplustwo.com/private.php?do=showpm&pmid=9971981
+			ConnectionSettings cs = _connectionSettings.Clone();
+			String securityToken = GetSecurityToken(cs);
+			cs.Url = String.Format("{0}/private.php?do=showpm&pmid={1}", ForumURL, id);
+			StringBuilder msg = new StringBuilder();
+			cs.Data = msg.ToString();
+			String resp = HtmlHelper.GetUrlResponseString(cs);
+			if (resp == null)
+			{
+				// failure
+				return;
+			}
+			var html = new HtmlAgilityPack.HtmlDocument();
+			html.LoadHtml(resp);
+			HtmlAgilityPack.HtmlNode root = html.DocumentNode;
+			ThreadReader.RemoveComments(root);
+			HtmlAgilityPack.HtmlNode timeNode = root.SelectNodes("//div[@class='smallfont'][@align='center']").Last();
+			DateTimeOffset serverTime = DateTime.Now;
+			if (timeNode != null)
+			{
+				String timeText = timeNode.InnerText;
+				serverTime = Utils.Misc.ParsePageTime(timeText, DateTime.UtcNow);
+			}
+			List<String> sTo = new List<String>();
+			var nodesTo = root.SelectNodes("//table[@class='tborder']/tr[2]/td[@class='alt1']/span");
+			if (nodesTo != null)
+			{
+				foreach (var to in nodesTo)
+				{
+					String recepient = to.InnerText;
+					sTo.Add(recepient);
+				}
+			}
+			var nodePM = root.SelectSingleNode("//table[@id='post']");
+			var nodeTime = nodePM.SelectSingleNode("tr[1]/td[1]").InnerText.Trim();
+			DateTimeOffset ts = Misc.ParseItemTimeEnglish(serverTime, nodeTime);
+			var nodeSender = nodePM.SelectSingleNode("tr[2]/td[1]/div[1]/a").InnerText.Trim();
+			var nodeTitle = nodePM.SelectSingleNode("tr[2]/td[2]/div[1]").InnerText.Trim();
+			var nodeBody = nodePM.SelectSingleNode("tr[2]/td[2]/div[2]");
+			ThreadReader.RemoveQuotes(nodeBody);
+			var body = nodeBody.InnerText.Trim();
+			PrivateMessage pm = new PrivateMessage(nodeSender, sTo, nodeTitle, body, ts.UtcDateTime, id);
+			callback(id, pm, cookie);
+		}
 
-        internal bool CheckPMs(int folder, int page, object cookie, PMReadPageResult callback)
-        {
-            /*
-                http://forumserver.twoplustwo.com/private.php?folderid=0&pp=50&sort=date&page=1
-            */
-            ConnectionSettings cs = _connectionSettings.Clone();
-            String securityToken = GetSecurityToken(cs);
-            cs.Url = String.Format("{0}/private.php?folderid={1}&pp=50&sort=date&page={2}", ForumURL, folder, page);
-            StringBuilder msg = new StringBuilder();
-            cs.Data = msg.ToString();
-            String resp = HtmlHelper.GetUrlResponseString(cs);
-            if (resp == null)
-            {
-                // failure
-                return false;
-            }
-            var html = new HtmlAgilityPack.HtmlDocument();
-            html.LoadHtml(resp);
-            HtmlAgilityPack.HtmlNode root = html.DocumentNode;
-            HtmlAgilityPack.HtmlNode timeNode = root.SelectNodes("//div[@class='smallfont'][@align='center']").Last();
-            DateTimeOffset serverTime = DateTime.Now;
-            if (timeNode != null)
-            {
-                String timeText = timeNode.InnerText;
-                serverTime = Utils.Misc.ParsePageTime(timeText, DateTime.UtcNow);
-            }
-            Int32 foldercount = 0;
-            String folderName = String.Empty;
-            Int32 totalmessages = 0;
-            Int32 totalcapacity = 0;
-            Int32 unreadCount = 0;
+		internal bool CheckPMs(int folder, int page, object cookie, PMReadPageResult callback)
+		{
+			/*
+				http://forumserver.twoplustwo.com/private.php?folderid=0&pp=50&sort=date&page=1
+			*/
+			ConnectionSettings cs = _connectionSettings.Clone();
+			String securityToken = GetSecurityToken(cs);
+			cs.Url = String.Format("{0}/private.php?folderid={1}&pp=50&sort=date&page={2}", ForumURL, folder, page);
+			StringBuilder msg = new StringBuilder();
+			cs.Data = msg.ToString();
+			String resp = HtmlHelper.GetUrlResponseString(cs);
+			if (resp == null)
+			{
+				// failure
+				return false;
+			}
+			var html = new HtmlAgilityPack.HtmlDocument();
+			html.LoadHtml(resp);
+			HtmlAgilityPack.HtmlNode root = html.DocumentNode;
+			HtmlAgilityPack.HtmlNode timeNode = root.SelectNodes("//div[@class='smallfont'][@align='center']").Last();
+			DateTimeOffset serverTime = DateTime.Now;
+			if (timeNode != null)
+			{
+				String timeText = timeNode.InnerText;
+				serverTime = Utils.Misc.ParsePageTime(timeText, DateTime.UtcNow);
+			}
+			Int32 foldercount = 0;
+			String folderName = String.Empty;
+			Int32 totalmessages = 0;
+			Int32 totalcapacity = 0;
+			Int32 unreadCount = 0;
 
-            var pmstatus = root.SelectSingleNode("//div[@class='smallfont']/div").InnerText;
-            Match m = Regex.Match(pmstatus, @"Private Messages: Unread (\d*)");
-            if (m.Success)
-            {
-                unreadCount = Int32.Parse(m.Groups[1].Value);
-            }
+			var pmstatus = root.SelectSingleNode("//div[@class='smallfont']/div").InnerText;
+			Match m = Regex.Match(pmstatus, @"Private Messages: Unread (\d*)");
+			if (m.Success)
+			{
+				unreadCount = Int32.Parse(m.Groups[1].Value);
+			}
 
-            HtmlAgilityPack.HtmlNode node = root.SelectSingleNode("//tbody[@id='collapseobj_pmlistinfo']//fieldset");
-            m = Regex.Match(node.InnerText, @"(.*) contains (\d*) messages.You have (\d{1,3}(?:(?:,\d{3})+|\d*)) messages stored, of a total (\d{1,3}(?:(?:,\d{3})+|\d*))");
-            if (m.Success)
-            {
-                folderName = m.Groups[1].Value.Trim();
-                foldercount = Int32.Parse(m.Groups[2].Value, NumberStyles.AllowThousands);
-                totalmessages = Int32.Parse(m.Groups[3].Value, NumberStyles.AllowThousands);
-                totalcapacity = Int32.Parse(m.Groups[4].Value, NumberStyles.AllowThousands);
-            }
+			HtmlAgilityPack.HtmlNode node = root.SelectSingleNode("//tbody[@id='collapseobj_pmlistinfo']//fieldset");
+			m = Regex.Match(node.InnerText, @"(.*) contains (\d*) messages.You have (\d{1,3}(?:(?:,\d{3})+|\d*)) messages stored, of a total (\d{1,3}(?:(?:,\d{3})+|\d*))");
+			if (m.Success)
+			{
+				folderName = m.Groups[1].Value.Trim();
+				foldercount = Int32.Parse(m.Groups[2].Value, NumberStyles.AllowThousands);
+				totalmessages = Int32.Parse(m.Groups[3].Value, NumberStyles.AllowThousands);
+				totalcapacity = Int32.Parse(m.Groups[4].Value, NumberStyles.AllowThousands);
+			}
 			List<PMHeader> headers = new List<PMHeader>();
 			var nodes = root.SelectNodes("//tbody[contains(@id, 'collapseobj_pmf')]/tr");
 			if (nodes != null)
@@ -979,7 +979,15 @@ loggedinuser 81788
 					Int32 id = Int32.Parse(mid);
 					String timestamp = pm.SelectSingleNode("div[1]/div[1]").InnerText;
 					DateTimeOffset ts = Misc.ParseItemTimeEnglish(serverTime, timestamp);
-					var sender = pm.SelectSingleNode("div[1]//span[@style='cursor:pointer']").InnerText;
+					var senderNode = pm.SelectSingleNode("div[1]//span[@style='cursor:pointer']");
+					var sender = senderNode.InnerText;
+					Int32 senderId = -1;
+					var onclick = senderNode.Attributes["onclick"].Value;
+					var split = onclick.Split(new char[] {'/'}, StringSplitOptions.RemoveEmptyEntries);
+					if (split.Count() >= 2)
+					{
+						senderId = Int32.Parse(split[1]);
+					}
 					var title = pm.SelectSingleNode("div[1]//a[@rel='nofollow']").InnerText;
 					var previewNode = pm.SelectSingleNode("div[2]");
 					String preview = String.Empty;
@@ -987,14 +995,14 @@ loggedinuser 81788
 					{
 						preview = previewNode.InnerText.Trim();
 					}
-					PMHeader header = new PMHeader(id, ts, sender, title, preview, unread);
+					PMHeader header = new PMHeader(id, ts, sender, senderId, title, preview, unread);
 					headers.Add(header);
 				}
 			}
-            PMFolderPage folderpage = new PMFolderPage(totalcapacity, totalmessages, folderName, folder, foldercount, unreadCount, page, headers);
-            callback(folderpage, String.Empty, cookie);
-            return true;
-        }
+			PMFolderPage folderpage = new PMFolderPage(totalcapacity, totalmessages, folderName, folder, foldercount, unreadCount, page, headers);
+			callback(folderpage, String.Empty, cookie);
+			return true;
+		}
 
 		void DoGetPostersLike(string name, Action<String, IEnumerable<Poster> > callback)
 		{
@@ -1021,8 +1029,8 @@ fragment	name
 */
 			StringBuilder msg = new StringBuilder();
 			msg.AppendFormat("{0}={1}&", "securitytoken", securityToken);
-            msg.AppendFormat("{0}={1}&", "do", "usersearch");
-            msg.AppendFormat("{0}={1}&", "fragment", HttpUtility.UrlEncode(name, Encoding.GetEncoding(1252)));
+			msg.AppendFormat("{0}={1}&", "do", "usersearch");
+			msg.AppendFormat("{0}={1}&", "fragment", HttpUtility.UrlEncode(name, Encoding.GetEncoding(1252)));
 			cs.Url = String.Format("{0}/ajax.php?do=usersearch", ForumURL);
 			cs.Data = msg.ToString();
 			//Trace.TraceInformation("Posting: " + cs.Data);
@@ -1077,27 +1085,27 @@ fragment	name
 			callback(name, posters);
 		}
 
-        public virtual string ForumLobby
-        {
-            get;
-            private set;
-        }
+		public virtual string ForumLobby
+		{
+			get;
+			private set;
+		}
 
-        public string ForumHost { 
-            get; 
-            private set; 
-        }
+		public string ForumHost { 
+			get; 
+			private set; 
+		}
 
-        public string ForumURL { 
-            get
-            {
-                String rc = String.Format("http://{0}/", ForumHost);
-                return rc;
-            }
-        }
+		public string ForumURL { 
+			get
+			{
+				String rc = String.Format("http://{0}/", ForumHost);
+				return rc;
+			}
+		}
 
 
-    }
+	}
 	public class VBulletinForum
 	{
 		#region members
@@ -1108,20 +1116,20 @@ fragment	name
 		public VBulletinForum(Action<Action> synchronousInvoker, String forum, String vbVersion, String lobby)
 		{
 			_synchronousInvoker = synchronousInvoker;
-            switch (vbVersion)
-            {
-                case "4.2.0":
-                    {
-                        _inner = new VBulletin_4_2_0(this, new StateMachineHost("ForumHost"), forum, lobby, synchronousInvoker);
-                    }
-                    break;
+			switch (vbVersion)
+			{
+				case "4.2.0":
+					{
+						_inner = new VBulletin_4_2_0(this, new StateMachineHost("ForumHost"), forum, lobby, synchronousInvoker);
+					}
+					break;
 
-                default:
-                    {
-                        _inner = new VBulletin_3_8_7(this, new StateMachineHost("ForumHost"), forum, lobby, synchronousInvoker);
-                    }
-                    break;
-            }
+				default:
+					{
+						_inner = new VBulletin_3_8_7(this, new StateMachineHost("ForumHost"), forum, lobby, synchronousInvoker);
+					}
+					break;
+			}
 		}
 		#endregion
 		#region events
@@ -1158,13 +1166,13 @@ fragment	name
 				return _inner.PostsPerPage;
 			}
 		}
-        public String Username
-        {
-            get
-            {
-                return _inner.Username;
-            }
-        }
+		public String Username
+		{
+			get
+			{
+				return _inner.Username;
+			}
+		}
 		#region public methods
 		public ThreadReader Reader()
 		{
@@ -1184,26 +1192,26 @@ fragment	name
 		{
 			_inner.Logout();
 		}
-        public Boolean CheckPMs(Int32 folder, Int32 page, object cookie, PMReadPageResult callback)
-        {
-            Boolean rc = _inner.CheckPMs(folder, page, cookie, callback);
-            return rc;
-        }
-        public void ReadPM(Int32 id, object cookie, PMReadMessageResult callback)
-        {
-            _inner.ReadPM(id, cookie, callback);
-        }
-        [Obsolete]
+		public Boolean CheckPMs(Int32 folder, Int32 page, object cookie, PMReadPageResult callback)
+		{
+			Boolean rc = _inner.CheckPMs(folder, page, cookie, callback);
+			return rc;
+		}
+		public void ReadPM(Int32 id, object cookie, PMReadMessageResult callback)
+		{
+			_inner.ReadPM(id, cookie, callback);
+		}
+		[Obsolete]
 		public Boolean SendPM(IEnumerable<String> To, IEnumerable<String> bcc, String title, String content, Boolean receipt = true)
 		{
-            Boolean rc = _inner.SendPM(To, bcc, title, content, receipt);
-            return rc;
+			Boolean rc = _inner.SendPM(To, bcc, title, content, receipt);
+			return rc;
 		}
-        public Boolean SendPM(PrivateMessage pm, PMResult callback = null, Boolean receipt = true, object cookie = null)
-        {
-            Boolean rc = _inner.SendPM(pm, callback, receipt, cookie);
-            return rc;
-        }
+		public Boolean SendPM(PrivateMessage pm, PMResult callback = null, Boolean receipt = true, object cookie = null)
+		{
+			Boolean rc = _inner.SendPM(pm, callback, receipt, cookie);
+			return rc;
+		}
 		public Boolean LockThread(Int32 thread, Boolean lockIt)
 		{
 			Boolean rc = _inner.LockThread(thread, lockIt);
@@ -1214,21 +1222,21 @@ fragment	name
 			Boolean rc = _inner.MakePost(threadId, title, message, LockThread, PostIcon);
 			return rc;
 		}
-        public Boolean DeleteThread(Int32 postId)
-        {
-            Boolean rc = _inner.DeleteThread(postId);
-            return rc;
-        }
-        public String NewThread(Int32 forum, String title, String body, Int32 icon, Boolean lockit)
-        {
-            String rc = _inner.NewThread(forum, title, body, icon, lockit);
-            return rc;
-        }
-        public Boolean CanUserReceivePM(String name)
-        {
-            Boolean rc = _inner.CanUserReceivePM(name);
-            return rc;
-        }
+		public Boolean DeleteThread(Int32 postId)
+		{
+			Boolean rc = _inner.DeleteThread(postId);
+			return rc;
+		}
+		public String NewThread(Int32 forum, String title, String body, Int32 icon, Boolean lockit)
+		{
+			String rc = _inner.NewThread(forum, title, body, icon, lockit);
+			return rc;
+		}
+		public Boolean CanUserReceivePM(String name)
+		{
+			Boolean rc = _inner.CanUserReceivePM(name);
+			return rc;
+		}
 		public void GetPostersLike(string name, Action<String, IEnumerable<Poster>> callback)
 		{
 			_inner.GetPostersLike(name, callback);
@@ -1249,15 +1257,15 @@ fragment	name
 			string tid = url.Substring(ixTidStart, url.Length - (ixTidStart + 1));
 			Int32 threadId = 0;
 			Int32.TryParse(tid, out threadId);
-            if (0 == threadId)
-            {
-                // Estonia?
-                int ixTidEnd = url.IndexOf('-');
-                tid = url.Substring(0, ixTidEnd);
-                ixTidStart = tid.LastIndexOf('/') + 1;
-                tid = tid.Substring(ixTidStart, ixTidEnd - ixTidStart);
-                Int32.TryParse(tid, out threadId);
-            }
+			if (0 == threadId)
+			{
+				// Estonia?
+				int ixTidEnd = url.IndexOf('-');
+				tid = url.Substring(0, ixTidEnd);
+				ixTidStart = tid.LastIndexOf('/') + 1;
+				tid = tid.Substring(ixTidStart, ixTidEnd - ixTidStart);
+				Int32.TryParse(tid, out threadId);
+			}
 			return threadId;
 		}
 		#endregion
@@ -1270,25 +1278,25 @@ fragment	name
 		{
 			get
 			{
-                String rc = _inner.ForumURL;
+				String rc = _inner.ForumURL;
 				return rc;
 			}
 		}
-        public String ForumLobby
-        {
-            get
-            {
-                String rc = _inner.ForumLobby;
-                return rc;
-            }
-        }
+		public String ForumLobby
+		{
+			get
+			{
+				String rc = _inner.ForumLobby;
+				return rc;
+			}
+		}
 		public String ForumHost
 		{
 			get
-            {
-                String rc = _inner.ForumHost;
-                return rc;
-            }
+			{
+				String rc = _inner.ForumHost;
+				return rc;
+			}
 		}
 	}
 	public class NewStatusEventArgs : EventArgs

@@ -610,14 +610,17 @@ roleid = @p2
 						}
 					}
 				}
-				using (SQLiteCommand cmd = new SQLiteCommand(sqlUpdate, dbRead))
+				if (roleId != -1)
 				{
-					cmd.Parameters.Add(new SQLiteParameter("@p1", newPosterId));
-					cmd.Parameters.Add(new SQLiteParameter("@p2", roleId));
-					int rows = cmd.ExecuteNonQuery();
-					if (rows != 1)
+					using (SQLiteCommand cmd = new SQLiteCommand(sqlUpdate, dbRead))
 					{
-						Trace.TraceError("*** Sub UPDATE failed. '{0}' for '{1}'. query: {2}\n", oldName, newName, cmd.CommandText);
+						cmd.Parameters.Add(new SQLiteParameter("@p1", newPosterId));
+						cmd.Parameters.Add(new SQLiteParameter("@p2", roleId));
+						int rows = cmd.ExecuteNonQuery();
+						if (rows != 1)
+						{
+							Trace.TraceError("*** Sub UPDATE failed. '{0}' for '{1}'. query: {2}\n", oldName, newName, cmd.CommandText);
+						}
 					}
 				}
 			}

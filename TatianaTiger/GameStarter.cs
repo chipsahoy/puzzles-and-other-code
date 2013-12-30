@@ -13,6 +13,12 @@ namespace TatianaTiger
 {
 	class GameStarter : StateMachine
 	{
+		#region consts
+		readonly String WOLF = "Wolf";
+		readonly String VILLAGE = "Village";
+		readonly String VANILLA = "vanilla";
+		readonly String SEER = "seer";
+		#endregion
 		#region fields
 		VBulletinForum _forum;
 		private POG.Werewolf.IPogDb _db;
@@ -26,10 +32,10 @@ namespace TatianaTiger
 		List<String> _validNames = new List<string>();
 		List<String> _canPM = new List<string>();
 		List<String> _PMSent = new List<string>();
-		List<Player> _players = new List<Player>();
-		List<String> _peeks = new List<string>();
-		List<String> _subbedPlayers;
-		String _peek;
+		List<Player> _playerRoles = new List<Player>();
+		List<Player> _peeks = new List<Player>();
+		Dictionary<String, Player> _playerByName = new Dictionary<string,Player>();
+		Player _peek;
 		String _killMessage;
 		DateTime _nextNight;
 		int _d1Duration;
@@ -186,32 +192,37 @@ namespace TatianaTiger
 						for (i = 1; i < 3; i++)
 						{
 							String wolf = Misc.RandomItemFromList(_canPM);
-							p = new Player(i, false, wolf, "Wolf", "vanilla");
-							_players.Add(p);
+							p = new Player(i, false, wolf, WOLF, VANILLA);
+							_playerRoles.Add(p);
 							_canPM.Remove(wolf);
 						}
 						String seer = Misc.RandomItemFromList(_canPM);
-						p = new Player(i++, false, seer, "Village", "seer");
-						_players.Add(p);
+						p = new Player(i++, false, seer, VILLAGE, SEER);
+						_playerRoles.Add(p);
 						_canPM.Remove(seer);
-						_peek = Misc.RandomItemFromList(_canPM);
-						_peeks.Clear();
-						_peeks.Add(_peek);
 						foreach (String vanilla in _canPM)
 						{
-							p = new Player(i++, false, vanilla, "Village", "vanilla");
-							_players.Add(p);
+							p = new Player(i++, false, vanilla, VILLAGE, VANILLA);
+							_playerRoles.Add(p);
 						}
 						_canPM.Clear();
+						foreach (var pr in _playerRoles)
+						{
+							_playerByName[pr.Name] = pr;
+
+						}
+						Int32 peek = Misc.RandomItemFromRange(4, 10);
+						_peeks.Clear();
+						_peeks.Add(LookupPlayer(peek));
 						PostEvent(new Event("SendPMs"));
 					}
 					break;
 
 				case "SendPMs":
 					{
-						List<String> seers = (from p in _players where (p.Role == "seer") select p.Name).ToList();
-						List<String> vanillas = (from p in _players where (p.Team == "Village") && (p.Role == "vanilla") select p.Name).ToList();
-						List<string> wolves = (from p in _players where p.Team == "Wolf" select p.Name).ToList();
+						List<String> seers = (from p in _playerRoles where (p.Role == SEER) select p.Name).ToList();
+						List<String> vanillas = (from p in _playerRoles where (p.Team == VILLAGE) && (p.Role == VANILLA) select p.Name).ToList();
+						List<string> wolves = (from p in _playerRoles where p.Team == WOLF select p.Name).ToList();
 
 						String seerMsg = MakeSeerPmMessage();
 						String wolfMsg = MakeWolfPmMessage();
@@ -241,13 +252,14 @@ namespace TatianaTiger
 		}
 		String MakeSeerPmMessage()
 		{
-			String seerMsg = String.Format("You are the seer. Your random n0 villager peek is {0}\r\n", _peek);
+			String peek = _peeks[0].Name;
+			String seerMsg = String.Format("You are the seer. Your random n0 villager peek is {0}\r\n", peek);
 			seerMsg += "\r\nEach night send a PM with the exact name of the player you want to peek.\r\n";
 			return seerMsg;
 		}
 		String MakeWolfPmMessage()
 		{
-			List<string> wolves = (from p in _players where p.Team == "Wolf" select p.Name).ToList();
+			List<string> wolves = (from p in _playerRoles where p.Team == WOLF select p.Name).ToList();
 			String wolfMsg = "You are the wolves:\r\n";
 			foreach (var w in wolves)
 			{
@@ -270,15 +282,15 @@ namespace TatianaTiger
 			{
 				case "EventEnter":
 					{
-						_subbedPlayers = new List<string>();
 					}
 					break;
 				case "EventExit":
 					{
 						_peeks.Clear();
-						_players.Clear();
+						_playerByName.Clear();
+						_playerRoles.Clear();
 						_requestNames.Clear();
-						_peek = "";
+						_peek = null;
 						_killMessage = "";
 						//_threadId
 						_majorityLynch = false;
@@ -370,7 +382,7 @@ namespace TatianaTiger
 				case "SubPM":
 					{
 						PrivateMessage pm = (e as Event<PrivateMessage>).Param;
-						if ((LookupPlayer(pm.From) != null) || (_subbedPlayers.Contains(pm.From)))
+						if (LookupPlayer(pm.From) != null)
 						{
 							QueuePM(new string[] { pm.From }, pm.Title,
 								String.Format("Sorry, I can't sub you back in."));
@@ -387,25 +399,24 @@ namespace TatianaTiger
 						StringBuilder sb = new StringBuilder();
 						String subMsg = String.Format("[b]{0}[/b] is subbing in for [b]{1}[/b]\n\n", pm.From, role.Name);
 						_count.SubPlayer(role.Name, pm.From);
-						_subbedPlayers.Add(role.Name);
+						_playerByName[pm.From] = role;
 						role.Name = pm.From;
 						QueueAnnouncement(subMsg);
 						sb.AppendLine(subMsg);
 						sb.AppendLine("Role Info:\n");
-						if (role.Team == "wolf")
+						if (role.Team == WOLF)
 						{
 							sb.AppendLine(MakeWolfPmMessage());
 						}
 						else
 						{
-							if (role.Role == "seer")
+							if (role.Role == SEER)
 							{
 								sb.AppendLine(MakeSeerPmMessage());
 								sb.AppendLine("\r\n[u]Peeks:[/u]\r\n");
 								foreach (var peek in _peeks)
 								{
-									var p = LookupPlayer(peek);
-									sb.AppendFormat("{0} : {1} {2}\r\n", p.Name, p.Team, p.Role);
+									sb.AppendFormat("{0} : {1} {2}\r\n", peek.Name, peek.Team, peek.Role);
 								}
 
 							}
@@ -438,7 +449,7 @@ namespace TatianaTiger
 				case "GameOver":
 					{
 						String msg = (e as Event<String>).Param;
-						var live = from p in _players where p.Dead == false select p;
+						var live = from p in _playerRoles where p.Dead == false select p;
 						StringBuilder sb = new StringBuilder();
 						sb.AppendLine(msg);
 						sb.AppendLine("\r\n\r\n[u]Remaining Players:[/u]\r\n");
@@ -448,9 +459,8 @@ namespace TatianaTiger
 							KillPlayer(p.Name);
 						}
 						sb.AppendLine("\r\n\r\n[u]Peeks:[/u]\r\n");
-						foreach (var peek in _peeks)
+						foreach (var p in _peeks)
 						{
-							var p = LookupPlayer(peek);
 							sb.AppendFormat("{0} : {1} {2}\r\n", p.Name, p.Team, p.Role);
 						}
 						_forum.LockThread(_threadId, false);
@@ -471,10 +481,10 @@ namespace TatianaTiger
 						if (_forum.Username.Equals("Oreos", StringComparison.InvariantCultureIgnoreCase))
 						{
 							_hyper = true;
-							_d1Duration = 4;
-							_dDuration = 4;
-							_n1Duration = 3;
-							_nDuration = 3;
+							_d1Duration = 2;
+							_dDuration = 2;
+							_n1Duration = 1;
+							_nDuration = 1;
 						}
 						else
 						{
@@ -546,8 +556,8 @@ namespace TatianaTiger
 							String lynch = Misc.RandomItemFromList(leaders);
 							Player player = KillPlayer(lynch);
 
-							String teamColor = player.Team == "Village" ? "green" : "red";
-							String roleColor = player.Role == "seer" ? "purple" : teamColor;
+							String teamColor = player.Team == VILLAGE ? "green" : "red";
+							String roleColor = player.Role == SEER ? "purple" : teamColor;
 							String result = (leaders.Count > 1) ? "The lynch was randed to break a tie.\r\n" : "";
 							result += String.Format(
 								"[b]{0}[/b] was lynched. Team: [color={1}][b]{2}[/b][/color] Role: [color={3}][b]{4}[/b][/color]\r\n",
@@ -675,14 +685,14 @@ namespace TatianaTiger
 						if (_kill == "")
 						{
 							// rand a kill
-							var villagers = (from p in _players where (p.Dead == false) && (p.Team == "Village") select p);
+							var villagers = (from p in _playerRoles where (p.Dead == false) && (p.Team == VILLAGE) select p);
 							var kill = Misc.RandomItemFromList(villagers);
 							_kill = kill.Name;
 						}
-						String seerName = (from p in _players where p.Role == "seer" select p.Name).First();
-						if (IsSeerAlive() && (_peek == ""))
+						String seerName = (from p in _playerRoles where p.Role == SEER select p.Name).First();
+						if (IsSeerAlive() && (_peek == null))
 						{
-							IEnumerable<String> possibles = GetPeekCandidates(seerName);
+							var possibles = GetPeekCandidates(seerName);
 							if (possibles.Any())
 							{
 								_peek = Misc.RandomItemFromList(possibles);
@@ -692,18 +702,17 @@ namespace TatianaTiger
 
 						var k = LookupPlayer(_kill);
 						KillPlayer(k.Name);
-						String roleColor = (k.Role == "seer") ? "purple" : "green";
+						String roleColor = (k.Role == SEER) ? "purple" : "green";
 						_killMessage = String.Format("The wolves killed [b]{0}[/b]. Role: [color={1}][b]{2}[/b][/color].\r\n",
 							k.Name, roleColor, k.Role);
 						
 						if ((seer.Dead == false) && (_kill.Equals(seerName, StringComparison.InvariantCultureIgnoreCase) == false))
 						{
 							String msg;
-							if (_peek != "")
+							if (_peek != null)
 							{
-								var peek = LookupPlayer(_peek);
-								_peeks.Add(peek.Name);
-								msg = String.Format("Peek result for {0}: {1}\r\n", peek.Name, peek.Team);
+								_peeks.Add(_peek);
+								msg = String.Format("Peek result for {0}: {1}\r\n", _peek.Name, _peek.Team);
 							}
 							else
 							{
@@ -735,7 +744,7 @@ namespace TatianaTiger
 			{
 				case "EventEnter":
 					{
-						_peek = "";
+						_peek = null;
 					}
 					break;
 
@@ -758,7 +767,7 @@ namespace TatianaTiger
 						{
 							ParseKillPM(pm);
 						}
-						if ((_kill != "") && (!IsSeerAlive() || (_peek != "")))
+						if ((_kill != "") && (!IsSeerAlive() || (_peek != null)))
 						{
 							ChangeState(StateCallDay);
 							return null;
@@ -770,11 +779,11 @@ namespace TatianaTiger
 					{
 						Event<PrivateMessage> pme = e as Event<PrivateMessage>;
 						PrivateMessage pm = pme.Param;
-						if (_peek == "")
+						if (_peek == null)
 						{
-							ParsePeekPM(pm);
+							_peek = ParsePeekPM(pm);
 						}
-						if ((_kill != "") && (_peek != ""))
+						if ((_kill != "") && (_peek != null))
 						{
 							ChangeState(StateCallDay);
 							return null;
@@ -828,6 +837,7 @@ namespace TatianaTiger
 					PMHeader header = folderpage[i];
 					if ((_EarliestPMTime <= header.Timestamp) && (_maxTime >= header.Timestamp) && (header.Id > _lastPMProcessed))
 					{
+						_db.AddPosters(new Poster[] {new Poster(header.Sender, header.SenderId)});
 						_forum.ReadPM(header.Id, null, (id, pm, cake) =>
 						{
 							pms.Add(pm);
@@ -859,7 +869,7 @@ namespace TatianaTiger
 					PostEvent(new Event<PrivateMessage>("CorrectionPM", pm));
 					continue;
 				}
-				if (pm.Title.ToLowerInvariant().Trim().StartsWith("sub"))
+				if ((pm.Title.ToLowerInvariant().Trim().StartsWith("sub")) || (pm.Content.ToLowerInvariant().Trim().StartsWith("sub ")))
 				{
 					PostEvent(new Event<PrivateMessage>("SubPM", pm));
 					continue;
@@ -875,7 +885,7 @@ namespace TatianaTiger
 					PostEvent(new Event<PrivateMessage>("DeadPM", pm));
 					continue;
 				}
-				if (player.Team == "Wolf")
+				if (player.Team == WOLF)
 				{
 					if (pm.Content.StartsWith("resign", StringComparison.InvariantCultureIgnoreCase))
 					{
@@ -885,7 +895,7 @@ namespace TatianaTiger
 					PostEvent(new Event<PrivateMessage>("WolfKillPM", pm));
 					continue;
 				}
-				if (player.Role == "seer")
+				if (player.Role == SEER)
 				{
 					PostEvent(new Event<PrivateMessage>("SeerPM", pm));
 					continue;
@@ -959,7 +969,7 @@ namespace TatianaTiger
 		{
 			get
 			{
-				int wolfCount = (from p in _players where (p.Dead == false) && (p.Team == "Wolf") select p).Count();
+				int wolfCount = (from p in _playerRoles where (p.Dead == false) && (p.Team == WOLF) select p).Count();
 				return wolfCount;
 			}
 		}
@@ -967,7 +977,7 @@ namespace TatianaTiger
 		{
 			get
 			{
-				int seerCount = (from p in _players where (p.Dead == false) && (p.Team == "Village") && (p.Role == "seer") select p).Count();
+				int seerCount = (from p in _playerRoles where (p.Dead == false) && (p.Team == VILLAGE) && (p.Role == SEER) select p).Count();
 				return seerCount;
 			}
 		}
@@ -975,7 +985,7 @@ namespace TatianaTiger
 		{
 			get
 			{
-				int vanillaCount = (from p in _players where (p.Dead == false) && (p.Team == "Village") && (p.Role == "vanilla") select p).Count();
+				int vanillaCount = (from p in _playerRoles where (p.Dead == false) && (p.Team == VILLAGE) && (p.Role == VANILLA) select p).Count();
 				return vanillaCount;
 			}
 		}
@@ -983,7 +993,7 @@ namespace TatianaTiger
 		{
 			get
 			{
-				var live = from p in _players where p.Dead == false select p.Name;
+				var live = from p in _playerRoles where p.Dead == false select p.Name;
 				return live.Count();
 			}
 		}
@@ -1008,8 +1018,14 @@ namespace TatianaTiger
 				sb.AppendLine(_killMessage);
 				sb.AppendLine();
 			}
-			var live = from p in _players where (p.Dead == false) orderby p.Name.ToUpperInvariant() select p.Name;
-			sb.AppendFormat("{0} players: {1} wolves, {2} seer(s), {3} vanilla villagers", live.Count(), WolfCount, SeerCount, VanillaCount);
+			var live = from p in _playerRoles where (p.Dead == false) orderby p.Name.ToUpperInvariant() select p.Name;
+			string wolf = (WolfCount > 1) ? "wolves" : "wolf";
+			string seer = (SeerCount > 0) ? "1 seer, " : "";
+			string vanilla = (VanillaCount > 1) ? "villagers" : "villager";
+			sb.AppendFormat("{0} players: {1} {2}, {3}{4} vanilla {5}", live.Count(), 
+				WolfCount, wolf, 
+				seer, 
+				VanillaCount, vanilla);
 			sb.AppendLine();
 			sb.AppendLine();
 
@@ -1064,7 +1080,9 @@ namespace TatianaTiger
 				_count = new VoteCount(invoker, t, _db, _forum.ForumURL,
 					_url,
 					_forum.PostsPerPage, Language.English);
-				var players = from p in _players where p.Dead == false select p.Name;
+				_count.Census.Clear();
+
+				var players = from p in _playerRoles where p.Dead == false select p.Name;
 				foreach (var p in players)
 				{
 					CensusEntry ce = new CensusEntry();
@@ -1085,7 +1103,7 @@ namespace TatianaTiger
 		}
 		Boolean IsSeerAlive()
 		{
-			var seer = (from p in _players where (p.Dead == false) && (p.Role == "seer") select p).FirstOrDefault();
+			var seer = (from p in _playerRoles where (p.Dead == false) && (p.Role == SEER) select p).FirstOrDefault();
 			if (seer == null)
 			{
 				return false;
@@ -1095,7 +1113,7 @@ namespace TatianaTiger
 		Int32 GetMajorityCount()
 		{
 			if (!_majorityLynch) return Int32.MaxValue;
-			var live = from p in _players where p.Dead == false select p.Name;
+			var live = from p in _playerRoles where p.Dead == false select p.Name;
 			int majCount = 1 + (live.Count() / 2);
 			return majCount;
 		}
@@ -1105,7 +1123,7 @@ namespace TatianaTiger
 			Player player = LookupPlayer(who);
 			player.Dead = true;
 
-			var live = from p in _players where p.Dead == false select p.Name;
+			var live = from p in _playerRoles where p.Dead == false select p.Name;
 			Trace.TraceInformation("*** Begin Live Player List ***");
 			foreach (var p in live)
 			{
@@ -1114,12 +1132,17 @@ namespace TatianaTiger
 			Trace.TraceInformation("*** End Live Player List ***");
 			return player;
 		}
+		Player LookupPlayer(Int32 id)
+		{
+			Player rc = (from p in _playerRoles where p.Id == id select p).FirstOrDefault();
+			return rc;
+		}
 		Player LookupPlayer(String name)
 		{
-			var player = (from p in _players
+			var player = (from p in _playerByName
 						  where
-							  p.Name.Equals(name, StringComparison.InvariantCultureIgnoreCase)
-						  select p).FirstOrDefault();
+							  p.Key.Equals(name, StringComparison.InvariantCultureIgnoreCase)
+						  select p.Value).FirstOrDefault();
 			return player;
 		}
 		private bool ParseKillPM(PrivateMessage pm)
@@ -1131,15 +1154,15 @@ namespace TatianaTiger
 			foreach (var line in rawList)
 			{
 				var player = LookupPlayer(line);
-				if ((player != null) && (player.Dead == false) && (player.Team != "Wolf"))
+				if ((player != null) && (player.Dead == false) && (player.Team != WOLF))
 				{
 					_kill = player.Name;
 					return true;
 				}
 
 			}
-			var wolves = from p in _players where (p.Dead == false) && (p.Team == "Wolf") select p.Name;
-			var villagers = from p in _players where (p.Dead == false) && (p.Team == "Village") orderby p.Name.ToUpperInvariant() select p.Name;
+			var wolves = from p in _playerRoles where (p.Dead == false) && (p.Team == WOLF) select p.Name;
+			var villagers = from p in _playerRoles where (p.Dead == false) && (p.Team == VILLAGE) orderby p.Name.ToUpperInvariant() select p.Name;
 			String msg = "Submit your kill promptly. It should be a PM that contains only the name of the villager you want to kill.\r\n\r\n live villagers:\r\n";
 			foreach (var v in villagers)
 			{
@@ -1230,16 +1253,20 @@ namespace TatianaTiger
 				.Distinct().ToList();
 			foreach (var line in rawList)
 			{
-				var player = LookupPlayer(line);
+				string l = line;
+				if (pm.Content.ToLowerInvariant().Trim().StartsWith("sub "))
+				{
+					l = l.Substring(4).Trim();
+				}
+				var player = LookupPlayer(l);
 				if ((player != null) && (player.Dead == false))
 				{
-					_peek = player.Name;
 					return player;
 				}
 			}
 			return null;
 		}
-		private bool ParsePeekPM(PrivateMessage pm)
+		private Player ParsePeekPM(PrivateMessage pm)
 		{
 			List<String> rawList = pm.Content.Split(
 				new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries)
@@ -1250,8 +1277,7 @@ namespace TatianaTiger
 				var player = LookupPlayer(line);
 				if ((player != null) && (player.Dead == false))
 				{
-					_peek = player.Name;
-					return true;
+					return player;
 				}
 
 			}
@@ -1263,12 +1289,13 @@ namespace TatianaTiger
 				msg += v + "\r\n";
 			}
 			QueuePM(new String[] {pm.From}, "NIGHT ACTION FAILED", msg);
-			return false;
+			return null;
 		}
-		IEnumerable<String> GetPeekCandidates(String seerName)
+		IEnumerable<Player> GetPeekCandidates(String seerName)
 		{
-			var players = from p in _players where (p.Dead == false) orderby p.Name.ToUpperInvariant() select p.Name;
-			var peekCandidates = players.Except(_peeks).Where(p => p.Equals(seerName, StringComparison.InvariantCultureIgnoreCase) == false);
+			var players = from p in _playerRoles where (p.Dead == false) orderby p.Name.ToUpperInvariant() select p;
+			var peekCandidates = players.Except(_peeks).
+				Where(p => p.Name.Equals(seerName, StringComparison.InvariantCultureIgnoreCase) == false);
 			return peekCandidates;
 		}
 		void SetDayDuration()
