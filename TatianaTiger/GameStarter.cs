@@ -305,19 +305,6 @@ namespace TatianaTiger
 					}
 					break;
 
-				case "EventMinute":
-					{
-						if (_count != null)
-						{
-							Trace.TraceInformation("another minute, need a vote count.");
-							_count.CheckThread(() =>
-								{
-									PostEvent(new Event("CountUpdated"));
-								});
-						}
-						PollPMs();
-					}
-					break;
 
 				case "CorrectionPM":
 					{
@@ -491,8 +478,8 @@ namespace TatianaTiger
 							_hyper = false;
 							_d1Duration = 22;
 							_dDuration = 17;
-							_n1Duration = 8;
-							_nDuration = 5;
+							_n1Duration = 7;
+							_nDuration = 4;
 						}
 					}
 					break;
@@ -511,7 +498,7 @@ namespace TatianaTiger
 							ChangeState(StateDay);
 						}
 					}
-					break;
+					return null;
 			}
 			return StatePlaying;
 		}
@@ -540,6 +527,20 @@ namespace TatianaTiger
 					{
 					}
 					break;
+
+				case "EventMinute":
+					{
+						if (_count != null)
+						{
+							Trace.TraceInformation("another minute, need a vote count.");
+							_count.CheckThread(() =>
+							{
+								PostEvent(new Event("CountUpdated"));
+							});
+						}
+						PollPMs();
+					}
+					return null;
 
 				case "CountUpdated":
 					{
@@ -659,20 +660,17 @@ namespace TatianaTiger
 
 				case "EventMinute":
 					{
-						DateTime now = DateTime.Now;
-						now = TruncateSeconds(now);
-						if (now > _nextDay)
+						PollPMs();
+						if (_count != null)
 						{
-							PostEvent(new Event("NightTimeout"));
+							_count.CheckThread(() => // keep reading the thread so we have the right start post.
+							{
+								PostEvent(new Event("CountUpdated"));
+							});
 						}
+						PostEvent(new Event("CheckForTimeout"));
 					}
-					break;
-
-				case "NightTimeout":
-					{
-						ChangeState(StateCallDay);
-					}
-					break;
+					return null;
 			}
 			return StatePlaying;
 		}
@@ -687,6 +685,7 @@ namespace TatianaTiger
 							// rand a kill
 							var villagers = (from p in _playerRoles where (p.Dead == false) && (p.Team == VILLAGE) select p);
 							var kill = Misc.RandomItemFromList(villagers);
+							Trace.TraceInformation("*** Randed a wolf kill of '{0}'", kill.Name);
 							_kill = kill.Name;
 						}
 						String seerName = (from p in _playerRoles where p.Role == SEER select p.Name).First();
@@ -696,6 +695,7 @@ namespace TatianaTiger
 							if (possibles.Any())
 							{
 								_peek = Misc.RandomItemFromList(possibles);
+								Trace.TraceInformation("*** Randed a seer peek of '{0}'", _peek.Name);
 							}
 						}
 						var seer = LookupPlayer(seerName);
@@ -753,10 +753,21 @@ namespace TatianaTiger
 					}
 					break;
 
-				case "EventMinute":
+				case "CheckForTimeout":
 					{
+						DateTime now = DateTime.Now;
+						now = TruncateSeconds(now);
+						if (now > _nextDay)
+						{
+							PostEvent(new Event("NightTimeout"));
+						}
 					}
-					break;
+					return null;
+				case "NightTimeout":
+					{
+						ChangeState(StateCallDay);
+					}
+					return null;
 
 				case "WolfKillPM":
 					{
@@ -797,11 +808,9 @@ namespace TatianaTiger
 		#region helpers
 		void _timer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
 		{
-			Trace.TraceInformation("Begin timer event at {0}", DateTime.Now);
 			PostEvent(new Event("EventMinute"));
 			_timer.Interval = GetTimerInterval();
 			_timer.Start();
-			Trace.TraceInformation("End timer event at {0}", DateTime.Now);
 		}
 		private double GetTimerInterval()
 		{

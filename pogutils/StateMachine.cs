@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using System.Diagnostics;
 
 namespace POG.Utils
 {
@@ -115,17 +116,17 @@ namespace POG.Utils
 		private object m_stateLock = new object();
 		private Stack<Queue<Event>> m_EventQueues = new Stack<Queue<Event>>();
 		private Dictionary<string, Queue<Event>> m_EventQueueMap = new Dictionary<string, Queue<Event>>();
-        private Dictionary<string, System.Threading.Timer> _Timers = new Dictionary<string, Timer>();
+		private Dictionary<string, System.Threading.Timer> _Timers = new Dictionary<string, Timer>();
 
 		public string Name { get; private set; }
 
 		internal void Initialize() // runs on host thread.
 		{
-            OnInitialize();
+			OnInitialize();
 		}
-        protected virtual void OnInitialize()
-        {
-        }
+		protected virtual void OnInitialize()
+		{
+		}
 
 		protected StateMachine(string name, StateMachineHost host)
 		{
@@ -147,32 +148,32 @@ namespace POG.Utils
 			Queue<Event> qStack = m_EventQueues.Pop();
 			qStack.Clear();
 		}
-        private void OneShotTimer(object state)
-        {
-            Event evt = (Event)state;
-            Timer t;
-            if (_Timers.TryGetValue(evt.EventName, out t))
-            {
-                _Timers.Remove(evt.EventName);
-                t.Dispose();
-            }
-            PostEvent(evt);
-        }
+		private void OneShotTimer(object state)
+		{
+			Event evt = (Event)state;
+			Timer t;
+			if (_Timers.TryGetValue(evt.EventName, out t))
+			{
+				_Timers.Remove(evt.EventName);
+				t.Dispose();
+			}
+			PostEvent(evt);
+		}
 		protected void StartOneShotTimer(int delayMS, Event evt)
 		{
-            CancelTimer(evt.EventName);
-            Timer t= new Timer(OneShotTimer, evt, delayMS, Timeout.Infinite);
-            _Timers.Add(evt.EventName, t);
+			CancelTimer(evt.EventName);
+			Timer t= new Timer(OneShotTimer, evt, delayMS, Timeout.Infinite);
+			_Timers.Add(evt.EventName, t);
 		}
 
 		protected void CancelTimer(string eventName)
 		{
-            Timer t;
-            if (_Timers.TryGetValue(eventName, out t))
-            {
-                _Timers.Remove(eventName);
-                t.Dispose();
-            }
+			Timer t;
+			if (_Timers.TryGetValue(eventName, out t))
+			{
+				_Timers.Remove(eventName);
+				t.Dispose();
+			}
 		}
 
 		protected void SetInitialState(State initialState)
@@ -250,6 +251,11 @@ namespace POG.Utils
 				sDesired = m_desiredState;
 				m_desiredState = null;
 			}
+
+			string currentName = (sCurrent != null) ? sCurrent.GetInvocationList()[0].Method.Name : "<no current state>";
+			string desiredName = (sDesired != null) ? sDesired.GetInvocationList()[0].Method.Name : "<no target state>";
+			Trace.TraceInformation("Changing state from {0} to {1}", currentName, desiredName);
+
 			while (sCurrent != null)
 			{
 				oldList.Add(sCurrent);
@@ -352,6 +358,8 @@ namespace POG.Utils
 				{
 					s = m_currentState;
 				}
+				string methodName = m_currentState.GetInvocationList()[0].Method.Name;
+				Trace.TraceInformation("Dispatching event {0} to {1}", evt.EventName, methodName);
 				while (s != null)
 				{
 					s = s(evt);
