@@ -11,14 +11,14 @@ namespace POG.FennecFox
 {
     public partial class KillSub : Form
     {
-        private Werewolf.VoteCount _voteCount;
+        private Werewolf.ElectionInfo _voteCount;
 
         public KillSub()
         {
             InitializeComponent();
         }
 
-        public KillSub(string name, Werewolf.VoteCount _voteCount) : this()
+        public KillSub(string name, Werewolf.ElectionInfo _voteCount) : this()
         {
             // TODO: Complete member initialization
             this.Name = name;

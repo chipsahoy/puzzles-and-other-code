@@ -1120,6 +1120,94 @@ SELECT Bolded.bolded, Bolded.position, Post.postnumber, Post.posttime
 			//Trace.TraceInformation("after post counts {0}", watch.Elapsed.ToString());
 			return voters;
 		}
+        public IEnumerable<VoterInfo2> GetAllVotes(Int32 threadId, Int32 startPost, DateTime endTime, object game)
+        {
+            String sql =
+@"
+SELECT GameRole.roleid, Player.posterid, Poster.postername, 
+(SELECT COUNT(*)  
+	FROM Post WHERE
+	(GameRole.threadid = @p2)
+	AND ((Player.endtime IS NULL) OR (player.endtime > @p4))
+	AND (Post.threadid = GameRole.threadid)
+	AND (Post.posterid = Player.posterid)
+	AND (Post.postnumber >= @p4) 
+	AND (Post.posttime <= @p3)
+) AS postcount
+FROM GameRole 
+JOIN Player ON (GameRole.roleid = Player.roleid)
+JOIN Poster ON (Poster.posterid = Player.posterid)
+WHERE (GameRole.threadid = @p2)
+	AND ((Player.endtime IS NULL) OR (player.endtime > @p4))
+GROUP BY Poster.postername
+;
+";
+            SortableBindingList<VoterInfo2> voters = new SortableBindingList<VoterInfo2>();
+            Stopwatch watch = new Stopwatch();
+            watch.Start();
+            using (SQLiteConnection dbRead = new SQLiteConnection(_connect))
+            {
+                dbRead.Open();
+                using (SQLiteCommand cmd = new SQLiteCommand(sql, dbRead))
+                {
+                    cmd.Parameters.Add(new SQLiteParameter("@p2", threadId));
+                    SQLiteParameter pEndTime = new SQLiteParameter("@p3", System.Data.DbType.DateTime);
+                    pEndTime.Value = endTime.ToUniversalTime();
+                    cmd.Parameters.Add(pEndTime);
+                    cmd.Parameters.Add(new SQLiteParameter("@p4", startPost));
+
+                    using (SQLiteDataReader r = cmd.ExecuteReader())
+                    {
+                        while (r.Read())
+                        {
+                            Int32 roleId = r.GetInt32(0);
+                            Int32 playerId = r.GetInt32(1);
+                            String name = r.GetString(2);
+                            Int32 count = r.GetInt32(3);
+                            VoterInfo2 v = new VoterInfo2(name, playerId, count);
+                            voters.Add(v);
+                        }
+                    }
+
+                }
+                string sqlVotes = @"SELECT Bolded.bolded, Bolded.position, Post.postnumber, Post.posttime, Post.postid
+	FROM Bolded, Post WHERE
+	(Post.threadid = @p1)
+	AND (Post.posterid = @p2)
+	AND (Bolded.postid = Post.postid)
+	AND (Post.postnumber >= @p3) 
+	AND (Post.posttime <= @p4)
+	AND (Bolded.ignore = 0)
+    ORDER BY Post.postnumber ASC, Bolded.Position ASC
+";
+                using (SQLiteCommand cmd = new SQLiteCommand(sqlVotes, dbRead))
+                {
+                    cmd.Parameters.Add(new SQLiteParameter("@p1", threadId));
+                    cmd.Parameters.Add(new SQLiteParameter("@p3", startPost));
+                    cmd.Parameters.Add(new SQLiteParameter("@p4", endTime));
+                    foreach (VoterInfo2 v in voters)
+                    {
+                        cmd.Parameters.Add(new SQLiteParameter("@p2", v.PosterId));
+                        using (SQLiteDataReader r = cmd.ExecuteReader())
+                        {
+                            while (r.Read())
+                            {
+                                String bolded = r.GetString(0);
+                                Int32 position = r.GetInt32(1);
+                                Int32 number = r.GetInt32(2);
+                                DateTimeOffset time = r.GetDateTime(3);
+                                Int32 postId = r.GetInt32(4);
+                                v.AddVote(new Vote(v.Name, bolded, number, postId, position, time));
+                            }
+                        }
+                    }
+
+                }
+            }
+            watch.Stop();
+            //Trace.TraceInformation("after post counts {0}", watch.Elapsed.ToString());
+            return voters;
+        }
 
 		public Boolean GetDayBoundaries(Int32 threadId, Int32 day, out Int32 startPost, 
 				out DateTime endTime, out Int32 endPost)
@@ -1374,7 +1462,7 @@ WHERE Post.threadid = @p2 AND
 			//p.Poster; p.PostId; p.Time; 
 			//p.Title; p.Bolded; p.Content; p.Edit; p.PostLink;
 			String sql = 
-@"SELECT Post.postid, Post.posterid, Poster.postername, Post.posttime
+@"SELECT Post.postid, Post.posterid, Poster.postername, Post.posttime, Post.posttitle, 
 FROM Post
 JOIN Poster ON (Post.posterid = Poster.posterid)        
 WHERE Post.threadid = @p2 AND
@@ -1397,6 +1485,8 @@ WHERE Post.threadid = @p2 AND
 							Int32 posterId = r.GetInt32(1);
 							String name = r.GetString(2);
 							DateTime time = DateTime.SpecifyKind(r.GetDateTime(3), DateTimeKind.Local);
+                            String title = r.GetString(4);
+                            String content = r.GetString(5);
 							p = new Post(threadId, name, posterId, postNumber, time, String.Empty, String.Empty,
 								String.Empty, null, null);
 						}

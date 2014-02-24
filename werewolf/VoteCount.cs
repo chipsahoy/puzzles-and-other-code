@@ -16,7 +16,21 @@ using System.Diagnostics;
 
 namespace POG.Werewolf
 {
-	public class VoteCount : INotifyPropertyChanged
+    public class VoteCount
+    {
+        public VoteCount()
+        {
+        }
+        public Int32 StartPost { get; private set; }
+        public Int32 EndPost { get; private set; }
+        public Dictionary<String, List<Voter>> Wagons { get; private set; }
+        public List<String> LivePlayers { get; private set; }
+        public String PostableCount()
+        {
+            return "";
+        }
+    }
+	public class ElectionInfo : INotifyPropertyChanged
 	{
 		#region fields
 		IPogDb _db;
@@ -47,7 +61,7 @@ namespace POG.Werewolf
 		#endregion
 
 		#region constructors
-		public VoteCount(Action<Action> synchronousInvoker, ThreadReader t, IPogDb db, String forum, String url, Int32 postsPerPage, Language language) 
+		public ElectionInfo(Action<Action> synchronousInvoker, ThreadReader t, IPogDb db, String forum, String url, Int32 postsPerPage, Language language) 
 		{
 			_synchronousInvoker = synchronousInvoker;
 			_forumURL = forum;
@@ -65,7 +79,7 @@ namespace POG.Werewolf
 			_db.WriteThreadDefinition(_threadId, url, false);
 		}
 
-		~VoteCount()
+		~ElectionInfo()
 		{
 		}
 
@@ -366,6 +380,27 @@ namespace POG.Werewolf
 				return _census;
 			}
 		}
+        Boolean _checkMajority = false;
+        public Boolean CheckMajority
+        {
+            get
+            {
+                return _checkMajority;
+            }
+            set
+            {
+                if (_checkMajority != value)
+                {
+                    _checkMajority = value;
+                    ReadAllFromDB();
+                }
+            }
+        }
+        public Int32 MajorityPost
+        {
+            get;
+            private set;
+        }
 		[System.ComponentModel.Bindable(true)]
 		Boolean _lockedVotes;
 		public Boolean LockedVotes
@@ -379,22 +414,6 @@ namespace POG.Werewolf
 				if (_lockedVotes != value)
 				{
 					_lockedVotes = value;
-					ReadAllFromDB();
-				}
-			}
-		}
-		Boolean _majorityLynch;
-		public Boolean MajorityLynch
-		{
-			get
-			{
-				return _majorityLynch;
-			}
-			set
-			{
-				if (_majorityLynch != value)
-				{
-					_majorityLynch = value;
 					ReadAllFromDB();
 				}
 			}
@@ -652,6 +671,14 @@ namespace POG.Werewolf
 				sb.AppendFormat(sGoodBad,
 						good.ToString("00"), bad.ToString("00"));
 			}
+            if (MajorityPost > 0)
+            {
+                Int32 postId = _db.GetPostId(_threadId, MajorityPost);
+                String postLink = String.Format("{0}showpost.php?p={1}&postcount={2}",
+                    ForumURL, postId, MajorityPost);
+
+                sb.AppendFormat("\n[highlight]*** MAJORITY LYNCH IN [url={1}]POST {0}[/url] ***[/highlight]\n", MajorityPost, postLink);
+            }
 			_postableCount = sb.ToString();
 		}
 		void ReadAllFromDB()
@@ -665,7 +692,17 @@ namespace POG.Werewolf
 			EndTime = endTime;
 			EndPost = endPost;
 			SortableBindingList<Voter> livePlayers = new SortableBindingList<Voter>();
-			foreach (VoterInfo vi in _db.GetVotes(_threadId, startPost, _endTime.ToUniversalTime(), _lockedVotes, this))
+            IEnumerable<VoterInfo2> voters = _db.GetAllVotes(_threadId, startPost, _endTime.ToUniversalTime(), this);
+            MajorityInfo maj = GetActiveVote(voters, _checkMajority, _lockedVotes);
+            if (maj != null)
+            {
+                MajorityPost = maj.PostNumber;
+            }
+            else
+            {
+                MajorityPost = 0;
+            }
+            foreach (VoterInfo2 vi in voters)
 			{
 				Voter v = new Voter(vi, this);
 				livePlayers.Add(v);
@@ -684,7 +721,67 @@ namespace POG.Werewolf
 			CreatePostableVoteCount(); // updates counts.
 
 		}
+        private MajorityInfo GetActiveVote(IEnumerable<VoterInfo2> voters, Boolean checkMajority, Boolean lockedVotes)
+        {
+            MajorityInfo rc = null;
+            Int32 majCount = (1 + voters.Count()) / 2;
+            Dictionary<String, String> voterVote = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase);
+            Dictionary<String, HashSet<String>> wagons = new Dictionary<string, HashSet<string>>(StringComparer.InvariantCultureIgnoreCase);
+            Dictionary<String, VoterInfo2> voterInfos = new Dictionary<string, VoterInfo2>();
+            List<Vote> votes = new List<Vote>();
+            foreach (var vi in voters)
+            {
+                voterInfos.Add(vi.Name, vi);
+                votes.AddRange(vi.Votes);
+                voterVote.Add(vi.Name, "");
+                wagons.Add(vi.Name, new HashSet<string>(StringComparer.InvariantCultureIgnoreCase));
+            }
+            if (!lockedVotes)
+            {
+                wagons.Add(NoLynch, new HashSet<string>());
+            }
+            votes.Sort((a, b) =>
+            {
+                if (a.PostId == b.PostId) return a.BoldPosition.CompareTo(b.BoldPosition);
+                return a.PostId.CompareTo(b.PostId);
+            });
+            foreach (var v in votes)
+            {
+                String oldVote = voterVote[v.Voter];
+                if (wagons.ContainsKey(oldVote))
+                {
+                    if (lockedVotes)
+                    {
+                        // you can't change votes and previously had a valid vote.
+                        continue;
+                    }
+                    wagons[oldVote].Remove(v.Voter);
+                    voterVote[v.Voter] = "";
+                }
+                String votee = ParseInputToVote(v.Bolded);
+                voterInfos[v.Voter].SetVote(v.Bolded, v.PostNumber, v.PostTime, v.PostId, v.BoldPosition);
+                if (wagons.ContainsKey(votee))
+                {
+                    voterVote[v.Voter] = votee;
+                    wagons[votee].Add(v.Voter);
+                }
+                if (checkMajority)
+                {
+                    var lynch = (from w in wagons where (w.Value.Count >= majCount) select w.Key).FirstOrDefault();
+                    if (lynch != null)
+                    {
+                        rc = new MajorityInfo(v.PostNumber, lynch);
+                        return rc;
+                    }
+                }
+            }
+            return rc;
+        }
 
+        private string ParseInputToVote(string p)
+        {
+            return ParseBoldedToVote(p);
+        }
 		private List<String> GetValidVotesList()
 		{
 			List<String> validVotes = new List<string>();
@@ -801,5 +898,25 @@ namespace POG.Werewolf
 			cnt = _leaderVotes;
 			return _leaders;
 		}
+        public IEnumerable<Tuple<String, Int32>> GetPostCounts()
+        {
+            List<Tuple<String, Int32>> counts = new List<Tuple<string, int>>();
+            foreach (var player in LivePlayers)
+            {
+                counts.Add(new Tuple<string, int>(player.Name, player.PostCount));
+            }
+            
+            return counts;
+        }
 	}
+    public class MajorityInfo
+    {
+        public MajorityInfo(Int32 postNumber, String lynch)
+        {
+            PostNumber = postNumber;
+            Lynch = lynch;
+        }
+        public Int32 PostNumber { get; private set; }
+        public String Lynch { get; private set; }
+    }
 }

@@ -15,9 +15,9 @@ namespace POG.Werewolf
 		int? GetMaxPost(int threadId);
 		DateTime? GetPostTime(int threadId, int postNumber);
 		IEnumerable<VoterInfo> GetVotes(Int32 threadId, Int32 startPost, DateTime endTime, Boolean lockedVotes, object game);
-		IEnumerable<CensusEntry> ReadRoster(Int32 threadId);
+        IEnumerable<VoterInfo2> GetAllVotes(Int32 threadId, Int32 startPost, DateTime endTime, object game);
+        IEnumerable<CensusEntry> ReadRoster(Int32 threadId);
 		System.Collections.Generic.IEnumerable<Poster> GetPostersLike(string name);
-		Post GetPost(Int32 threadId, Int32 postNumber);
 		Int32 GetPostId(Int32 threadId, Int32 postNumber);
 		Int32 GetPostNumber(Int32 threadId, Int32 postId);
 

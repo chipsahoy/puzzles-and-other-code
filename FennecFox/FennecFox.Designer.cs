@@ -52,9 +52,10 @@
             this.btnCopyIt = new System.Windows.Forms.Button();
             this.grdVotes = new System.Windows.Forms.DataGridView();
             this.lblDaysToEOD = new System.Windows.Forms.Label();
-            this.btnMod = new System.Windows.Forms.Button();
             this.chkLockedVotes = new System.Windows.Forms.CheckBox();
             this.btnFixVote = new System.Windows.Forms.Button();
+            this.btnMod = new System.Windows.Forms.Button();
+            this.chkUseMajority = new System.Windows.Forms.CheckBox();
             this.contextMenuStrip1.SuspendLayout();
             this.statusBrowser.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
@@ -130,9 +131,10 @@
             this.tableLayoutPanel1.Controls.Add(this.btnCopyIt, 8, 2);
             this.tableLayoutPanel1.Controls.Add(this.grdVotes, 0, 3);
             this.tableLayoutPanel1.Controls.Add(this.lblDaysToEOD, 7, 5);
-            this.tableLayoutPanel1.Controls.Add(this.chkLockedVotes, 4, 1);
             this.tableLayoutPanel1.Controls.Add(this.btnFixVote, 4, 2);
             this.tableLayoutPanel1.Controls.Add(this.btnMod, 7, 2);
+            this.tableLayoutPanel1.Controls.Add(this.chkLockedVotes, 5, 1);
+            this.tableLayoutPanel1.Controls.Add(this.chkUseMajority, 4, 1);
             this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 0);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
@@ -244,7 +246,7 @@
             // 
             // txtCountDown
             // 
-            this.txtCountDown.Location = new System.Drawing.Point(587, 361);
+            this.txtCountDown.Location = new System.Drawing.Point(599, 361);
             this.txtCountDown.Name = "txtCountDown";
             this.txtCountDown.ReadOnly = true;
             this.txtCountDown.Size = new System.Drawing.Size(65, 20);
@@ -252,7 +254,7 @@
             // 
             // btnGetPosts
             // 
-            this.btnGetPosts.Location = new System.Drawing.Point(516, 2);
+            this.btnGetPosts.Location = new System.Drawing.Point(528, 2);
             this.btnGetPosts.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.btnGetPosts.Name = "btnGetPosts";
             this.btnGetPosts.Size = new System.Drawing.Size(65, 23);
@@ -264,7 +266,7 @@
             // btnPostIt
             // 
             this.btnPostIt.Enabled = false;
-            this.btnPostIt.Location = new System.Drawing.Point(587, 2);
+            this.btnPostIt.Location = new System.Drawing.Point(599, 2);
             this.btnPostIt.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.btnPostIt.Name = "btnPostIt";
             this.btnPostIt.Size = new System.Drawing.Size(65, 23);
@@ -275,7 +277,7 @@
             // 
             // btnCopyIt
             // 
-            this.btnCopyIt.Location = new System.Drawing.Point(587, 31);
+            this.btnCopyIt.Location = new System.Drawing.Point(599, 31);
             this.btnCopyIt.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.btnCopyIt.Name = "btnCopyIt";
             this.btnCopyIt.Size = new System.Drawing.Size(65, 23);
@@ -309,7 +311,7 @@
             // 
             this.lblDaysToEOD.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.lblDaysToEOD.AutoSize = true;
-            this.lblDaysToEOD.Location = new System.Drawing.Point(531, 366);
+            this.lblDaysToEOD.Location = new System.Drawing.Point(543, 366);
             this.lblDaysToEOD.Name = "lblDaysToEOD";
             this.lblDaysToEOD.Size = new System.Drawing.Size(50, 13);
             this.lblDaysToEOD.TabIndex = 43;
@@ -317,25 +319,15 @@
             this.lblDaysToEOD.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             this.lblDaysToEOD.Visible = false;
             // 
-            // btnMod
-            // 
-            this.btnMod.Location = new System.Drawing.Point(516, 32);
-            this.btnMod.Name = "btnMod";
-            this.btnMod.Size = new System.Drawing.Size(65, 23);
-            this.btnMod.TabIndex = 44;
-            this.btnMod.Text = "Mod...";
-            this.btnMod.UseVisualStyleBackColor = true;
-            this.btnMod.Click += new System.EventHandler(this.btnMod_Click);
-            // 
             // chkLockedVotes
             // 
             this.chkLockedVotes.AutoSize = true;
-            this.tableLayoutPanel1.SetColumnSpan(this.chkLockedVotes, 3);
-            this.chkLockedVotes.Location = new System.Drawing.Point(370, 3);
+            this.tableLayoutPanel1.SetColumnSpan(this.chkLockedVotes, 2);
+            this.chkLockedVotes.Location = new System.Drawing.Point(438, 3);
             this.chkLockedVotes.Name = "chkLockedVotes";
-            this.chkLockedVotes.Size = new System.Drawing.Size(92, 17);
+            this.chkLockedVotes.Size = new System.Drawing.Size(62, 17);
             this.chkLockedVotes.TabIndex = 45;
-            this.chkLockedVotes.Text = "Locked Votes";
+            this.chkLockedVotes.Text = "Locked";
             this.chkLockedVotes.UseVisualStyleBackColor = true;
             this.chkLockedVotes.CheckedChanged += new System.EventHandler(this.chkLockedVotes_CheckedChanged);
             // 
@@ -349,6 +341,27 @@
             this.btnFixVote.Text = "Fix this vote...";
             this.btnFixVote.UseVisualStyleBackColor = true;
             this.btnFixVote.Click += new System.EventHandler(this.btnFixVote_Click);
+            // 
+            // btnMod
+            // 
+            this.btnMod.Location = new System.Drawing.Point(528, 32);
+            this.btnMod.Name = "btnMod";
+            this.btnMod.Size = new System.Drawing.Size(65, 23);
+            this.btnMod.TabIndex = 44;
+            this.btnMod.Text = "Mod...";
+            this.btnMod.UseVisualStyleBackColor = true;
+            this.btnMod.Click += new System.EventHandler(this.btnMod_Click);
+            // 
+            // chkUseMajority
+            // 
+            this.chkUseMajority.AutoSize = true;
+            this.chkUseMajority.Location = new System.Drawing.Point(370, 3);
+            this.chkUseMajority.Name = "chkUseMajority";
+            this.chkUseMajority.Size = new System.Drawing.Size(62, 17);
+            this.chkUseMajority.TabIndex = 47;
+            this.chkUseMajority.Text = "Majority";
+            this.chkUseMajority.UseVisualStyleBackColor = true;
+            this.chkUseMajority.CheckedChanged += new System.EventHandler(this.chkUseMajority_CheckedChanged);
             // 
             // FormVoteCounter
             // 
@@ -398,6 +411,7 @@
         private System.Windows.Forms.Button btnMod;
         private System.Windows.Forms.CheckBox chkLockedVotes;
         private System.Windows.Forms.Button btnFixVote;
+        private System.Windows.Forms.CheckBox chkUseMajority;
 
 
     }

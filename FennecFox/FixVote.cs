@@ -12,7 +12,7 @@ namespace POG.FennecFox
 {
     public partial class FixVote : Form
     {
-        private Werewolf.VoteCount _voteCount;
+        private Werewolf.ElectionInfo _voteCount;
         private string _player;
 
         public FixVote()
@@ -20,7 +20,7 @@ namespace POG.FennecFox
             InitializeComponent();
         }
 
-        public FixVote(Werewolf.VoteCount _voteCount, string player) : this()
+        public FixVote(Werewolf.ElectionInfo _voteCount, string player) : this()
         {
             // TODO: Complete member initialization
             this._voteCount = _voteCount;

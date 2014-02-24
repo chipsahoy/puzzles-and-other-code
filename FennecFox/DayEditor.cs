@@ -11,14 +11,14 @@ namespace POG.FennecFox
 {
     public partial class DayEditor : Form
     {
-        private Werewolf.VoteCount _voteCount;
+        private Werewolf.ElectionInfo _voteCount;
 
         public DayEditor()
         {
             InitializeComponent();
         }
 
-        public DayEditor(Werewolf.VoteCount _voteCount)
+        public DayEditor(Werewolf.ElectionInfo _voteCount)
         {
             this._voteCount = _voteCount;
             InitializeComponent();

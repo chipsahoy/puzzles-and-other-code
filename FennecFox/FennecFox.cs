@@ -28,7 +28,7 @@ namespace POG.FennecFox
 			Bolded,
 		};
 
-		private VoteCount _voteCount;
+		private ElectionInfo _voteCount;
 		private VBulletinForum _forum;
         Language _language;
 		IPogDb _db;
@@ -340,7 +340,7 @@ namespace POG.FennecFox
 		{
 			url = Utils.Misc.NormalizeUrl(url);
 			ThreadReader t = _forum.Reader();
-			_voteCount = new VoteCount(_synchronousInvoker, t, _db, _forum.ForumURL, url, _forum.PostsPerPage, _language);
+			_voteCount = new ElectionInfo(_synchronousInvoker, t, _db, _forum.ForumURL, url, _forum.PostsPerPage, _language);
 			_voteCount.PropertyChanged += new PropertyChangedEventHandler(_voteCount_PropertyChanged);
 			_voteCount.Turbo = _turbo;
 			_moderator = new Moderator(_synchronousInvoker, _voteCount, _forum);
@@ -513,6 +513,22 @@ namespace POG.FennecFox
                 FixVote dlg = new FixVote(_voteCount, player);
                 DialogResult dr = dlg.ShowDialog();
                 
+            }
+        }
+
+        private void chkUseMajority_CheckedChanged(object sender, EventArgs e)
+        {
+            if (chkUseMajority.Checked)
+            {
+                chkLockedVotes.Enabled = true;
+                _voteCount.CheckMajority = true;
+                _voteCount.LockedVotes = chkLockedVotes.Checked;
+            }
+            else
+            {
+                _voteCount.CheckMajority = false;
+                chkLockedVotes.Enabled = false;
+                chkLockedVotes.Checked = false;
             }
         }
 	}

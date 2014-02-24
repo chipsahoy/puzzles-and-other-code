@@ -68,4 +68,26 @@ namespace POG.Werewolf
 			BoldPosition = position;
 		}
 	}
+    public class VoterInfo2 : VoterInfo
+    {
+        List<Vote> _votes = new List<Vote>();
+        public VoterInfo2(String name, Int32 posterId, Int32 postCount)
+            : base(name, postCount, null)
+        {
+            PosterId = posterId;
+            _votes = new List<Vote>();
+        }
+        public Int32 PosterId { get; private set; }
+        public IEnumerable<Vote> Votes
+        {
+            get
+            {
+                return _votes;
+            }
+        }
+        public void AddVote(Vote v)
+        {
+            _votes.Add(v);
+        }
+    }
 }

@@ -9,11 +9,11 @@ namespace POG.Werewolf
 {
 	public class Voter 
 	{
-		VoteCount _game;
+		ElectionInfo _game;
 		VoterInfo _info;
 		private Int32 _votes;
 
-		public Voter(VoterInfo vi, VoteCount game)
+		public Voter(VoterInfo vi, ElectionInfo game)
 		{
 			_info = vi;
 			_game =game;

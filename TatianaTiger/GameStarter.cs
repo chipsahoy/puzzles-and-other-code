@@ -45,7 +45,7 @@ namespace TatianaTiger
 		Int32 _threadId = 1204368;
 		String _url = "http://forumserver.twoplustwo.com/59/puzzles-other-games/vote-counter-testing-thread-1204368/";
 		Boolean _majorityLynch = false;
-		VoteCount _count;
+		ElectionInfo _count;
 
 		private POG.Werewolf.AutoComplete _autoComplete;
 		int _pendingLookups = 0;
@@ -465,6 +465,7 @@ namespace TatianaTiger
 				case "EventEnter":
 					{
 						_majorityLynch = false;
+                        _count.CheckMajority = false;
 						if (_forum.Username.Equals("Oreos", StringComparison.InvariantCultureIgnoreCase))
 						{
 							_hyper = true;
@@ -506,6 +507,7 @@ namespace TatianaTiger
 		Int32 _lastCountPostNumber;
 		DateTime _lastCountTime;
 		List<String> _lastCountLeaders = new List<string>();
+        Boolean _missingPlayers = false;
 
 		State StateDay(Event e)
 		{
@@ -578,7 +580,17 @@ namespace TatianaTiger
 							String post = postableCount + "\r\n\r\n" + result;
 							if (winner == "")
 							{
-								SetNightDuration();
+                                var postcounts = _count.GetPostCounts();
+                                var missing = from p in postcounts where p.Item2 == 0 select p.Item1;
+                                if (missing.Any())
+                                {
+                                    _missingPlayers = true;
+                                }
+                                else
+                                {
+                                    _missingPlayers = false;
+                                }
+                                SetNightDuration();
 								post += "PM your night action or it will be randed.\r\nDeadline: " + MakeGoodBad(_nextDay);
 								post += "\r\n\r\n[b]It is night![/b]";
 								_forum.MakePost(_threadId, "Mod: Lynch result", post, 0, true);
@@ -648,6 +660,7 @@ namespace TatianaTiger
 				case "EventExit":
 					{
 						_majorityLynch = true;
+                        _count.CheckMajority = true;
 						SetDayDuration();
 						Int32 villas = SeerCount + VanillaCount;
 						Int32 wolves = WolfCount;
@@ -778,7 +791,7 @@ namespace TatianaTiger
 						{
 							ParseKillPM(pm);
 						}
-						if ((_kill != "") && (!IsSeerAlive() || (_peek != null)))
+						if ((_kill != "") && (!IsSeerAlive() || (_peek != null)) && !_missingPlayers)
 						{
 							ChangeState(StateCallDay);
 							return null;
@@ -1086,10 +1099,11 @@ namespace TatianaTiger
 
 				ThreadReader t = _forum.Reader();
 				Action<Action> invoker = a => a();
-				_count = new VoteCount(invoker, t, _db, _forum.ForumURL,
+				_count = new ElectionInfo(invoker, t, _db, _forum.ForumURL,
 					_url,
 					_forum.PostsPerPage, Language.English);
 				_count.Census.Clear();
+                _count.CheckMajority = false;
 
 				var players = from p in _playerRoles where p.Dead == false select p.Name;
 				foreach (var p in players)

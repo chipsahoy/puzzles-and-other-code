@@ -91,11 +91,11 @@ namespace POG.Werewolf
     
     class ModeratorSM : StateMachine
     {
-        VoteCount _voteCount;
+        ElectionInfo _voteCount;
         VBulletinForum _forum;
         Boolean _postingCounts = false;
 
-        public ModeratorSM(Moderator outer, VoteCount game, VBulletinForum forum, StateMachineHost host)
+        public ModeratorSM(Moderator outer, ElectionInfo game, VBulletinForum forum, StateMachineHost host)
             : base("Moderator", host)
         {
             _voteCount = game;
@@ -321,7 +321,7 @@ namespace POG.Werewolf
         #endregion
         #region constructors
 
-        public Moderator(Action<Action> synchronousInvoker, VoteCount voteCount, VBulletinForum forum)
+        public Moderator(Action<Action> synchronousInvoker, ElectionInfo voteCount, VBulletinForum forum)
         {
             _inner = new ModeratorSM(this, voteCount, forum, new StateMachineHost("ForumHost"));
         }

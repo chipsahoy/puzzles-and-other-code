@@ -13,7 +13,7 @@ namespace POG.FennecFox
 {
     public partial class PlayerList : Form
     {
-        private Werewolf.VoteCount _voteCount;
+        private Werewolf.ElectionInfo _voteCount;
         Werewolf.AutoComplete _autoComplete;
         List<String> _acNames = new List<string>();
 
@@ -53,7 +53,7 @@ namespace POG.FennecFox
             grdRoster.DisableArrowNavigationMode = true;
         }
 
-        public PlayerList(Werewolf.VoteCount voteCount, Werewolf.AutoComplete autoComplete) : this()
+        public PlayerList(Werewolf.ElectionInfo voteCount, Werewolf.AutoComplete autoComplete) : this()
         {
             _voteCount = voteCount;
             _autoComplete = autoComplete;
