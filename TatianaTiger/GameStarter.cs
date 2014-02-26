@@ -465,7 +465,6 @@ namespace TatianaTiger
 				case "EventEnter":
 					{
 						_majorityLynch = false;
-                        _count.CheckMajority = false;
 						if (_forum.Username.Equals("Oreos", StringComparison.InvariantCultureIgnoreCase))
 						{
 							_hyper = true;
