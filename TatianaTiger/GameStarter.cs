@@ -306,6 +306,13 @@ namespace TatianaTiger
 					break;
 
 
+                case "DelayedPost":
+                    {
+                        Event<String, String, Boolean> evtPost = e as Event<String, String, Boolean>;
+                        MakePost(evtPost.Param1, evtPost.Param2, evtPost.Param3);
+                    }
+                    return null;
+
 				case "CorrectionPM":
 					{
 						PrivateMessage pm = (e as Event<PrivateMessage>).Param;
@@ -451,7 +458,7 @@ namespace TatianaTiger
 							sb.AppendFormat("{0} : {1} {2}\r\n", p.Name, p.Team, p.Role);
 						}
 						_forum.LockThread(_threadId, false);
-						_forum.MakePost(_threadId, "Mod: Game Over", sb.ToString(), 0, false);
+						MakePost("Mod: Game Over", sb.ToString());
 						ChangeState(StateIdle);
 					}
 					break;
@@ -494,14 +501,20 @@ namespace TatianaTiger
 						if (_pmQueue.Count == 0)
 						{
 							SetDayDuration();
-							AnnounceDay(0);
-							ChangeState(StateDay);
+                            if (AnnounceDay(0))
+                            {
+                                ChangeState(StateDay);
+                            } // else try again next minute...
 						}
 					}
 					return null;
 			}
 			return StatePlaying;
 		}
+        State StateResign(Event e)
+        {
+            return StatePlaying;
+        }
 		Int32 _day = 0;
 		Int32 _lastCountPostNumber;
 		DateTime _lastCountTime;
@@ -592,7 +605,7 @@ namespace TatianaTiger
                                 SetNightDuration();
 								post += "PM your night action or it will be randed.\r\nDeadline: " + MakeGoodBad(_nextDay);
 								post += "\r\n\r\n[b]It is night![/b]";
-								_forum.MakePost(_threadId, "Mod: Lynch result", post, 0, true);
+								MakePost("Mod: Lynch result", post, true);
 								ChangeState(StateNightNeedAction);
 							}
 							else
@@ -636,7 +649,7 @@ namespace TatianaTiger
 								_lastCountLeaders = leaders;
 								_lastCountTime = now;
 								_lastCountPostNumber = lastPost + 1;
-								_forum.MakePost(_threadId, "Vote Count", postableCount, 0, false);
+								MakePost("Vote Count", postableCount);
 							}
 						}
 					}
@@ -677,7 +690,7 @@ namespace TatianaTiger
 						{
 							_count.CheckThread(() => // keep reading the thread so we have the right start post.
 							{
-								PostEvent(new Event("CountUpdated"));
+								//PostEvent(new Event("CountUpdated"));
 							});
 						}
 						PostEvent(new Event("CheckForTimeout"));
@@ -911,6 +924,7 @@ namespace TatianaTiger
 					if (pm.Content.StartsWith("resign", StringComparison.InvariantCultureIgnoreCase))
 					{
 						PostEvent(new Event<PrivateMessage>("WolfResignPM", pm));
+                        ChangeState(StateResign);
 						continue;
 					}
 					PostEvent(new Event<PrivateMessage>("WolfKillPM", pm));
@@ -981,6 +995,22 @@ namespace TatianaTiger
 			}
 
 		}
+        DateTime _lastPostTime = DateTime.MinValue;
+        Boolean MakePost(String title, String post, bool lockIt = false)
+        {
+            DateTime now = DateTime.Now;
+            TimeSpan delay = now - _lastPostTime;
+            if (delay < new TimeSpan(0, 0, 26))
+            {
+                Trace.TraceInformation("Delaying post '{0}' due to 25 second rule.", title);
+                var evt = new Event<String, String, bool>("DelayedPost", title, post, lockIt);
+                PostEvent(evt);
+                return true;
+            }
+            var rc = _forum.MakePost(_threadId, title, post, 0, lockIt);
+            _lastPostTime = DateTime.Now;
+            return rc.Item1;
+        }
 		DateTime TruncateSeconds(DateTime dt)
 		{
 			DateTime rc = new DateTime(dt.Year, dt.Month, dt.Day, dt.Hour, dt.Minute, 0);
@@ -1026,8 +1056,9 @@ namespace TatianaTiger
 			   minuteGood.ToString("00"), minuteBad.ToString("00"));
 			return rc;
 		}
-		void AnnounceDay(Int32 day)
+		Boolean AnnounceDay(Int32 day)
 		{
+            Boolean rc = true;
 			var sb = new StringBuilder();
 			String announce = GetAnnouncements();
 			if (announce != "")
@@ -1086,14 +1117,20 @@ namespace TatianaTiger
 			{
 				if (_hyper == false)
 				{
-					String url = _forum.NewThread(59, _threadTitle, sb.ToString(), 15, false);
+					var newThread = _forum.NewThread(59, _threadTitle, sb.ToString(), 15, false);
+                    String url = newThread.Item1;
 					_threadId = Misc.TidFromURL(url);
 					_url = url;
+                    if (_threadId <= 0)
+                    {
+                        Trace.TraceError("*** FAILURE CREATING THREAD: {0}", newThread.Item2);
+                        rc = false;
+                    }
 				}
 				else
 				{
 					_forum.LockThread(_threadId, false);
-					_forum.MakePost(_threadId, "Mod: It is day!", sb.ToString(), 0, false);
+					MakePost("Mod: It is day!", sb.ToString());
 				}
 
 				ThreadReader t = _forum.Reader();
@@ -1119,9 +1156,10 @@ namespace TatianaTiger
 				if (day != 1)
 				{
 					_forum.LockThread(_threadId, false);
-					_forum.MakePost(_threadId, "Mod: It is day!", sb.ToString(), 0, false);
+					MakePost("Mod: It is day!", sb.ToString());
 				}
 			}
+            return rc;
 		}
 		Boolean IsSeerAlive()
 		{

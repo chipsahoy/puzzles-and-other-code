@@ -253,9 +253,20 @@ namespace POG.FennecFox
 			if (e.PropertyName == "Status")
 			{
 				statusText.Text = _voteCount.Status; // no direct binding support in status strip.
+                ShowMajorityStatus();
 			}
 		}
-
+        void ShowMajorityStatus()
+        {
+            if (_voteCount.CheckMajority && (_voteCount.MajorityPost > 0))
+            {
+                chkUseMajority.BackColor = System.Drawing.Color.Red;
+            }
+            else
+            {
+                chkUseMajority.BackColor = Control.DefaultBackColor;
+            }
+        }
 		private void _timerEODCountdown_Tick(object sender, EventArgs e)
 		{
 			DateTime now = DateTime.Now;
@@ -436,8 +447,8 @@ namespace POG.FennecFox
 				title = "EOD ";
 			}
 			title += String.Format("Vote Count {0} to {1} ", first, last);
-			Boolean ok = _forum.MakePost(threadId, title, count, 4, false);
-			if (ok)
+			var ok = _forum.MakePost(threadId, title, count, 4, false);
+			if (ok.Item1)
 			{
 				statusText.Text = String.Format("Posted a vote count at {0}.", DateTime.Now.ToShortTimeString());
 			}
@@ -530,6 +541,7 @@ namespace POG.FennecFox
                 chkLockedVotes.Enabled = false;
                 chkLockedVotes.Checked = false;
             }
+            ShowMajorityStatus();
         }
 	}
 

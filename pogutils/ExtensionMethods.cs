@@ -10,6 +10,10 @@ namespace POG.Utils
     /// </summary>
     public static class ExtensionMethods
     {
+        public static bool Contains(this string source, string toCheck, StringComparison comp)
+        {
+            return source.IndexOf(toCheck, comp) >= 0;
+        }
         public static string ToString<T>(this IEnumerable<T> source, string separator)
         {
             if (source == null)

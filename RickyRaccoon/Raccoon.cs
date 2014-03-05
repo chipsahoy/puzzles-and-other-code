@@ -437,7 +437,7 @@ namespace RickyRaccoon
             else if (opform.makeOP && !testrun)
             {
                 string optext = opform.getOPTextBox().Text;
-                txtGameURL.Text = _forum.NewThread(59, txtGameName.Text, optext, 18, true);
+                txtGameURL.Text = _forum.NewThread(59, txtGameName.Text, optext, 18, true).Item1;
                 gamepms.GameURL = txtGameURL.Text;
             }
             gamepms.GameName = txtGameName.Text;

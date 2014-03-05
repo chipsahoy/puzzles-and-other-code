@@ -102,6 +102,20 @@ namespace POG.Utils
 
 			public T2 Param2 { get; private set; }
 		}
+        protected class Event<T1, T2, T3> : Event
+        {
+            public Event(string name, T1 param1, T2 param2, T3 param3)
+                : base(name)
+            {
+                Param1 = param1;
+                Param2 = param2;
+                Param3 = param3;
+            }
+
+            public T1 Param1 { get; private set; }
+            public T2 Param2 { get; private set; }
+            public T3 Param3 { get; private set; }
+        }
 
 		private static Event evtEnter = new Event("EventEnter");
 		private static Event evtExit = new Event("EventExit");

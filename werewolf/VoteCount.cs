@@ -11,7 +11,8 @@ using POG.Forum;
 using System.Collections.Specialized;
 using System.Configuration;
 using System.Threading.Tasks;
-using System.Diagnostics; 
+using System.Diagnostics;
+using System.Text.RegularExpressions; 
 
 
 namespace POG.Werewolf
@@ -824,7 +825,7 @@ namespace POG.Werewolf
 		}
 		private String PrepBolded(String bolded)
 		{
-			String vote = bolded.ToLower().Replace(" ", "");
+			String vote = bolded.Trim();
 			if (vote.StartsWith("vote:"))
 			{
 				vote = vote.Substring(5).Trim();
@@ -836,6 +837,121 @@ namespace POG.Werewolf
 			}
 			return vote;
 		}
+        class Alias
+        {
+            public String Original {get; private set;}
+            public String MapsTo {get; private set;}
+            public Alias(String original, String mapsTo)
+            {
+                Original = original;
+                MapsTo = mapsTo;
+            }
+        }
+        String ParseInputToChoice(String input, IEnumerable<Alias> choices)
+        {
+            // check for exact match.
+            String rc = (from c in choices 
+                         where String.Compare(input, c.Original, StringComparison.InvariantCultureIgnoreCase) == 0 
+                         select c.MapsTo).FirstOrDefault();
+            if (rc != null) return rc;
+            //aliases
+            String suggestion = _db.GetAlias(_threadId, input);
+            if (suggestion != String.Empty)
+            {
+                rc =
+                    (from c in choices
+                     where String.Compare(suggestion, c.Original, StringComparison.InvariantCultureIgnoreCase) == 0
+                     select c.MapsTo).FirstOrDefault();
+                if (rc != null) return rc;
+            }
+            //punctuation
+            //whitespace
+            List<Alias> newChoices = new List<Alias>();
+            foreach (var c in choices)
+            {
+                String newOriginal = new String(c.Original.Where(ch => char.IsLetterOrDigit(ch)).ToArray());
+                Alias a = new Alias(newOriginal, c.MapsTo);
+                if (newOriginal.Length >= 2)
+                {
+                    newChoices.Add(a);
+                }
+                else
+                {
+                    newChoices.Add(c);
+                }
+            }
+            String newInput = new String(input.Where(ch => char.IsLetterOrDigit(ch)).ToArray());
+            rc = (from c in newChoices
+                         where String.Compare(newInput, c.Original, StringComparison.InvariantCultureIgnoreCase) == 0
+                         select c.MapsTo).FirstOrDefault();
+            if (rc != null) return rc;
+            //repeated letters
+            Regex r = new Regex("(.)(?<=\\1\\1)", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+            List<Alias> newChoices2 = new List<Alias>();
+            foreach (var c in newChoices)
+            {
+                String newOriginal = r.Replace(c.Original, String.Empty);
+                Alias a = new Alias(newOriginal, c.MapsTo);
+                if (newOriginal.Length >= 2)
+                {
+                    newChoices2.Add(a);
+                }
+                else
+                {
+                    newChoices2.Add(c);
+                }
+            }
+            String newInput2 = r.Replace(newInput, String.Empty);
+            rc = (from c in newChoices2
+                  where String.Compare(newInput2, c.Original, StringComparison.InvariantCultureIgnoreCase) == 0
+                  select c.MapsTo).FirstOrDefault();
+            if (rc != null) return rc;
+            //subset
+            rc = (from c in newChoices2
+                  where c.Original.Contains(newInput2)
+                  select c.MapsTo).FirstOrDefault();
+            if (rc != null) return rc;
+            //initials
+            // omitted letters
+            foreach (var c in newChoices2)
+            {
+                int ixMatch = 0;
+                foreach (char ch in newInput2)
+                {
+                    int ix = c.Original.IndexOf(ch.ToString(), ixMatch, StringComparison.InvariantCultureIgnoreCase);
+                    ixMatch = ix;
+                    if (ix == -1) break;
+                }
+                if (ixMatch > 0)
+                {
+                    return c.MapsTo;
+                }
+
+            }
+            // GOAT / WOAT / WOLF
+            newInput2 = newInput2.Replace("GOAT", "").Replace("WOAT", "").Replace("WOLF", "");
+            if (newInput2.Length <= 2)
+            {
+                return "";
+            }
+            foreach (var c in newChoices2)
+            {
+                int ixMatch = 0;
+                foreach (char ch in newInput2)
+                {
+                    int ix = c.Original.IndexOf(ch.ToString(), ixMatch, StringComparison.InvariantCultureIgnoreCase);
+                    ixMatch = ix;
+                    if (ix == -1) break;
+                }
+                if (ixMatch > 0)
+                {
+                    return c.MapsTo;
+                }
+
+            }
+            return "";
+        }
 		internal String ParseBoldedToVote(String bolded)
 		{
 			String vote = PrepBolded(bolded);
@@ -843,21 +959,15 @@ namespace POG.Werewolf
 			{
 				return "";
 			}
-			String player = ValidVotes.FirstOrDefault(p => p.ToLower().Replace(" ", "") == vote || p.ToLower().Replace(" ", "").StartsWith(vote));
-			if (player == null)
+            List<Alias> aliases = new List<Alias>();
+            foreach (var w in ValidVotes)
+            {
+                aliases.Add(new Alias(w, w));
+            }
+            String player = ParseInputToChoice(bolded, aliases);
+			if ((player == "") || (player == null))
 			{
-				// check if there is a mapping defined for this vote => player
-				String suggestion = _db.GetAlias(_threadId, bolded);
-				if (suggestion != String.Empty)
-				{
-					player =
-						ValidVotes.FirstOrDefault(
-							p => p == suggestion);
-				}
-				if (player == null)
-				{
-					player = ErrorVote;
-				}
+				player = ErrorVote;
 			}
 			return player;
 		}

@@ -297,9 +297,9 @@ namespace POG.Forum
 
 		}
 		#endregion
-		internal Boolean MakePost(Int32 threadId, String title, String content, Boolean lockit, Int32 icon)
+		internal Tuple<Boolean, String> MakePost(Int32 threadId, String title, String content, Boolean lockit, Int32 icon)
 		{
-			Boolean rc = DoMakePost(threadId, title, content, lockit, icon);
+			var rc = DoMakePost(threadId, title, content, lockit, icon);
 			return rc;
 		}
 		internal bool CanUserReceivePM(string name)
@@ -703,9 +703,9 @@ namespace POG.Forum
 			}
 			return true;
 		}
-		internal String NewThread(Int32 forum, String title, String body, Int32 icon, Boolean lockit)
+		internal Tuple<String, String> NewThread(Int32 forum, String title, String body, Int32 icon, Boolean lockit)
 		{
-			String rc = String.Empty;
+            Tuple<String, String> rc = new Tuple<string, string>(String.Empty, String.Empty);
 			ConnectionSettings cs = _connectionSettings.Clone();
 			String securityToken = GetSecurityToken(cs);
 			StringBuilder msg = new StringBuilder();
@@ -742,14 +742,15 @@ namespace POG.Forum
 			html.LoadHtml(resp);
 			HtmlAgilityPack.HtmlNode root = html.DocumentNode;
 			HtmlAgilityPack.HtmlNode link = root.SelectSingleNode("html/head/link[@rel='canonical']");
+            String url = "";
 			if (link != null)
 			{
-				String url = link.Attributes["href"].Value;
-				rc = url;
+				url = link.Attributes["href"].Value;
 			}
+            rc = new Tuple<string, string>(url, resp);
 			return rc;
 		}
-		Boolean DoMakePost(Int32 threadId, String title, String content, Boolean lockit, Int32 icon)
+		Tuple<Boolean, String> DoMakePost(Int32 threadId, String title, String content, Boolean lockit, Int32 icon)
 		{
 			/* headers
 				POST /newreply.php?do=postreply&t=1198532 HTTP/1.1
@@ -849,10 +850,10 @@ loggedinuser 81788
 			if (resp == null)
 			{
 				// failure
-				return false;
+				return new Tuple<bool,string>(false, "");
 			}
 
-			return true;
+			return new Tuple<bool,string>(true, resp);
 		}
 
 		protected virtual String GetOurUserId(ConnectionSettings cs)
@@ -1217,9 +1218,9 @@ fragment	name
 			Boolean rc = _inner.LockThread(thread, lockIt);
 			return rc;
 		}
-		public Boolean MakePost(Int32 threadId, String title, String message, Int32 PostIcon, Boolean LockThread)
+		public Tuple<Boolean, String> MakePost(Int32 threadId, String title, String message, Int32 PostIcon, Boolean LockThread)
 		{
-			Boolean rc = _inner.MakePost(threadId, title, message, LockThread, PostIcon);
+			var rc = _inner.MakePost(threadId, title, message, LockThread, PostIcon);
 			return rc;
 		}
 		public Boolean DeleteThread(Int32 postId)
@@ -1227,9 +1228,9 @@ fragment	name
 			Boolean rc = _inner.DeleteThread(postId);
 			return rc;
 		}
-		public String NewThread(Int32 forum, String title, String body, Int32 icon, Boolean lockit)
+		public Tuple<String, String> NewThread(Int32 forum, String title, String body, Int32 icon, Boolean lockit)
 		{
-			String rc = _inner.NewThread(forum, title, body, icon, lockit);
+			var rc = _inner.NewThread(forum, title, body, icon, lockit);
 			return rc;
 		}
 		public Boolean CanUserReceivePM(String name)
