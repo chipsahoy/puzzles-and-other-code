@@ -40,8 +40,8 @@ namespace POG.Utils
 		public static Int32 TidFromURL(String url)
 		{
 			int ixTidStart = url.LastIndexOf('-') + 1;
-            int length = url.Length - (ixTidStart + 1);
-            if (length < 0) return -1;
+			int length = url.Length - (ixTidStart + 1);
+			if (length < 0) return -1;
 			string tid = url.Substring(ixTidStart, length);
 			Int32 rc = 0;
 			Int32.TryParse(tid, out rc);
