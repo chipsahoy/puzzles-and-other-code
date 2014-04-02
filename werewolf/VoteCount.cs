@@ -903,6 +903,40 @@ namespace POG.Werewolf
                          where String.Compare(newInput, c.Original, StringComparison.InvariantCultureIgnoreCase) == 0
                          select c.MapsTo).FirstOrDefault();
             if (rc != null) return rc;
+
+			//initials
+			foreach (var c in newChoices)
+			{
+				if (c.Original[0].ToString().Equals(newInput[0].ToString()) == false) continue;
+				int ixMatch = -1;
+				foreach (char ch in newInput)
+				{
+					int ix = c.Original.IndexOf(ch.ToString(), ixMatch + 1, StringComparison.InvariantCultureIgnoreCase);
+					ixMatch = ix;
+					if (ix == -1) break;
+				}
+				if (ixMatch > 0)
+				{
+					return c.MapsTo;
+				}
+			}
+			// omitted letters
+			foreach (var c in newChoices)
+			{
+				int ixMatch = -1;
+				foreach (char ch in newInput)
+				{
+					int ix = c.Original.IndexOf(ch.ToString(), ixMatch + 1, StringComparison.InvariantCultureIgnoreCase);
+					ixMatch = ix;
+					if (ix == -1) break;
+				}
+				if (ixMatch > 0)
+				{
+					return c.MapsTo;
+				}
+			}
+
+			
             //repeated letters
             Regex r = new Regex("(.)(?<=\\1\\1)", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
@@ -921,6 +955,7 @@ namespace POG.Werewolf
                 }
             }
             String newInput2 = r.Replace(newInput, String.Empty);
+			if (newInput2.Length < 2) newInput2 = newInput;
             rc = (from c in newChoices2
                   where String.Compare(newInput2, c.Original, StringComparison.InvariantCultureIgnoreCase) == 0
                   select c.MapsTo).FirstOrDefault();
@@ -934,10 +969,10 @@ namespace POG.Werewolf
             // omitted letters
             foreach (var c in newChoices2)
             {
-                int ixMatch = 0;
+				int ixMatch = -1;
                 foreach (char ch in newInput2)
                 {
-                    int ix = c.Original.IndexOf(ch.ToString(), ixMatch, StringComparison.InvariantCultureIgnoreCase);
+					int ix = c.Original.IndexOf(ch.ToString(), ixMatch + 1, StringComparison.InvariantCultureIgnoreCase);
                     ixMatch = ix;
                     if (ix == -1) break;
                 }
@@ -977,17 +1012,20 @@ namespace POG.Werewolf
 
             }
             // GOAT / WOAT / WOLF
-            newInput2 = newInput2.Replace("GOAT", "").Replace("WOAT", "").Replace("WOLF", "");
+			newInput2 = newInput2.Replace("GOAT", "", StringComparison.InvariantCultureIgnoreCase).
+				Replace("WOAT", "", StringComparison.InvariantCultureIgnoreCase).
+				Replace("WOLF", "", StringComparison.InvariantCultureIgnoreCase).
+				Replace("AIDS", "", StringComparison.InvariantCultureIgnoreCase);
             if (newInput2.Length <= 2)
             {
                 return "";
             }
             foreach (var c in newChoices2)
             {
-                int ixMatch = 0;
+				int ixMatch = -1;
                 foreach (char ch in newInput2)
                 {
-                    int ix = c.Original.IndexOf(ch.ToString(), ixMatch, StringComparison.InvariantCultureIgnoreCase);
+					int ix = c.Original.IndexOf(ch.ToString(), ixMatch + 1, StringComparison.InvariantCultureIgnoreCase);
                     ixMatch = ix;
                     if (ix == -1) break;
                 }
