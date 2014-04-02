@@ -17,8 +17,8 @@ namespace POG.Forum
 {
     public class ThreadReader_4_2_0 : ThreadReader
     {
-        public ThreadReader_4_2_0(ConnectionSettings connectionSettings, Action<Action> synchronousInvoker)
-            : base(connectionSettings, synchronousInvoker)
+        public ThreadReader_4_2_0(ConnectionSettings connectionSettings, Action<Action> synchronousInvoker, String voteRegex)
+            : base(connectionSettings, synchronousInvoker, voteRegex)
         {
             ParseItemTime = Misc.ParseItemTimeEstonia;
         }
@@ -197,12 +197,14 @@ namespace POG.Forum
         protected readonly ConnectionSettings _connectionSettings;
         Action<Action> _synchronousInvoker;
         protected Misc.ParseItemTimeDelegate ParseItemTime = Misc.ParseItemTimeEnglish;
+        protected String _voteRegex;
         #endregion
         #region constructors
-        public ThreadReader(ConnectionSettings connectionSettings, Action<Action> synchronousInvoker)
+        public ThreadReader(ConnectionSettings connectionSettings, Action<Action> synchronousInvoker, String voteRegex)
         {
             _connectionSettings = connectionSettings;
             _synchronousInvoker = synchronousInvoker;
+            _voteRegex = voteRegex;
         }
         private ThreadReader()
         {
@@ -490,14 +492,17 @@ namespace POG.Forum
                     {
                         continue;
                     }
+                    if (_voteRegex.Length > 0)
+                    {
+                        Match m = Regex.Match(bold, _voteRegex);
+                        if (!m.Success) continue;
+                        bold = m.Groups[1].Value;
+                    }
                     if (bold.Length > 0)
                     {
+                        
                         //System.Trace.TraceInformation("{0}\t{1}\t{2}", PostNumber, Poster, bold);
                         Bold b = new Bold(bold);
-                        if (bold.Trim().ToLower().StartsWith("shoot"))
-                        {
-                            b.Ignore = true;
-                        }
                         bolded.Add(b);
                     }
                 }

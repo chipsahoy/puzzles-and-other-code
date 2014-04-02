@@ -41,6 +41,13 @@ namespace POG.Forum
         String _content;
         List<Bold> _bolded;
 
+        public Post(Int32 threadId, String poster, Int32 posterId, Int32 postNumber, DateTimeOffset ts,
+            Int32 postId, String postTitle, String content, List<Bold> bolded, PostEdit edit) : 
+            this(threadId, poster, posterId,
+                postNumber, ts, "", postTitle, content, bolded, edit)
+        {
+            PostId = postId;
+        }
         public Post(Int32 threadId, String poster, Int32 posterId, Int32 postNumber, DateTimeOffset ts, 
             String postLink, String postTitle, String content, List<Bold> bolded, PostEdit edit)
         {
@@ -53,13 +60,20 @@ namespace POG.Forum
             _content = content;
             ThreadId = threadId;
             _bolded = bolded;
-            int ixPostStart = postLink.LastIndexOf("?p=") + 3;
-            string sPost = postLink.Substring(ixPostStart);
-            int ixPostLast = sPost.IndexOf('&');
-            sPost = sPost.Substring(0, ixPostLast);
-            Int32 postId = -1;
-            Int32.TryParse(sPost, out postId);
-            PostId = postId;
+            if (postLink.Length > 3)
+            {
+                int ixPostStart = postLink.LastIndexOf("?p=") + 3;
+                string sPost = postLink.Substring(ixPostStart);
+                int ixPostLast = sPost.IndexOf('&');
+                if (ixPostLast == -1) ixPostLast = sPost.IndexOf('#');
+                if (ixPostLast != -1)
+                {
+                    sPost = sPost.Substring(0, ixPostLast);
+                    Int32 postId = -1;
+                    Int32.TryParse(sPost, out postId);
+                    PostId = postId;
+                }
+            }
         }
         [DataMember]
         public Poster Poster

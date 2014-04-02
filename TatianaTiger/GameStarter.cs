@@ -871,7 +871,7 @@ namespace TatianaTiger
 					PMHeader header = folderpage[i];
 					if ((_EarliestPMTime <= header.Timestamp) && (_maxTime >= header.Timestamp) && (header.Id > _lastPMProcessed))
 					{
-						_db.AddPosters(new Poster[] {new Poster(header.Sender, header.SenderId)});
+                        _db.AddPosters(new POG.Forum.Poster[] { new POG.Forum.Poster(header.Sender, header.SenderId) });
 						_forum.ReadPM(header.Id, null, (id, pm, cake) =>
 						{
 							pms.Add(pm);

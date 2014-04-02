@@ -30,7 +30,7 @@ namespace POG.Werewolf
                         _synchronousInvoker(() =>
                             {
                                 _db.AddPosters(posters);
-                                foreach (Poster p in posters)
+                                foreach (POG.Forum.Poster p in posters)
                                 {
                                     if(p.Name.Equals(name, StringComparison.InvariantCultureIgnoreCase))
                                     {
@@ -54,7 +54,7 @@ namespace POG.Werewolf
                         _synchronousInvoker(() =>
                             {
                                 _db.AddPosters(posters);
-                                IEnumerable<Poster> rc = _db.GetPostersLike(name);
+                                IEnumerable<POG.Forum.Poster> rc = _db.GetPostersLike(name);
                                 callback(name, rc);
                             }
                         );

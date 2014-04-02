@@ -62,7 +62,7 @@ namespace POG.Utils
 					url = url.Substring(0, url.LastIndexOf("index"));
 				}
 
-				if (!url.EndsWith("/"))
+				if (!url.EndsWith("/") && !url.Contains('?'))
 				{
 					url += "/";
 				}
@@ -118,25 +118,49 @@ namespace POG.Utils
 			// 09-04-2012 at 11:03 AM
 			// 04-12-2012 07:02 PM
 			// 04-12-2012, 02:10 PM
+            // 2nd February 2014, 05:48 AM
+            List<String> months = new List<string>() {"January", "February", "March", "April", "May", "June", "July", "August",
+                "September", "October", "November", "December"};
+            Boolean longDate = false;
+            foreach (var month in months)
+            {
+                if (time.Contains(month))
+                {
+                    longDate = true;
+                    break;
+                }
+            }
+            DateTimeOffset rc;
+            String dateFormat = "MM-dd-yyyy";
+            if (longDate) dateFormat = "dd MMMMM yyyy";
+            string today = pageTime.ToString(dateFormat);
+            DateTime dtYesterday = pageTime.DateTime - new TimeSpan(1, 0, 0, 0);
+            string yesterday = dtYesterday.ToString(dateFormat);
+            time = time.Replace("Today", today);
+            time = time.Replace("Yesterday", yesterday);
+            time = time.Replace(",", String.Empty);
+            time = time.Replace("at ", String.Empty);
 
-			DateTimeOffset rc;
-			string today = pageTime.ToString("MM-dd-yyyy");
-			time = time.Replace("Today", today);
-			DateTime dtYesterday = pageTime.DateTime - new TimeSpan(1, 0, 0, 0);
-			string yesterday = dtYesterday.ToString("MM-dd-yyyy");
-			time = time.Replace("Yesterday", yesterday);
-			time = time.Replace(",", String.Empty);
-			time = time.Replace("at ", String.Empty);
 			var culture = Thread.CurrentThread.CurrentCulture;
-			try
-			{
-				Thread.CurrentThread.CurrentCulture = CultureInfo.CreateSpecificCulture("en-US");
-				rc = new DateTimeOffset(DateTime.ParseExact(time, "MM-dd-yyyy hh:mm tt", null), pageTime.Offset);
-			}
-			finally
-			{
-				Thread.CurrentThread.CurrentCulture = culture;
-			}
+            try
+            {
+                Thread.CurrentThread.CurrentCulture = CultureInfo.CreateSpecificCulture("en-US");
+                if (longDate)
+                {
+                    // 2nd February 2014, 05:48 AM
+                    time = time.Replace("August", "Augus").Replace("nd ", " ").Replace("st ", " ").Replace("th ", " ").
+                        Replace("rd ", " ").Replace("Augus", "August");
+                    rc = new DateTimeOffset(DateTime.ParseExact(time, "d MMMM yyyy hh:mm tt", null), pageTime.Offset);
+                }
+                else
+                {
+                    rc = new DateTimeOffset(DateTime.ParseExact(time, "MM-dd-yyyy hh:mm tt", null), pageTime.Offset);
+                }
+            }
+            finally
+            {
+                Thread.CurrentThread.CurrentCulture = culture;
+            }
 			rc = rc.ToUniversalTime();
 			return rc;
 		}
@@ -171,7 +195,15 @@ namespace POG.Utils
 		}
 		public static Int32 ParseMemberId(String profileUrl)
 		{
+            // "member.php?u=545"
 			Int32 posterId = -1;
+            Int32 ixU = profileUrl.IndexOf("?u=");
+            if (ixU >= 0)
+            {
+                String uid = profileUrl.Substring(ixU + "?u=".Length);
+                Int32.TryParse(uid, out posterId);
+                return posterId;
+            }
 			Match m = Regex.Match(profileUrl, @".*/members/(\d*)/");
 			if (m.Success)
 			{

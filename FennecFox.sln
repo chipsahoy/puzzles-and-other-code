@@ -46,6 +46,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "bugsbunny", "bugsbunny\bugs
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TatianaTiger", "TatianaTiger\TatianaTiger.csproj", "{169B41D0-A6BA-430A-B3A5-B60E80A0091D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ResultsReporter", "ResultsReporter\ResultsReporter.csproj", "{00E63BBD-80A1-4EDE-ADA3-D314B9391F35}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Titan", "Titan\Titan.csproj", "{7A64AAF6-2CC3-4050-B67D-3C5C548D79D3}"
+EndProject
 Global
 	GlobalSection(TestCaseManagementSettings) = postSolution
 		CategoryFile = FennecFox.vsmdi
@@ -219,6 +223,26 @@ Global
 		{169B41D0-A6BA-430A-B3A5-B60E80A0091D}.Release|Mixed Platforms.Build.0 = Release|x86
 		{169B41D0-A6BA-430A-B3A5-B60E80A0091D}.Release|x86.ActiveCfg = Release|x86
 		{169B41D0-A6BA-430A-B3A5-B60E80A0091D}.Release|x86.Build.0 = Release|x86
+		{00E63BBD-80A1-4EDE-ADA3-D314B9391F35}.Debug|Any CPU.ActiveCfg = Debug|x86
+		{00E63BBD-80A1-4EDE-ADA3-D314B9391F35}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
+		{00E63BBD-80A1-4EDE-ADA3-D314B9391F35}.Debug|Mixed Platforms.Build.0 = Debug|x86
+		{00E63BBD-80A1-4EDE-ADA3-D314B9391F35}.Debug|x86.ActiveCfg = Debug|x86
+		{00E63BBD-80A1-4EDE-ADA3-D314B9391F35}.Debug|x86.Build.0 = Debug|x86
+		{00E63BBD-80A1-4EDE-ADA3-D314B9391F35}.Release|Any CPU.ActiveCfg = Release|x86
+		{00E63BBD-80A1-4EDE-ADA3-D314B9391F35}.Release|Mixed Platforms.ActiveCfg = Release|x86
+		{00E63BBD-80A1-4EDE-ADA3-D314B9391F35}.Release|Mixed Platforms.Build.0 = Release|x86
+		{00E63BBD-80A1-4EDE-ADA3-D314B9391F35}.Release|x86.ActiveCfg = Release|x86
+		{00E63BBD-80A1-4EDE-ADA3-D314B9391F35}.Release|x86.Build.0 = Release|x86
+		{7A64AAF6-2CC3-4050-B67D-3C5C548D79D3}.Debug|Any CPU.ActiveCfg = Debug|x86
+		{7A64AAF6-2CC3-4050-B67D-3C5C548D79D3}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
+		{7A64AAF6-2CC3-4050-B67D-3C5C548D79D3}.Debug|Mixed Platforms.Build.0 = Debug|x86
+		{7A64AAF6-2CC3-4050-B67D-3C5C548D79D3}.Debug|x86.ActiveCfg = Debug|x86
+		{7A64AAF6-2CC3-4050-B67D-3C5C548D79D3}.Debug|x86.Build.0 = Debug|x86
+		{7A64AAF6-2CC3-4050-B67D-3C5C548D79D3}.Release|Any CPU.ActiveCfg = Release|x86
+		{7A64AAF6-2CC3-4050-B67D-3C5C548D79D3}.Release|Mixed Platforms.ActiveCfg = Release|x86
+		{7A64AAF6-2CC3-4050-B67D-3C5C548D79D3}.Release|Mixed Platforms.Build.0 = Release|x86
+		{7A64AAF6-2CC3-4050-B67D-3C5C548D79D3}.Release|x86.ActiveCfg = Release|x86
+		{7A64AAF6-2CC3-4050-B67D-3C5C548D79D3}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

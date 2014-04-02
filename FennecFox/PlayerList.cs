@@ -323,7 +323,7 @@ namespace POG.FennecFox
             DataGridViewRow r = grdRoster.Rows[e.RowIndex];
             DataGridViewCell c = r.Cells[(Int32)CounterColumn.Player];
             object oValue = c.FormattedValue;
-            if ((oValue != null) && (oValue as String != String.Empty)& (r.Index != -1))
+            if ((oValue != null) && (oValue as String != String.Empty) && (r.Index != -1) && (c.RowIndex != -1))
             {
                 c.ReadOnly = false;
                 String name = oValue as String;

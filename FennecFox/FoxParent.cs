@@ -37,8 +37,11 @@ namespace POG.FennecFox
 			_synchronousInvoker = a => Invoke(a);
 			//String host = "forumserver.twoplustwo.com";
             String host = _forumName;
+            String forumRoot = "";
             String lobby;
             String vbVersion;
+            String voteRegex = "";
+
             switch (host)
             {
                 case "foorum.pokkeriprod.com":
@@ -46,6 +49,16 @@ namespace POG.FennecFox
                         vbVersion = "4.2.0";
                         lobby = "forumdisplay.php/9-Võistlused";
                         _language = Language.Estonian;
+                    }
+                    break;
+
+                case "mindromp.org":
+                    {
+                        vbVersion = "3.8.7";
+                        lobby = "forumdisplay.php?f=17";
+                        _language = Language.English;
+                        forumRoot = "/forum";
+                        voteRegex = "##(.*)##";
                     }
                     break;
 
@@ -57,13 +70,13 @@ namespace POG.FennecFox
                     }
                     break;
             }
-            String dbPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "/pog/";
+            String dbPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\pog\";
 			System.IO.Directory.CreateDirectory(dbPath);
 			String dbName = String.Format("{0}posts.{1}.sqlite", dbPath, host);
 			_db = new PogSqlite();
 			_db.Connect(dbName);
 			
-			_forum = new VBulletinForum(_synchronousInvoker, host, vbVersion, lobby);
+			_forum = new VBulletinForum(_synchronousInvoker, host, vbVersion, lobby, forumRoot, voteRegex);
 			_forum.LoginEvent += new EventHandler<LoginEventArgs>(_forum_LoginEvent);
 
 			String username = PogSettings.Read("username", String.Empty);

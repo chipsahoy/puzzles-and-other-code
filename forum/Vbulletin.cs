@@ -18,13 +18,13 @@ namespace POG.Forum
 {
 	internal class VBulletin_4_2_0 : VBulletinSM
 	{
-		internal VBulletin_4_2_0(VBulletinForum outer, StateMachineHost host, String forum, String lobby, Action<Action> synchronousInvoker) :
-			base(outer, host, forum, lobby, synchronousInvoker)
+		internal VBulletin_4_2_0(VBulletinForum outer, StateMachineHost host, String forum, String lobby, String forumRoot, String voteRegex, Action<Action> synchronousInvoker) :
+			base(outer, host, forum, lobby, forumRoot, voteRegex, synchronousInvoker)
 		{
 		}
 		internal override ThreadReader Reader()
 		{
-			ThreadReader t = new ThreadReader_4_2_0(_connectionSettings, _synchronousInvoker);
+			ThreadReader t = new ThreadReader_4_2_0(_connectionSettings, _synchronousInvoker, VoteRegex);
 			return t;
 		}
 		internal override LobbyReader Lobby()
@@ -40,8 +40,8 @@ namespace POG.Forum
 	}
 	internal class VBulletin_3_8_7 : VBulletinSM
 	{
-		internal VBulletin_3_8_7(VBulletinForum outer, StateMachineHost host, String forum, String lobby, Action<Action> synchronousInvoker) :
-			base(outer, host, forum, lobby, synchronousInvoker)
+		internal VBulletin_3_8_7(VBulletinForum outer, StateMachineHost host, String forum, String lobby, String forumRoot, String voteRegex, Action<Action> synchronousInvoker) :
+			base(outer, host, forum, lobby, forumRoot, voteRegex, synchronousInvoker)
 		{
 		}
 	}
@@ -53,23 +53,26 @@ namespace POG.Forum
 		protected Action<Action> _synchronousInvoker;
 		private String _username = ""; // if this changes from what user entered previously, need to logout then re-login with new info.
 		int _postsPerPage = 50;
+        protected String VoteRegex = "";
 
 		#endregion
 
-		internal VBulletinSM(VBulletinForum outer, StateMachineHost host, String forum, String lobby, Action<Action> synchronousInvoker) :
+		internal VBulletinSM(VBulletinForum outer, StateMachineHost host, String forum, String lobby, String forumRoot, String voteRegex, Action<Action> synchronousInvoker) :
 			base("VBulletin", host)
 		{
 			_outer = outer;
 			_synchronousInvoker = synchronousInvoker;
+            VoteRegex = voteRegex;
 			ForumHost = forum;
 			ForumLobby = lobby;
+            ForumRoot = forumRoot;
 			_connectionSettings = new ConnectionSettings(ForumURL);
 			SetInitialState(StateLoggedOut);
 		}
 		#region Properties
 		internal virtual ThreadReader Reader()
 		{
-			ThreadReader t = new ThreadReader(_connectionSettings, _synchronousInvoker);
+			ThreadReader t = new ThreadReader(_connectionSettings, _synchronousInvoker, VoteRegex);
 			return t;
 		}
 		internal virtual LobbyReader Lobby()
@@ -1091,7 +1094,7 @@ fragment	name
 			get;
 			private set;
 		}
-
+        public virtual string ForumRoot { get; private set; }
 		public string ForumHost { 
 			get; 
 			private set; 
@@ -1101,6 +1104,7 @@ fragment	name
 			get
 			{
 				String rc = String.Format("http://{0}/", ForumHost);
+                if (ForumRoot.Length > 0) rc += String.Format("{0}/", ForumRoot);
 				return rc;
 			}
 		}
@@ -1114,20 +1118,20 @@ fragment	name
 		Action<Action> _synchronousInvoker;
 		#endregion
 		#region constructors
-		public VBulletinForum(Action<Action> synchronousInvoker, String forum, String vbVersion, String lobby)
+		public VBulletinForum(Action<Action> synchronousInvoker, String forum, String vbVersion, String lobby, String forumRoot = "", String voteRegex = "")
 		{
 			_synchronousInvoker = synchronousInvoker;
 			switch (vbVersion)
 			{
 				case "4.2.0":
 					{
-						_inner = new VBulletin_4_2_0(this, new StateMachineHost("ForumHost"), forum, lobby, synchronousInvoker);
+                        _inner = new VBulletin_4_2_0(this, new StateMachineHost("ForumHost"), forum, lobby, forumRoot, voteRegex, synchronousInvoker);
 					}
 					break;
 
 				default:
 					{
-						_inner = new VBulletin_3_8_7(this, new StateMachineHost("ForumHost"), forum, lobby, synchronousInvoker);
+                        _inner = new VBulletin_3_8_7(this, new StateMachineHost("ForumHost"), forum, lobby, forumRoot, voteRegex, synchronousInvoker);
 					}
 					break;
 			}
@@ -1260,12 +1264,27 @@ fragment	name
 			Int32.TryParse(tid, out threadId);
 			if (0 == threadId)
 			{
-				// Estonia?
-				int ixTidEnd = url.IndexOf('-');
-				tid = url.Substring(0, ixTidEnd);
-				ixTidStart = tid.LastIndexOf('/') + 1;
-				tid = tid.Substring(ixTidStart, ixTidEnd - ixTidStart);
-				Int32.TryParse(tid, out threadId);
+                // http://mindromp.org/forum/showthread.php?t=2071&page=3
+                String showthread = "showthread.php?";
+                int ixShowThread = url.IndexOf(showthread);
+                if (ixShowThread > 0)
+                {
+                    String qry = url.Substring(ixShowThread + showthread.Length);
+                    tid = HttpUtility.ParseQueryString(qry).Get("t");
+                    if(tid.Length > 0) Int32.TryParse(tid, out threadId);
+                }
+                else
+                {
+                    // Estonia?
+                    int ixTidEnd = url.IndexOf('-');
+                    if (ixTidEnd >= 0)
+                    {
+                        tid = url.Substring(0, ixTidEnd);
+                        ixTidStart = tid.LastIndexOf('/') + 1;
+                        tid = tid.Substring(ixTidStart, ixTidEnd - ixTidStart);
+                        Int32.TryParse(tid, out threadId);
+                    }
+                }
 			}
 			return threadId;
 		}

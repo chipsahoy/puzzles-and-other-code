@@ -1319,10 +1319,10 @@ LIMIT 1;
 
 
 
-		public IEnumerable<Poster> GetPostersLike(string name)
+		public IEnumerable<POG.Forum.Poster> GetPostersLike(string name)
 		{
 			name = name.Replace("%", ";%");
-			List<Poster> posters = new List<Poster>();
+			var posters = new List<POG.Forum.Poster>();
 			String sql = 
 @"
 SELECT Poster.postername, Poster.posterid, COUNT(*) AS gamesplayed FROM Poster
@@ -1346,7 +1346,7 @@ ORDER BY gamesplayed DESC, postername ASC;
 						{
 							String suggestion = r.GetString(0);
 							Int32 id = r.GetInt32(1);
-							Poster p = new Poster(suggestion, id);
+							var p = new POG.Forum.Poster(suggestion, id);
 							posters.Add(p);
 						}
 					}
@@ -1358,7 +1358,7 @@ ORDER BY gamesplayed DESC, postername ASC;
 		}
 
 
-		public void AddPosters(IEnumerable<Poster> posters)
+		public void AddPosters(IEnumerable<POG.Forum.Poster> posters)
 		{
 			Stopwatch watch = new Stopwatch();
 			watch.Start();
@@ -1378,7 +1378,7 @@ ORDER BY gamesplayed DESC, postername ASC;
 						cmd.Parameters.Add(pPosterName);
 						cmd.Parameters.Add(pPosterId);
 
-						foreach (Poster p in posters)
+						foreach (POG.Forum.Poster p in posters)
 						{
 							pPosterName.Value = p.Name;
 							pPosterId.Value = p.Id;
@@ -1392,7 +1392,103 @@ ORDER BY gamesplayed DESC, postername ASC;
 
 			//Trace.TraceInformation("after AddPosters {0}", watch.Elapsed.ToString());
 		}
-		public Int32 GetPostNumber(Int32 threadId, Int32 postId)
+        public Post GetPost(Int32 postId)
+        {
+            Post rc = null;
+            String sql =
+@"SELECT Post.threadid, Post.posterid, Post.postnumber, Post.posttime, Post.title, Post.content, Poster.postername
+FROM Post, Poster
+WHERE
+Post.postid = @p1
+AND
+Post.posterid = Poster.Posterid
+LIMIT 1;";
+            Int32 threadId = 0;
+            Int32 posterId = 0;
+            Int32 postNumber = 0;
+            DateTimeOffset postTime = DateTimeOffset.MinValue;
+            String title = "";
+            String content = "";
+            String posterName = "";
+
+            Stopwatch watch = new Stopwatch();
+            watch.Start();
+            using (SQLiteConnection dbRead = new SQLiteConnection(_connect))
+            {
+                dbRead.Open();
+                using (SQLiteCommand cmd = new SQLiteCommand(sql, dbRead))
+                {
+                    cmd.Parameters.Add(new SQLiteParameter("@p1", postId));
+                    using (SQLiteDataReader r = cmd.ExecuteReader())
+                    {
+                        if (r.Read())
+                        {
+                            threadId = r.GetInt32(0);
+                            posterId = r.GetInt32(1);
+                            postNumber = r.GetInt32(2);
+                            postTime = DateTime.SpecifyKind(r.GetDateTime(3), DateTimeKind.Local);
+                            title = r.GetString(4);
+                            content = r.GetString(5);
+                            posterName = r.GetString(6);
+                        }
+                    }
+                }
+            }
+            watch.Stop();
+            //Trace.TraceInformation("after GetPostNumber {0}", watch.Elapsed.ToString());
+            rc = new Post(threadId, posterName, posterId, postNumber, postTime, postId, title, content, null, null);
+            return rc;
+        }
+        public IEnumerable<Post> GetPosts(Int32 threadId, String poster)
+        {
+            Int32 posterId = GetPlayerId(poster);
+            List<Post> posts = new List<Post>();
+            String sql =
+@"SELECT postnumber, posttime, title, content, postid
+FROM Post
+WHERE
+threadid = @p1
+AND
+posterid = @p2
+ORDER BY postid ASC
+;";
+
+            Stopwatch watch = new Stopwatch();
+            watch.Start();
+            using (SQLiteConnection dbRead = new SQLiteConnection(_connect))
+            {
+                dbRead.Open();
+                using (SQLiteCommand cmd = new SQLiteCommand(sql, dbRead))
+                {
+                    cmd.Parameters.Add(new SQLiteParameter("@p1", threadId));
+                    cmd.Parameters.Add(new SQLiteParameter("@p2", posterId));
+                    using (SQLiteDataReader r = cmd.ExecuteReader())
+                    {
+                        while (r.Read())
+                        {
+                            Int32 postNumber = r.GetInt32(0);
+                            DateTimeOffset postTime = DateTime.SpecifyKind(r.GetDateTime(1), DateTimeKind.Local);
+                            String title = r.GetString(2);
+                            String content = r.GetString(3);
+                            Int32 postId = r.GetInt32(4);
+                            Post post = new Post(threadId, poster, posterId, postNumber, postTime, postId, title, content, null, null);
+                            posts.Add(post);
+                        }
+                    }
+                }
+            }
+            watch.Stop();
+            //Trace.TraceInformation("after GetPostNumber {0}", watch.Elapsed.ToString());
+            return posts;
+        }
+
+        public Post GetPost(Int32 threadId, Int32 postNumber)
+        {
+            Int32 postId = GetPostId(threadId, postNumber);
+            Post rc = GetPost(postId);
+            return rc;
+        }
+        public Int32 GetPostNumber(Int32 threadId, Int32 postId)
 		{
 			Int32 rc = 0;
 			String sql =
@@ -1455,47 +1551,6 @@ WHERE Post.threadid = @p2 AND
 			watch.Stop();
 			//Trace.TraceInformation("after GetPostId {0}", watch.Elapsed.ToString());
 			return rc;
-		}
-		public Post GetPost(int threadId, int postNumber)
-		{
-			Post p = null; 
-			//p.Poster; p.PostId; p.Time; 
-			//p.Title; p.Bolded; p.Content; p.Edit; p.PostLink;
-			String sql = 
-@"SELECT Post.postid, Post.posterid, Poster.postername, Post.posttime, Post.posttitle, 
-FROM Post
-JOIN Poster ON (Post.posterid = Poster.posterid)        
-WHERE Post.threadid = @p2 AND
-(Post.postnumber == @p4);";
-
-			Stopwatch watch = new Stopwatch();
-			watch.Start();
-			using (SQLiteConnection dbRead = new SQLiteConnection(_connect))
-			{
-				dbRead.Open();
-				using (SQLiteCommand cmd = new SQLiteCommand(sql, dbRead))
-				{
-					cmd.Parameters.Add(new SQLiteParameter("@p2", threadId));
-					cmd.Parameters.Add(new SQLiteParameter("@p4", postNumber));
-					using (SQLiteDataReader r = cmd.ExecuteReader())
-					{
-						if (r.Read())
-						{
-							Int32 postId = r.GetInt32(0);
-							Int32 posterId = r.GetInt32(1);
-							String name = r.GetString(2);
-							DateTime time = DateTime.SpecifyKind(r.GetDateTime(3), DateTimeKind.Local);
-                            String title = r.GetString(4);
-                            String content = r.GetString(5);
-							p = new Post(threadId, name, posterId, postNumber, time, String.Empty, String.Empty,
-								String.Empty, null, null);
-						}
-					}
-				}
-			}
-			watch.Stop();
-			//Trace.TraceInformation("after GetPost {0}", watch.Elapsed.ToString());
-			return p;
 		}
 
 

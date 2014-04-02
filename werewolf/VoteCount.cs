@@ -52,7 +52,7 @@ namespace POG.Werewolf
 		Int32? _endPost;
 		Int32 _day = 1;
 		String _postableCount;
-
+        Boolean _final = false; // lock votes with " final" at end.
 		List<String> _leaders =  new List<string>();
 		Int32 _leaderVotes = 0;
 
@@ -78,6 +78,7 @@ namespace POG.Werewolf
 			_thread.ReadCompleteEvent += new EventHandler<ReadCompleteEventArgs>(_thread_ReadCompleteEvent);
 			_db = db;
 			_db.WriteThreadDefinition(_threadId, url, false);
+            if (forum.Contains("mindromp.org")) _final = true;
 		}
 
 		~ElectionInfo()
@@ -825,7 +826,7 @@ namespace POG.Werewolf
 		}
 		private String PrepBolded(String bolded)
 		{
-			String vote = bolded.Trim();
+			String vote = bolded.Trim().ToLowerInvariant();
 			if (vote.StartsWith("vote:"))
 			{
 				vote = vote.Substring(5).Trim();
@@ -835,6 +836,14 @@ namespace POG.Werewolf
 			{
 				vote = vote.Substring(4).Trim();
 			}
+            if (_final)
+            {
+                String final = " final";
+                if (vote.EndsWith(final))
+                {
+                    vote = vote.Substring(0, vote.Length - final.Length);
+                }
+            }
 			return vote;
 		}
         class Alias
@@ -854,6 +863,15 @@ namespace POG.Werewolf
                          where String.Compare(input, c.Original, StringComparison.InvariantCultureIgnoreCase) == 0 
                          select c.MapsTo).FirstOrDefault();
             if (rc != null) return rc;
+            // vote prefix
+            if (input.StartsWith("vote:", StringComparison.InvariantCultureIgnoreCase))
+            {
+                input = input.Substring("vote:".Length).Trim();
+            }
+            else if (input.StartsWith("vote", StringComparison.InvariantCultureIgnoreCase))
+            {
+                input = input.Substring("vote".Length).Trim();
+            }
             //aliases
             String suggestion = _db.GetAlias(_threadId, input);
             if (suggestion != String.Empty)
@@ -929,6 +947,35 @@ namespace POG.Werewolf
                 }
 
             }
+            // off by one
+            List<String> inputs = new List<string>();
+            inputs.Add(newInput2);
+            if (newInput2.Length > 3)
+            {
+                for(int i = 0; i < newInput2.Length; i++)
+                {
+                    String missing = newInput2.Remove(i) + newInput2.Substring(i + 1);
+                    inputs.Add(missing);
+                }
+            }
+            foreach (var c in newChoices2)
+            {
+                foreach (string test in inputs)
+                {
+                    int ixMatch = 0;
+                    foreach (char ch in test)
+                    {
+                        int ix = c.Original.IndexOf(ch.ToString(), ixMatch, StringComparison.InvariantCultureIgnoreCase);
+                        ixMatch = ix;
+                        if (ix == -1) break;
+                    }
+                    if (ixMatch > 0)
+                    {
+                        return c.MapsTo;
+                    }
+                }
+
+            }
             // GOAT / WOAT / WOLF
             newInput2 = newInput2.Replace("GOAT", "").Replace("WOAT", "").Replace("WOLF", "");
             if (newInput2.Length <= 2)
@@ -964,7 +1011,7 @@ namespace POG.Werewolf
             {
                 aliases.Add(new Alias(w, w));
             }
-            String player = ParseInputToChoice(bolded, aliases);
+            String player = ParseInputToChoice(vote, aliases);
 			if ((player == "") || (player == null))
 			{
 				player = ErrorVote;

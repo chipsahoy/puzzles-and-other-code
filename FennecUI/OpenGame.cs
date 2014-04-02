@@ -78,7 +78,7 @@ namespace POG.FennecFox
         private void OpenGame_Load(object sender, EventArgs e)
         {
             _lobby.LobbyPageCompleteEvent += new EventHandler<LobbyPageCompleteEventArgs>(_lobby_LobbyPageCompleteEvent);
-            _lobby.ReadLobby(_url, 1, 2, true);
+            _lobby.ReadLobby(_url, 1, 1, true);
             lbThreads.DataSource = _threads;
             lbThreads.DisplayMember = "Title";
         }
