@@ -320,7 +320,14 @@ namespace POG.Forum
             String local = url;
             if (pageNumber > 1)
             {
-                local += "index" + pageNumber + ".html";
+                if (url.ToLowerInvariant().Contains("showthread.php?"))
+                {
+                    local += "&page=" + pageNumber;
+                }
+                else
+                {
+                    local += "index" + pageNumber + ".html";
+                }
             }
             string doc = null;
             for (int i = 0; i < 10; i++)
