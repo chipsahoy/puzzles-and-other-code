@@ -846,7 +846,7 @@ namespace POG.Werewolf
             }
 			return vote;
 		}
-        class Alias
+        public class Alias
         {
             public String Original {get; private set;}
             public String MapsTo {get; private set;}
@@ -856,7 +856,7 @@ namespace POG.Werewolf
                 MapsTo = mapsTo;
             }
         }
-        String ParseInputToChoice(String input, IEnumerable<Alias> choices)
+        public String ParseInputToChoice(String input, IEnumerable<Alias> choices)
         {
             // check for exact match.
             String rc = (from c in choices 
