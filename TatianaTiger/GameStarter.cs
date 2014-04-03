@@ -11,6 +11,20 @@ using System.Text.RegularExpressions;
 
 namespace TatianaTiger
 {
+    class SubInfo
+    {
+        public String Out { get; private set; }
+        public String In { get; private set; }
+        public DateTime Time { get; private set; }
+        public Int32 Post { get; private set; }
+        public SubInfo(String outPlayer, String inPlayer, DateTime time, Int32 post)
+        {
+            Out = outPlayer;
+            In = inPlayer;
+            Time = time;
+            Post = post;
+        }
+    }
 	class GameStarter : StateMachine
 	{
 		#region consts
@@ -35,6 +49,7 @@ namespace TatianaTiger
 		List<Player> _playerRoles = new List<Player>();
 		List<Player> _peeks = new List<Player>();
 		Dictionary<String, Player> _playerByName = new Dictionary<string,Player>();
+        List<SubInfo> _subs = new List<SubInfo>();
 		Player _peek;
 		String _killMessage;
 		DateTime _nextNight;
@@ -290,6 +305,7 @@ namespace TatianaTiger
 						_playerByName.Clear();
 						_playerRoles.Clear();
 						_requestNames.Clear();
+                        _subs.Clear();
 						_peek = null;
 						_killMessage = "";
 						//_threadId
@@ -376,12 +392,6 @@ namespace TatianaTiger
 				case "SubPM":
 					{
 						PrivateMessage pm = (e as Event<PrivateMessage>).Param;
-						if (LookupPlayer(pm.From) != null)
-						{
-							QueuePM(new string[] { pm.From }, pm.Title,
-								String.Format("Sorry, I can't sub you back in."));
-							break;
-						}
 						Player role = ParseSubPM(pm);
 						if (role == null)
 						{
@@ -389,10 +399,33 @@ namespace TatianaTiger
 								String.Format("I couldn't find the player you are asking to sub in for: '{0}'", pm.Content));
 							break;
 						}
-						List<String> notify = new List<string>() { role.Name, pm.From };
+                        Player oldRole = LookupPlayer(pm.From);
+                        if (oldRole != null)
+                        {
+                            bool reject = true;
+                            if (oldRole == role)
+                            {
+                                // allow original player to sub back in. Do not allow sub to sub back in.
+                                var repeat = (from s in _subs where 
+                                               s.In.Equals(pm.From, StringComparison.InvariantCultureIgnoreCase) 
+                                           select s).FirstOrDefault();
+                                if (repeat == null)
+                                {
+                                    reject = false;
+                                }
+                            }
+                            if (reject)
+                            {
+                                QueuePM(new string[] { pm.From }, pm.Title,
+                                    String.Format("Sorry, I can't sub you back in."));
+                                break;
+                            }
+                        }
+                        List<String> notify = new List<string>() { role.Name, pm.From };
 						StringBuilder sb = new StringBuilder();
 						String subMsg = String.Format("[b]{0}[/b] is subbing in for [b]{1}[/b]\n\n", pm.From, role.Name);
-						_count.SubPlayer(role.Name, pm.From);
+                        var sub = new SubInfo(role.Name, pm.From, DateTime.Now, _count.LastPost);
+                        _count.SubPlayer(role.Name, pm.From);
 						_playerByName[pm.From] = role;
 						role.Name = pm.From;
 						QueueAnnouncement(subMsg);
@@ -419,6 +452,8 @@ namespace TatianaTiger
 								sb.AppendLine(MakeVanillaPmMessage());
 							}
 						}
+                        sb.AppendLine().AppendFormat("If you do not wish to sub out, sub back in by sending a PM with title sub and body {0}",
+                            sub.In);
 						PrivateMessage pmSub = new PrivateMessage(notify, null, "Substitution in Turbo", sb.ToString());
 						QueuePM(pmSub);
 					}
@@ -475,10 +510,10 @@ namespace TatianaTiger
 						if (_forum.Username.Equals("Oreos", StringComparison.InvariantCultureIgnoreCase))
 						{
 							_hyper = true;
-							_d1Duration = 2;
-							_dDuration = 2;
-							_n1Duration = 1;
-							_nDuration = 1;
+							_d1Duration = 1;
+							_dDuration = 1;
+							_n1Duration = 3;
+							_nDuration = 3;
 						}
 						else
 						{
@@ -903,7 +938,7 @@ namespace TatianaTiger
 					PostEvent(new Event<PrivateMessage>("CorrectionPM", pm));
 					continue;
 				}
-				if ((pm.Title.ToLowerInvariant().Trim().StartsWith("sub")) || (pm.Content.ToLowerInvariant().Trim().StartsWith("sub ")))
+                if ((pm.Title.ToLowerInvariant().Trim().StartsWith("sub")) || (pm.Content.ToLowerInvariant().Trim().StartsWith("sub ")))
 				{
 					PostEvent(new Event<PrivateMessage>("SubPM", pm));
 					continue;
@@ -1205,6 +1240,13 @@ namespace TatianaTiger
 						  select p.Value).FirstOrDefault();
 			return player;
 		}
+        Player LookupLivePlayer(String name)
+        {
+			var player = (from p in _playerRoles where (p.Dead == false) && 
+                             (p.Name.Equals(name, StringComparison.InvariantCultureIgnoreCase)) 
+                         select p).FirstOrDefault();
+            return player;
+        }
 		private bool ParseKillPM(PrivateMessage pm)
 		{
 			List<String> rawList = pm.Content.Split(
@@ -1223,6 +1265,32 @@ namespace TatianaTiger
 			}
 			var wolves = from p in _playerRoles where (p.Dead == false) && (p.Team == WOLF) select p.Name;
 			var villagers = from p in _playerRoles where (p.Dead == false) && (p.Team == VILLAGE) orderby p.Name.ToUpperInvariant() select p.Name;
+            var villaNames = from p in _playerByName
+                             where (p.Value.Dead == false) && (p.Value.Team == VILLAGE)
+                             orderby
+                                 p.Value.Name.ToLowerInvariant()
+                             select p.Key;
+            // look for name without requiring exact.
+            foreach (var line in rawList)
+            {
+                string l = line;
+                if (pm.Content.ToLowerInvariant().Trim().StartsWith("kill "))
+                {
+                    l = l.Substring(5).Trim();
+                }
+                String k = InexactLookup(l, villaNames);
+                if ((k != null) && (k != ""))
+                {
+                    var player = LookupPlayer(k);
+                    if ((player != null) && (player.Dead == false) && (player.Team != WOLF))
+                    {
+                        _kill = player.Name;
+                        return true;
+                    }
+                }
+
+            }
+
 			String msg = "Submit your kill promptly. It should be a PM that contains only the name of the villager you want to kill.\r\n\r\n live villagers:\r\n";
 			foreach (var v in villagers)
 			{
@@ -1231,6 +1299,22 @@ namespace TatianaTiger
 			QueuePM(wolves, "NIGHT ACTION FAILED", msg);
 			return false;
 		}
+        String InexactLookup(String input, IEnumerable<Player> choices)
+        {
+            var names = from c in choices select c.Name;
+            String rc = InexactLookup(input, names);
+            return rc;
+        }
+        String InexactLookup(String input, IEnumerable<String> choices)
+        {
+            List<ElectionInfo.Alias> choiceList = new List<ElectionInfo.Alias>();
+            foreach (var c in choices)
+            {
+                choiceList.Add(new ElectionInfo.Alias(c, c));
+            }
+            String rc = _count.ParseInputToChoice(input, choiceList);
+            return rc;
+        }
 		DateTime _lastPMTime = DateTime.MinValue;
 		Queue<PrivateMessage> _pmQueue = new Queue<PrivateMessage>();
 		void SendPM(PrivateMessage pm)
@@ -1307,7 +1391,8 @@ namespace TatianaTiger
 		}
 		private Player ParseSubPM(PrivateMessage pm)
 		{
-			List<String> rawList = pm.Content.Split(
+            var players = from p in _playerRoles where (p.Dead == false) orderby p.Name.ToUpperInvariant() select p.Name;
+            List<String> rawList = pm.Content.Split(
 				new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries)
 				.Select(p => p.Trim())
 				.Distinct().ToList();
@@ -1318,12 +1403,18 @@ namespace TatianaTiger
 				{
 					l = l.Substring(4).Trim();
 				}
-				var player = LookupPlayer(l);
-				if ((player != null) && (player.Dead == false))
+				var player = LookupLivePlayer(l);
+				if (player != null)
 				{
 					return player;
 				}
-			}
+                String match = InexactLookup(l, players);
+                player = LookupLivePlayer(match);
+                if (player != null)
+                {
+                    return player;
+                }
+            }
 			return null;
 		}
 		private Player ParsePeekPM(PrivateMessage pm)
@@ -1341,12 +1432,31 @@ namespace TatianaTiger
 				}
 
 			}
-			var peekCandidates = GetPeekCandidates(pm.From);
+			var peekCandidates = GetPeekCandidatesAllNames(pm.From);
+            List<ElectionInfo.Alias> choiceList = new List<ElectionInfo.Alias>();
+            foreach (var c in peekCandidates)
+            {
+                choiceList.Add(new ElectionInfo.Alias(c.Key, c.Value.Name));
+                choiceList.Add(new ElectionInfo.Alias("peek " + c.Key, c.Value.Name));
+            }
+            // try again, inexact
+            foreach (var line in rawList)
+            {
+                string l = line;
+                String peek = _count.ParseInputToChoice(l, choiceList);
+                var player = LookupPlayer(peek);
+                if ((player != null) && (player.Dead == false))
+                {
+                    return player;
+                }
+
+            }
 			
 			String msg = "Submit your peek promptly. It should be a PM that contains only the name of the player you want to peek. \r\n\r\nUnpeeked players:\r\n";
-			foreach (var v in peekCandidates)
+            var currentCandidates = GetPeekCandidates(pm.From);
+            foreach (var v in currentCandidates)
 			{
-				msg += v + "\r\n";
+				msg += v.Name + "\r\n";
 			}
 			QueuePM(new String[] {pm.From}, "NIGHT ACTION FAILED", msg);
 			return null;
@@ -1358,7 +1468,16 @@ namespace TatianaTiger
 				Where(p => p.Name.Equals(seerName, StringComparison.InvariantCultureIgnoreCase) == false);
 			return peekCandidates;
 		}
-		void SetDayDuration()
+        IEnumerable<KeyValuePair<String, Player>> GetPeekCandidatesAllNames(String seerName)
+        {
+            var players = from p in _playerByName where 
+                              (p.Value.Dead == false) && 
+                              !_peeks.Contains(p.Value) &&
+                              !p.Value.Name.Equals(seerName, StringComparison.InvariantCultureIgnoreCase)
+                          orderby p.Value.Name.ToUpperInvariant() select p;
+            return players;
+        }
+        void SetDayDuration()
 		{
 			Int32 m = (_day < 1) ? _d1Duration : _dDuration;
 			_nextNight = TruncateSeconds(DateTime.Now).AddMinutes(m);

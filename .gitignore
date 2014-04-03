@@ -3,3 +3,5 @@
 */Debug/
 packages/
 *.suo
+
+*.user
