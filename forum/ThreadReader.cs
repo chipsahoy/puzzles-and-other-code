@@ -411,7 +411,7 @@ namespace POG.Forum
             Int32 postNumber = 0;
             String postLink = null;
             DateTimeOffset postTime = DateTime.Now;
-            HtmlAgilityPack.HtmlNode postNumberNode = html.SelectSingleNode("../../../tr[1]/td[2]/a");
+            HtmlAgilityPack.HtmlNode postNumberNode = html.SelectSingleNode("../../../tr[1]/td[2]/a[last()]");
 
             if (postNumberNode != null)
             {
