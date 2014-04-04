@@ -369,7 +369,7 @@ namespace POG.Forum
             serverTime = DateTime.Now;
             //(//div[class="smallfont", align="center'])[last()] All times are GMT ... The time is now <span class="time">time</span>"."
 
-            HtmlAgilityPack.HtmlNode timeNode = root.SelectNodes("//div[@class='smallfont'][@align='center']").Last();
+            HtmlAgilityPack.HtmlNode timeNode = root.SelectNodes("//div[@class='smallfont'][@align='center']/span[@class='time']/..").Last();
             if (timeNode != null)
             {
                 String timeText = timeNode.InnerText;
