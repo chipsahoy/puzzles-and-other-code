@@ -49,7 +49,8 @@ namespace POG.FennecFox
             if (radioAlias.Checked)
             {
                 String alias = cmbValidVotes.SelectedItem.ToString();
-                _voteCount.AddVoteAlias(txtBolded.Text, alias);
+                String vote = _voteCount.PrepBolded(txtBolded.Text);
+                _voteCount.AddVoteAlias(vote, alias);
             }
             if (radioIgnore.Checked)
             {

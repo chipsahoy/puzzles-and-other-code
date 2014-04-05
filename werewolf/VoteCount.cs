@@ -666,7 +666,7 @@ namespace POG.Werewolf
 			}
 			if (almostNight)
 			{
-				DateTime et = _endTime;
+				DateTime et = _endTime.ToUniversalTime();
 				int good = et.Minute;
 				int bad = (good + 1) % 60;
 				sb.AppendLine();
@@ -799,7 +799,8 @@ namespace POG.Werewolf
 		private String VoteLinks(List<Voter> wagon, Boolean linkToVote)
 		{
 			StringBuilder sb = new StringBuilder();
-			foreach (Voter voter in wagon)
+            var sortedWagon = from v in wagon orderby v.PostId ascending, v.Name.ToLowerInvariant() ascending select v;
+			foreach (Voter voter in sortedWagon)
 			{
 				if (linkToVote)
 				{
@@ -824,10 +825,39 @@ namespace POG.Werewolf
 			int page = (number / _postsPerPage) + 1;
 			return page;
 		}
-		private String PrepBolded(String bolded)
+		public String PrepBolded(String bolded)
 		{
 			String vote = bolded.Trim().ToLowerInvariant();
-			if (vote.StartsWith("vote:"))
+            if (_final)
+            {
+                String final = " final";
+                if (vote.EndsWith(final))
+                {
+                    vote = vote.Substring(0, vote.Length - final.Length);
+                }
+                else
+                {
+                    final = " final ";
+                    vote = vote.Replace(final, "");
+                }
+            }
+            // unvote handling.
+            if(vote.StartsWith("unvote"))
+            {
+                vote = vote.Substring(6);
+                if (vote.StartsWith(":")) vote = vote.Substring(1);
+                vote = vote.Trim();
+                int ixVote = vote.IndexOf(" vote");
+                if (ixVote != -1)
+                {
+                    vote = vote.Substring(ixVote + 1);
+                }
+                else
+                {
+                    return "unvote";
+                }
+            }
+            if (vote.StartsWith("vote:"))
 			{
 				vote = vote.Substring(5).Trim();
 			}
@@ -836,14 +866,6 @@ namespace POG.Werewolf
 			{
 				vote = vote.Substring(4).Trim();
 			}
-            if (_final)
-            {
-                String final = " final";
-                if (vote.EndsWith(final))
-                {
-                    vote = vote.Substring(0, vote.Length - final.Length);
-                }
-            }
 			return vote;
 		}
         public class Alias
@@ -863,15 +885,6 @@ namespace POG.Werewolf
                          where String.Compare(input, c.Original, StringComparison.InvariantCultureIgnoreCase) == 0 
                          select c.MapsTo).FirstOrDefault();
             if (rc != null) return rc;
-            // vote prefix
-            if (input.StartsWith("vote:", StringComparison.InvariantCultureIgnoreCase))
-            {
-                input = input.Substring("vote:".Length).Trim();
-            }
-            else if (input.StartsWith("vote", StringComparison.InvariantCultureIgnoreCase))
-            {
-                input = input.Substring("vote".Length).Trim();
-            }
             //aliases
             String suggestion = _db.GetAlias(_threadId, input);
             if (suggestion != String.Empty)
