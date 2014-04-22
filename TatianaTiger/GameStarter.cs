@@ -854,7 +854,7 @@ namespace TatianaTiger
 						{
 							_peek = ParsePeekPM(pm);
 						}
-						if ((_kill != "") && (_peek != null))
+						if ((_kill != "") && (_peek != null) && !_missingPlayers)
 						{
 							ChangeState(StateCallDay);
 							return null;
