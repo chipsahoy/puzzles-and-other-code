@@ -878,176 +878,176 @@ namespace POG.Werewolf
                 MapsTo = mapsTo;
             }
         }
-        public String ParseInputToChoice(String input, IEnumerable<Alias> choices)
+        delegate bool TestMatch(String input, Alias choice);
+        String TryRules(IEnumerable<String> inputs, IEnumerable<Alias> choices)
         {
-            // check for exact match.
-            String rc = (from c in choices 
-                         where String.Compare(input, c.Original, StringComparison.InvariantCultureIgnoreCase) == 0 
-                         select c.MapsTo).FirstOrDefault();
-            if (rc != null) return rc;
-            //aliases
-            String suggestion = _db.GetAlias(_threadId, input);
-            if (suggestion != String.Empty)
+            foreach (String input in inputs)
             {
-                rc =
-                    (from c in choices
-                     where String.Compare(suggestion, c.Original, StringComparison.InvariantCultureIgnoreCase) == 0
-                     select c.MapsTo).FirstOrDefault();
+                String rc = TryRules(input, choices);
+            }
+            return null;
+        }
+        String TryRules(String input, IEnumerable<Alias> choices)
+        {
+            var rules = GetRules(input);
+            foreach (var rule in rules)
+            {
+                String rc = TryRule(input, choices, rule);
                 if (rc != null) return rc;
             }
+            return null;
+        }
+        String TryRule(String input, IEnumerable<Alias> choices, TestMatch rule)
+        {
+            Alias match = null;
+            foreach (var choice in choices)
+            {
+                bool matched = rule(input, choice);
+                if (matched)
+                {
+                    if (match != null)
+                    {
+                        // two matches
+                        return "Error";
+                    }
+                    match = choice;
+                }
+            }
+            if (match != null)
+            {
+                return match.MapsTo;
+            }
+            return null;
+        }
+        
+        private IEnumerable<TestMatch> GetRules(string input)
+        {
+            // check for exact match.
+            TestMatch ruleExact = (userInput, choice) =>
+            {
+                bool ok = String.Compare(userInput, choice.Original, StringComparison.InvariantCultureIgnoreCase) == 0;
+                return ok;
+            };
+            //initials
+            TestMatch ruleInitials = (userInput, choice) =>
+            {
+                if (!choice.Original[0].ToString().ToLowerInvariant().
+                    Equals(userInput[0].ToString().ToLowerInvariant())) return false;
+                int ixMatch = -1;
+                foreach (char ch in userInput)
+                {
+                    int ix = choice.Original.IndexOf(ch.ToString(), ixMatch + 1, StringComparison.InvariantCultureIgnoreCase);
+                    ixMatch = ix;
+                    if (ix == -1) return false;
+                }
+                return true;
+            };
+            // check for input inside the string
+            TestMatch ruleConsecutive = (userInput, choice) =>
+            {
+                String ui = userInput.ToLowerInvariant();
+                String ci = choice.Original.ToLowerInvariant();
+                return ci.Contains(ui);
+            };
+            // check for input inside the string
+            TestMatch ruleStart = (userInput, choice) =>
+            {
+                String ui = userInput.ToLowerInvariant();
+                String ci = choice.Original.ToLowerInvariant();
+                return ci.StartsWith(ui);
+            };
+
+            List<TestMatch> rules = new List<TestMatch>();
+            rules.Add(ruleExact);
+            if (input.Length > 2)
+            {
+                rules.Add(ruleStart);
+                rules.Add(ruleInitials);
+                rules.Add(ruleConsecutive);
+            }
+            else
+            {
+                if(input.Length == 2) rules.Add(ruleInitials);
+            }
+            return rules;
+        }
+        public String ParseInputToChoice(String input, IEnumerable<Alias> choices)
+        {
+
+            
+            //aliases
+            String suggestion = _db.GetAlias(_threadId, input);
             //punctuation
             //whitespace
-            List<Alias> newChoices = new List<Alias>();
+            List<Alias> onlyAlphaNumChoices = new List<Alias>();
             foreach (var c in choices)
             {
                 String newOriginal = new String(c.Original.Where(ch => char.IsLetterOrDigit(ch)).ToArray());
                 Alias a = new Alias(newOriginal, c.MapsTo);
                 if (newOriginal.Length >= 2)
                 {
-                    newChoices.Add(a);
+                    onlyAlphaNumChoices.Add(a);
                 }
                 else
                 {
-                    newChoices.Add(c);
+                    onlyAlphaNumChoices.Add(c);
                 }
             }
-            String newInput = new String(input.Where(ch => char.IsLetterOrDigit(ch)).ToArray());
-            rc = (from c in newChoices
-                         where String.Compare(newInput, c.Original, StringComparison.InvariantCultureIgnoreCase) == 0
-                         select c.MapsTo).FirstOrDefault();
-            if (rc != null) return rc;
-
-			//initials
-			foreach (var c in newChoices)
-			{
-				if (c.Original[0].ToString().Equals(newInput[0].ToString()) == false) continue;
-				int ixMatch = -1;
-				foreach (char ch in newInput)
-				{
-					int ix = c.Original.IndexOf(ch.ToString(), ixMatch + 1, StringComparison.InvariantCultureIgnoreCase);
-					ixMatch = ix;
-					if (ix == -1) break;
-				}
-				if (ixMatch > 0)
-				{
-					return c.MapsTo;
-				}
-			}
-			// omitted letters
-			foreach (var c in newChoices)
-			{
-				int ixMatch = -1;
-				foreach (char ch in newInput)
-				{
-					int ix = c.Original.IndexOf(ch.ToString(), ixMatch + 1, StringComparison.InvariantCultureIgnoreCase);
-					ixMatch = ix;
-					if (ix == -1) break;
-				}
-				if (ixMatch > 0)
-				{
-					return c.MapsTo;
-				}
-			}
-
-			
+            String alphaNumInput = new String(input.Where(ch => char.IsLetterOrDigit(ch)).ToArray());
             //repeated letters
             Regex r = new Regex("(.)(?<=\\1\\1)", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
-            List<Alias> newChoices2 = new List<Alias>();
-            foreach (var c in newChoices)
+            List<Alias> collapseRepeatsChoices = new List<Alias>();
+            foreach (var c in onlyAlphaNumChoices)
             {
                 String newOriginal = r.Replace(c.Original, String.Empty);
                 Alias a = new Alias(newOriginal, c.MapsTo);
-                if (newOriginal.Length >= 2)
+                if (newOriginal.Length >= 4)
                 {
-                    newChoices2.Add(a);
+                    collapseRepeatsChoices.Add(a);
                 }
                 else
                 {
-                    newChoices2.Add(c);
+                    collapseRepeatsChoices.Add(c);
                 }
             }
-            String newInput2 = r.Replace(newInput, String.Empty);
-			if (newInput2.Length < 2) newInput2 = newInput;
-            rc = (from c in newChoices2
-                  where String.Compare(newInput2, c.Original, StringComparison.InvariantCultureIgnoreCase) == 0
-                  select c.MapsTo).FirstOrDefault();
-            if (rc != null) return rc;
-            //subset
-            rc = (from c in newChoices2
-                  where c.Original.Contains(newInput2)
-                  select c.MapsTo).FirstOrDefault();
-            if (rc != null) return rc;
-            //initials
-            // omitted letters
-            foreach (var c in newChoices2)
-            {
-				int ixMatch = -1;
-                foreach (char ch in newInput2)
-                {
-					int ix = c.Original.IndexOf(ch.ToString(), ixMatch + 1, StringComparison.InvariantCultureIgnoreCase);
-                    ixMatch = ix;
-                    if (ix == -1) break;
-                }
-                if (ixMatch > 0)
-                {
-                    return c.MapsTo;
-                }
+            String collapseInput = r.Replace(alphaNumInput, String.Empty);
+			if (collapseInput.Length < 4) collapseInput = ""; // go back if too short
 
-            }
             // off by one
-            List<String> inputs = new List<string>();
-            inputs.Add(newInput2);
-            if (newInput2.Length > 3)
+            List<String> missingOneLetter = new List<string>();
+            missingOneLetter.Add(collapseInput);
+            if (collapseInput.Length > 3)
             {
-                for(int i = 0; i < newInput2.Length; i++)
+                for (int i = 0; i < collapseInput.Length; i++)
                 {
-                    String missing = newInput2.Remove(i) + newInput2.Substring(i + 1);
-                    inputs.Add(missing);
+                    String missing = collapseInput.Remove(i) + collapseInput.Substring(i + 1);
+                    missingOneLetter.Add(missing);
                 }
-            }
-            foreach (var c in newChoices2)
-            {
-                foreach (string test in inputs)
-                {
-                    int ixMatch = 0;
-                    foreach (char ch in test)
-                    {
-                        int ix = c.Original.IndexOf(ch.ToString(), ixMatch, StringComparison.InvariantCultureIgnoreCase);
-                        ixMatch = ix;
-                        if (ix == -1) break;
-                    }
-                    if (ixMatch > 0)
-                    {
-                        return c.MapsTo;
-                    }
-                }
-
             }
             // GOAT / WOAT / WOLF
-			newInput2 = newInput2.Replace("GOAT", "", StringComparison.InvariantCultureIgnoreCase).
-				Replace("WOAT", "", StringComparison.InvariantCultureIgnoreCase).
-				Replace("WOLF", "", StringComparison.InvariantCultureIgnoreCase).
-				Replace("AIDS", "", StringComparison.InvariantCultureIgnoreCase);
-            if (newInput2.Length <= 2)
+            String noAids = collapseInput.Replace("GOAT", "", StringComparison.InvariantCultureIgnoreCase).
+                Replace("WOAT", "", StringComparison.InvariantCultureIgnoreCase).
+                Replace("WOLF", "", StringComparison.InvariantCultureIgnoreCase).
+                Replace("AIDS", "", StringComparison.InvariantCultureIgnoreCase);
+            if (noAids.Length <= 2)
             {
-                return "";
+                noAids = "";
             }
-            foreach (var c in newChoices2)
-            {
-				int ixMatch = -1;
-                foreach (char ch in newInput2)
-                {
-					int ix = c.Original.IndexOf(ch.ToString(), ixMatch + 1, StringComparison.InvariantCultureIgnoreCase);
-                    ixMatch = ix;
-                    if (ix == -1) break;
-                }
-                if (ixMatch > 0)
-                {
-                    return c.MapsTo;
-                }
 
-            }
+            String rc = TryRules(input, choices);
+            if (rc != null) return rc;
+            rc = TryRules(suggestion, choices);
+            if (rc != null) return rc;
+            rc = TryRules(alphaNumInput, onlyAlphaNumChoices);
+            if (rc != null) return rc;
+            rc = TryRules(collapseInput, collapseRepeatsChoices);
+            if (rc != null) return rc;
+            rc = TryRules(missingOneLetter, collapseRepeatsChoices);
+            if (rc != null) return rc;
+            rc = TryRules(noAids, collapseRepeatsChoices);
+            if (rc != null) return rc;
+
             return "";
         }
 		internal String ParseBoldedToVote(String bolded)

@@ -755,7 +755,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:checkmywwstats, Version=2.0.5206.18864, Culture=neutral, processorArchitecture=x86"
+            "AssemblyAsmDisplayName" = "8:checkmywwstats, Version=2.0.5215.29157, Culture=neutral, processorArchitecture=x86"
                 "ScatterAssemblies"
                 {
                     "_16907AE0B453B6D61F1419BE5CCC54C5"
@@ -868,7 +868,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:WerewolfTypes, Version=2.0.5206.18864, Culture=neutral, processorArchitecture=x86"
+            "AssemblyAsmDisplayName" = "8:WerewolfTypes, Version=2.0.5215.29156, Culture=neutral, processorArchitecture=x86"
                 "ScatterAssemblies"
                 {
                     "_6832F4A1E33AD6458DF7C4CD16392CAF"
@@ -930,7 +930,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:FennecUI, Version=2.0.5207.22575, Culture=neutral, processorArchitecture=x86"
+            "AssemblyAsmDisplayName" = "8:FennecUI, Version=2.0.5215.29157, Culture=neutral, processorArchitecture=x86"
                 "ScatterAssemblies"
                 {
                     "_B194349FE83DCC7B02BB0A8B8510C0E3"
@@ -981,7 +981,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:vbulletin, Version=2.0.5207.22574, Culture=neutral, processorArchitecture=x86"
+            "AssemblyAsmDisplayName" = "8:vbulletin, Version=2.0.5215.29156, Culture=neutral, processorArchitecture=x86"
                 "ScatterAssemblies"
                 {
                     "_BC6C5BF994D21FB35D2D1BE6B33164E4"
@@ -1043,7 +1043,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:WerewolfTypes, Version=2.0.5206.18864, Culture=neutral, processorArchitecture=x86"
+            "AssemblyAsmDisplayName" = "8:WerewolfTypes, Version=2.0.5215.29156, Culture=neutral, processorArchitecture=x86"
                 "ScatterAssemblies"
                 {
                     "_C4B9B58527407873669611B32658956F"
@@ -1074,7 +1074,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:werewolf, Version=2.0.5208.20258, Culture=neutral, processorArchitecture=x86"
+            "AssemblyAsmDisplayName" = "8:werewolf, Version=2.0.5215.30425, Culture=neutral, processorArchitecture=x86"
                 "ScatterAssemblies"
                 {
                     "_C54EE2129A47FB3C52CC55458AE8426E"
@@ -1187,7 +1187,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:PogDbSqlite, Version=2.0.5206.18865, Culture=neutral, processorArchitecture=x86"
+            "AssemblyAsmDisplayName" = "8:PogDbSqlite, Version=2.0.5215.29158, Culture=neutral, processorArchitecture=x86"
                 "ScatterAssemblies"
                 {
                     "_FE224A3349975319CB45761C82D001B8"
@@ -1314,15 +1314,15 @@
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:FennecFox"
-        "ProductCode" = "8:{DFED0ECD-A268-4D77-BC36-E414FFD4E983}"
-        "PackageCode" = "8:{6AB0A192-98D5-47D0-8205-502136C4B8EC}"
+        "ProductCode" = "8:{FED95F61-2231-4F28-9835-26EFF73597D6}"
+        "PackageCode" = "8:{84BD859C-CB8A-44D3-9CA7-318A408B43AF}"
         "UpgradeCode" = "8:{6FA378AC-1D8C-4F10-AD8C-831DCAE5C6BF}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:FALSE"
-        "ProductVersion" = "8:1.1.71"
+        "ProductVersion" = "8:1.1.72"
         "Manufacturer" = "8:POG"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:"
