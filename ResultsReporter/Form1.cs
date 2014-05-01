@@ -10,6 +10,7 @@ using POG.Forum;
 using POG.Werewolf;
 using POG.Utils;
 using Newtonsoft.Json;
+using POG.Werewolf.Serialize;
 
 namespace ResultsReporter
 {
