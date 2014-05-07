@@ -446,7 +446,7 @@ namespace POG.FennecFox
 			{
 				title = "EOD ";
 			}
-			title += String.Format("Vote Count {0} to {1} ", first, last);
+			title += String.Format("Vote Count");
 			var ok = _forum.MakePost(threadId, title, count, 4, false);
 			if (ok.Item1)
 			{
