@@ -1164,7 +1164,7 @@ GROUP BY Poster.postername
                             Int32 playerId = r.GetInt32(1);
                             String name = r.GetString(2);
                             Int32 count = r.GetInt32(3);
-                            VoterInfo2 v = new VoterInfo2(name, playerId, count);
+                            VoterInfo2 v = new VoterInfo2(roleId, name, playerId, count);
                             voters.Add(v);
                         }
                     }

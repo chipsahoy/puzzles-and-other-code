@@ -1,8 +1,15 @@
 ﻿using System;
 using System.Windows.Forms;
+using CommandLine.Text;
+using CommandLine;
 
 namespace POG.FennecFox
 {
+    class Options
+    {
+        [Option('h', "host", DefaultValue="forumserver.twoplustwo.com", HelpText = "base url of forum")]
+        public String Host { get; set; }
+    }
     static class Program
     {
         /// <summary>
@@ -13,10 +20,11 @@ namespace POG.FennecFox
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
+            var options = new Options();
             String forum = "forumserver.twoplustwo.com";
-            if (args.Length > 0)
+            if (CommandLine.Parser.Default.ParseArguments(args, options))
             {
-                forum = args[0].ToLowerInvariant();
+                forum = options.Host.ToLowerInvariant();
             }
             Form f = new FoxParent(forum);
             if (f != null)

@@ -695,6 +695,21 @@ namespace POG.Werewolf
 			EndPost = endPost;
 			SortableBindingList<Voter> livePlayers = new SortableBindingList<Voter>();
             IEnumerable<VoterInfo2> voters = _db.GetAllVotes(_threadId, startPost, _endTime.ToUniversalTime(), this);
+            var votersById = voters.GroupBy(x => x.RoleId).Select(y => y.ToList()).ToList();
+            List<VoterInfo2> hydraVoters = new List<VoterInfo2>();
+            foreach (var hydra in votersById)
+            {
+                if (hydra.Count > 1)
+                {
+                    Hydra h = new Hydra(hydra[0], hydra[1]);
+                    hydraVoters.Add(h);
+                }
+                if (hydra.Count == 1)
+                {
+                    hydraVoters.Add(hydra[0]);
+                }
+            }
+            voters = hydraVoters;
             MajorityInfo maj = GetActiveVote(voters, _checkMajority, _lockedVotes);
             if (maj != null)
             {
@@ -723,8 +738,10 @@ namespace POG.Werewolf
 			CreatePostableVoteCount(); // updates counts.
 
 		}
+        List<Alias> _aliases = new List<Alias>();
         private MajorityInfo GetActiveVote(IEnumerable<VoterInfo2> voters, Boolean checkMajority, Boolean lockedVotes)
         {
+            _aliases.Clear();
             MajorityInfo rc = null;
             Int32 majCount = (1 + voters.Count()) / 2;
             Dictionary<String, String> voterVote = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase);
@@ -737,7 +754,13 @@ namespace POG.Werewolf
                 votes.AddRange(vi.Votes);
                 voterVote.Add(vi.Name, "");
                 wagons.Add(vi.Name, new HashSet<string>(StringComparer.InvariantCultureIgnoreCase));
+                foreach (var name in vi.Names)
+                {
+                    _aliases.Add(new Alias(name, vi.Name));
+                }
             }
+            _aliases.Add(new Alias("unvote", "unvote"));
+            _aliases.Add(new Alias("no lynch", "no lynch"));
             if (!lockedVotes)
             {
                 wagons.Add(NoLynch, new HashSet<string>());
@@ -760,7 +783,7 @@ namespace POG.Werewolf
                     wagons[oldVote].Remove(v.Voter);
                     voterVote[v.Voter] = "";
                 }
-                String votee = ParseInputToVote(v.Bolded);
+                String votee = ParseBoldedToVote(v.Bolded, _aliases);
                 voterInfos[v.Voter].SetVote(v.Bolded, v.PostNumber, v.PostTime, v.PostId, v.BoldPosition);
                 if (wagons.ContainsKey(votee))
                 {
@@ -884,6 +907,7 @@ namespace POG.Werewolf
             foreach (String input in inputs)
             {
                 String rc = TryRules(input, choices);
+                if (rc != null) return rc;
             }
             return null;
         }
@@ -905,7 +929,7 @@ namespace POG.Werewolf
                 bool matched = rule(input, choice);
                 if (matched)
                 {
-                    if (match != null)
+                    if ((match != null) && (match.MapsTo != choice.MapsTo))
                     {
                         // two matches
                         return "Error";
@@ -1050,23 +1074,28 @@ namespace POG.Werewolf
 
             return "";
         }
+        internal String ParseBoldedToVote(String bolded, IEnumerable<Alias> aliases)
+        {
+            String vote = PrepBolded(bolded);
+            if (vote == "")
+            {
+                return "";
+            }
+            String player = ParseInputToChoice(vote, aliases);
+            if ((player == "") || (player == null))
+            {
+                player = ErrorVote;
+            }
+            return player;
+        }
 		internal String ParseBoldedToVote(String bolded)
 		{
-			String vote = PrepBolded(bolded);
-			if (vote == "")
-			{
-				return "";
-			}
             List<Alias> aliases = new List<Alias>();
             foreach (var w in ValidVotes)
             {
                 aliases.Add(new Alias(w, w));
             }
-            String player = ParseInputToChoice(vote, aliases);
-			if ((player == "") || (player == null))
-			{
-				player = ErrorVote;
-			}
+            String player = ParseBoldedToVote(bolded, _aliases);
 			return player;
 		}
 		DateTime TruncateTime(DateTime dt)

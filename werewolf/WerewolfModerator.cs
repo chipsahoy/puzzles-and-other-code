@@ -222,11 +222,11 @@ namespace POG.Werewolf
         Boolean SetVoteCountTimer()
         {
             DateTime eod = _voteCount.EndTime;
-            eod.AddMinutes(1);
+            eod = eod.AddMinutes(1);
             DateTime now = DateTime.Now;
             DateTime alarm = now;
             TimeSpan daylight = eod - now;
-            if (daylight.TotalMinutes < -1)
+            if (daylight.TotalMinutes < 0)
             {
                 return false;
             }
@@ -252,9 +252,17 @@ namespace POG.Werewolf
             {
                 alarm = eod - new TimeSpan(1, 0, 0);
             }
+            else if (daylight.Minutes >= 40)
+            {
+                alarm = eod - new TimeSpan(0, 40, 0);
+            }
             else if (daylight.Minutes >= 30)
             {
                 alarm = eod - new TimeSpan(0, 30, 0);
+            }
+            else if (daylight.Minutes >= 20)
+            {
+                alarm = eod - new TimeSpan(0, 20, 0);
             }
             else if (daylight.Minutes >= 15)
             {
@@ -276,9 +284,9 @@ namespace POG.Werewolf
             {
                 alarm = eod - new TimeSpan(0, 1, 0);
             }
-            else
+            else if (daylight.Minutes == 0)
             {
-                alarm = now + new TimeSpan(0, 0, 30);
+                alarm = eod + new TimeSpan(0, 0, 2);
             }
             TimeSpan duration = alarm - now;
             
