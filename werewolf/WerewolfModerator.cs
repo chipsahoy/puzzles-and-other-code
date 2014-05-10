@@ -201,7 +201,7 @@ namespace POG.Werewolf
                                 {
                                     title = "EOD ";
                                 }
-                                title += String.Format("Vote Count {0} to {1} ", first, last);
+                                title += String.Format("Vote Count");
                                 _forum.MakePost(tid, title, count, 4, LockThread && night);
                             }
                             if (night)
