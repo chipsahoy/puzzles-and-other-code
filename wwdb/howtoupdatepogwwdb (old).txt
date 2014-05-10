@@ -1,0 +1,56 @@
+How to update the werewolf database:
+
+# test in dev first
+# copy over Poster, Thread tables
+delete from dev.Thread;
+insert into dev.Thread select * from fennecfox.Thread where subforumid < 1000;
+delete from dev.Poster;
+insert into dev.Poster select * from fennecfox.Poster;
+# fix url russians are coming / monkey
+# fix url disney http
+# #3 champs game, victors wolves
+# fix revenge of burn notice, all fucked up
+
+
+
+# make sure that the db is updated using fennecfox
+# take the ww data wwdbcombined.xls file
+# remove the 12th and 13th columns (Post Restriction, Special Rules) since this script is not up to date with those changes
+# make sure date format is readable
+# sort by date, gamename (not really necessary)
+# make sure urls are good; needs the "http://" part
+# save as text file, tab delimited
+# run: python readwwcsv.py -i wwdbcombined.txt -o wwupdate.sql
+# this generates wwupdate.sql
+# in mysql: delete from fennecfox.Thread where subforumid >= 1000;
+# because we created "synthetic" threads in the db last time we uploaded non-2p2 games. they need to be refreshed
+# run in command line: 
+mysql fennecfox < wwupdate.sql -upogwwdb -pwerewolf
+# on the server to delete old data and add new
+# remove all apostrophes from game names, since the special characters are used in the address bar to point to the game's webpage and... it doesn't work
+update Game set gamename='Les Miserables' where gamename like "Les Mis%";
+update Game set gamename = replace(gamename, "'", "") where gamename like "%'%";
+
+# adjust threadids for non-2p2
+update Thread set threadid = threadid + 3000000 where subforumid = 1000;
+update Thread set threadid = threadid + 3100000 where subforumid = 3;
+update Thread set threadid = threadid + 3200000 where subforumid = 2000;
+
+# gimmicks:
+
+truncate Gimmick;
+mysql fennecfox < gimmicks_20140412.sql -upogwwdb -pwerewolf
+
+# player records
+mysql fennecfox < derived.sql -upogwwdb -pwerewolf
+
+# ELO
+don't know how
+
+
+
+connection.set_character_set('utf8')
+cursor.execute('SET NAMES utf8;')
+cursor.execute('SET CHARACTER SET utf8;')
+cursor.execute('SET character_set_connection=utf8;')
+
