@@ -45,13 +45,11 @@ check for ties as victory condition 2
 
 
 
-
 -- join gimmicks
 
 update player set mainplayerid= where playerid=;
 
 update playerlist set playerid= where playeraccount=;
-
 
 
 

@@ -34,7 +34,7 @@ Maximum: <input type="text" id="max" name="max"/><br/>
 		select p.mainplayerid playerid, p.playername, count(distinct g.gameid) games, sum(g.gametype in ('Vanilla','Slow Game')) vanillas, 
 		sum(g.gametype = 'Turbo') turbos, min(g.startdate) firstgame, max(g.startdate) lastgame, m.playername mainacct
 		from player p
-		join playerlist pl on p.playerid=pl.playeraccount
+		join playerlist pl on p.playerid=pl.playerid
 		join game g using (gameid)
 		join player m on m.playerid=p.mainplayerid
 		where p.playerid != p.mainplayerid

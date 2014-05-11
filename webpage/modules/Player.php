@@ -56,7 +56,7 @@
 </table>
 
 <?php
-	$qry = "select if(pl.playerid=pl.playeraccount,'',p.playername) playername, gamename, gametype, startdate, gameid, factionname, deathday, 
+	$qry = "select if(p.playerid=p.mainplayerid,'',p.playername) playername, gamename, gametype, startdate, gameid, factionname, deathday, 
 		deathtypename, victory, rolename, pc.posts postcount, url, pl.ordinal, pl.dayin, pl.dayout
 		from game g
 		join team t using (gameid)
@@ -65,9 +65,9 @@
 		join playerlist pl using (gameid, slot)
 		join roles r on r.roleid=rs.roletype
 		join deathtype dt on dt.deathtypeid=rs.deathtype
-		join player p on p.playerid=pl.playeraccount
-		left join postcount pc on pc.threadid=g.gameid and pc.posterid=pl.playeraccount
-		where pl.playerid =" .$playerid. " and g.gametype <> 'Turbo' order by startdate desc, deathday desc";
+		join player p on p.playerid=pl.playerid
+		left join postcount pc on pc.threadid=g.gameid and pc.posterid=pl.playerid
+		where p.mainplayerid =" .$playerid. " and g.gametype <> 'Turbo' order by startdate desc, deathday desc";
 	$result = $db->query($qry);
 	
 	echo "<h3>Long Games</h3>";
@@ -134,7 +134,7 @@
 	# turbos
 	$turbos = array();
 
-	$qry = "select if(pl.playerid=pl.playeraccount,'',p.playername) playername, gamename, gametype, startdate, gameid, factionname, deathday, 
+	$qry = "select if(p.playerid=p.mainplayerid,'',p.playername) playername, gamename, gametype, startdate, gameid, factionname, deathday, 
 		deathtypename, victory, rolename, pc.posts postcount, url, pl.ordinal, pl.dayin, pl.dayout
 		from game g
 		join team t using (gameid)
@@ -143,9 +143,9 @@
 		join playerlist pl using (gameid, slot)
 		join roles r on r.roleid=rs.roletype
 		join deathtype dt on dt.deathtypeid=rs.deathtype
-		join player p on p.playerid=pl.playeraccount
-		left join postcount pc on pc.threadid=g.gameid and pc.posterid=pl.playeraccount
-		where pl.playerid =" .$playerid. " and g.gametype = 'Turbo' order by startdate desc, deathday desc";
+		join player p on p.playerid=pl.playerid
+		left join postcount pc on pc.threadid=g.gameid and pc.posterid=pl.playerid
+		where p.mainplayerid =" .$playerid. " and g.gametype = 'Turbo' order by startdate desc, deathday desc";
 	$result = $db->query($qry);
 	
 	if ($result->num_rows > 0):

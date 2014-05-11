@@ -1,7 +1,7 @@
 <?php
 	$qry = "select p.playerid, g.playername gimmick, p.playername main, count(*) n
 		from player p join player g on g.mainplayerid=p.playerid
-		join playerlist pl on pl.playeraccount=g.playerid
+		join playerlist pl on pl.playerid=g.playerid
 		where p.playerid != g.playerid group by g.playerid order by 2";
 	$result = $db->query($qry);
 ?>

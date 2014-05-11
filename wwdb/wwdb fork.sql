@@ -1,12 +1,12 @@
 /*
 iversonian
 4/16/14
-wwdb refactoring
+wwdb update
 
 Player/role: not a series of players, but rather of ordinal values, with a player associated with it
 Gimmicks. use main account from the start
 
-Each forum has its own db, own webpage
+Each forum has its own db, own webpage, to contain the ebolaids
 */
 
 --#############################################################
@@ -333,6 +333,14 @@ delete from faction where factionid >=30;
 update faction set factionname='Wolves' where factionid=11;
 update faction set factionname='Neutral' where factionid=21;
 
+--############################################
+-- change playerlist to have one playerid only, the player account used
+
+update playerlist set playerid=playeraccount;
+
+alter table playerlist drop column playeraccount;
+
+drop table derivedrecords;
 
 
 

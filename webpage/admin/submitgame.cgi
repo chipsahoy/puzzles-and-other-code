@@ -15,9 +15,6 @@ cursor.execute("set autocommit=0")
 
 import textjsondb
 
-TOPDIRECTORY = 'pog'
-PASSWORDS = []
-
 ##########################################################
 
 def ValidDate(date_text):
@@ -76,13 +73,21 @@ def ListPlayers(playerlist, affiliation, role, deathday, deathtype):
 		formpl += "</table></td></tr>"
 		return formpl
 
+def VictorType(victor):
+	if len(victor) == 0:
+		return ''
+	elif len(victor) == 1 and victor[0] in ('Village','Wolves',''):
+		return victor[0]
+	else:
+		return 'Other/Multiple:'
+
 def GenerateForm(game):
 	print "<font color='red'>"
 	for m in game.errmsg:
 		print str(m) + "<br>"
 	print "</font>"
 	form1 = """<br>
-		<form method="post" action="/cgi-bin/submitgame.cgi">
+		<form method="post" action="submitgame.cgi">
 		<table width="100%%">
 		<tr><td><input type="submit" name="clear" value="Clear Form"></td></tr>
 		<tr><td align="right" width="10%%">URL:</td>
@@ -95,14 +100,17 @@ def GenerateForm(game):
 			<td><input type="text" name="startdate" size="25" placeholder="YYYY-MM-DD" value="%s"></td></tr>
 		<tr><td align="right">Game Type:</td><td>
 		%s</td></tr>
-		<tr><td align='right'>Victor(s):</td><td><input type="text" name="victor" size="25" value="%s"></td></tr>
+		<tr><td align='right'>Victor:</td><td>%s<input type="text" name="victortxt" size="15" value="%s"></td>
+		</tr>
 		<tr><td align="right">Player list:</td>
 			<td><table><tr><td><textarea name="playerlisttext" rows="9" cols="20">%s</textarea></td>
 			<td>The player list should include only the <u>original</u> players<br> that occupied each player slot. Subs are noted separately.<br><br>
 			<input type="submit" name="deathtable" value="Build death table with this player list"></td></tr></table></tr>
 		""" % (game.url, game.gamename, '; '.join(game.mods), game.startdate, 
 			makeRadio('gametype', ['Vanilla','Slow Game','Vanilla+','Mish-Mash','Turbo'], game.gametype), 
-			'; '.join(game.victor), '\n'.join(game.playerlisttext))
+			makeSelect('victordrop', ['','Village','Wolves','Other/Multiple:'], VictorType(game.victor)), 
+			'' if len(game.victor)==1 and game.victor[0] in ('Village','Wolves','') else '; '.join(game.victor),
+			'\n'.join(game.playerlisttext))
 	
 	players = ListPlayers(game.playerlist, game.affiliation, game.role, game.deathday, game.deathtype) if (len(game.playerlist) > 0) else ''
 	subs = ListSubs(game.subs, game.playerlist)
@@ -110,6 +118,7 @@ def GenerateForm(game):
 	
 	form2 = """<tr><td></td><td><br><br>
 			<input type="hidden" name="action" value="go">
+			<input type="submit" name="filldt" value="Fill in death table with implied values"><br><br>
 			<input type="submit" name="checkgame" value="Check for validity"><br><br>
 			<input type="hidden" name="delete" value="Delete game from database"><br><br>
 			<input type="text" name="commit" size="20" value="" placeholder="Commit message"><br>
@@ -156,7 +165,8 @@ class Game:
 		for fieldname in ('url','gamename','startdate'):
 			setattr(self, fieldname, f[fieldname].value)
 		self.gametype = f.getvalue('gametype')
-		self.victor = [a.strip() for a in f.getvalue('victor').split(';')] if f.getvalue('victor') != '' else []
+		#self.victor = [a.strip() for a in f.getvalue('victor').split(';')] if f.getvalue('victor') != '' else []
+		self.SetVictor(f.getvalue('victordrop'), f.getvalue('victortxt'))
 		self.mods = [a.strip() for a in f.getvalue('mods').split(';')] if f.getvalue('mods') != '' else []
 		self.playerlist = [a.strip() for a in f.getvalue('playerlisttext').strip().split('\n')] if f.getvalue('playerlist') != '' else []
 		self.playerlist = f.getlist("playerlist")
@@ -171,6 +181,14 @@ class Game:
 			self.subs = []
 			for i, s in enumerate(subop):
 				self.subs.append({'op':subop[i], 'subname':subname[i], 'subday':subday[i]})
+	
+	def SetVictor(self, vd, vt):
+		if len(vd) == 0:
+			self.victor = []
+		elif vd in ('Village','Wolves'):
+			self.victor = [vd]
+		else:
+			self.victor = [a.strip() for a in vt.split(';')] if vt != '' else []
 	
 	def CheckPlayerlistAgainstDB(self):
 		for i, p in enumerate(self.playerlist):
@@ -193,15 +211,32 @@ class Game:
 	def AddSub(self):
 		self.subs.append({'op':'--', 'subname':'', 'subday':''})
 	
+	def FillInDeathTable(self):
+	# infer missing deathtype/deathday values
+		if self.victor == []:
+			self.errmsg.append("<font color='red'>Victor(s) is a required field.</font>")
+		else:
+			for i in range(len(self.deathday)):
+				if self.deathday[i] == '':
+					self.deathday[i] = max([0 if a=='' else a for a in self.deathday])
+				if self.deathtype[i] == '': # fill in s/e/c deathtypes
+					if self.affiliation[i].upper() in [a.upper for a in self.victor]:
+						self.deathtype[i] = 'Survived'
+					else:
+						if self.affiliation[i] == 'Village':
+							self.deathtype[i] = 'Eaten'
+						else:
+							self.deathtype[i] = 'Conceded'				
+	
 	def CheckValidity(self):
 		# check url against thread table
 		cursor.execute("select * from thread where url = %s", self.url)
 		if cursor.rowcount == 0:
-			self.errmsg.append("Game thread (url) does not exist in the database. Please wait for it to be added.")
+			self.errmsg.append("<font color='red'>Game thread (url) does not exist in the database. Add it using the control panel.</font>")
 	
 		# missing values:
 		if self.gamename == '':
-			self.errmsg.append("Game Name is a required field.")
+			self.errmsg.append("<font color='red'>Game Name is a required field.</font>")
 		if self.mods == []:
 			self.errmsg.append("<font color='red'>Mod(s) is a required field.</font>")
 		if not ValidDate(self.startdate):
@@ -239,19 +274,12 @@ class Game:
 		# get rid of '--' subs
 		self.subs = filter(lambda a: a['op'] != '--', self.subs)
 		
-		# set missing deathtype/deathdays
-		for i in range(len(self.deathday)):
-			if self.deathday[i] == '':
-				self.deathday[i] = max([0 if a=='' else a for a in self.deathday])
-			if self.deathtype[i] == '' and self.victor != '': 
-				# fill in s/e/c deathtypes (but don't bother if victor isn't filled out)
-				if self.affiliation[i] in self.victor:
-					self.deathtype[i] = 'Survived'
-				else:
-					if self.affiliation[i] == 'Village':
-						self.deathtype[i] = 'Eaten'
-					else:
-						self.deathtype[i] = 'Conceded'				
+		if self.gametype in ('Vanilla','Slow Game','Turbo'):
+			self.FillInDeathTable()
+		
+		# incomplete death table
+		if sum([a == '' for a in self.deathday]) > 0 or sum([a == '' for a in self.deathtype]) > 0:
+			self.errmsg.append("<font color='red'>Death table is incomplete.</font>")
 		
 		# check for valid role names
 		for i in self.role:
@@ -353,7 +381,8 @@ print """<script type="text/javascript">
 	var evt = (evt) ? evt : ((event) ? event : null); 
 	var node = (evt.target) ? evt.target : ((evt.srcElement) ? evt.srcElement : null); 
 	if ((evt.keyCode == 13) && (node.type=="text"))  {return false;} }
-	document.onkeypress = stopRKey; </script>"""
+	document.onkeypress = stopRKey;
+	</script>"""
 print "<h3><ul>Werewolf Database Game Submission/Edit Form (beta)</ul></h3>"
 
 #print '<font face="courier new">'
@@ -370,8 +399,6 @@ if "sendgame" in form:
 	j = game.ExportToJSON()
 	if len(form.getvalue('commit')) < 1:
 		print "<font color='red'>Enter a commit message.</font><br>"
-		#if form.getvalue('commit')[:5] not in PASSWORDS:
-		#	print "<font color='red'>Incorrect password.</font><br>"
 	else:
 		commitmsg = form.getvalue('commit').strip()
 		if game.CheckValidity():
@@ -385,8 +412,7 @@ if "sendgame" in form:
 				cursor.execute("select gameid from game where url=%s", game.url)
 				if result == 1 and cursor.rowcount == 1:
 					print "<font color='blue'><br>Game uploaded successfully.</font><br> \
-						<a href='../%s/index.php?report=Game&gameid=%s' target='_blank'>Link to game in database</a><br>" % (
-							TOPDIRECTORY, cursor.fetchone()['gameid'])
+						<a href='../index.php?report=Game&gameid=%s' target='_blank'>Link to game in database</a><br>" % (cursor.fetchone()['gameid'])
 				else:
 					print "<font color='red'><br>Game was not uploaded successfully. Please send details to iversonian for debugging.</font><br>"
 					#cursor.execute("SET GLOBAL general_log = 'OFF'")
@@ -402,9 +428,15 @@ elif "deathtable" in form:
 elif "addsub" in form:
 	game.AddSub()
 	GenerateForm(game)
+elif "filldt" in form:
+	if game.gametype in ('Vanilla','Slow Game','Turbo'):
+		game.FillInDeathTable()
+	else:
+		print "<font color='red'>That function is only applicable for vanilla games.</font><br>"
+	GenerateForm(game)
 elif "checkgame" in form:
 	if game.CheckValidity():
-		print "<font color='blue'>Looks good :thumb:</font><br>"
+		print "<font color='blue'>Looks good</font><br>"
 	GenerateForm(game)
 elif "clear" in form:
 	GenerateForm(Game())
