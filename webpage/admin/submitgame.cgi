@@ -31,9 +31,6 @@ def PlayerInDB(playername):
 	else:
 		return [True, cursor.fetchone()['playername']] # to get capitalization the same as db
 
-def ListActions(actions):
-	return ''
-
 def makeRadio(name, values, selectedValue=None):
 	OPT = '<input type="radio" name="{0}"{2} value="{1}">{1}\n'
 	return ''.join(OPT.format(name, v, " checked" if v==selectedValue else "") for v in values)
@@ -53,8 +50,22 @@ def ListSubs(subs, playerlist):
 				<td><input type="text" name="subday" size="5" value="%s"></td></tr>""" % (
 				makeSelect('subop', ['--']+playerlist, s['op']), s['subname'], s['subday'])
 		formsub += '</table></tr>' 
-	formsub += '<tr><td></td><td><br><input type="submit" name="addsub" value="Add Sub"></td></tr>'
+	formsub += '<tr><td></td><td><br><input type="submit" name="addsub" value="Add Sub"><br><br></td></tr>'
 	return formsub
+
+def ListActions(actions, playerlist):
+	# actions is list of dicts: {'player','target','night','ability'}
+	formaction = ''
+	if len(actions) > 0:
+		formaction = '<tr><td align="right">Actions:</td><td><table bgcolor=efe1f1><tr><th>Player</th><th>Target</th><th>Night</th><th>Ability</th></tr>'
+		for a in actions:
+			formaction += """<tr><td>%s</td><td>%s</td><td><input type="text" name="night" size="5" value="%s"></td><td>%s</td></tr>""" % (
+				makeSelect('actor', ['--']+playerlist, a['player']),
+				makeSelect('actor', ['--']+playerlist, a['target']),
+				a['night'], makeSelect('actor', ['Peek','Angel','Vig','Roleblock'], a['ability']))
+		formaction += '</table></tr>'
+	formaction += '<tr><td></td><td><br><input type="submit" name="addaction" value="Add Action"><br><br></td></tr>'
+	return formaction
 
 def ListPlayers(playerlist, affiliation, role, deathday, deathtype):
 	if len(playerlist)==0:
@@ -70,7 +81,7 @@ def ListPlayers(playerlist, affiliation, role, deathday, deathtype):
 			'<td>' + makeSelect('deathtype', ['','Lynched','Night Killed','Survived','Eaten','Conceded','Mod Killed','Day Killed'], 
 				deathtype[i]) + '</td>' + \
 			'<td><input type="text" name="role" size="15" value="%s"></td></tr>' % ('' if role[i] == 'Vanilla' else role[i])
-		formpl += "</table></td></tr>"
+		formpl += "</table><br></td></tr>"
 		return formpl
 
 def VictorType(victor):
@@ -114,7 +125,7 @@ def GenerateForm(game):
 	
 	players = ListPlayers(game.playerlist, game.affiliation, game.role, game.deathday, game.deathtype) if (len(game.playerlist) > 0) else ''
 	subs = ListSubs(game.subs, game.playerlist)
-	actions = ListActions(game.actions)
+	actions = ListActions(game.actions, game.playerlist)
 	
 	form2 = """<tr><td></td><td><br><br>
 			<input type="hidden" name="action" value="go">
@@ -137,7 +148,7 @@ def GenerateForm(game):
 		8. If there are no error messages, prepend your password to your commit message and hit Submit. 
 			The message is to avoid duplicate submissions and to help with debugging.<br>
 		<br><br>"""
-	print form1 + players + subs + form2 + instructions
+	print form1 + players + subs + actions + form2 + instructions
 
 #####################################################################
 
@@ -210,6 +221,9 @@ class Game:
 	
 	def AddSub(self):
 		self.subs.append({'op':'--', 'subname':'', 'subday':''})
+	
+	def AddAction(self):
+		self.actions.append({'player':'--', 'target':'', 'night':'', 'ability':''})
 	
 	def FillInDeathTable(self):
 	# infer missing deathtype/deathday values
@@ -427,6 +441,9 @@ elif "deathtable" in form:
 	GenerateForm(game)
 elif "addsub" in form:
 	game.AddSub()
+	GenerateForm(game)
+elif "addaction" in form:
+	game.AddAction()
 	GenerateForm(game)
 elif "filldt" in form:
 	if game.gametype in ('Vanilla','Slow Game','Turbo'):

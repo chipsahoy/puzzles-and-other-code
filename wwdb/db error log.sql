@@ -35,6 +35,9 @@ http://forumserver.twoplustwo.com/59/puzzles-other-games/june-8th-ww-game-thread
 
 # search tie games
 
+-- figure out why there are dupes, posterid null
+-- e.g. roleid 5131, gameid=563562
+
 
 triple sub, startday=5, endday=4
 gameid 1372095 slot 30 posterid 121114 roleid 17909 teamid 1899
