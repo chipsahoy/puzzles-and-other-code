@@ -29,9 +29,9 @@ def JSONtoDB(j, cur, msg='added'):
 	# roleset & playerlist
 	for n, i in enumerate(j['players']):
 		cur.execute("""insert into roleset values (%s, %s, (select factionid from faction where factionname = %s),
-			(select roleid from roles where rolename = %s), (select deathtypeid from deathtype where deathtypename=%s), %s, %s, NULL)""",
+			(select roleid from roles where rolename = %s), %s, %s, %s, NULL)""",
 			(gameid, n+1, i['faction'], i['role'], i['deathtype'], i['deathday'], 1))
-		cur.execute("""insert into playerlist values (%s, %s, %s, NULL, (select playerid from player where playername = %s), %s, NULL)""", 
+		cur.execute("""insert into playerlist values (%s, %s, %s, (select playerid from player where playername = %s), %s, NULL)""", 
 			(gameid, n+1, 1, i['op'], 0))
 	
 	# subs
@@ -47,9 +47,6 @@ def JSONtoDB(j, cur, msg='added'):
 				(i['subday'], gameid, result['slot'], result['players']))
 			cur.execute("update roleset set players = players + 1 where gameid=%s and slot=%s", (gameid, result['slot']))
 	# actions
-	
-	# set main player id in playerlist table
-	cur.execute("update playerlist pl join player p on p.playerid=pl.playeraccount set pl.playerid=p.mainplayerid where pl.gameid=%s", gameid)
 	
 	SaveJSONToLog(j['url'], cur, msg, str(j))
 	cur.execute("commit")
@@ -84,15 +81,15 @@ def DBtoJSON(url, cur):
 		if x['victory'] == 1:
 			jsontxt['victor'].append(str(x['factionname']))
 	
-	cur.execute("select p.playername, f.factionname, rs.slot, r.rolename, rs.deathday, dt.deathtypename, \
+	cur.execute("select p.playername, f.factionname, rs.slot, r.rolename, rs.deathday, rs.deathtype, \
 		(select max(ordinal)-1 from playerlist x where x.gameid=rs.gameid and x.slot=rs.slot) subs \
 		from roleset rs join playerlist pl using (gameid, slot) join player p using (playerid) join faction f on f.factionid=rs.faction \
-		join roles r on r.roleid=rs.roletype join deathtype dt on dt.deathtypeid=rs.deathtype where ordinal = 1 and rs.gameid=%s" %gameid)
+		join roles r on r.roleid=rs.roletype where ordinal = 1 and rs.gameid=%s" %gameid)
 	result = cur.fetchall()
 	
 	for p in result:
 		jsontxt['players'].append({'op':p['playername'], 'faction':p['factionname'], 'role':p['rolename'], 'deathday':int(p['deathday']), 
-			'deathtype':p['deathtypename']})
+			'deathtype':p['deathtype']})
 		if p['subs'] > 0:
 			cur.execute('select p.playername, dayin, dayout from playerlist pl join player p using (playerid) \
 				where pl.gameid=%s and pl.slot=%s and ordinal > 1 order by ordinal' % (gameid, p['slot']))

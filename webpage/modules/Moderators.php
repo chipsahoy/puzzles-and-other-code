@@ -1,7 +1,7 @@
 <?php
 	$qry = "select p.mainplayerid playerid, (select playername from player p2 where p2.playerid=p.mainplayerid) playername, 
 		sum(gametype<>'Turbo') n, sum(gametype in ('Vanilla','Slow Game')) v, sum(gametype='Vanilla+') vp, sum(gametype='Mish-Mash') mash, sum(gametype='Turbo') turbo,
-		sum(isprimary) primarymod, min(g.startdate) firstgame, max(g.startdate) lastgame
+		sum(isprimary and gametype<>'Turbo') primarymod, min(g.startdate) firstgame, max(g.startdate) lastgame
 		from moderator m join game g using (gameid)
 		join player p on p.playerid=m.modid
 		group by p.mainplayerid order by 3 desc";

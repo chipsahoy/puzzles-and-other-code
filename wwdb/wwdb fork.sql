@@ -4,7 +4,7 @@ iversonian
 wwdb update
 
 Player/role: not a series of players, but rather of ordinal values, with a player associated with it
-Gimmicks. use main account from the start
+Gimmicks: aggregate by main account from the start
 
 Each forum has its own db, own webpage, to contain the ebolaids
 */
@@ -17,8 +17,6 @@ alter database pog default character set 'utf8';
 create user 'dev'@'localhost' identified by 'dev';
 
 grant all privileges on dev.* to dev@localhost;
-grant all privileges on wwdb.* to dev@localhost;
-grant select on *.* to dev@localhost;
 flush privileges;
 
 --#############################################################
@@ -41,7 +39,7 @@ primary key (playerid), unique (playername), index (mainplayerid)) engine=innodb
 create table roleset (gameid int, slot int, faction int, roletype int, deathtype char(1), deathday int, players int, roleid int,
 primary key (gameid, slot)) engine=innodb;
 
-create table playerlist (gameid int, slot int, ordinal int, playerid int, playeraccount int, dayin int, dayout int, primary key (gameid, slot, ordinal)) engine=innodb;
+create table playerlist (gameid int, slot int, ordinal int, playerid int, dayin int, dayout int, primary key (gameid, slot, ordinal)) engine=innodb;
 
 create table team (gameid int, faction int, players int, victory int, teamid int, primary key (gameid, faction)) engine=innodb;
 
@@ -242,12 +240,8 @@ update temp1 set ordinal = 3 where ordinal = 0;
 -- should be done now
 
 insert into playerlist
-select gameid, slot, ordinal, NULL as playerid, posterid as playeraccount, startday, endday
+select gameid, slot, ordinal, posterid as playerid, startday, endday
 from temp1;
-
--- the "player" in playerlist is always the main account id
-update playerlist pl join player p on pl.playeraccount=p.playerid set pl.playerid = p.mainplayerid;
-
 
 update roleset r join fennecfox.GameRole g on r.roleid=g.roleid set r.roletype = roletypeid;
 
@@ -334,15 +328,22 @@ update faction set factionname='Wolves' where factionid=11;
 update faction set factionname='Neutral' where factionid=21;
 
 --############################################
--- change playerlist to have one playerid only, the player account used
+-- update player from fennecfox.Poster
+insert into player
+select posterid as playerid, postername as playername, posterid as mainplayerid
+from fennecfox.Poster t
+left join player p on p.playerid=t.posterid
+where p.playerid is null and t.forumid=1;
 
-update playerlist set playerid=playeraccount;
+--############################################
 
-alter table playerlist drop column playeraccount;
-
-drop table derivedrecords;
-
-
+alter table roleset drop column roleid;
+alter table roleset modify column deathtype char(17);
+update roleset rs join deathtype dt on rs.deathtype=dt.deathtypeid set rs.deathtype = dt.deathtypename;
+drop table deathtype;
+update roles set rolename='Vigilante' where roleid=4;
+update roleset set roletype = 1 where roletype=215; -- rolename = ''
+delete from roles where roleid=215;
 
 -- finish conversion
 --############################################
