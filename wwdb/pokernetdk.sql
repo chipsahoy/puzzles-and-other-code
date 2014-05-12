@@ -54,7 +54,8 @@ join team t using (gameid)
 join faction f on f.factionid=t.faction
 group by g.gameid;
 
-create view thread as select * from fennecfox.Thread where subforumid=1000;
+create table thread (threadid int primary key, op int, posts int, title varchar(100), url varchar(200) not null, unique index (url)) default charset=utf8;
+insert into thread select threadid, op, NULL as posts, NULL as title, url from fennecfox.Thread where subforumid=1000;
 
 --############################################
 -- covert from old db to new

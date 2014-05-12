@@ -7,6 +7,8 @@
 def JSONtoDB(j, cur, msg='added'):
 	RemoveGameFromDB(j['url'], cur) # delete existing game
 	
+	# check names against db!
+	
 	gameid = GetThreadIDFromURL(j['url'])
 	gamelength = max([x['deathday'] for x in j['players']])
 	
@@ -17,8 +19,8 @@ def JSONtoDB(j, cur, msg='added'):
 	# team (deal with ties later)
 	for i in j['factions']:
 		n = sum(item['faction']==i for item in j['players'])
-		cur.execute("insert into team values (%s, (select factionid from faction where factionname = %s), %s, %s, NULL)",
-			(gameid, i, n, int(i.lower() in (a.lower() for a in j['victor']))))
+		cur.execute("insert into team values (%s, (select factionid from faction where factionname = %s), %s, %s)",
+			(gameid, i, n, IsVictory(i, j['victor'])))
 	
 	# mod
 	for n, i in enumerate(j['mod']):
@@ -80,6 +82,8 @@ def DBtoJSON(url, cur):
 		jsontxt['factions'].append(str(x['factionname']))
 		if x['victory'] == 1:
 			jsontxt['victor'].append(str(x['factionname']))
+		if x['victory'] == 2:
+			jsontxt['victor'] = ['Tie']
 	
 	cur.execute("select p.playername, f.factionname, rs.slot, r.rolename, rs.deathday, rs.deathtype, \
 		(select max(ordinal)-1 from playerlist x where x.gameid=rs.gameid and x.slot=rs.slot) subs \
@@ -105,21 +109,25 @@ def DBtoJSON(url, cur):
 	
 	return jsontxt
 
-# j = DBtoJSON('http://forumserver.twoplustwo.com/59/puzzles-other-games/3-game-mafia-champions-ww-invitational-game-thread-1428519/',cursor)
-
 #######################################
 # misc functions
 
-def GetThreadIDFromURL(url):
-	if '-' not in url:
-		return None
-	url = url[url.rindex('-')+1:]
-	if '/' not in url:
-		return None
-	url = url[0:url.index('/')]
-	if not url.isdigit():
-		return None
-	return int(url)
+def GetThreadIDFromURL(url, cur):
+	if 'forumserver.twoplustwo.com' in url:
+		if '-' not in url:
+			return None
+		url = url[url.rindex('-')+1:]
+		if '/' not in url:
+			return None
+		url = url[0:url.index('/')]
+		if not url.isdigit():
+			return None
+		return int(url)
+	elif 'archives1.twoplustwo.com' in url:
+		pass
+	else: # grab the highest gameid +1
+		cur.execute("select ifnull(max(gameid)+1,1) gameid from game")
+		return cur.fetchrone()['gameid']
 
 def SaveJSONToLog(url, cur, msg='', jsontxt=None):
 	if jsontxt is None:
@@ -140,5 +148,14 @@ def RemoveGameFromDB(url, cur, commit=False):
 		cur.execute("delete from game where gameid=%s", gameid)
 	if commit:
 		cur.execute("commit")
+
+def IsVictory(thisteam, victors):
+	# return 1 for win, 0 for loss, 2 for tie
+	if int(thisteam.upper() in (a.upper() for a in victors)):
+		return 1
+	elif victors[0] == 'Tie':
+		return 2
+	else:
+		return 0
 
 

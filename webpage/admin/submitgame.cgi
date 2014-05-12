@@ -87,7 +87,7 @@ def ListPlayers(playerlist, affiliation, role, deathday, deathtype):
 def VictorType(victor):
 	if len(victor) == 0:
 		return ''
-	elif len(victor) == 1 and victor[0] in ('Village','Wolves',''):
+	elif len(victor) == 1 and victor[0] in ('Village','Wolves','Tie',''):
 		return victor[0]
 	else:
 		return 'Other/Multiple:'
@@ -119,8 +119,8 @@ def GenerateForm(game):
 			<input type="submit" name="deathtable" value="Build death table with this player list"></td></tr></table></tr>
 		""" % (game.url, game.gamename, '; '.join(game.mods), game.startdate, 
 			makeRadio('gametype', ['Vanilla','Slow Game','Vanilla+','Mish-Mash','Turbo'], game.gametype), 
-			makeSelect('victordrop', ['','Village','Wolves','Other/Multiple:'], VictorType(game.victor)), 
-			'' if len(game.victor)==1 and game.victor[0] in ('Village','Wolves','') else '; '.join(game.victor),
+			makeSelect('victordrop', ['','Village','Wolves','Tie','Other/Multiple:'], VictorType(game.victor)), 
+			'' if len(game.victor)==1 and game.victor[0] in ('Village','Wolves','Tie','') else '; '.join(game.victor),
 			'\n'.join(game.playerlisttext))
 	
 	players = ListPlayers(game.playerlist, game.affiliation, game.role, game.deathday, game.deathtype) if (len(game.playerlist) > 0) else ''
@@ -176,7 +176,6 @@ class Game:
 		for fieldname in ('url','gamename','startdate'):
 			setattr(self, fieldname, f[fieldname].value)
 		self.gametype = f.getvalue('gametype')
-		#self.victor = [a.strip() for a in f.getvalue('victor').split(';')] if f.getvalue('victor') != '' else []
 		self.SetVictor(f.getvalue('victordrop'), f.getvalue('victortxt'))
 		self.mods = [a.strip() for a in f.getvalue('mods').split(';')] if f.getvalue('mods') != '' else []
 		self.playerlist = [a.strip() for a in f.getvalue('playerlisttext').strip().split('\n')] if f.getvalue('playerlist') != '' else []
@@ -196,7 +195,7 @@ class Game:
 	def SetVictor(self, vd, vt):
 		if len(vd) == 0:
 			self.victor = []
-		elif vd in ('Village','Wolves'):
+		elif vd in ('Village','Wolves','Tie'):
 			self.victor = [vd]
 		else:
 			self.victor = [a.strip() for a in vt.split(';')] if vt != '' else []
@@ -243,11 +242,6 @@ class Game:
 							self.deathtype[i] = 'Conceded'				
 	
 	def CheckValidity(self):
-		# check url against thread table
-		cursor.execute("select * from thread where url = %s", self.url)
-		if cursor.rowcount == 0:
-			self.errmsg.append("<font color='red'>Game thread (url) does not exist in the database. Add it using the control panel.</font>")
-	
 		# missing values:
 		if self.gamename == '':
 			self.errmsg.append("<font color='red'>Game Name is a required field.</font>")
@@ -335,8 +329,10 @@ def RetrieveGame(cur, url):
 		gameobj = Game()
 		gameobj.url = url
 		gameobj.errmsg.append("<font color='red'>Game is not yet entered in the database.</font>")
-		cur.execute("select t.title, playername as moderator, ifnull(date(o.posttime),'') startdate from thread t join player p on p.playerid=t.op \
-			left join fennecfox.Post o on o.threadid=t.threadid and o.postnumber=1 where t.url=%s", url)
+		cur.execute("select t.title, playername as moderator, ifnull(date(o.posttime),'') startdate \
+			from fennecfox.Thread t join player p on p.playerid=t.op \
+			left join fennecfox.Post o on o.threadid=t.threadid and o.postnumber=1 \
+			where t.url=%s", url)
 		if cur.rowcount > 0:
 			thread = cur.fetchone()
 			gameobj.gamename = thread['title']

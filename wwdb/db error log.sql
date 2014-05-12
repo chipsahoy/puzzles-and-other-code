@@ -1,22 +1,12 @@
 
--- mod for game 3, hadn't posted in pog ever
-insert into player values (6913, 'poker-penguin', 6913);
-insert into moderator values (5340033, 6913, 1);
-
-# add moocher as a comod for wild west game
-insert into moderator values (1327565, 131995, 0);
-
-# get rid of quotes
-update game set gamename= 'Wild, Wild West' where gameid=1327565;
-
-# rainingmen
-update player set mainplayerid=322212 where playerid=322212;
-update playerlist set playerid=322212 where playeraccount=128574;
-
+-- backups
+/*
+mysqldump -uroot -pwerewolf pogwwdb > pogwwdb_backup_20140511.sql
+mysqldump -uroot -pwerewolf fennecfox --ignore-table=fennecfox.Post --ignore-table=fennecfox.post2 --ignore-table=fennecfox.posttemp > fennecfox_bak.sql
+mysqldump -uroot -pwerewolf turbo > turbo_schema_bak.sql
+*/
 
 -- ######################################
-
-sudo nano /etc/mysql/my.cnf
 
 /*
 # issues: ties
