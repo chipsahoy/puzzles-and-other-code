@@ -18,7 +18,7 @@
 	(select playername from moderator m join player p on p.playerid=m.modid where m.gameid=g.gameid and m.isprimary) as modname,
 	(select modid from moderator m join player p on p.playerid=m.modid where m.gameid=g.gameid and m.isprimary) as modid,
 	left(victor,20) victor,
-	(select replies from thread t where t.threadid=g.gameid) replies
+	(select replies from fennecfox.Thread t where t.threadid=g.gameid) replies
 	from game g	
 	join victor v using (gameid)
 	where g.gametype = 'Turbo'

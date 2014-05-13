@@ -1,4 +1,5 @@
 <?php
+	# if you sub out, you don't get credit
 	if(!array_key_exists('gametype', $_GET) || $_GET['gametype'] == "") $gametype = "All"; else $gametype = $_GET['gametype'];
 	if($gametype == "All")
 		$qry = "select m.playerid, m.playername, 'Total' as gametype, count(*) games,
@@ -12,7 +13,7 @@
 				join game g using (gameid)
 				join player p on p.playerid=pl.playerid
 				join player m on m.playerid=p.mainplayerid
-				where g.gametype <> 'Turbo'
+				where g.gametype <> 'Turbo' and pl.dayout is null
 				group by p.mainplayerid 
 				order by count(*) desc";
 	elseif($gametype == "Vanilla/Slow Games")
@@ -26,7 +27,7 @@
 				join game g using (gameid)
 				join player p on p.playerid=pl.playerid
 				join player m on m.playerid=p.mainplayerid
-				where g.gametype in ('Vanilla','Slow Game')
+				where g.gametype in ('Vanilla','Slow Game') and pl.dayout is null
 				group by p.mainplayerid 
 				order by count(*) desc";
 	elseif($gametype == "Vanilla+/Mish-Mashes")
@@ -41,7 +42,7 @@
 				join game g using (gameid)
 				join player p on p.playerid=pl.playerid
 				join player m on m.playerid=p.mainplayerid
-				where g.gametype in ('Vanilla+','Mish-Mash')
+				where g.gametype in ('Vanilla+','Mish-Mash') and pl.dayout is null
 				group by p.mainplayerid 
 				order by count(*) desc";
 	elseif($gametype == "Turbos")
@@ -55,7 +56,7 @@
 				join game g using (gameid)
 				join player p on p.playerid=pl.playerid
 				join player m on m.playerid=p.mainplayerid
-				where g.gametype = 'Turbo'
+				where g.gametype = 'Turbo' and pl.dayout is null
 				group by p.mainplayerid 
 				order by count(*) desc";
 	$result = $db->query($qry);
