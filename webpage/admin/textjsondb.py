@@ -5,11 +5,12 @@
 # json -> db
 
 def JSONtoDB(j, cur, msg='added'):
+	cur.execute("set autocommit=0")
 	RemoveGameFromDB(j['url'], cur) # delete existing game
-	
-	# check names against db!
-	
-	gameid = GetThreadIDFromURL(j['url'])
+		
+	gameid = GetThreadIDFromURL(j['url'], cur)
+	if gameid is None:
+		return 0
 	gamelength = max([x['deathday'] for x in j['players']])
 	
 	# game
@@ -31,7 +32,7 @@ def JSONtoDB(j, cur, msg='added'):
 	# roleset & playerlist
 	for n, i in enumerate(j['players']):
 		cur.execute("""insert into roleset values (%s, %s, (select factionid from faction where factionname = %s),
-			(select roleid from roles where rolename = %s), %s, %s, %s, NULL)""",
+			(select roleid from roles where rolename = %s), %s, %s, %s)""",
 			(gameid, n+1, i['faction'], i['role'], i['deathtype'], i['deathday'], 1))
 		cur.execute("""insert into playerlist values (%s, %s, %s, (select playerid from player where playername = %s), %s, NULL)""", 
 			(gameid, n+1, 1, i['op'], 0))
@@ -40,19 +41,33 @@ def JSONtoDB(j, cur, msg='added'):
 	if 'subs' in j:
 		for i in j['subs']:
 			cur.execute("""select pl.slot, rs.players from playerlist pl join roleset rs using (gameid, slot) 
-				where gameid=%s and ordinal=1 and playeraccount=(select playerid from player where playername = %s)""",
+				where gameid=%s and ordinal=1 and playerid=(select playerid from player where playername = %s)""",
 				(gameid, i['op']))
 			result = cur.fetchone()
-			cur.execute("insert into playerlist values (%s, %s, %s, NULL, (select playerid from player where playername = %s), %s, NULL)",
+			cur.execute("insert into playerlist values (%s, %s, %s, (select playerid from player where playername = %s), %s, NULL)",
 				(gameid, result['slot'], result['players']+1, i['subname'], i['subday']))
 			cur.execute("update playerlist set dayout = %s where gameid=%s and slot=%s and ordinal=%s",
 				(i['subday'], gameid, result['slot'], result['players']))
 			cur.execute("update roleset set players = players + 1 where gameid=%s and slot=%s", (gameid, result['slot']))
+	
 	# actions
+	if 'actions' in j:
+		for a in j['actions']:
+			cur.execute("""select pl.slot from playerlist pl join roleset rs using (gameid, slot) 
+				where gameid=%s and ordinal=1 and playerid=(select playerid from player where playername = %s)""",
+				(gameid, a['player']))
+			result1 = cur.fetchone()
+			cur.execute("""select pl.slot from playerlist pl join roleset rs using (gameid, slot) 
+				where gameid=%s and ordinal=1 and playerid=(select playerid from player where playername = %s)""",
+				(gameid, a['target']))
+			result2 = cur.fetchone()
+			cur.execute('insert into actions values (%s, %s, %s, %s, %s)', 
+				(gameid, result1['slot'], a['ability'], a['night'], result2['slot']))
 	
 	SaveJSONToLog(j['url'], cur, msg, str(j))
 	cur.execute("commit")
 	return 1
+
 
 #######################################
 # db -> json
@@ -124,7 +139,8 @@ def GetThreadIDFromURL(url, cur):
 			return None
 		return int(url)
 	elif 'archives1.twoplustwo.com' in url:
-		pass
+		url = url[url.find('Number=')+7:]
+		return int(url[:url.find('&')])
 	else: # grab the highest gameid +1
 		cur.execute("select ifnull(max(gameid)+1,1) gameid from game")
 		return cur.fetchrone()['gameid']

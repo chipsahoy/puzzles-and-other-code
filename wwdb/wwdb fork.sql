@@ -315,6 +315,11 @@ update roles set rolename='Vigilante' where roleid=4;
 update roleset set roletype = 1 where roletype=215; -- rolename = ''
 delete from roles where roleid=215;
 
+-- disallow duplicate rolenames
+update roleset set roletype = 4 where roletype=67;
+delete from roles where roleid=67;
+alter table roles add unique index (rolename);
+
 -- finish conversion
 --############################################
 -- error fixes

@@ -18,6 +18,7 @@ http://forumserver.twoplustwo.com/59/puzzles-other-games/storm-swords-game-thron
 ^ this game doesn't load
 */
 
+
 # Lin/ivers
 
 village wins this:
@@ -35,16 +36,8 @@ gameid 1372095 slot 30 posterid 121114 roleid 17909 teamid 1899
 
 check for ties as victory condition 2
 
-
-
-
--- join gimmicks
-
-update player set mainplayerid= where playerid=;
-
-update playerlist set playerid= where playeraccount=;
-
-
+-- playerlist on:
+http://forumserver.twoplustwo.com/59/puzzles-other-games/wolf-pups-game-thread-1002970/index14.html#post25611050
 
 
 
