@@ -1,0 +1,3436 @@
+Vanilla werewolf game summary
+Report template version 0.1
+
+Game name: 
+Game type: turbo
+url: http://forumserver.twoplustwo.com/59/puzzles-other-games/turbo-game-thread-1283946/
+Start date: 2013-01-01
+Mod: necro
+
+Player list:
+vixticator; w; d2 lynch
+gder; w; c
+captain binkles; s
+A VERY GAY MAN; v; d1 lynch
+rebonkulous; v
+Xkf; v
+Chips Ahoy; v; n1 nk
+JimHalpert; v; n2 nk
+Sun Tzu; v
+
+Subs: domer2; Sun Tzu; d2
+
+Peeks: Sun Tzu; JimHalpert; Xkf
+
+Victor: village
+
+End Summary
+Vanilla werewolf game summary
+Report template version 0.1
+
+Game name: 
+Game type: turbo
+url: http://forumserver.twoplustwo.com/59/puzzles-other-games/turbo-2-game-thread-1283967/
+Start date: 2013-01-01
+Mod: necro
+
+Player list:
+Larry Legend; w; d1 lynch
+Nofear3838; w; d3 lynch
+rebonkulous; s; n1 nk
+domer2; v
+Vagos; v
+Anarchist; v
+Hurp Durpington; v
+vixticator; v; d2 lynch
+Mitt Romney (R); v; n2 nk
+
+Subs: okse54; domer2; d1
+
+Peeks: Mitt Romney (R); Nofear3838
+
+Victor: village
+
+End Summary
+Vanilla werewolf game summary
+Report template version 0.1
+
+Game name: 
+Game type: turbo
+url: http://forumserver.twoplustwo.com/59/puzzles-other-games/turbo-game-thread-1284166/
+Start date: 2013-01-02
+Mod: necro
+
+Player list:
+rebonkulous; w
+domer2; w
+Nofear3838; s; d1 lynch
+pokerbobo; v; n1 nk
+Duckburg; v; d3 lynch
+Larry Legend; v; d2 lynch
+Sun Tzu; v
+timistere; v
+Willi; v; n2 nk
+
+Subs: 
+
+Peeks: pokerbobo
+
+Victor: wolves
+
+End Summary
+Vanilla werewolf game summary
+Report template version 0.1
+
+Game name: 
+Game type: turbo
+url: http://forumserver.twoplustwo.com/59/puzzles-other-games/thursday-night-turbo-1284797/
+Start date: 2013-01-04
+Mod: Hurp Durpington
+
+Player list:
+VarianceMinefield; w; d1 lynch
+TBobLP; w; c
+Noah; s
+Sun Tzu; v
+rebonkulous; v
+domer2; v; n1 nk
+Anarchist; v
+pokerbobo; v
+KruZe; v
+
+Subs: 
+
+Peeks: KruZe; TBobLP
+
+Victor: village
+
+End Summary
+Vanilla werewolf game summary
+Report template version 0.1
+
+Game name: 
+Game type: turbo
+url: http://forumserver.twoplustwo.com/59/puzzles-other-games/sandwich-turbo-game-thread-1285078/
+Start date: 2013-01-04
+Mod: Noah
+
+Player list:
+starrazz; w; d3 lynch
+Chilltown; w
+BirdieLongSocks; s; d2 lynch
+pokerbobo; v; n3 nk
+hardcoreUFO; v; d1 lynch
+The Moocher; v
+Larry Legend; v; n1 nk
+VarianceMinefield; v; d4 lynch
+rebonkulous; v; n2 nk
+
+Subs: 
+
+Peeks: Larry Legend; starrazz
+
+Victor: wolves
+
+End Summary
+Vanilla werewolf game summary
+Report template version 0.1
+
+Game name: 
+Game type: turbo
+url: http://forumserver.twoplustwo.com/59/puzzles-other-games/chocolate-turbo-1285941/
+Start date: 2013-01-06
+Mod: Evene
+
+Player list:
+zdye724; w
+confirmedtroll; w
+KruZe; s; n1 nk
+Noah; v
+rebonkulous; v; d2 lynch
+ShipItUp; v; d3 lynch
+bazooka87; v; d1 lynch
+Vagos; v
+ibavly; v; n2 nk
+
+Subs: 
+
+Peeks: ibavly
+
+Victor: wolves
+
+End Summary
+Vanilla werewolf game summary
+Report template version 0.1
+
+Game name: 
+Game type: turbo
+url: http://forumserver.twoplustwo.com/59/puzzles-other-games/turbo-2-game-thread-1285992/
+Start date: 2013-01-07
+Mod: Vagos
+
+Player list:
+pokerbobo; w
+rebonkulous; w
+captain binkles; s; n1 nk
+Hurp Durpington; v; d3 lynch
+Noah; v; n2 nk
+Sun Tzu; v
+tweedybirdd; v
+VarianceMinefield; v; d2 lynch
+zdye724; v; d1 lynch
+
+Subs: 
+
+Peeks: Noah
+
+Victor: wolves
+
+End Summary
+Vanilla werewolf game summary
+Report template version 0.1
+
+Game name: 
+Game type: turbo
+url: http://forumserver.twoplustwo.com/59/puzzles-other-games/turbo-game-thread-1286787/
+Start date: 2013-01-08
+Mod: Noah
+
+Player list:
+Sun Tzu; w; d3 lynch
+KruZe; w; d2 lynch
+metsandfinsfan; s
+ShipItUp; v; n2 nk
+starrazz; v; d1 lynch
+younguns87; v
+Vagos; v
+zdye724; v; n1 nk
+rebonkulous; v
+
+Subs: SGT RJ; rebonkulous; n2
+
+Peeks: rebonkulous; ShipItUp; younguns87
+
+Victor: village
+
+End Summary
+Vanilla werewolf game summary
+Report template version 0.1
+
+Game name: 
+Game type: turbo
+url: http://forumserver.twoplustwo.com/59/puzzles-other-games/pencils-turbo-1286828/
+Start date: 2013-01-09
+Mod: Evene
+
+Player list:
+Sun Tzu; w; d3 lynch
+LKJ; w; d2 lynch
+vixticator; s
+Noah; v; n1 nk
+pokerbobo; v
+hardcoreUFO; v; d1 lynch
+Vagos; v; n2 nk
+metsandfinsfan; v
+zdye724; v
+
+Subs: Forsythio; hardcoreUFO; d1
+
+Peeks: metsandfinsfan; LKJ; Sun Tzu
+
+Victor: village
+
+End Summary
+Vanilla werewolf game summary
+Report template version 0.1
+
+Game name: 
+Game type: turbo
+url: http://forumserver.twoplustwo.com/59/puzzles-other-games/thursday-night-turbo-game-thread-1287622/
+Start date: 2013-01-10
+Mod: Scootaloo
+
+Player list:
+JimHalpert; w
+Sun Tzu; w
+TBobLP; s; n1 nk
+buckyb88; v; n2 nk
+LKJ; v; d1 lynch
+Noah; v
+starrazz; v; n1 modkill
+EADGBE; v
+gder; v; d3 lynch
+
+Subs: 
+
+Peeks: buckyb88
+
+Victor: wolves
+
+End Summary
+Vanilla werewolf game summary
+Report template version 0.1
+
+Game name: 
+Game type: turbo
+url: http://forumserver.twoplustwo.com/59/puzzles-other-games/ballin-vs-lol-wwers-turbo-game-thread-1287654/
+Start date: 2013-01-11
+Mod: tweedybirdd
+
+Player list:
+metsandfinsfan; w; d4 lynch
+Vagos; w; d1 lynch
+JimHalpert; s; n2 nk
+TBobLP; v; n2 modkill
+ibavly; v; n1 nk
+Noah; v; d2 lynch
+Hurp Durpington; v; n3 nk
+Willi; v
+EADGBE; v
+
+Subs: 
+
+Peeks: Hurp durpington; ibavly
+
+Victor: village
+
+End Summary
+Vanilla werewolf game summary
+Report template version 0.1
+
+Game name: 
+Game type: turbo
+url: http://forumserver.twoplustwo.com/59/puzzles-other-games/orly-turbo-1287867/
+Start date: 2013-01-11
+Mod: Hurp Durpington
+
+Player list:
+CPHoya; w
+Willi; w
+KruZe; s; n1 nk
+lenC; v
+Noah; v; n2 nk
+SGT RJ; v; d1 lynch
+ShipItUp; v; d3 lynch
+Gadarene; v; d2 lynch
+Cueballmania; v
+
+Subs: 
+
+Peeks: SGT RJ
+
+Victor: wolves
+
+End Summary
+Vanilla werewolf game summary
+Report template version 0.1
+
+Game name: 
+Game type: turbo
+url: http://forumserver.twoplustwo.com/59/puzzles-other-games/turbo-game-thread-gogo-1287984/
+Start date: 2013-01-11
+Mod: Crossnerd
+
+Player list:
+Hurp Durpington; w; d2 lynch
+CPHoya; w
+vixticator; s; n2 nk
+Aicirt; v; n3 nk
+rebonkulous; v; d1 lynch
+Noah; v; n1 nk
+Sun Tzu; v; d3 lynch
+Vagos; v; d4 lynch
+ShipItUp; v
+
+Subs: 
+
+Peeks: Aicirt; Noah
+
+Victor: wolves
+
+End Summary
+Vanilla werewolf game summary
+Report template version 0.1
+
+Game name: 
+Game type: turbo
+url: http://forumserver.twoplustwo.com/59/puzzles-other-games/turbo-3-game-thread-1288066/
+Start date: 2013-01-12
+Mod: Vagos
+
+Player list:
+Noah; w
+CPHoya; w
+JimHalpert; s; n1 nk
+ibavly; v; d3 lynch
+metsandfinsfan; v; n2 nk
+425kid; v
+Outed wolves; v
+rebonkulous; v; d2 lynch
+zdye724; v; d1 lynch
+
+Subs: 
+
+Peeks: metsandfinsfan
+
+Victor: wolves
+
+End Summary
+Vanilla werewolf game summary
+Report template version 0.1
+
+Game name: 
+Game type: turbo
+url: http://forumserver.twoplustwo.com/59/puzzles-other-games/sunday-night-turbo-1288745/
+Start date: 2013-01-13
+Mod: Scootaloo
+
+Player list:
+confirmedtroll; w; d2 lynch
+Vagos; w; d3 lynch
+rebonkulous; s; n2 nk
+Hurp Durpington; v
+McAvoy; v
+Felix the Cat; v; n1 nk
+starrazz; v; d1 lynch
+domer2; v
+Sun Tzu; v
+
+Subs: Anarchist; McAvoy; n1
+
+Peeks: Hurp Durpington; domer2
+
+Victor: village
+
+End Summary
+Vanilla werewolf game summary
+Report template version 0.1
+
+Game name: 
+Game type: turbo
+url: http://forumserver.twoplustwo.com/59/puzzles-other-games/sunday-turbo-2-game-thread-1288779/
+Start date: 2013-01-13
+Mod: Vagos
+
+Player list:
+Sun Tzu; w; d4 lynch
+HiFi; w; d3 lynch
+starrazz; s; n1 nk
+domer2; v; d1 lynch
+Hurp Durpington; v; n2 nk
+rebonkulous; v
+425kid; v
+Anarchist; v; n3 nk
+TBobLP; v; d2 lynch
+
+Subs: 
+
+Peeks: domer2
+
+Victor: village
+
+End Summary
+Vanilla werewolf game summary
+Report template version 0.1
+
+Game name: 
+Game type: turbo
+url: http://forumserver.twoplustwo.com/59/puzzles-other-games/not-epic-turbo-game-thread-1289585/
+Start date: 2013-01-15
+Mod: gder
+
+Player list:
+KruZe; w; d4 lynch
+domer2; w; d3 lynch
+starrazz; s; n1 nk
+metsandfinsfan; v; n3 nk
+Sun Tzu; v
+rebonkulous; v; d1 lynch
+Anarchist; v; d2 lynch
+pokerbobo; v; n2 nk
+Daisoujou; v
+
+Subs: 
+
+Peeks: pokerbobo
+
+Victor: village
+
+End Summary
+Vanilla werewolf game summary
+Report template version 0.1
+
+Game name: 
+Game type: turbo
+url: http://forumserver.twoplustwo.com/59/puzzles-other-games/pitt-turbo-1289970/
+Start date: 2013-01-17
+Mod: Krayz
+
+Player list:
+JimHalpert; w
+VarianceMinefield; w; d1 lynch
+HiFi; s; n2 nk
+CPHoya; v
+Monkey Banana; v; n1 nk
+Outed wolves; v; n3 nk
+pocketas227; v; d2 lynch
+domer2; v; d4 lynch
+younguns87; v; d3 lynch
+
+Subs: 
+
+Peeks: Monkey Banana; Outed Wolf
+
+Victor: wolves
+
+End Summary
+Vanilla werewolf game summary
+Report template version 0.1
+
+Game name: 
+Game type: turbo
+url: http://forumserver.twoplustwo.com/59/puzzles-other-games/saturday-afternoon-taylor-swift-turbo-game-thread-1290871/
+Start date: 2013-01-20
+Mod: Searix
+
+Player list:
+Hurp Durpington; w
+younguns87; w; d3 lynch
+accobra_kid; s; n1 nk
+Redmen62; v; d4 lynch
+Sun Tzu; v; n3 nk
+pokerbobo; v; d2 lynch
+rebonkulous; v; d1 lynch
+TBobLP; v; n2 nk
+Nofear3838; v
+
+Subs: 
+
+Peeks: pokerbobo
+
+Victor: wolves
+
+End Summary
+Vanilla werewolf game summary
+Report template version 0.1
+
+Game name: 
+Game type: turbo
+url: http://forumserver.twoplustwo.com/59/puzzles-other-games/frist-turbo-1291291/
+Start date: 2013-01-20
+Mod: Hurp Durpington
+
+Player list:
+Bakes; w; d2 lynch
+rebonkulous; w
+domer2; s; n2 nk
+JimHalpert; v; n3 nk
+Noah; v; n1 nk
+Felix the Cat; v; d3 lynch
+VarianceMinefield; v; d4 lynch
+Krayz; v; d1 lynch
+TBobLP; v
+
+Subs: starrazz; Felix the Cat; n1
+
+Peeks: JimHalpert; TBobLP
+
+Victor: wolves
+
+End Summary
+Vanilla werewolf game summary
+Report template version 0.1
+
+Game name: 
+Game type: turbo
+url: http://forumserver.twoplustwo.com/59/puzzles-other-games/late-night-turbo-game-thread-1291317/
+Start date: 2013-01-21
+Mod: Vagos
+
+Player list:
+Noah; w; d4 lynch
+Hurp Durpington; w; d3 lynch
+domer2; s; d2 lynch
+JimHalpert; v; n1 nk
+Monkey Banana; v; d1 lynch
+Bakes; v
+rebonkulous; v; n2 nk
+starrazz; v; n3 nk
+VarianceMinefield; v
+
+Subs: 
+
+Peeks: rebonkulous; starrazz
+
+Victor: village
+
+End Summary
+Vanilla werewolf game summary
+Report template version 0.1
+
+Game name: 
+Game type: turbo
+url: http://forumserver.twoplustwo.com/59/puzzles-other-games/sunday-late-night-turbo-game-thread-1291334/
+Start date: 2013-01-21
+Mod: Searix
+
+Player list:
+JimHalpert; w; d1 lynch
+VarianceMinefield; w; d2 lynch
+captain binkles; s
+younguns87; v
+domer2; v
+rebonkulous; v
+Noah; v
+Vagos; v; n1 nk
+Henrik Sedin; v
+
+Subs: 
+
+Peeks: Vagos; VarianceMinefield
+
+Victor: village
+
+End Summary
+Vanilla werewolf game summary
+Report template version 0.1
+
+Game name: 
+Game type: turbo
+url: http://forumserver.twoplustwo.com/59/puzzles-other-games/saturday-late-night-turbo-2-a-1291343/
+Start date: 2013-01-21
+Mod: Searix
+
+Player list:
+domer2; w; d3 lynch
+Noah; w; d2 lynch
+rebonkulous; s
+younguns87; v
+JimHalpert; v
+captain binkles; v; d1 lynch
+VarianceMinefield; v; n2 nk
+Vagos; v
+Henrik Sedin; v; n1 nk
+
+Subs: 
+
+Peeks: VarianceMinefield; Noah; younguns87
+
+Victor: village
+
+End Summary
+Vanilla werewolf game summary
+Report template version 0.1
+
+Game name: 
+Game type: turbo
+url: http://forumserver.twoplustwo.com/59/puzzles-other-games/tuesday-night-turbo-1291993/
+Start date: 2013-01-22
+Mod: Searix
+
+Player list:
+Redmen62; w
+Missle9; w; d2 lynch
+Bumhunt; s; n1 nk
+gtpitch; v; n2 nk
+Noah; v; n3 nk
+CPHoya; v; d4 lynch
+younguns87; v; d1 lynch
+metsandfinsfan; v; d3 lynch
+captain binkles; v
+
+Subs: 
+
+Peeks: younguns87
+
+Victor: wolves
+
+End Summary
+Vanilla werewolf game summary
+Report template version 0.1
+
+Game name: 
+Game type: turbo
+url: http://forumserver.twoplustwo.com/59/puzzles-other-games/tuesday-night-turbo-2-a-1292029/
+Start date: 2013-01-22
+Mod: Searix
+
+Player list:
+KruZe; w; d3 lynch
+rebonkulous; w
+zdye724; s; n2 nk
+CPHoya; v; n3 nk
+Kaze13; v; n1 nk
+norseman1066; v; d2 lynch
+starrazz; v; d4 lynch
+domer2; v; d1 lynch
+Felix the Cat; v
+
+Subs: Vagos; CPHoya; d1
+
+Peeks: CPHoya; KruZe
+
+Victor: wolves
+
+End Summary
+Vanilla werewolf game summary
+Report template version 0.1
+
+Game name: 
+Game type: turbo
+url: http://forumserver.twoplustwo.com/59/puzzles-other-games/grievances-turbo-game-thread-1292772/
+Start date: 2013-01-24
+Mod: well named
+
+Player list:
+rebonkulous; w; d4 lynch
+metsandfinsfan; w; d3 lynch
+Noah; s; n2 nk
+gtpitch; v; d2 lynch
+SGT RJ; v; d1 lynch
+LKJ; v
+TbobLP; v; n1 nk
+younguns87; v; n3 nk
+Anarchist; v
+
+Subs: 
+
+Peeks: younguns87; Anarchist
+
+Victor: village
+
+End Summary
+Vanilla werewolf game summary
+Report template version 0.1
+
+Game name: 
+Game type: turbo
+url: http://forumserver.twoplustwo.com/59/puzzles-other-games/thursday-night-turbo-2-a-1292808/
+Start date: 2013-01-24
+Mod: Searix
+
+Player list:
+younguns87; w
+rebonkulous; w
+Hurp Durpington; s; n1 nk
+chuckleslovakian; v; n2 nk
+domer2; v; d3 lynch
+metsandfinsfan; v; d2 lynch
+TbobLP; v; d1 lynch
+JimHalpert; v
+vixticator; v
+
+Subs: 
+
+Peeks: chuckleslovakian
+
+Victor: wolves
+
+End Summary
+Vanilla werewolf game summary
+Report template version 0.1
+
+Game name: 
+Game type: turbo
+url: http://forumserver.twoplustwo.com/59/puzzles-other-games/thursday-night-turbo-3-a-1292837/
+Start date: 2013-01-25
+Mod: Searix
+
+Player list:
+kioshk; w; c
+Willi; w; d1 lynch
+CPHoya; s
+vixticator; v
+Monkey Banana; v; n2 nk
+chuckleslovakian; v
+Noah; v; n1 nk
+younguns87; v; d2 lynch
+KruZe; v
+
+Subs: starrazz; Monkey Banana; d1
+
+Peeks: KruZe; vixticator
+
+Victor: village
+
+End Summary
+Vanilla werewolf game summary
+Report template version 0.1
+
+Game name: 
+Game type: turbo
+url: http://forumserver.twoplustwo.com/59/puzzles-other-games/friday-afternoon-turbo-1293072/
+Start date: 2013-01-25
+Mod: Searix
+
+Player list:
+Ozymandias00; w; d3 lynch
+TBobLP; w; d1 lynch
+vixticator; s; n1 nk
+rebonkulous; v; n2 nk
+Sun Tzu; v
+KruZe; v
+necro; v
+CPHoya; v
+Hurp Durpington; v; d2 lynch
+
+Subs: Chips Ahoy; Sun Tzu; n1
+
+Peeks: rebonkulous
+
+Victor: village
+
+End Summary
+Vanilla werewolf game summary
+Report template version 0.1
+
+Game name: 
+Game type: turbo
+url: http://forumserver.twoplustwo.com/59/puzzles-other-games/friday-night-turbo-2-a-1293107/
+Start date: 2013-01-25
+Mod: Searix
+
+Player list:
+Felix the Cat; w; d3 lynch
+His Boy Elroy; w; d2 lynch
+suckoutgenius; s; d1 lynch
+Sun Tzu; v
+CPHoya; v; n2 nk
+rebonkulous; v
+425kid; v
+vixticator; v
+Ozymandias00; v; n1 nk
+
+Subs: KruZe; vixticator; d1
+
+Peeks: KruZe
+
+Victor: village
+
+End Summary
+Vanilla werewolf game summary
+Report template version 0.1
+
+Game name: 
+Game type: turbo
+url: http://forumserver.twoplustwo.com/59/puzzles-other-games/friday-night-turbo-3-a-1293139/
+Start date: 2013-01-25
+Mod: Searix
+
+Player list:
+CPHoya; w
+domer2; w
+rebonkulous; s
+suckoutgenius; v; d2 lynch
+Sun Tzu; v; d3 lynch
+KruZe; v; n2 nk
+Monkey Banana; v
+Titanrulez; v; n1 nk
+Felix the Cat; v; d1 lynch
+
+Subs: 
+
+Peeks: Titanrulez; CPHoya; Sun Tzu
+
+Victor: wolves
+
+End Summary
+Vanilla werewolf game summary
+Report template version 0.1
+
+Game name: 
+Game type: turbo
+url: http://forumserver.twoplustwo.com/59/puzzles-other-games/friday-turbo-4-game-thread-1293167/
+Start date: 2013-01-25
+Mod: Vagos
+
+Player list:
+Sun Tzu; w; d2 lynch
+suckoutgenius; w; d1 lynch
+Redmen62; s
+CPHoya; v
+domer2; v
+Bakes; v
+425kid; v
+Aksdal; v; n1 nk
+Titanrulez; v
+
+Subs: 
+
+Peeks: Aksdal; Sun Tzu
+
+Victor: village
+
+End Summary
+Vanilla werewolf game summary
+Report template version 0.1
+
+Game name: 
+Game type: turbo
+url: http://forumserver.twoplustwo.com/59/puzzles-other-games/turbo-5-thread-1293171/
+Start date: 2013-01-25
+Mod: Vagos
+
+Player list:
+Sun Tzu; w; d3 lynch
+VoraciousReader; w; d1 lynch
+Redmen62; s
+Nofear3838; v
+LKJ; v
+425kid; v; d2 lynch
+Titanrulez; v; n2 nk
+domer2; v
+zdye724; v; n1 nk
+
+Subs: 
+
+Peeks: domer2; 425kid; Sun Tzu
+
+Victor: village
+
+End Summary
+Vanilla werewolf game summary
+Report template version 0.1
+
+Game name: 
+Game type: turbo
+url: http://forumserver.twoplustwo.com/59/puzzles-other-games/friday-night-turbo-6-a-1293179/
+Start date: 2013-01-26
+Mod: Searix
+
+Player list:
+LKJ; w; d4 lynch
+Titanrulez; w; d3 lynch
+zdye724; s; n2 nk
+domer2; v; d2 lynch
+BirdieLongSocks; v; n3 nk
+tappokone; v; d1 lynch
+425kid; v; n1 nk
+Redmen62; v
+Hurp Durpington; v
+
+Subs: 
+
+Peeks: Redmen62; 425kid
+
+Victor: village
+
+End Summary
+Vanilla werewolf game summary
+Report template version 0.1
+
+Game name: 
+Game type: turbo
+url: http://forumserver.twoplustwo.com/59/puzzles-other-games/saturday-night-turbo-1293529/
+Start date: 2013-01-26
+Mod: Searix
+
+Player list:
+James Franco; w
+accobra_kid; w; d1 lynch
+vixticator; s; n2 nk
+Sun Tzu; v; d4 lynch
+Montecore; v
+well named; v; n1 nk
+Noah; v; d2 lynch
+Aids Aidsington; v; d3 lynch
+Hurp Durpington; v; n3 nk
+
+Subs: 
+
+Peeks: well named; Hurp Durpington
+
+Victor: wolves
+
+End Summary
+Vanilla werewolf game summary
+Report template version 0.1
+
+Game name: 
+Game type: turbo
+url: http://forumserver.twoplustwo.com/59/puzzles-other-games/turbo-game-thread-1294788/
+Start date: 2013-01-29
+Mod: Felix the Cat
+
+Player list:
+BirdieLongSocks; w; d3 lynch
+Noah; w; d4 lynch
+Steve Yzerman fan; s; n3 nk
+suckoutgenius; v; n1 modkill
+younguns87; v
+Sun Tzu; v; n1 nk
+domer2; v; n2 nk
+James Franco; v
+Hurp Durpington; v; d1 lynch
+
+Subs: 
+
+Peeks: Hurp Durpington; domer2; James Franco
+
+Victor: village
+
+End Summary
+Vanilla werewolf game summary
+Report template version 0.1
+
+Game name: 
+Game type: turbo
+url: http://forumserver.twoplustwo.com/59/puzzles-other-games/ttturbo-1296212/
+Start date: 2013-02-02
+Mod: Oreos
+
+Player list:
+zoltan; w; d3 lynch
+Vagos; w
+vixticator; s; n2 nk
+James Franco; v
+Hurp Durpington; v; d1 lynch
+younguns87; v; n1 nk
+KruZe; v; d4 lynch
+Krayz; v; n3 nk
+Sun Tzu; v; d2 lynch
+
+Subs: 
+
+Peeks: James Franco; Krayz
+
+Victor: wolves
+
+End Summary
+Vanilla werewolf game summary
+Report template version 0.1
+
+Game name: 
+Game type: turbo
+url: http://forumserver.twoplustwo.com/59/puzzles-other-games/ttturbo-tttwo-game-thread-1296288/
+Start date: 2013-02-02
+Mod: Oreos
+
+Player list:
+Nofear3838; w
+Vagos; w
+Aksdal; s; n1 nk
+OrangeRake; v; d2 lynch
+TBobLP; v
+Thingyman; v; d3 lynch
+domer2; v; d1 lynch
+VarianceMinefield; v; n2 nk
+vyk07; v
+
+Subs: 
+
+Peeks: VarianceMinefield
+
+Victor: wolves
+
+End Summary
+
+
+
+
+
+
+Starts from post #156. Last one from post #452.
+Vanilla werewolf game summary
+Report template version 0.1
+
+Game name: 
+Game type: turbo
+url: 
+Start date: 
+Mod: 
+
+Player list:
+Aksdal; s
+domer2; v
+Nofear3838; w
+OrangeRake; v
+TBobLP; v
+Thingyman; v
+Vagos; w
+VarianceMinefield; v
+vyk07; v
+
+Subs: 
+
+Peeks: 
+
+Victor: wolves
+
+End Summary
+Vanilla werewolf game summary
+Report template version 0.1
+
+Game name: 
+Game type: turbo
+url: 
+Start date: 
+Mod: 
+
+Player list:
+kruze; v
+hurp durpington; v
+rebonkulous; v
+zoltan; v
+A.Ertbjerg; w
+CPHoya; v
+EADGBE; v
+Felix The Cat; w
+Sun Tzu; s
+
+Subs: 
+
+Peeks: 
+
+Victor: village
+
+End Summary
+Vanilla werewolf game summary
+Report template version 0.1
+
+Game name: 
+Game type: turbo
+url: 
+Start date: 
+Mod: 
+
+Player list:
+kruze; v
+zoltan; v
+Sun Tzu; s
+felix the cat; w
+domer2; v
+metsandfinsfan; v
+Forsythio; v
+rjoefish; v
+EADGBE; w
+
+Subs: 
+
+Peeks: 
+
+Victor: village
+
+End Summary
+Vanilla werewolf game summary
+Report template version 0.1
+
+Game name: 
+Game type: turbo
+url: 
+Start date: 
+Mod: 
+
+Player list:
+A.Ertbjerg; s
+domer2; v
+Duke0424; v
+EADGBE; w
+Hurp Durpington; v
+metsandfinsfan; v
+Nofear3838; v
+rebonkulous; w
+Vagos; v
+
+Subs: 
+
+Peeks: 
+
+Victor: village
+
+End Summary
+Vanilla werewolf game summary
+Report template version 0.1
+
+Game name: 
+Game type: turbo
+url: 
+Start date: 
+Mod: 
+
+Player list:
+Hurp durpington; v
+Krayz; v
+Zoltan; w
+Domer2; v
+Caedus; w
+Xxsooted; v
+Vagos; v
+Vixticator; v
+Noah; s
+
+Subs: 
+
+Peeks: 
+
+Victor: village
+
+End Summary
+Vanilla werewolf game summary
+Report template version 0.1
+
+Game name: 
+Game type: turbo
+url: 
+Start date: 
+Mod: 
+
+Player list:
+Chilltown; v
+Sun Tzu; w
+zoltan; v
+ChrisV; w
+Nofear3838; v
+matrat; s
+Vagos; v
+Aksdal; v
+KruZe; v
+
+Subs: 
+
+Peeks: 
+
+Victor: wolves
+
+End Summary
+Vanilla werewolf game summary
+Report template version 0.1
+
+Game name: 
+Game type: turbo
+url: 
+Start date: 
+Mod: 
+
+Player list:
+Nofear3838; v
+HiFi; w
+Chips Ahoy; w
+Vagos; v
+TH10; v
+Willi; s
+The Moocher; v
+q_q; v
+Chilltown; v
+
+Subs: 
+
+Peeks: 
+
+Victor: village
+
+End Summary
+Vanilla werewolf game summary
+Report template version 0.1
+
+Game name: 
+Game type: turbo
+url: 
+Start date: 
+Mod: 
+
+Player list:
+Searix; v
+Hurp Durpington; v
+Nofear3838; v
+TH10; v
+LeonardoDicaprio; v
+Vagos; w
+DonkDonkDonkDonk; v
+Chips Ahoy; s
+Chilltown; w
+
+Subs: 
+
+Peeks: 
+
+Victor: wolves
+
+End Summary
+Vanilla werewolf game summary
+Report template version 0.1
+
+Game name: 
+Game type: turbo
+url: 
+Start date: 
+Mod: 
+
+Player list:
+Chilltown; v
+LeonardoDicaprio; v
+metsandfinsfan; v
+necro; v
+nofear3838; v
+PyramidScheme; v
+Sun Tzu; s
+TH10; w
+younguns87; w
+
+Subs: 
+
+Peeks: 
+
+Victor: wolves
+
+End Summary
+Vanilla werewolf game summary
+Report template version 0.1
+
+Game name: 
+Game type: turbo
+url: 
+Start date: 
+Mod: 
+
+Player list:
+Chilltown; v
+CPHoya; v
+Hurp Durpington; v
+Krayz; v
+LeonardoDicaprio; s
+necro; w
+TH10; w
+Vagos; v
+younguns87; v
+
+Subs: 
+
+Peeks: 
+
+Victor: village
+
+End Summary
+Vanilla werewolf game summary
+Report template version 0.1
+
+Game name: 
+Game type: turbo
+url: 
+Start date: 
+Mod: 
+
+Player list:
+Chilltown; s
+CPHoya; v
+Hurp Durpington; v
+Krayz; v
+LeonardoDicaprio; w
+vyk07; v
+Ashington; v
+Sun Tzu; v
+bowens; w
+
+Subs: 
+
+Peeks: 
+
+Victor: village
+
+End Summary
+Vanilla werewolf game summary
+Report template version 0.1
+
+Game name: 
+Game type: turbo
+url: 
+Start date: 
+Mod: 
+
+Player list:
+LeonardoDicaprio; v
+Noah; v
+younguns87; v
+EADGBE; w
+Sun Tzu; w
+Vixticator; v
+Hifi; s
+Chips Ahoy; v
+CPHoya; v
+
+Subs: 
+
+Peeks: 
+
+Victor: village
+
+End Summary
+Vanilla werewolf game summary
+Report template version 0.1
+
+Game name: 
+Game type: turbo
+url: 
+Start date: 
+Mod: 
+
+Player list:
+LeonardoDicaprio; v
+Nofear3838; v
+VarianceMinefield; s
+Felix the Cat; v
+CPHoya; w
+iamnotawerewolf; w
+MFFNike; v
+Hurp Durpington; v
+ShipItUp; v
+
+Subs: 
+
+Peeks: 
+
+Victor: village
+
+End Summary
+Vanilla werewolf game summary
+Report template version 0.1
+
+Game name: 
+Game type: turbo
+url: 
+Start date: 
+Mod: 
+
+Player list:
+LeonardoDicaprio; v
+iamnotawerewolf; w
+younguns87; v
+kioshk; v
+Nofear3838; v
+McAvoy; v
+CPHoya; v
+MFFNike; s
+Chips Ahoy; w
+
+Subs: 
+
+Peeks: 
+
+Victor: wolves
+
+End Summary
+Vanilla werewolf game summary
+Report template version 0.1
+
+Game name: 
+Game type: turbo
+url: 
+Start date: 
+Mod: 
+
+Player list:
+Ashington; v
+gambit8888; v
+HiFi; v
+LeonardoDicaprio; v
+nofear3838; w
+Henrik Sedin; s
+ShipItUp; v
+timistere; w
+Willi; v
+
+Subs: 
+
+Peeks: 
+
+Victor: village
+
+End Summary
+Vanilla werewolf game summary
+Report template version 0.1
+
+Game name: 
+Game type: turbo
+url: 
+Start date: 
+Mod: 
+
+Player list:
+Ashington; v
+Bakes; w
+gambit8888; w
+HiFi; v
+LeonardoDicaprio; v
+TH10; v
+VarianceMinefield; s
+well named; v
+younguns87; v
+
+Subs: 
+
+Peeks: 
+
+Victor: wolves
+
+End Summary
+Vanilla werewolf game summary
+Report template version 0.1
+
+Game name: 
+Game type: turbo
+url: 
+Start date: 
+Mod: 
+
+Player list:
+gambit8888; v
+hifi; s
+LeonardoDicaprio; w
+nutshot2; w
+shipitup; v
+sun tzu; v
+TH10; v
+Vagos; v
+well named; v
+
+Subs: 
+
+Peeks: 
+
+Victor: village
+
+End Summary
+Vanilla werewolf game summary
+Report template version 0.1
+
+Game name: 
+Game type: turbo
+url: 
+Start date: 
+Mod: 
+
+Player list:
+bakes; w
+Noah; v
+ShipItUp; v
+Sven O; v
+TH10; s
+Willi; v
+well named; v
+younguns87; v
+zdye725; w
+
+Subs: 
+
+Peeks: 
+
+Victor: village
+
+End Summary
+Vanilla werewolf game summary
+Report template version 0.1
+
+Game name: 
+Game type: turbo
+url: 
+Start date: 
+Mod: 
+
+Player list:
+nofear3838; v
+felix the cat; v
+confirmedtroll; w
+gambit8888; v
+sun tzu; v
+younguns87; v
+TH10; v
+well named; w
+zdye724; s
+
+Subs: 
+
+Peeks: 
+
+Victor: village
+
+End Summary
+Vanilla werewolf game summary
+Report template version 0.1
+
+Game name: 
+Game type: turbo
+url: 
+Start date: 
+Mod: 
+
+Player list:
+Chips Ahoy; v
+Forsythio; w
+gambit8888; v
+outdrawed; v
+PyramidScheme; v
+q_q; v
+rjoefish; s
+VoraciousReader; w
+zoltan; v
+
+Subs: 
+
+Peeks: 
+
+Victor: wolves
+
+End Summary
+Vanilla werewolf game summary
+Report template version 0.1
+
+Game name: 
+Game type: turbo
+url: 
+Start date: 
+Mod: 
+
+Player list:
+gambit8888; s
+LeonardoDicaprio; w
+nofear3838; v
+PyramidScheme; w
+q_q; v
+ShipItUp; v
+UncleDynamite; v
+JimHalpert; v
+well named; v
+
+Subs: 
+
+Peeks: 
+
+Victor: village
+
+End Summary
+Vanilla werewolf game summary
+Report template version 0.1
+
+Game name: 
+Game type: turbo
+url: 
+Start date: 
+Mod: 
+
+Player list:
+bakes; v
+gambit8888; v
+HiFi; w
+JimHalpert; v
+LeonardoDicaprio; s
+Nofear3838; w
+PyramidScheme; v
+Vagos; v
+well named; v
+
+Subs: 
+
+Peeks: 
+
+Victor: wolves
+
+End Summary
+Vanilla werewolf game summary
+Report template version 0.1
+
+Game name: 
+Game type: turbo
+url: 
+Start date: 
+Mod: 
+
+Player list:
+Noah; v
+Felix the Cat; v
+LeonardoDicaprio; v
+Charry; v
+iamnotawerewolf; w
+q_q; v
+Nofear3838; s
+Outed Wolf; v
+YESYESYES; w
+
+Subs: 
+
+Peeks: 
+
+Victor: village
+
+End Summary
+Vanilla werewolf game summary
+Report template version 0.1
+
+Game name: 
+Game type: turbo
+url: 
+Start date: 
+Mod: 
+
+Player list:
+Gambit8888; v
+LeonardoDicaprio; v
+Younguns87; s
+Charry; v
+ShipItUp; w
+q_q; v
+Hurp durpington; v
+Outdrawed; w
+PlzBeALevel; v
+
+Subs: 
+
+Peeks: 
+
+Victor: wolves
+
+End Summary
+Vanilla werewolf game summary
+Report template version 0.1
+
+Game name: 
+Game type: turbo
+url: 
+Start date: 
+Mod: 
+
+Player list:
+younguns87; v
+LeonardoDicaprio; v
+gambit8888; w
+Hurp Durpington; v
+Nofear3838; s
+Willi; v
+PlzBeALevel; w
+q_q; v
+Vagos; v
+
+Subs: 
+
+Peeks: 
+
+Victor: wolves
+
+End Summary
+Vanilla werewolf game summary
+Report template version 0.1
+
+Game name: 
+Game type: turbo
+url: 
+Start date: 
+Mod: 
+
+Player list:
+younguns87; s
+LeonardoDicaprio; v
+gambit8888; w
+Vixticator; v
+tmleafs1967; w
+Charry; v
+Nofear3838; v
+tappokone; v
+hurp durpington; v
+
+Subs: 
+
+Peeks: 
+
+Victor: wolves
+
+End Summary
+Vanilla werewolf game summary
+Report template version 0.1
+
+Game name: 
+Game type: turbo
+url: 
+Start date: 
+Mod: 
+
+Player list:
+gambit8888; w
+A Very Gay Man; w
+LeonardoDicaprio; s
+ChrisV; v
+Carl_Spackler; v
+Sun Tzu; v
+Scootaloo; v
+Chips Ahoy; v
+Steve Yzerman fan; v
+
+Subs: 
+
+Peeks: 
+
+Victor: wolves
+
+End Summary
+Vanilla werewolf game summary
+Report template version 0.1
+
+Game name: 
+Game type: turbo
+url: 
+Start date: 
+Mod: 
+
+Player list:
+gambit8888; v
+LeonardoDicaprio; v
+Sun Tzu; v
+J4est; s
+KruZe; v
+Charry; w
+remedys; v
+nutshot2; v
+Vagos; w
+
+Subs: 
+
+Peeks: 
+
+Victor: village
+
+End Summary
+Vanilla werewolf game summary
+Report template version 0.1
+
+Game name: 
+Game type: turbo
+url: 
+Start date: 
+Mod: 
+
+Player list:
+bhuber2010; v
+Charry; v
+gambit8888; s
+Hurp Durpington; v
+J4est; v
+KruZe; v
+LeonardoDicaprio; v
+Sun Tzu; w
+vyk07; w
+
+Subs: 
+
+Peeks: 
+
+Victor: wolves
+
+End Summary
+Vanilla werewolf game summary
+Report template version 0.1
+
+Game name: 
+Game type: turbo
+url: 
+Start date: 
+Mod: 
+
+Player list:
+gambit8888; v
+J4est; v
+KruZe; w
+LeonardoDicaprio; w
+Searix; v
+SimDaniels; v
+Sun Tzu; s
+metsandfinsfan; v
+Hurp Durpington; v
+
+Subs: 
+
+Peeks: 
+
+Victor: village
+
+End Summary
+Vanilla werewolf game summary
+Report template version 0.1
+
+Game name: 
+Game type: turbo
+url: 
+Start date: 
+Mod: 
+
+Player list:
+CPHoya; v
+Forsythio; v
+gambit8888; w
+HappyMadison; v
+KruZe; v
+LeonardoDicaprio; s
+Sun Tzu; v
+tmleafs1967; w
+VarianceMinefield; v
+
+Subs: 
+
+Peeks: 
+
+Victor: wolves
+
+End Summary
+Vanilla werewolf game summary
+Report template version 0.1
+
+Game name: 
+Game type: turbo
+url: 
+Start date: 
+Mod: 
+
+Player list:
+gambit8888; v
+sun tzu; v
+vagos; s
+tmleafs1967; w
+j4est; v
+jcohen; v
+cphoya; w
+kruze; v
+albundy4; v
+
+Subs: 
+
+Peeks: 
+
+Victor: village
+
+End Summary
+Vanilla werewolf game summary
+Report template version 0.1
+
+Game name: 
+Game type: turbo
+url: 
+Start date: 
+Mod: 
+
+Player list:
+Vagos; v
+j4est; w
+Charry; v
+YESYESYES; w
+gambit8888; v
+remedys; v
+Kruze; v
+Kaze13; v
+Hifi; s
+
+Subs: 
+
+Peeks: 
+
+Victor: village
+
+End Summary
+Vanilla werewolf game summary
+Report template version 0.1
+
+Game name: 
+Game type: turbo
+url: 
+Start date: 
+Mod: 
+
+Player list:
+Charry; v
+Hurp Durpington; w
+gambit8888; v
+HiFi; v
+J4est; v
+Kaze13; w
+LeonardoDicaprio; s
+Sun Tzu; v
+tmleafs1967; v
+
+Subs: 
+
+Peeks: 
+
+Victor: wolves
+
+End Summary
+Vanilla werewolf game summary
+Report template version 0.1
+
+Game name: 
+Game type: turbo
+url: 
+Start date: 
+Mod: 
+
+Player list:
+vyk07; v
+sun tzu; w
+nofear3838; s
+hurp durpington; v
+kaze13; v
+gambit8888; w
+mutigers5591; v
+JimHalpert; v
+yesyesyes; v
+
+Subs: 
+
+Peeks: 
+
+Victor: village
+
+End Summary
+Vanilla werewolf game summary
+Report template version 0.1
+
+Game name: 
+Game type: turbo
+url: 
+Start date: 
+Mod: 
+
+Player list:
+albundy4; v
+gambit8888; v
+Jcohen; v
+Kaze13; s
+LeonardoDicaprio; v
+Mutigers5591; w
+Searix; w
+Sun Tzu; v
+vyk07; v
+
+Subs: 
+
+Peeks: 
+
+Victor: village
+
+End Summary
+Vanilla werewolf game summary
+Report template version 0.1
+
+Game name: 
+Game type: turbo
+url: 
+Start date: 
+Mod: 
+
+Player list:
+tmleafs1967; w
+Sun Tzu; v
+gambit8888; v
+LeonardoDicaprio; v
+albundy4; w
+Jcohen; s
+Tappokone; v
+Kaze13; v
+Hurp Durpington; v
+
+Subs: 
+
+Peeks: 
+
+Victor: village
+
+End Summary
+Vanilla werewolf game summary
+Report template version 0.1
+
+Game name: 
+Game type: turbo
+url: 
+Start date: 
+Mod: 
+
+Player list:
+Charry; w
+Flytrap; v
+gambit8888; w
+Jcohen; v
+LeonardoDicaprio; v
+NoFear3838; v
+ShipItUp; v
+Sun Tzu; v
+UncleDynamite; s
+
+Subs: 
+
+Peeks: 
+
+Victor: village
+
+End Summary
+Vanilla werewolf game summary
+Report template version 0.1
+
+Game name: 
+Game type: turbo
+url: 
+Start date: 
+Mod: 
+
+Player list:
+fanmail; s
+Sun Tzu; v
+gambit8888; w
+Noah; v
+captain binkles; w
+Monkey Banana; v
+J4est; v
+tappokone; v
+jcohen; v
+
+Subs: 
+
+Peeks: 
+
+Victor: village
+
+End Summary
+Vanilla werewolf game summary
+Report template version 0.1
+
+Game name: 
+Game type: turbo
+url: 
+Start date: 
+Mod: 
+
+Player list:
+Kaze13; w
+YESYESYES; v
+Nofear3838; s
+gambit8888; v
+hifi; w
+sun tzu; v
+kruze; v
+j4est; v
+LeonardoDicaprio; v
+
+Subs: 
+
+Peeks: 
+
+Victor: village
+
+End Summary
+Vanilla werewolf game summary
+Report template version 0.1
+
+Game name: 
+Game type: turbo
+url: 
+Start date: 
+Mod: 
+
+Player list:
+gambit8888; v
+iversonian; v
+j4est; s
+Kaze13; w
+LeonardoDicaprio; w
+Sun Tzu; v
+tmleafs1967; v
+VarianceMineField; v
+younguns87; v
+
+Subs: 
+
+Peeks: 
+
+Victor: village
+
+End Summary
+Vanilla werewolf game summary
+Report template version 0.1
+
+Game name: 
+Game type: turbo
+url: 
+Start date: 
+Mod: 
+
+Player list:
+bhuber2010; v
+Charry; v
+gambit8888; v
+j4est; w
+jcohen; v
+KruZe; s
+ryne16; w
+Sun Tzu; v
+tmleafs1967; v
+
+Subs: 
+
+Peeks: 
+
+Victor: wolves
+
+End Summary
+Vanilla werewolf game summary
+Report template version 0.1
+
+Game name: 
+Game type: turbo
+url: 
+Start date: 
+Mod: 
+
+Player list:
+Chips Ahoy; v
+gambit8888; w
+Hell Yeah; s
+J4est; w
+jcohen; v
+mutigers5591; v
+ryne16; v
+Searix; v
+Sun Tzu; v
+
+Subs: 
+
+Peeks: 
+
+Victor: village
+
+End Summary
+Vanilla werewolf game summary
+Report template version 0.1
+
+Game name: 
+Game type: turbo
+url: 
+Start date: 
+Mod: 
+
+Player list:
+Forsythio; v
+NoFear3838; w
+Sun Tzu; w
+ihcjay; v
+ShipItUp; v
+j4est; v
+VarianceMinefield; v
+remedys; s
+vyk07; v
+
+Subs: 
+
+Peeks: 
+
+Victor: village
+
+End Summary
+Vanilla werewolf game summary
+Report template version 0.1
+
+Game name: 
+Game type: turbo
+url: 
+Start date: 
+Mod: 
+
+Player list:
+mutigers5591; s
+gambit8888; w
+Vagos; w
+Willi; v
+Kaze13; v
+albundy4; v
+Hurp Durpington; v
+KruZe; v
+Anarchist; v
+
+Subs: 
+
+Peeks: 
+
+Victor: wolves
+
+End Summary
+Vanilla werewolf game summary
+Report template version 0.1
+
+Game name: 
+Game type: turbo
+url: 
+Start date: 
+Mod: 
+
+Player list:
+shortline99; w
+thedean1; v
+kcaw; v
+chuckleslovakian; v
+nofear3838; v
+aksdal; v
+vyk07; s
+rebonkulous; v
+teddyyr1973; w
+
+Subs: 
+
+Peeks: 
+
+Victor: wolves
+
+End Summary
+Vanilla werewolf game summary
+Report template version 0.1
+
+Game name: 
+Game type: turbo
+url: 
+Start date: 
+Mod: 
+
+Player list:
+tmleafs1967; v
+domer2; v
+feedmykids2; w
+gambit8888; v
+KruZe; v
+ShipItUp; v
+Sun Tzu; v
+VarianceMineField; w
+vyk07; s
+
+Subs: 
+
+Peeks: 
+
+Victor: wolves
+
+End Summary
+Vanilla werewolf game summary
+Report template version 0.1
+
+Game name: 
+Game type: turbo
+url: 
+Start date: 
+Mod: 
+
+Player list:
+shortline99; w
+TheDean1; w
+KruZe; v
+feedmykids2; v
+gambit8888; v
+ihcjay; s
+Charry; v
+remedys; v
+Sun Tzu; v
+
+Subs: 
+
+Peeks: 
+
+Victor: wolves
+
+End Summary
+Vanilla werewolf game summary
+Report template version 0.1
+
+Game name: 
+Game type: turbo
+url: 
+Start date: 
+Mod: 
+
+Player list:
+gambit8888; v
+Sun Tzu; v
+TheDean1; w
+shortline99; v
+Hurp Durpington; s
+Charry; v
+bhuber2010; w
+LeonardoDicaprio; v
+jcohen; v
+
+Subs: 
+
+Peeks: 
+
+Victor: wolves
+
+End Summary
+Vanilla werewolf game summary
+Report template version 0.1
+
+Game name: 
+Game type: turbo
+url: 
+Start date: 
+Mod: 
+
+Player list:
+Sun Tzu; v
+ShipItUp; v
+gambit8888; v
+LeonardoDicaprio; w
+ihcjay; v
+Nofear3838; v
+lenC; w
+Charry; s
+IBeDrummin; v
+
+Subs: 
+
+Peeks: 
+
+Victor: wolves
+
+End Summary
+Vanilla werewolf game summary
+Report template version 0.1
+
+Game name: 
+Game type: turbo
+url: 
+Start date: 
+Mod: 
+
+Player list:
+shipitup; w
+bhuber2010; w
+sun tzu; v
+charry; s
+vyk07; v
+thedean1; v
+domer2; v
+gambit8888; v
+vagos; v
+
+Subs: 
+
+Peeks: 
+
+Victor: wolves
+
+End Summary
+Vanilla werewolf game summary
+Report template version 0.1
+
+Game name: 
+Game type: turbo
+url: 
+Start date: 
+Mod: 
+
+Player list:
+JimHalpert; w; d2 lynch
+lenC; w; d3 lynch
+Hurp Durpington; v
+Kaze13; v
+domer2; v
+zdye724; v; n1 nk
+NFL Swami Mod; v; d1 lynch
+Sun Tzu; v; n2 nk
+Nofear3838; s
+
+Subs: 
+
+Peeks: 
+
+Victor: village
+
+End Summary
+Vanilla werewolf game summary
+Report template version 0.1
+
+Game name: 
+Game type: turbo
+url: 
+Start date: 
+Mod: 
+
+Player list:
+Ashington; v
+Gadarene; v
+Sun Tzu; v
+fanmail; v
+JimHalpert; v
+TheDean1; s
+remedys; v
+shortline99; w
+Vagos; w
+
+Subs: 
+
+Peeks: 
+
+Victor: village
+
+End Summary
+Vanilla werewolf game summary
+Report template version 0.1
+
+Game name: 
+Game type: turbo
+url: 
+Start date: 
+Mod: 
+
+Player list:
+shortline99; w
+Sun Tzu; v
+Gadarene; v
+Ashington; w
+TheDean1; v
+Vagos; s
+JimHalpert; v
+The Moocher; v
+Nofear3838; v
+
+Subs: 
+
+Peeks: 
+
+Victor: village
+
+End Summary
+Vanilla werewolf game summary
+Report template version 0.1
+
+Game name: 
+Game type: turbo
+url: 
+Start date: 
+Mod: 
+
+Player list:
+TheDean1; v
+lenC; v
+Sun Tzu; v
+Vagos; v
+KruZe; w
+pwnsall; w
+Hurp Durpington; v
+fanmail; s
+vixticator; v
+
+Subs: 
+
+Peeks: 
+
+Victor: village
+
+End Summary
+Vanilla werewolf game summary
+Report template version 0.1
+
+Game name: 
+Game type: turbo
+url: 
+Start date: 
+Mod: 
+
+Player list:
+thedean1; v
+remedys; v
+leonardodicaprio; w
+well named; v
+noah; s
+steroid boy; v
+varianceminefield; w
+shortline99; v
+nofear3838; v
+
+Subs: 
+
+Peeks: 
+
+Victor: wolves
+
+End Summary
+Vanilla werewolf game summary
+Report template version 0.1
+
+Game name: 
+Game type: turbo
+url: 
+Start date: 
+Mod: 
+
+Player list:
+leonardodicaprio; v
+noah; w
+thedean1; v
+domer2; w
+jimhalpert; v
+hurp durpington; v
+monkey banana; s
+remedys; v
+hardcoreUFO; v
+
+Subs: 
+
+Peeks: 
+
+Victor: wolves
+
+End Summary
+Vanilla werewolf game summary
+Report template version 0.1
+
+Game name: 
+Game type: turbo
+url: 
+Start date: 
+Mod: 
+
+Player list:
+Noah; v
+VarianceMinefield; v
+Sun Tzu; s
+LeonardoDiCaprio; v
+zdye724; w
+JimHalpert; v
+domer2; w
+Vagos; v
+Thedean1; v
+
+Subs: 
+
+Peeks: 
+
+Victor: wolves
+
+End Summary
+Vanilla werewolf game summary
+Report template version 0.1
+
+Game name: 
+Game type: turbo
+url: 
+Start date: 
+Mod: 
+
+Player list:
+zdye724; v
+noah; s
+jimhalpert; v
+sun tzu; v
+thedean1; v
+ibedrummin; w
+leonardodicaprio; v
+ihcjay; v
+vagos; w
+
+Subs: 
+
+Peeks: 
+
+Victor: village
+
+End Summary
+Vanilla werewolf game summary
+Report template version 0.1
+
+Game name: 
+Game type: turbo
+url: 
+Start date: 
+Mod: 
+
+Player list:
+Nofear3838; v
+Noah; v
+TheDean1; v
+Aksdal; v
+VarianceMinefield; s
+Gadarene; v
+Sun Tzu; w
+Vagos; v
+LeonardoDicaprio; w
+
+Subs: 
+
+Peeks: 
+
+Victor: village
+
+End Summary
+Vanilla werewolf game summary
+Report template version 0.1
+
+Game name: 
+Game type: turbo
+url: 
+Start date: 
+Mod: 
+
+Player list:
+Noah; v
+Aksdal; w
+LeonardoDicaprio; w
+Nofear3838; s
+mutigers5591; v
+TheDean1; v
+Vagos; v
+JimHalpert; v
+Hurp Durpington; v
+
+Subs: 
+
+Peeks: 
+
+Victor: wolves
+
+End Summary
+Vanilla werewolf game summary
+Report template version 0.1
+
+Game name: 
+Game type: turbo
+url: 
+Start date: 
+Mod: 
+
+Player list:
+Aksdal; w
+A.Ertbjerg; w
+Charry; v
+captain binkles; v
+chuckleslovakian; v
+JimHalpert; s
+Nofear3838; v
+HiFi; v
+VoraciousReader; v
+
+Subs: 
+
+Peeks: 
+
+Victor: village
+
+End Summary
+Vanilla werewolf game summary
+Report template version 0.1
+
+Game name: 
+Game type: turbo
+url: 
+Start date: 
+Mod: 
+
+Player list:
+CPHoya; s
+JimHalpert; w
+zdye724; v
+Vagos; v
+domer2; v
+VarianceMinefield; v
+lenC; v
+soah; w
+KruZe; v
+
+Subs: 
+
+Peeks: 
+
+Victor: village
+
+End Summary
+Vanilla werewolf game summary
+Report template version 0.1
+
+Game name: 
+Game type: turbo
+url: 
+Start date: 
+Mod: 
+
+Player list:
+CPHoya; v
+TheDean1; v
+domer2; w
+Nana7; v
+Charry; v
+Vagos; v
+remedys; s
+ihcjay; w
+housenuts; v
+
+Subs: 
+
+Peeks: 
+
+Victor: village
+
+End Summary
+Vanilla werewolf game summary
+Report template version 0.1
+
+Game name: 
+Game type: turbo
+url: 
+Start date: 
+Mod: 
+
+Player list:
+Charry; w
+LKJ; v
+Xkf; v
+Nana7; v
+mutigers5591; w
+CPHoya; v
+Steroid Boy; v
+Younguns87; v
+Vagos; s
+
+Subs: 
+
+Peeks: 
+
+Victor: village
+
+End Summary
+Vanilla werewolf game summary
+Report template version 0.1
+
+Game name: 
+Game type: turbo
+url: 
+Start date: 
+Mod: 
+
+Player list:
+CPHoya; v
+Charry; w
+Vagos; v
+bhuber2010; v
+hibiscus; w
+VarianceMinefield; s
+Sun Tzu; v
+Felix the Cat; v
+Hurp Durpington; v
+
+Subs: 
+
+Peeks: 
+
+Victor: wolves
+
+End Summary
+Vanilla werewolf game summary
+Report template version 0.1
+
+Game name: 
+Game type: turbo
+url: 
+Start date: 
+Mod: 
+
+Player list:
+Noah; w; d1 lynch
+ShipItUp; w; d2 lynch
+Kaze13; v
+KruZe; v
+JimHalpert; v
+VarianceMinefield; v; n1 nk
+bhuber2010; v
+zdye724; s
+Nofear3838; v
+
+Subs: 
+
+Peeks: 
+
+Victor: village
+
+End Summary
+Vanilla werewolf game summary
+Report template version 0.1
+
+Game name: 
+Game type: turbo
+url: 
+Start date: 
+Mod: 
+
+Player list:
+Charry; v; n1 nk
+JimHalpert; w
+Kaze13; v; n2 nk
+Nana7; v; d3 lynch
+Noah; w
+ShipItUp; v; d1 lynch
+Sun Tzu; s
+VarianceMinefield; v; d2 lynch
+xkf; v
+
+Subs: 
+
+Peeks: 
+
+Victor: wolves
+
+End Summary
+Vanilla werewolf game summary
+Report template version 0.1
+
+Game name: 
+Game type: turbo
+url: 
+Start date: 
+Mod: 
+
+Player list:
+bhuber2010; v
+Butt Fumble; v
+captain binkles; s; n1 nk
+JimHalpert; v; d2 lynch
+Kaze13; w
+mutigers5591; v; d1 lynch
+Noah; v; n2 nk
+Sun Tzu; v; d3 lynch
+Vagos; w
+
+Subs: 
+
+Peeks: 
+
+Victor: wolves
+
+End Summary
+Vanilla werewolf game summary
+Report template version 0.1
+
+Game name: 
+Game type: turbo
+url: 
+Start date: 
+Mod: 
+
+Player list:
+Kaze13; v; n2 nk
+KruZe; v
+Charry; v; n1 nk
+metsandfinsfan; v; d1 lynch
+LeonardoDicaprio; w
+zdye724; w
+ShipItUp; v
+Boner2; s; d3 lynch
+Crossnerd; v; d2 lynch
+
+Subs: 
+
+Peeks: 
+
+Victor: wolves
+
+End Summary
+Vanilla werewolf game summary
+Report template version 0.1
+
+Game name: 
+Game type: turbo
+url: 
+Start date: 
+Mod: 
+
+Player list:
+TheDean1; v; d4 lynch
+ShipItUp; w
+Aksdal; v; d3 lynch
+KruZe; s; d2 lynch
+zdye724; v
+Charry; v; n2 nk
+iversonian; v; n3 nk
+LeonardoDicaprio; v; n1 nk
+fanmail; w; d1 lynch
+
+Subs: 
+
+Peeks: 
+
+Victor: wolves
+
+End Summary
+Vanilla werewolf game summary
+Report template version 0.1
+
+Game name: 
+Game type: turbo
+url: 
+Start date: 
+Mod: 
+
+Player list:
+TimeLady; w
+Nana7; v; d1 lynch
+TheDean1; v; d3 lynch
+ShipItUp; v
+Noah; s; n1 nk
+Nofear3838; v; n2 nk
+Auramyna; v; d4 lynch
+shortline99; w; d2 lynch
+well named; v; n3 nk
+
+Subs: 
+
+Peeks: 
+
+Victor: wolves
+
+End Summary
+Vanilla werewolf game summary
+Report template version 0.1
+
+Game name: 
+Game type: turbo
+url: 
+Start date: 
+Mod: 
+
+Player list:
+Kaze13; w
+ShipItUp; v
+Noah; v; d2 lynch
+TheDean1; w
+Auramyna; v; d3 lynch
+Crossnerd; v; d1 lynch
+Hell Yeah; v; n1 nk
+remedys; s; n2 nk
+Nofear3838; v
+
+Subs: 
+
+Peeks: 
+
+Victor: wolves
+
+End Summary
+Vanilla werewolf game summary
+Report template version 0.1
+
+Game name: 
+Game type: turbo
+url: 
+Start date: 
+Mod: 
+
+Player list:
+charry; w; d2 lynch
+thedean1; v
+shortline99; w; d3 lynch
+aksdal; v
+remedys; s
+kaze13; v; n2 nk
+felix the cat; v
+zdye724; v; n1 nk
+leonardodicaprio; v; d1 lynch
+
+Subs: 
+
+Peeks: 
+
+Victor: village
+
+End Summary
+Vanilla werewolf game summary
+Report template version 0.1
+
+Game name: 
+Game type: turbo
+url: 
+Start date: 
+Mod: 
+
+Player list:
+kruze; v
+tmleafs1967; v
+tboblp; v; d2 lynch
+sun tzu; v; n1 nk
+charry; v
+thedean1; s; n2 nk
+chips ahoy; w; d3 lynch
+remedys; w; d1 lynch
+mutigers5591; v
+
+Subs: 
+
+Peeks: 
+
+Victor: village
+
+End Summary
+Vanilla werewolf game summary
+Report template version 0.1
+
+Game name: 
+Game type: turbo
+url: 
+Start date: 
+Mod: 
+
+Player list:
+Noah; w; d2 lynch
+Aksdal; v; d4 lynch
+TheDean1; s; n2 nk
+iversonian; v; n3 nk
+Charry; v
+Boner2; v; n1 nk
+ShipItUp; w
+krayz; v; d1 lynch
+chuckleslovakian; v; d3 lynch
+
+Subs: 
+
+Peeks: 
+
+Victor: wolves
+
+End Summary
+Vanilla werewolf game summary
+Report template version 0.1
+
+Game name: 
+Game type: turbo
+url: 
+Start date: 
+Mod: 
+
+Player list:
+Noah; w
+Herp Derpington; w
+ShipItUp; s; n1 nk
+bhuber2010; v; d2 lynch
+SimDaniels; v
+Charry; v; n2 nk
+Klingbard; v
+TheDean1; v; d1 lynch
+shortline99; v; d3 lynch
+
+Subs: 
+
+Peeks: 
+
+Victor: wolves
+
+End Summary
+Vanilla werewolf game summary
+Report template version 0.1
+
+Game name: 
+Game type: turbo
+url: 
+Start date: 
+Mod: 
+
+Player list:
+TheDean1; v
+Noah; v; d2 lynch
+Aksdal; v; n2 nk
+bhuber2010; s; n1 nk
+Sun Tzu; w; d1 lynch
+krayz; v; d4 lynch
+ihcjay; v; n3 nk
+Possum; w
+remedys; v; d3 lynch
+
+Subs: 
+
+Peeks: 
+
+Victor: wolves
+
+End Summary
+Vanilla werewolf game summary
+Report template version 0.1
+
+Game name: 
+Game type: turbo
+url: 
+Start date: 
+Mod: 
+
+Player list:
+Noah; v; n2 nk
+bhuber2010; v
+Sun Tzu; v
+TheDean1; v; d3 lynch
+jenningst77; v; d1 lynch
+CPHoya; w
+Phooey Duck; v; d2 lynch
+gambit8888; w
+Klingbard; s; n1 nk
+
+Subs: 
+
+Peeks: 
+
+Victor: wolves
+
+End Summary
+Vanilla werewolf game summary
+Report template version 0.1
+
+Game name: 
+Game type: turbo
+url: 
+Start date: 
+Mod: 
+
+Player list:
+Sun Tzu; v
+Noah; w
+metsandfinsfan; s; d1 lynch
+Effen; v; n3 nk
+KruZe; w; d3 lynch
+gambit8888; v; d2 lynch
+CPHoya; v; n2 nk
+bhuber2010; v; d4 lynch
+Charry; v; n1 nk
+
+Subs: 
+
+Peeks: 
+
+Victor: wolves
+
+End Summary
+Vanilla werewolf game summary
+Report template version 0.1
+
+Game name: 
+Game type: turbo
+url: 
+Start date: 
+Mod: 
+
+Player list:
+metsandfinsfan; v
+ShipItUp; v; n3 nk
+Sun Tzu; v; n1 nk
+bhuber2010; v; n2 nk
+Noah; w; d4 lynch
+gambit8888; w; d3 lynch
+Felix the Cat; v
+kruze; s; d1 lynch
+Effen; v; d2 lynch
+
+Subs: 
+
+Peeks: 
+
+Victor: village
+
+End Summary
+Vanilla werewolf game summary
+Report template version 0.1
+
+Game name: 
+Game type: turbo
+url: 
+Start date: 
+Mod: 
+
+Player list:
+shortline99; v
+tmleafs1967; w; d2 lynch
+TheDean1; s; n2 nk
+Noah; v
+gambit8888; v; d1 lynch
+Felix the Cat; w; d4 lynch
+VarianceMinefield; v; n1 nk
+Tappokone; v; d3 lynch
+Krayz; v; n3 nk
+
+Subs: 
+
+Peeks: 
+
+Victor: village
+
+End Summary
+Vanilla werewolf game summary
+Report template version 0.1
+
+Game name: 
+Game type: turbo
+url: 
+Start date: 
+Mod: 
+
+Player list:
+thedean1; v; d3 lynch
+varianceminefield; v; n1 nk
+chips ahoy; v
+lenc; w
+krayz; w
+tappokone; v
+sun tzu; v; d1 lynch
+captain binkles; s; n2 nk
+kokiri; v; d2 lynch
+
+Subs: 
+
+Peeks: 
+
+Victor: wolves
+
+End Summary
+Vanilla werewolf game summary
+Report template version 0.1
+
+Game name: 
+Game type: turbo
+url: 
+Start date: 
+Mod: 
+
+Player list:
+Sun Tzu; v
+gambit8888; s; d1 lynch
+Krayz; v; n2 nk
+iamnotawerewolf; w; d4 lynch
+globetrotter; v
+bhuber2010; v; n1 nk
+Phooey Duck; v; d2 lynch
+jenningst77; v; n3 nk
+Charry; w; d3 lynch
+
+Subs: 
+
+Peeks: 
+
+Victor: village
+
+End Summary
+Vanilla werewolf game summary
+Report template version 0.1
+
+Game name: 
+Game type: turbo
+url: 
+Start date: 
+Mod: 
+
+Player list:
+Aksdal; s; n1 nk
+bhuber2010; w; d1 lynch
+gambit8888; v; d3 lynch
+globetrotter; v; n3 nk
+Krayz; v; d2 lynch
+LeonardoDicaprio; v
+Outed Wolf; w
+ReddBoiler; v; d4 lynch
+Sun Tzu; v; n2 nk
+
+Subs: 
+
+Peeks: 
+
+Victor: wolves
+
+End Summary
+Vanilla werewolf game summary
+Report template version 0.1
+
+Game name: 
+Game type: turbo
+url: 
+Start date: 
+Mod: 
+
+Player list:
+ReddBoiler; v
+Outed Wolf; v; n3 nk
+Charry; w; d4 lynch
+remedys; w; d3 lynch
+ihcjay; v; d2 lynch
+comeasur337; v; d1 lynch
+Noah; v
+LeonardoDicaprio; s; n1 nk
+well named; v; n2 nk
+
+Subs: 
+
+Peeks: 
+
+Victor: village
+
+End Summary
+Vanilla werewolf game summary
+Report template version 0.1
+
+Game name: 
+Game type: turbo
+url: 
+Start date: 
+Mod: 
+
+Player list:
+bhuber2010; v; d4 lynch
+Charry; v
+domer2; v; n2 nk
+fanmail; v; d2 lynch
+ReddBoiler; w
+shortline99; s; n1 nk
+SimDaniels; w; d3 lynch
+TheDean1; v; n3 nk
+zdye724; v; d1 lynch
+
+Subs: 
+
+Peeks: 
+
+Victor: wolves
+
+End Summary
+Vanilla werewolf game summary
+Report template version 0.1
+
+Game name: 
+Game type: turbo
+url: 
+Start date: 
+Mod: 
+
+Player list:
+felix the cat; v; d1 lynch
+noah; v; n3 nk
+sun tzu; v; n1 nk
+gambit8888; v; d3 lynch
+nofear3838; v
+chips ahoy; v; d4 lynch
+remedys; s; n2 nk
+ihcjay; w
+younguns87; w; d2 lynch
+
+Subs: 
+
+Peeks: 
+
+Victor: wolves
+
+End Summary
+Vanilla werewolf game summary
+Report template version 0.1
+
+Game name: 
+Game type: turbo
+url: 
+Start date: 
+Mod: 
+
+Player list:
+Charry; v
+ESKiMO-SiCKNE5S; w
+gambit8888; s
+KruZe; w
+metsandfinsfan; v
+No Lynches; v
+ReddBoiler; v
+soah; v
+watevs; v
+
+Subs: 
+
+Peeks: 
+
+Victor: wolves
+
+End Summary

@@ -320,6 +320,9 @@ update roleset set roletype = 4 where roletype=67;
 delete from roles where roleid=67;
 alter table roles add unique index (rolename);
 
+alter table team drop column teamid;
+alter table game modify column gametype enum('Vanilla','Vanilla+','Mish-Mash','Slow Game','Turbo','Turbo Mishmash');
+
 -- finish conversion
 --############################################
 -- error fixes
@@ -345,6 +348,3 @@ update playerlist pl join player p on pl.playerid=p.playerid set pl.playerid = p
 
 --####################################
 -- pending changes to production:
-drop view thread;
-alter table team drop column teamid;
-

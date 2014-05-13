@@ -102,7 +102,7 @@ def DoGame(lines):
 	
 	return gamejson
 
-data = [line.strip() for line in open('/home/pbae/puzzles-and-other-code/wwdb/turbospreadsheet.txt')]
+data = [line.strip() for line in open('/home/iversonian/turbospreadsheet.txt')]
 len(data)
 del data[0] # header
 
@@ -176,7 +176,7 @@ summaries[0]['actions']
 JSONtoDB(summaries[281], cursor, 'turbo ss 6')
 
 for i in summaries:
-	JSONtoDB(i, cursor, 'turbo ss 7')
+	JSONtoDB(i, cursor, 'turbo ss prod 1')
 
 
 # add these to db:
