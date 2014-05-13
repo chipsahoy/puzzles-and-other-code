@@ -25,6 +25,7 @@ Peeks: Sun Tzu; JimHalpert; Xkf
 Victor: village
 
 End Summary
+
 Vanilla werewolf game summary
 Report template version 0.1
 
