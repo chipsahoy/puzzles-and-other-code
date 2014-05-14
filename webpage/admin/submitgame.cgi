@@ -7,13 +7,17 @@ import cgi, os, sys, string, time, datetime
 cgitb.enable()
 sys.stderr = sys.stdout 
 
-import MySQLdb
-db = MySQLdb.connect(host="localhost", user="poguser", passwd="werewolf", db='pog', charset="utf8", use_unicode=True)
+#import MySQLdb
+#db = MySQLdb.connect(host="localhost", user="poguser", passwd="werewolf", db='pog', charset="utf8", use_unicode=True)
+import login
 
-cursor = db.cursor(MySQLdb.cursors.DictCursor)
+cursor = login.db.cursor(login.MySQLdb.cursors.DictCursor)
 cursor.execute("set autocommit=0")
 
 import textjsondb
+
+#TOPDIRECTORY = 'pog'
+#PASSWORDS = []
 
 ##########################################################
 
@@ -48,21 +52,30 @@ def ListSubs(subs, playerlist):
 		for s in subs:
 			formsub += """<tr><td>%s</td><td><input type="text" name="subname" size="15" value="%s"></td>
 				<td><input type="text" name="subday" size="5" value="%s"></td></tr>""" % (
-				makeSelect('subop', ['--']+playerlist, s['op']), s['subname'], s['subday'])
+				makeSelect('subop', ['']+playerlist, s['op']), s['subname'], s['subday'])
 		formsub += '</table></tr>' 
 	formsub += '<tr><td></td><td><br><input type="submit" name="addsub" value="Add Sub"><br><br></td></tr>'
 	return formsub
 
-def ListActions(actions, playerlist):
-	# actions is list of dicts: {'player','target','night','ability'}
+def GetActorOrSeer(playerlist, role, actor):
+	# if actor is already set, use him, else return first seer in playerlist, for convenience
+	if actor == '':
+		if 'SEER' in [x.upper() for x in role]:
+			return playerlist[[y.upper() for y in role].index('SEER')]
+	else:
+		return actor
+	
+def ListActions(actions, playerlist, role):
+	# actions is list of dicts: {'actor','target','night','ability'}
 	formaction = ''
 	if len(actions) > 0:
 		formaction = '<tr><td align="right">Actions:</td><td><table bgcolor=efe1f1><tr><th>Player</th><th>Target</th><th>Night</th><th>Ability</th></tr>'
 		for a in actions:
 			formaction += """<tr><td>%s</td><td>%s</td><td><input type="text" name="night" size="5" value="%s"></td><td>%s</td></tr>""" % (
-				makeSelect('actor', ['--']+playerlist, a['player']),
-				makeSelect('actor', ['--']+playerlist, a['target']),
-				a['night'], makeSelect('actor', ['Peek','Angel','Vig','Roleblock'], a['ability']))
+				makeSelect('actor', ['']+playerlist, GetActorOrSeer(playerlist, role, a['actor'])),
+				makeSelect('target', ['']+playerlist, a['target']),
+				a['night'], 
+				makeSelect('ability', ['Peek','Angel','Vig','Roleblock'], a['ability']))
 		formaction += '</table></tr>'
 	formaction += '<tr><td></td><td><br><input type="submit" name="addaction" value="Add Action"><br><br></td></tr>'
 	return formaction
@@ -81,7 +94,7 @@ def ListPlayers(playerlist, affiliation, role, deathday, deathtype):
 			'<td>' + makeSelect('deathtype', ['','Lynched','Night Killed','Survived','Eaten','Conceded','Mod Killed','Day Killed'], 
 				deathtype[i]) + '</td>' + \
 			'<td><input type="text" name="role" size="15" value="%s"></td></tr>' % ('' if role[i] == 'Vanilla' else role[i])
-		formpl += "</table><br></td></tr>"
+		formpl += "</table></td></tr>"
 		return formpl
 
 def VictorType(victor):
@@ -124,12 +137,14 @@ def GenerateForm(game):
 			'\n'.join(game.playerlisttext))
 	
 	players = ListPlayers(game.playerlist, game.affiliation, game.role, game.deathday, game.deathtype) if (len(game.playerlist) > 0) else ''
-	subs = ListSubs(game.subs, game.playerlist)
-	actions = ListActions(game.actions, game.playerlist)
 	
-	form2 = """<tr><td></td><td><br><br>
+	form2 = '<tr><td></td><td><input type="submit" name="filldt" value="Fill in death table with implied values"></td></tr>'
+			
+	subs = ListSubs(game.subs, game.playerlist)
+	actions = ListActions(game.actions, game.playerlist, game.role)
+	
+	form3 = """<tr><td></td><td><br><br>
 			<input type="hidden" name="action" value="go">
-			<input type="submit" name="filldt" value="Fill in death table with implied values"><br><br>
 			<input type="submit" name="checkgame" value="Check for validity"><br><br>
 			<input type="hidden" name="delete" value="Delete game from database"><br><br>
 			<input type="text" name="commit" size="20" value="" placeholder="Commit message"><br>
@@ -148,7 +163,7 @@ def GenerateForm(game):
 		8. If there are no error messages, prepend your password to your commit message and hit Submit. 
 			The message is to avoid duplicate submissions and to help with debugging.<br>
 		<br><br>"""
-	print form1 + players + subs + actions + form2 + instructions
+	print form1 + players + form2 + subs + actions + form3 + instructions
 
 #####################################################################
 
@@ -191,6 +206,14 @@ class Game:
 			self.subs = []
 			for i, s in enumerate(subop):
 				self.subs.append({'op':subop[i], 'subname':subname[i], 'subday':subday[i]})
+		if 'actor' in f:
+			actor = f.getlist("actor")
+			target = f.getlist("target")
+			night = f.getlist("night")
+			ability = f.getlist("ability")
+			self.actions = []
+			for i, a in enumerate(actor):
+				self.actions.append({'actor':actor[i], 'target':target[i], 'night':night[i], 'ability':ability[i]})
 	
 	def SetVictor(self, vd, vt):
 		if len(vd) == 0:
@@ -219,10 +242,10 @@ class Game:
 		self.CheckPlayerlistAgainstDB()
 	
 	def AddSub(self):
-		self.subs.append({'op':'--', 'subname':'', 'subday':''})
+		self.subs.append({'op':'', 'subname':'', 'subday':''})
 	
 	def AddAction(self):
-		self.actions.append({'player':'--', 'target':'', 'night':'', 'ability':''})
+		self.actions.append({'actor':'', 'target':'', 'night':'', 'ability':''})
 	
 	def FillInDeathTable(self):
 	# infer missing deathtype/deathday values
@@ -233,7 +256,7 @@ class Game:
 				if self.deathday[i] == '':
 					self.deathday[i] = max([0 if a=='' else a for a in self.deathday])
 				if self.deathtype[i] == '': # fill in s/e/c deathtypes
-					if self.affiliation[i].upper() in [a.upper for a in self.victor]:
+					if self.affiliation[i].upper() in [a.upper() for a in self.victor]:
 						self.deathtype[i] = 'Survived'
 					else:
 						if self.affiliation[i] == 'Village':
@@ -279,11 +302,12 @@ class Game:
 			if dbcheck[0] == False:
 				self.errmsg.append("<font color='red'>Moderator " + modname + " is not in the database.</font>")
 		
-		# get rid of '--' subs
-		self.subs = filter(lambda a: a['op'] != '--', self.subs)
+		# get rid of [blank] sub/actor fields
+		self.subs = filter(lambda a: a['op'] != '', self.subs)
+		self.actions = filter(lambda a: a['actor'] != '', self.actions)
 		
-		if self.gametype in ('Vanilla','Slow Game','Turbo'):
-			self.FillInDeathTable()
+		#if self.gametype in ('Vanilla','Slow Game','Turbo'):
+		#	self.FillInDeathTable()
 		
 		# incomplete death table
 		if sum([a == '' for a in self.deathday]) > 0 or sum([a == '' for a in self.deathtype]) > 0:
@@ -306,7 +330,7 @@ class Game:
 		j = {'url':self.url, 'gamename':self.gamename, 'gametype':self.gametype, 'startdate':self.startdate, 'mod':self.mods, 'victor':self.victor, 'factions':list(set(self.affiliation))}
 		players = []
 		for i, op in enumerate(self.playerlist):
-			p = {'op':op, 'faction':self.affiliation[i], 'role':self.role[i], 'deathday':self.deathday[i], 'deathtype':self.deathtype[i]}
+			p = {'op':op, 'faction':self.affiliation[i], 'role': 'Vanilla' if self.role[i] == '' else self.role[i], 'deathday':self.deathday[i], 'deathtype':self.deathtype[i]}
 			players.append(p)
 		j['players'] = players
 		
@@ -315,6 +339,12 @@ class Game:
 			subs.append({'op':s['op'], 'subname':s['subname'], 'subday':s['subday']})
 		if len(subs) > 0:
 			j['subs'] = subs
+		
+		actions = []
+		for a in self.actions:
+			actions.append({'actor':a['actor'], 'target':a['target'], 'night':a['night'], 'ability':a['ability']})
+		if len(actions) > 0:
+			j['actions'] = actions
 		
 		return j
 
@@ -378,10 +408,6 @@ def JSONtoGame(j):
 	return g
 
 ###################################################################
-# game checks
-# approved role types for vanillas
-
-# http://forumserver.twoplustwo.com/59/puzzles-other-games/3-game-mafia-champions-ww-invitational-game-thread-1428519/
 
 print "Content-Type: text/html;charset=utf-8"
 print
@@ -394,7 +420,6 @@ print """<script type="text/javascript">
 	document.onkeypress = stopRKey;
 	</script>"""
 print "<h3><ul>Werewolf Database Game Submission/Edit Form (beta)</ul></h3>"
-
 #print '<font face="courier new">'
 
 form = cgi.FieldStorage(keep_blank_values=True)
@@ -451,10 +476,10 @@ elif "checkgame" in form:
 	if game.CheckValidity():
 		print "<font color='blue'>Looks good</font><br>"
 	GenerateForm(game)
+	j = game.ExportToJSON()
+	print "For debugging:<br>" + str(j)
 elif "clear" in form:
 	GenerateForm(Game())
 else:
 	GenerateForm(game)
-
-
 

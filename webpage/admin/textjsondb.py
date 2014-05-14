@@ -55,7 +55,7 @@ def JSONtoDB(j, cur, msg='added'):
 		for a in j['actions']:
 			cur.execute("""select pl.slot from playerlist pl join roleset rs using (gameid, slot) 
 				where gameid=%s and ordinal=1 and playerid=(select playerid from player where playername = %s)""",
-				(gameid, a['player']))
+				(gameid, a['actor']))
 			result1 = cur.fetchone()
 			cur.execute("""select pl.slot from playerlist pl join roleset rs using (gameid, slot) 
 				where gameid=%s and ordinal=1 and playerid=(select playerid from player where playername = %s)""",

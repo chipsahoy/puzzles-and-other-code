@@ -87,7 +87,7 @@ def DoGame(lines):
 						target = subs[get_index(subs, 'subname', j)]['op']
 					else:
 						target = j
-					actions.append({'player': op, 'target': target, 'night': night, 'ability': 'Peek' if role.upper()=='SEER' else role})
+					actions.append({'actor': op, 'target': target, 'night': night, 'ability': 'Peek' if role.upper()=='SEER' else role})
 		
 		players.append({'op': op, 'faction': i[6], 'role': role, 'deathtype': deathtype, 'deathday': deathday})
 	

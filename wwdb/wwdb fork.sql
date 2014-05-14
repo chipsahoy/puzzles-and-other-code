@@ -320,8 +320,11 @@ update roleset set roletype = 4 where roletype=67;
 delete from roles where roleid=67;
 alter table roles add unique index (rolename);
 
+-- #
 alter table team drop column teamid;
 alter table game modify column gametype enum('Vanilla','Vanilla+','Mish-Mash','Slow Game','Turbo','Turbo Mishmash');
+
+alter table playerlist add unique (gameid, slot, playerid);
 
 -- finish conversion
 --############################################
