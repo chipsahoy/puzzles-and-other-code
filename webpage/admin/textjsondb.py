@@ -122,6 +122,19 @@ def DBtoJSON(url, cur):
 	if len(subs) > 0:
 		jsontxt['subs'] = subs		
 	
+	cur.execute("select p1.playername actor, p2.playername target, a.night, a.ability \
+		from roleset rs join playerlist pl1 using (gameid, slot) join player p1 on p1.playerid=pl1.playerid  \
+		join actions a using (gameid, slot) join playerlist pl2 on pl2.gameid=rs.gameid and pl2.slot=a.target and pl2.ordinal=1 \
+		join player p2 on p2.playerid=pl2.playerid \
+		where pl1.ordinal = 1 and rs.gameid=%s" %gameid)
+	result = cur.fetchall()
+	actions = []
+	for a in result:
+		actions.append({'actor':a['actor'],'target':a['target'],'night':a['night'],'ability':a['ability']})
+	
+	if len(actions) > 0:
+		jsontxt['actions'] = actions
+	
 	return jsontxt
 
 #######################################

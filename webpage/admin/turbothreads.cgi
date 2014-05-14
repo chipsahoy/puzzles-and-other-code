@@ -60,7 +60,7 @@ def ShowResults(f):
 		cursor.execute("select t.replies, if(t.icontext is null,'',t.icontext) icontext, date(t.lastposttime) lastposttime, \
 			t.url, convert(t.title using latin1) title, r.postername p, ifnull(date(p.posttime),'') optime \
 			from Thread t join Poster r on t.op=r.posterid \
-			left join Post p on p.threadid=t.threadid and p.posterid=t.op and p.postnumber=1 \
+			left join threadop p on p.threadid=t.threadid \
 			where t.threadid=%s" % i)
 		thread = cursor.fetchone()
 		print '<tr><td>%s</td><td>%s</td><td><a href="%s" target="_blank">%s</a></td><td>%s</td><td>%s</td><td>%s</td></tr>' % (

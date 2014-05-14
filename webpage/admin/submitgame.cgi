@@ -393,6 +393,7 @@ def JSONtoGame(j):
 	g.victor = j['victor']
 	playerlist = []
 	subs = []
+	actions = []
 	affiliation = []
 	role = []
 	deathday = []
@@ -408,8 +409,13 @@ def JSONtoGame(j):
 		for sub in j['subs']:
 			subs.append({'op':sub['op'], 'subname':sub['subname'], 'subday':str(sub['subday'])})
 	
+	if 'actions' in j:
+		for a in j['actions']:
+			actions.append({'actor':a['actor'],'target':a['target'],'night':str(a['night']),'ability':a['ability']})
+	
 	g.playerlist = playerlist
 	g.subs = subs
+	g.actions = actions
 	g.affiliation = affiliation
 	g.role = role
 	g.deathday = deathday
