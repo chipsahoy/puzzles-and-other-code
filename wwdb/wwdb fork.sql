@@ -1,12 +1,12 @@
 /*
 iversonian
 4/16/14
-wwdb refactoring
+wwdb update
 
 Player/role: not a series of players, but rather of ordinal values, with a player associated with it
-Gimmicks. use main account from the start
+Gimmicks: aggregate by main account from the start
 
-Each forum has its own db, own webpage
+Each forum has its own db, own webpage, to contain the ebolaids
 */
 
 --#############################################################
@@ -17,8 +17,6 @@ alter database pog default character set 'utf8';
 create user 'dev'@'localhost' identified by 'dev';
 
 grant all privileges on dev.* to dev@localhost;
-grant all privileges on wwdb.* to dev@localhost;
-grant select on *.* to dev@localhost;
 flush privileges;
 
 --#############################################################
@@ -30,18 +28,18 @@ CREATE TABLE game (gameid int, gamename varchar(100) not null, numplayers int no
 gametype enum('Vanilla','Vanilla+','Mish-Mash','Slow Game','Turbo') not null, gamelength int, url varchar(200), 
 PRIMARY KEY (gameid)) engine=innodb;
 
-create table moderator (gameid int, modid int, accountid int, isprimary int not null, primary key (gameid, modid), index (modid)) engine=innodb;
+create table moderator (gameid int, modid int, isprimary int not null, primary key (gameid, modid), index (modid)) engine=innodb;
 
 create table actions (gameid int not null, slot int not null, ability varchar(20), night int not null, target int not null, 
-index (gameid, slot, night)) engine=innodb;
+index (gameid, slot, night), index (gameid, target)) engine=innodb;
 
 create table player (playerid int, playername varchar(50) not null, mainplayerid int not null, 
 primary key (playerid), unique (playername), index (mainplayerid)) engine=innodb;
 
-create table roleset (gameid int, slot int, faction int, roletype int, deathtype char(1), deathday int, players int, roleid int,
+create table roleset (gameid int, slot int, faction int, roletype int, deathtype char(17), deathday int, players int, roleid int,
 primary key (gameid, slot)) engine=innodb;
 
-create table playerlist (gameid int, slot int, ordinal int, playerid int, playeraccount int, dayin int, dayout int, primary key (gameid, slot, ordinal)) engine=innodb;
+create table playerlist (gameid int, slot int, ordinal int, playerid int, dayin int, dayout int, primary key (gameid, slot, ordinal)) engine=innodb;
 
 create table team (gameid int, faction int, players int, victory int, teamid int, primary key (gameid, faction)) engine=innodb;
 
@@ -61,11 +59,6 @@ create table postcount (posterid int, threadid int, posts int, primary key (post
 
 create table editslog (gameid int, uploadtime timestamp, message varchar(100), gamejson text, index (gameid)) engine=innodb;
 
--- derived data
-create table derivedrecords (playerid int, gametype varchar(10), games int, 
-wins int, losses int, ties int, vgames int, vwin int, vloss int, wgames int, wwin int, wloss int, ngames int, nwin int, nloss int,
-primary key (playerid, gametype));
-
 create view victor as
 select g.gameid, if(sum(t.victory=2)>0, 'Tie', group_concat(if(t.victory=1, f.factionname, NULL))) victor,
 sum(t.victory=1) numvictors, sum(t.victory=2)>0 tiegame
@@ -74,25 +67,9 @@ join team t using (gameid)
 join faction f on f.factionid=t.faction
 group by g.gameid;
 
-create view thread as select * from fennecfox.Thread;
-
-create table deathtype as select * from fennecfox.DeathType;
-alter table deathtype add primary key (deathtypeid);
-
---############################################
-
--- management
-/*
-add new players in fennecfox.Poster
-
-*/
-
--- fix "Wolf" to "Wolves", and the sopranos game
-update fennecfox.Team set affiliationid=2 where affiliationid=20;
-update fennecfox.Team set affiliationid=4 where affiliationid=21;
-
-# dupe posterids
-# select posterid, count(*), group_concat(postername), postername from fennecfox.Poster group by posterid having count(*) > 1;
+--create view thread as select * from fennecfox.Thread;
+--create table thread (threadid int primary key, op int, posts int, title varchar(100), url varchar(200) not null, unique index (url)) default charset=utf8;
+--insert into thread select threadid, op, if(replies=0,NULL,replies)+1 posts, title, url from fennecfox.Thread;
 
 --############################################
 -- covert from old db to new
@@ -169,10 +146,11 @@ order by gameid, faction, slot;
 set @ord=0;
 drop table if exists temp2;
 create temporary table temp2 (x int primary key)
-select @ord:=@ord+1 x, t.threadid gameid, m.faction, pt.roleid, pt.deathtypeid, pt.deathday
+select @ord:=@ord+1 x, t.threadid gameid, m.faction, pt.roleid, dt.deathtypename, pt.deathday
 from fennecfox.GameRole pt
 join fennecfox.Team t using (teamid)
 join fennecfox.Game g using (threadid)
+join fennecfox.DeathType dt on dt.deathtypeid=pt.deathtypeid
 join team m using (teamid)
 where g.subforumid < 500
 order by t.threadid, m.faction;
@@ -180,19 +158,9 @@ order by t.threadid, m.faction;
 update roleset r
 join temp1 t1 using (gameid, slot)
 join temp2 t2 using (x)
-set r.roleid=t2.roleid, r.deathtype=t2.deathtypeid, r.deathday=t2.deathday;
+set r.roleid=t2.roleid, r.deathtype=t2.deathtypename, r.deathday=t2.deathday;
 
 update roleset set players = 1;
-
--- figure out why there are dupes, posterid null
--- e.g. roleid 5131, gameid=563562
-create temporary table temp4
-select distinct * from fennecfox.Player;
-
-truncate fennecfox.Player;
-
-insert into fennecfox.Player
-select * from temp4;
 
 drop table if exists temp1;
 create temporary table temp1 (ordinal int, index (gameid, slot))
@@ -242,12 +210,8 @@ update temp1 set ordinal = 3 where ordinal = 0;
 -- should be done now
 
 insert into playerlist
-select gameid, slot, ordinal, NULL as playerid, posterid as playeraccount, startday, endday
+select gameid, slot, ordinal, posterid as playerid, startday, endday
 from temp1;
-
--- the "player" in playerlist is always the main account id
-update playerlist pl join player p on pl.playeraccount=p.playerid set pl.playerid = p.mainplayerid;
-
 
 update roleset r join fennecfox.GameRole g on r.roleid=g.roleid set r.roletype = roletypeid;
 
@@ -333,8 +297,34 @@ delete from faction where factionid >=30;
 update faction set factionname='Wolves' where factionid=11;
 update faction set factionname='Neutral' where factionid=21;
 
+--############################################
+-- update player from fennecfox.Poster
+insert into player
+select posterid as playerid, postername as playername, posterid as mainplayerid
+from fennecfox.Poster t
+left join player p on p.playerid=t.posterid
+where p.playerid is null and t.forumid=1;
 
+--############################################
 
+alter table roleset drop column roleid;
+alter table roleset modify column deathtype char(17);
+update roleset rs join deathtype dt on rs.deathtype=dt.deathtypeid set rs.deathtype = dt.deathtypename;
+drop table deathtype;
+update roles set rolename='Vigilante' where roleid=4;
+update roleset set roletype = 1 where roletype=215; -- rolename = ''
+delete from roles where roleid=215;
+
+-- disallow duplicate rolenames
+update roleset set roletype = 4 where roletype=67;
+delete from roles where roleid=67;
+alter table roles add unique index (rolename);
+
+-- #
+alter table team drop column teamid;
+alter table game modify column gametype enum('Vanilla','Vanilla+','Mish-Mash','Slow Game','Turbo','Turbo Mishmash');
+
+alter table playerlist add unique (gameid, slot, playerid);
 
 -- finish conversion
 --############################################
@@ -359,3 +349,5 @@ update playerlist pl join player p on pl.playerid=p.playerid set pl.playerid = p
 
 
 
+--####################################
+-- pending changes to production:

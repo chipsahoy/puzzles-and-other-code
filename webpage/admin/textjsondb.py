@@ -5,9 +5,12 @@
 # json -> db
 
 def JSONtoDB(j, cur, msg='added'):
+	cur.execute("set autocommit=0")
 	RemoveGameFromDB(j['url'], cur) # delete existing game
-	
-	gameid = GetThreadIDFromURL(j['url'])
+		
+	gameid = GetThreadIDFromURL(j['url'], cur)
+	if gameid is None:
+		return 0
 	gamelength = max([x['deathday'] for x in j['players']])
 	
 	# game
@@ -17,8 +20,8 @@ def JSONtoDB(j, cur, msg='added'):
 	# team (deal with ties later)
 	for i in j['factions']:
 		n = sum(item['faction']==i for item in j['players'])
-		cur.execute("insert into team values (%s, (select factionid from faction where factionname = %s), %s, %s, NULL)",
-			(gameid, i, n, int(i.lower() in (a.lower() for a in j['victor']))))
+		cur.execute("insert into team values (%s, (select factionid from faction where factionname = %s), %s, %s)",
+			(gameid, i, n, IsVictory(i, j['victor'])))
 	
 	# mod
 	for n, i in enumerate(j['mod']):
@@ -29,31 +32,42 @@ def JSONtoDB(j, cur, msg='added'):
 	# roleset & playerlist
 	for n, i in enumerate(j['players']):
 		cur.execute("""insert into roleset values (%s, %s, (select factionid from faction where factionname = %s),
-			(select roleid from roles where rolename = %s), (select deathtypeid from deathtype where deathtypename=%s), %s, %s, NULL)""",
+			(select roleid from roles where rolename = %s), %s, %s, %s)""",
 			(gameid, n+1, i['faction'], i['role'], i['deathtype'], i['deathday'], 1))
-		cur.execute("""insert into playerlist values (%s, %s, %s, NULL, (select playerid from player where playername = %s), %s, NULL)""", 
+		cur.execute("""insert into playerlist values (%s, %s, %s, (select playerid from player where playername = %s), %s, NULL)""", 
 			(gameid, n+1, 1, i['op'], 0))
 	
 	# subs
 	if 'subs' in j:
 		for i in j['subs']:
 			cur.execute("""select pl.slot, rs.players from playerlist pl join roleset rs using (gameid, slot) 
-				where gameid=%s and ordinal=1 and playeraccount=(select playerid from player where playername = %s)""",
+				where gameid=%s and ordinal=1 and playerid=(select playerid from player where playername = %s)""",
 				(gameid, i['op']))
 			result = cur.fetchone()
-			cur.execute("insert into playerlist values (%s, %s, %s, NULL, (select playerid from player where playername = %s), %s, NULL)",
+			cur.execute("insert into playerlist values (%s, %s, %s, (select playerid from player where playername = %s), %s, NULL)",
 				(gameid, result['slot'], result['players']+1, i['subname'], i['subday']))
 			cur.execute("update playerlist set dayout = %s where gameid=%s and slot=%s and ordinal=%s",
 				(i['subday'], gameid, result['slot'], result['players']))
 			cur.execute("update roleset set players = players + 1 where gameid=%s and slot=%s", (gameid, result['slot']))
-	# actions
 	
-	# set main player id in playerlist table
-	cur.execute("update playerlist pl join player p on p.playerid=pl.playeraccount set pl.playerid=p.mainplayerid where pl.gameid=%s", gameid)
+	# actions
+	if 'actions' in j:
+		for a in j['actions']:
+			cur.execute("""select pl.slot from playerlist pl join roleset rs using (gameid, slot) 
+				where gameid=%s and ordinal=1 and playerid=(select playerid from player where playername = %s)""",
+				(gameid, a['actor']))
+			result1 = cur.fetchone()
+			cur.execute("""select pl.slot from playerlist pl join roleset rs using (gameid, slot) 
+				where gameid=%s and ordinal=1 and playerid=(select playerid from player where playername = %s)""",
+				(gameid, a['target']))
+			result2 = cur.fetchone()
+			cur.execute('insert into actions values (%s, %s, %s, %s, %s)', 
+				(gameid, result1['slot'], a['ability'], a['night'], result2['slot']))
 	
 	SaveJSONToLog(j['url'], cur, msg, str(j))
 	cur.execute("commit")
 	return 1
+
 
 #######################################
 # db -> json
@@ -83,16 +97,18 @@ def DBtoJSON(url, cur):
 		jsontxt['factions'].append(str(x['factionname']))
 		if x['victory'] == 1:
 			jsontxt['victor'].append(str(x['factionname']))
+		if x['victory'] == 2:
+			jsontxt['victor'] = ['Tie']
 	
-	cur.execute("select p.playername, f.factionname, rs.slot, r.rolename, rs.deathday, dt.deathtypename, \
+	cur.execute("select p.playername, f.factionname, rs.slot, r.rolename, rs.deathday, rs.deathtype, \
 		(select max(ordinal)-1 from playerlist x where x.gameid=rs.gameid and x.slot=rs.slot) subs \
 		from roleset rs join playerlist pl using (gameid, slot) join player p using (playerid) join faction f on f.factionid=rs.faction \
-		join roles r on r.roleid=rs.roletype join deathtype dt on dt.deathtypeid=rs.deathtype where ordinal = 1 and rs.gameid=%s" %gameid)
+		join roles r on r.roleid=rs.roletype where ordinal = 1 and rs.gameid=%s" %gameid)
 	result = cur.fetchall()
 	
 	for p in result:
 		jsontxt['players'].append({'op':p['playername'], 'faction':p['factionname'], 'role':p['rolename'], 'deathday':int(p['deathday']), 
-			'deathtype':p['deathtypename']})
+			'deathtype':p['deathtype']})
 		if p['subs'] > 0:
 			cur.execute('select p.playername, dayin, dayout from playerlist pl join player p using (playerid) \
 				where pl.gameid=%s and pl.slot=%s and ordinal > 1 order by ordinal' % (gameid, p['slot']))
@@ -106,23 +122,41 @@ def DBtoJSON(url, cur):
 	if len(subs) > 0:
 		jsontxt['subs'] = subs		
 	
+	cur.execute("select p1.playername actor, p2.playername target, a.night, a.ability \
+		from roleset rs join playerlist pl1 using (gameid, slot) join player p1 on p1.playerid=pl1.playerid  \
+		join actions a using (gameid, slot) join playerlist pl2 on pl2.gameid=rs.gameid and pl2.slot=a.target and pl2.ordinal=1 \
+		join player p2 on p2.playerid=pl2.playerid \
+		where pl1.ordinal = 1 and rs.gameid=%s" %gameid)
+	result = cur.fetchall()
+	actions = []
+	for a in result:
+		actions.append({'actor':a['actor'],'target':a['target'],'night':a['night'],'ability':a['ability']})
+	
+	if len(actions) > 0:
+		jsontxt['actions'] = actions
+	
 	return jsontxt
-
-# j = DBtoJSON('http://forumserver.twoplustwo.com/59/puzzles-other-games/3-game-mafia-champions-ww-invitational-game-thread-1428519/',cursor)
 
 #######################################
 # misc functions
 
-def GetThreadIDFromURL(url):
-	if '-' not in url:
-		return None
-	url = url[url.rindex('-')+1:]
-	if '/' not in url:
-		return None
-	url = url[0:url.index('/')]
-	if not url.isdigit():
-		return None
-	return int(url)
+def GetThreadIDFromURL(url, cur):
+	if 'forumserver.twoplustwo.com' in url:
+		if '-' not in url:
+			return None
+		url = url[url.rindex('-')+1:]
+		if '/' not in url:
+			return None
+		url = url[0:url.index('/')]
+		if not url.isdigit():
+			return None
+		return int(url)
+	elif 'archives1.twoplustwo.com' in url:
+		url = url[url.find('Number=')+7:]
+		return int(url[:url.find('&')])
+	else: # grab the highest gameid +1
+		cur.execute("select ifnull(max(gameid)+1,1) gameid from game")
+		return cur.fetchrone()['gameid']
 
 def SaveJSONToLog(url, cur, msg='', jsontxt=None):
 	if jsontxt is None:
@@ -143,5 +177,14 @@ def RemoveGameFromDB(url, cur, commit=False):
 		cur.execute("delete from game where gameid=%s", gameid)
 	if commit:
 		cur.execute("commit")
+
+def IsVictory(thisteam, victors):
+	# return 1 for win, 0 for loss, 2 for tie
+	if int(thisteam.upper() in (a.upper() for a in victors)):
+		return 1
+	elif victors[0] == 'Tie':
+		return 2
+	else:
+		return 0
 
 

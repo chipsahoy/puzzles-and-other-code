@@ -26,18 +26,18 @@
 	if ($victor['victor'] == 'Tie') echo "Tie Game<br/>";
 		else echo $victor['victor']." Win<br/>";
 	
-	$qry = "select p.mainplayerid playerid, playername, if(r.rolename='Vanilla','',r.rolename) rolename, dt.deathtypename, deathday, factionname,
+	$qry = "select p.mainplayerid playerid, playername, if(r.rolename='Vanilla','',r.rolename) rolename, rs.deathtype, deathday, factionname,
 			(select concat(group_concat(p2.playername order by pl2.ordinal), ' (', group_concat(pl2.dayin order by pl2.ordinal), ')') x from playerlist pl2 
-			join player p2 on p2.playerid=pl2.playeraccount where pl2.gameid=g.gameid and pl2.slot=pl.slot and pl2.ordinal > 1 group by pl2.slot) subs,
-			(select pl3.playerid from playerlist pl3 where pl3.gameid=g.gameid and pl3.slot=pl.slot and pl3.ordinal = 2) subid
+			join player p2 on p2.playerid=pl2.playerid where pl2.gameid=g.gameid and pl2.slot=pl.slot and pl2.ordinal > 1 group by pl2.slot) subs,
+			(select pl3.playerid from playerlist pl3 where pl3.gameid=g.gameid and pl3.slot=pl.slot and pl3.ordinal = 2) subid,
+			(select group_concat(concat(ability,' n', night) order by night separator ', ') from actions a where a.gameid=g.gameid and a.target=rs.slot) targeted
 			from game g
 			join roleset rs using (gameid)
 			join playerlist pl using (gameid, slot)
-			join player p on p.playerid=pl.playeraccount
+			join player p on p.playerid=pl.playerid
 			join team t using (gameid, faction)
 			join roles r on r.roleid = rs.roletype
 			join faction f on f.factionid=t.faction
-			join deathtype dt on dt.deathtypeid=rs.deathtype
 			where pl.ordinal=1 and g.gameid = ".$gameid;
 	
 	$result = $db->query($qry);
@@ -58,6 +58,7 @@
 	<th>Role</th>
 	<th>Method of Death</th>
 	<th>Survived Until</th>
+	<th>Targeted</th>
 	</tr></thead>
 	<tbody>
 	<?php
@@ -68,8 +69,10 @@
 			<td><a href=\"index.php?report=Player&playerid=".$item['subid']."\">".$item['subs']."</a></td>
 			<td>".$item['factionname']."</td>
 			<td>".$item['rolename']."</td>
-			<td>".$item['deathtypename']."</td>
-			<td>".$item['deathday']."</td></tr>");
+			<td>".$item['deathtype']."</td>
+			<td>".$item['deathday']."</td>
+			<td>".$item['targeted']."</td>
+			</tr>");
 		}
 	?>
 	</tbody>

@@ -1,13 +1,64 @@
 <?php
+	# if you sub out, you don't get credit
 	if(!array_key_exists('gametype', $_GET) || $_GET['gametype'] == "") $gametype = "All"; else $gametype = $_GET['gametype'];
 	if($gametype == "All")
-		$qry = "select * from derivedrecords dr join player p using (playerid) where gametype='Total' order by games desc";
+		$qry = "select m.playerid, m.playername, 'Total' as gametype, count(*) games,
+				sum(t.victory=1) wins, sum(t.victory=0) losses, sum(t.victory=2) ties,
+				sum(t.faction = 1) vgames, sum(t.victory=1 && t.faction = 1) vwin, sum(t.victory=0 && t.faction = 1) vloss,
+				sum(t.faction between 10 and 19) wgames, sum(t.victory=1 && (t.faction between 10 and 19)) wwin, sum(t.victory=0 && (t.faction between 10 and 19)) wloss,
+				sum(t.faction >= 20) ngames, sum(t.victory=1 && t.faction >=20) nwin, sum(t.victory=0 && t.faction >=20) nloss
+				from playerlist pl
+				join roleset rs using (gameid, slot)
+				join team t using (gameid, faction)
+				join game g using (gameid)
+				join player p on p.playerid=pl.playerid
+				join player m on m.playerid=p.mainplayerid
+				where g.gametype <> 'Turbo' and pl.dayout is null
+				group by p.mainplayerid 
+				order by count(*) desc";
 	elseif($gametype == "Vanilla/Slow Games")
-		$qry = "select * from derivedrecords dr join player p using (playerid) where gametype='vanilla' order by games desc";
+		$qry = "select m.playerid, m.playername, 'Total' as gametype, count(*) games,
+				sum(t.victory=1) wins, sum(t.victory=0) losses, sum(t.victory=2) ties,
+				sum(t.faction = 1) vgames, sum(t.victory=1 && t.faction = 1) vwin, sum(t.victory=0 && t.faction = 1) vloss,
+				sum(t.faction between 10 and 19) wgames, sum(t.victory=1 && (t.faction between 10 and 19)) wwin, sum(t.victory=0 && (t.faction between 10 and 19)) wloss
+				from playerlist pl
+				join roleset rs using (gameid, slot)
+				join team t using (gameid, faction)
+				join game g using (gameid)
+				join player p on p.playerid=pl.playerid
+				join player m on m.playerid=p.mainplayerid
+				where g.gametype in ('Vanilla','Slow Game') and pl.dayout is null
+				group by p.mainplayerid 
+				order by count(*) desc";
 	elseif($gametype == "Vanilla+/Mish-Mashes")
-		$qry = "select * from derivedrecords dr join player p using (playerid) where gametype='mash' order by games desc";
+		$qry = "select m.playerid, m.playername, 'Total' as gametype, count(*) games,
+				sum(t.victory=1) wins, sum(t.victory=0) losses, sum(t.victory=2) ties,
+				sum(t.faction = 1) vgames, sum(t.victory=1 && t.faction = 1) vwin, sum(t.victory=0 && t.faction = 1) vloss,
+				sum(t.faction between 10 and 19) wgames, sum(t.victory=1 && (t.faction between 10 and 19)) wwin, sum(t.victory=0 && (t.faction between 10 and 19)) wloss,
+				sum(t.faction >= 20) ngames, sum(t.victory=1 && t.faction >=20) nwin, sum(t.victory=0 && t.faction >=20) nloss
+				from playerlist pl
+				join roleset rs using (gameid, slot)
+				join team t using (gameid, faction)
+				join game g using (gameid)
+				join player p on p.playerid=pl.playerid
+				join player m on m.playerid=p.mainplayerid
+				where g.gametype in ('Vanilla+','Mish-Mash') and pl.dayout is null
+				group by p.mainplayerid 
+				order by count(*) desc";
 	elseif($gametype == "Turbos")
-		$qry = "select * from derivedrecords dr join player p using (playerid) where gametype='turbo' order by games desc";
+		$qry = "select m.playerid, m.playername, 'Total' as gametype, count(*) games,
+				sum(t.victory=1) wins, sum(t.victory=0) losses, sum(t.victory=2) ties,
+				sum(t.faction = 1) vgames, sum(t.victory=1 && t.faction = 1) vwin, sum(t.victory=0 && t.faction = 1) vloss,
+				sum(t.faction between 10 and 19) wgames, sum(t.victory=1 && (t.faction between 10 and 19)) wwin, sum(t.victory=0 && (t.faction between 10 and 19)) wloss
+				from playerlist pl
+				join roleset rs using (gameid, slot)
+				join team t using (gameid, faction)
+				join game g using (gameid)
+				join player p on p.playerid=pl.playerid
+				join player m on m.playerid=p.mainplayerid
+				where g.gametype = 'Turbo' and pl.dayout is null
+				group by p.mainplayerid 
+				order by count(*) desc";
 	$result = $db->query($qry);
 ?>
 <h2>Player Records - <?= $gametype?></h2>
@@ -40,29 +91,15 @@ Wolf Maximum: <input type="text" id="wolfmax" name="wolfmax"/><br/>
 	<th colspan="5">Total</th>
 	<th colspan="4">Villager</th>
 	<th colspan="4">Wolf</th>
-	<th colspan="4">Neutral</th>
-	</tr>
-	<tr>
-	<th>Games</th>	
-	<th>Wins</th>
-	<th>Losses</th>
-	<th>Ties</th>
-	<th>%</th>
-	<th>Games</th>
-	<th>Wins</th>
-	<th>Losses</th>
-	<th>%</th>
-	<th>Games</th>
-	<th>Wins</th>
-	<th>Losses</th>
-	<th>%</th>
-	<th>Games</th>
-	<th>Wins</th>
-	<th>Losses</th>
-	<th>%</th>
-	</tr>
-	</thead>
-	<tbody>
+	<?php if (in_array($gametype, array("Vanilla+/Mish-Mashes","All"))) { ?>
+	<th colspan="4">Neutral</th><?php } # endif?>
+	</tr><tr>
+	<th>Games</th><th>Wins</th><th>Losses</th><th>Ties</th><th>%</th>
+	<th>Games</th><th>Wins</th><th>Losses</th><th>%</th>
+	<th>Games</th><th>Wins</th><th>Losses</th><th>%</th>
+	<?php if (in_array($gametype, array("Vanilla+/Mish-Mashes","All"))) { ?>
+	<th>Games</th><th>Wins</th><th>Losses</th><th>%</th><?php } # endif?>
+	</tr></thead><tbody>
 <?php 
 	while($player = $result->fetch_assoc()) { 
 	#$elo = mysql_fetch_assoc(mysql_query("SELECT newelo FROM ELO e2, Game g2 WHERE e2.threadid = g2.threadid AND g2.startdate=(SELECT MAX(startdate) FROM ELO e, Game g WHERE g.threadid = e.threadid AND e.posterid = ".$player['posterid'].") AND e2.posterid= ".$player['posterid'])); 
@@ -71,7 +108,7 @@ Wolf Maximum: <input type="text" id="wolfmax" name="wolfmax"/><br/>
 	
 	<tr>
 	<td></td>
-	<td><a href="index.php?report=Player&playerid=<?= htmlentities($player['playerid'], ENT_QUOTES, 'UTF-8') ?>
+	<td><a href="index.php?report=Player&playerid=<?= $player['playerid'] ?>
 		"><?= htmlentities($player['playername'], ENT_QUOTES, 'UTF-8') ?></a></td>
 	<td><?= $elo ?></td>
 	<td><?= $player['games'] ?></td>
@@ -90,12 +127,13 @@ Wolf Maximum: <input type="text" id="wolfmax" name="wolfmax"/><br/>
 	<td><?= $player['wloss'] ?></td>
 	<td><?php if($player['wwin']+$player['wloss'] > 0) echo number_format(round($player['wwin']/($player['wwin']+$player['wloss']), 3), 3); 
 		else echo "0"; ?></td>
+	<?php if (in_array($gametype, array("Vanilla+/Mish-Mashes","All"))) { ?>
 	<td><?= $player['ngames'] ?></td>
 	<td><?= $player['nwin'] ?></td>
 	<td><?= $player['nloss'] ?></td>
 	<td><?php if($player['nwin']+$player['nloss'] > 0) echo number_format(round($player['nwin']/($player['nwin']+$player['nloss']), 3), 3); 
 		else echo "0"; ?></td>
-		
+	<?php } # endif?>
     </tr>
 <?php } // while ?>
 	</tbody>

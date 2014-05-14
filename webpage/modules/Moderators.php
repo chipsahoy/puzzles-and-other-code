@@ -1,10 +1,10 @@
 <?php
-	$qry = "select p.mainplayerid playerid, (select playername from player p2 where p2.playerid=p.mainplayerid) playername, count(*) n, 
-		sum(gametype in ('Vanilla','Slow Game')) v, sum(gametype='Vanilla+') vp, sum(gametype='Mish-Mash') mash, sum(isprimary) primarymod,
-		min(g.startdate) firstgame, max(g.startdate) lastgame
+	$qry = "select p.mainplayerid playerid, (select playername from player p2 where p2.playerid=p.mainplayerid) playername, 
+		sum(gametype<>'Turbo') n, sum(gametype in ('Vanilla','Slow Game')) v, sum(gametype='Vanilla+') vp, sum(gametype='Mish-Mash') mash, sum(gametype='Turbo') turbo,
+		sum(isprimary and gametype<>'Turbo') primarymod, min(g.startdate) firstgame, max(g.startdate) lastgame
 		from moderator m join game g using (gameid)
 		join player p on p.playerid=m.modid
-		group by p.mainplayerid order by count(*) desc";
+		group by p.mainplayerid order by 3 desc";
 	$result = $db->query($qry);
 ?>
 
@@ -19,11 +19,11 @@
 	<th rowspan="2">Last Game Moderated</th>
 	</tr>
 	<tr>
-	<th>Total</th>
+	<th>Long Games</th>
 	<th>Lead Mod</th>
 	<th>Vanilla</th>
-	<th>Vanilla+</th>
-	<th>Mishmash</th>
+	<th>V+/Mish-Mash</th>
+	<th>Turbo</th>
 	</tr>
 	</thead>
 	<tbody>
@@ -37,8 +37,8 @@
         <td><?= $player['n'] ?></td>	
 		<td><?= $player['primarymod'] ?></td>	
 		<td><?= $player['v'] ?></td>	
-		<td><?= $player['vp'] ?></td>	
-		<td><?= $player['mash'] ?></td>	
+		<td><?= $player['vp']+$player['mash'] ?></td>	
+		<td><?= $player['turbo'] ?></td>	
 		<td><?= $player['firstgame'] ?></td>	
 		<td><?= $player['lastgame'] ?></td>
     </tr>

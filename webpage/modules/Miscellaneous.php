@@ -11,7 +11,7 @@
 <tbody>
 	
 <?php
-	$qry = "SELECT t.title, t.threadid, t.replies, p.playername, p.playerid, t.url FROM thread t, player p 
+	$qry = "SELECT t.title, t.threadid, t.replies, p.playername, p.playerid, t.url FROM fennecfox.Thread t, player p 
 		WHERE p.playerid = t.op AND t.lastposttime > DATE_SUB(NOW(), INTERVAL 1 DAY) AND t.icontext = 'Spade'";
 	$result = $db->query($qry);
 	
