@@ -77,7 +77,7 @@ def ListActions(actions, playerlist, role):
 			formaction += """<tr><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>""" % (
 				makeSelect('actor', ['']+playerlist, GetActorOrSeer(playerlist, role, a['actor'])),
 				makeSelect('target', ['']+playerlist, a['target']),
-				makeSelect('night', range(10), a['night']),
+				makeSelect('night', [str(x) for x in range(10)], a['night']),
 				makeSelect('ability', ['Peek','Angel','Vig','Roleblock'], a['ability']))
 		formaction += '</table></tr>'
 	formaction += '<tr><td></td><td>'
@@ -251,8 +251,12 @@ class Game:
 		self.subs.append({'op':'', 'subname':'', 'subday':''})
 	
 	def AddAction(self):
-		self.actions.append({'actor':'', 'target':'', 'night':'', 'ability':''})
-	
+		if len(self.actions) >= 1:
+			night = str(int(self.actions[-1]['night'])+1)
+		else:
+			night = ''
+		self.actions.append({'actor':'', 'target':'', 'night':night, 'ability':''})
+		
 	def FillInDeathTable(self):
 	# infer missing deathtype/deathday values
 		if self.victor == []:
