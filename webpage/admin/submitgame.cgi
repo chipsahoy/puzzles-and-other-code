@@ -51,10 +51,13 @@ def ListSubs(subs, playerlist):
 		formsub = '<tr><td align="right">Subs:</td><td><table bgcolor=f9ecb6><tr><th>Original Player</th><th>Sub Name</th><th>Sub Day</th></tr>'
 		for s in subs:
 			formsub += """<tr><td>%s</td><td><input type="text" name="subname" size="15" value="%s"></td>
-				<td><input type="text" name="subday" size="5" value="%s"></td></tr>""" % (
-				makeSelect('subop', ['']+playerlist, s['op']), s['subname'], s['subday'])
-		formsub += '</table></tr>' 
-	formsub += '<tr><td></td><td><br><input type="submit" name="addsub" value="Add Sub"><br><br></td></tr>'
+				<td>%s</td></tr>""" % (
+				makeSelect('subop', ['']+playerlist, s['op']), s['subname'], makeSelect('subday', range(1,12), s['subday']))
+		formsub += '</table></tr>'
+	formsub += '<tr><td></td><td>'
+	if len(subs) > 0:
+		formsub += 'To remove entry, set the Original Player field to blank. Hit "Check for validity" to refresh.<br>'
+	formsub += '<input type="submit" name="addsub" value="Add Sub"><br><br></td></tr>'
 	return formsub
 
 def GetActorOrSeer(playerlist, role, actor):
@@ -69,17 +72,21 @@ def ListActions(actions, playerlist, role):
 	# actions is list of dicts: {'actor','target','night','ability'}
 	formaction = ''
 	if len(actions) > 0:
-		formaction = '<tr><td align="right">Actions:</td><td><table bgcolor=efe1f1><tr><th>Player</th><th>Target</th><th>Night</th><th>Ability</th></tr>'
+		formaction = '<tr><td align="right">Actions:</td><td><table bgcolor=efe1f1><tr><th>Actor</th><th>Target</th><th>Night</th><th>Ability</th></tr>'
 		for a in actions:
-			formaction += """<tr><td>%s</td><td>%s</td><td><input type="text" name="night" size="5" value="%s"></td><td>%s</td></tr>""" % (
+			formaction += """<tr><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>""" % (
 				makeSelect('actor', ['']+playerlist, GetActorOrSeer(playerlist, role, a['actor'])),
 				makeSelect('target', ['']+playerlist, a['target']),
-				a['night'], 
+				makeSelect('night', range(10), a['night']),
 				makeSelect('ability', ['Peek','Angel','Vig','Roleblock'], a['ability']))
 		formaction += '</table></tr>'
-	formaction += '<tr><td></td><td><br><input type="submit" name="addaction" value="Add Action"><br><br></td></tr>'
+	formaction += '<tr><td></td><td>'
+	if len(actions) > 0:
+		formaction += 'To remove entry, set the Actor field to blank. Hit "Check for validity" to refresh.<br>'
+	formaction += '<input type="submit" name="addaction" value="Add Action"><br><br></td></tr>'
 	return formaction
 
+# '<td></td>' % deathday[i] + \
 def ListPlayers(playerlist, affiliation, role, deathday, deathtype):
 	if len(playerlist)==0:
 		return ''
@@ -89,10 +96,9 @@ def ListPlayers(playerlist, affiliation, role, deathday, deathtype):
 		for i, player in enumerate(playerlist):
 			formpl += "<tr><td>" + str(i+1) + ".</td><td>" + '<input type="text" name="playerlist" size="15" value="' + player + '"></td><td>' + \
 			makeSelect('affiliation', ['Village','Wolves']+['Wolves'+str(f) for f in range(2,6)]+
-				['Neutral']+['Neutral'+str(f) for f in range(2,9)], affiliation[i]) + '</td>' +\
-			'<td><input type="text" name="deathday" size="5" value="%s"></td>' % deathday[i] + \
-			'<td>' + makeSelect('deathtype', ['','Lynched','Night Killed','Survived','Eaten','Conceded','Mod Killed','Day Killed'], 
-				deathtype[i]) + '</td>' + \
+				['Neutral']+['Neutral'+str(f) for f in range(2,9)], affiliation[i]) + '</td>' + \
+			'<td><input type="text" name="deathday" size="5" value="%s">' % deathday[i] + '</td><td>' + \
+			makeSelect('deathtype', ['','Lynched','Night Killed','Survived','Eaten','Conceded','Mod Killed','Day Killed'], deathtype[i]) + '</td>' + \
 			'<td><input type="text" name="role" size="15" value="%s"></td></tr>' % ('' if role[i] == 'Vanilla' else role[i])
 		formpl += "</table></td></tr>"
 		return formpl
@@ -250,7 +256,7 @@ class Game:
 	def FillInDeathTable(self):
 	# infer missing deathtype/deathday values
 		if self.victor == []:
-			self.errmsg.append("<font color='red'>Victor(s) is a required field.</font>")
+			self.errmsg.append("<font color='red'>Victor is a required field.</font>")
 		else:
 			for i in range(len(self.deathday)):
 				if self.deathday[i] == '':
