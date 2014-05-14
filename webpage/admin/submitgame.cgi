@@ -159,15 +159,15 @@ def GenerateForm(game):
 			</table></form><br><br>"""
 		
 	instructions = """How to use this form:<p>
-		1. Enter the URL of the game thread, then hit "Retrieve Game".<br>
-		2. If the game already exists in the database, it will display. Otherwise, you start from scratch. If the game thread is new, it may not show up yet. Give it a few days.<br>
-		3. Fill in all the missing fields. After entering the player list, hit the "refresh" button next to it. This will build the death table<br>
-		4. Separate multiple mod/victor names with semicolons.<br>
-		5. Set fields as appropriate. Leave "role" blank for vanillas. You may leave deathday/type blank if the player survived, was eaten, or conceded.<br>
-		6. If there are subs in the game, hit "Add Sub" to add fields.<br>
-		7. Press "check for validity" to see if there are any issues with your game summary.<br>
-		8. If there are no error messages, prepend your password to your commit message and hit Submit. 
-			The message is to avoid duplicate submissions and to help with debugging.<br>
+		1. Enter the URL of the game thread, then hit "Retrieve Game". Make sure that the url is in the correct form (url of page 1 of the thread).<br>
+		2. If the game already exists in the database, it will display. Otherwise, you start from scratch.<br>
+		3. After entering the player list, hit the "Build" button next to it. This will build the death table<br>
+		4. Set fields as appropriate. Leave "role" blank for vanillas. You may leave deathday/type blank if the player survived, was eaten, or conceded, and hit the "Fill in death table with implied values".<br>
+		5. If there are subs in the game, hit "Add Sub" to add fields.<br>
+		6. If there are night actions, hit "Add Actions" to add fields.<br>
+		7. Hit "Check for validity" to see if there are any issues with your game summary.<br>
+		8. If there are no error messages, enter a commit message (e.g. your name) and hit Submit. The message is to avoid duplicate submissions and to help with debugging.<br>
+		9. Follow the link to the url of the game page in the database. Check to ensure it is correct. You can simply overwrite the game with a new submission to correct errors.<br>
 		<br><br>"""
 	print form1 + players + form2 + subs + actions + form3 + instructions
 
