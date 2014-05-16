@@ -170,7 +170,8 @@ error_reporting(E_ALL);
 			}
 		?>
 		<p></p>
-		<a href="downloads.html">Latest Fennec Fox and Ricky Raccoon</a>
+		<a href="downloads.html">Latest Fennec Fox and Ricky Raccoon</a><br>
+		<a href="uploads.php">Recently uploaded games</a>
 		<?php
 			if(!array_key_exists('report', $_GET) || $_GET['report'] == 'Miscellaneous') include "./modules/Miscellaneous.php";
 		?>
