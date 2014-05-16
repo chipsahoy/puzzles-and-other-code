@@ -838,7 +838,10 @@ namespace TatianaTiger
 						{
 							ParseKillPM(pm);
 						}
-						if ((_kill != "") && (!IsSeerAlive() || (_peek != null)) && !_missingPlayers)
+                        var kill = LookupPlayer(_kill);
+						if ((_kill != "") && 
+                            (!IsSeerAlive() || (_peek != null) || (kill.Role == SEER)) && 
+                            !_missingPlayers)
 						{
 							ChangeState(StateCallDay);
 							return null;
