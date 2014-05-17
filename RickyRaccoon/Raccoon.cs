@@ -68,7 +68,7 @@ namespace RickyRaccoon
         {
             String host = "forumserver.twoplustwo.com";
             _synchronousInvoker = a => Invoke(a);
-            _forum = new VBulletinForum(_synchronousInvoker, host, "3.8.7", "59/puzzles-other-games/");
+            _forum = new VBulletinForum(_synchronousInvoker, host, "3.8.7", Language.English, "59/puzzles-other-games/");
             _forum.LoginEvent += new EventHandler<LoginEventArgs>(_forum_LoginEvent_mq);
             if ((username != String.Empty) && (password != String.Empty))
             {

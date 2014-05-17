@@ -171,7 +171,7 @@ namespace POG.Automation
             _synchronousInvoker = (x) => _invokeControl.Invoke(x);
             _url = POG.Utils.Misc.NormalizeUrl(url);
             _threadId = POG.Utils.Misc.TidFromURL(url);
-            _forum = new VBulletinForum(_synchronousInvoker, "forumserver.twoplustwo.com", "3.8.7", "59/puzzles-other-games/");
+            _forum = new VBulletinForum(_synchronousInvoker, "forumserver.twoplustwo.com", "3.8.7", Language.English, "59/puzzles-other-games/");
             _forum.LoginEvent+=new EventHandler<LoginEventArgs>(_forum_LoginEvent);
             _forum.Login(username, password);
         }

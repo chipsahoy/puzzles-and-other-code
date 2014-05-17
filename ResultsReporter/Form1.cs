@@ -37,7 +37,7 @@ namespace ResultsReporter
             InitializeComponent();
             String host = "forumserver.twoplustwo.com";
             _synchronousInvoker = a => Invoke(a);
-            _forum = new VBulletinForum(_synchronousInvoker, host, "3.8.7", "59/puzzles-other-games/");
+            _forum = new VBulletinForum(_synchronousInvoker, host, "3.8.7", Language.English, "59/puzzles-other-games/");
             _forum.LoginEvent += new EventHandler<LoginEventArgs>(_forum_LoginEvent);
 
             string username = PogSettings.Read("TatianaModName");
@@ -103,7 +103,7 @@ namespace ResultsReporter
             Action<Action> invoker = a => a();
             _count = new ElectionInfo(invoker, t, _db, _forum.ForumURL,
                 url,
-                _forum.PostsPerPage, Language.English);
+                _forum.PostsPerPage, Language.English, "3.8.7");
             _count.CheckThread(() =>
             {
                 Console.WriteLine("{0} posts", _count.LastPost);

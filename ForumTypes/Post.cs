@@ -4,7 +4,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Runtime.Serialization;
-
+using System.Web;
 
 namespace POG.Forum
 {
@@ -62,17 +62,11 @@ namespace POG.Forum
             _bolded = bolded;
             if (postLink.Length > 3)
             {
-                int ixPostStart = postLink.LastIndexOf("?p=") + 3;
-                string sPost = postLink.Substring(ixPostStart);
-                int ixPostLast = sPost.IndexOf('&');
-                if (ixPostLast == -1) ixPostLast = sPost.IndexOf('#');
-                if (ixPostLast != -1)
-                {
-                    sPost = sPost.Substring(0, ixPostLast);
-                    Int32 postId = -1;
-                    Int32.TryParse(sPost, out postId);
-                    PostId = postId;
-                }
+                // showthread.php?12931-Mafia-Convo-Thread&p=316289&viewfull=1#post316289
+                string sPost = HttpUtility.ParseQueryString(postLink).Get("p");
+                Int32 postId = -1;
+                Int32.TryParse(sPost, out postId);
+                PostId = postId;
             }
         }
         [DataMember]

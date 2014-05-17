@@ -17,10 +17,9 @@ namespace POG.Forum
 {
     public class ThreadReader_4_2_0 : ThreadReader
     {
-        public ThreadReader_4_2_0(ConnectionSettings connectionSettings, Action<Action> synchronousInvoker, String voteRegex)
-            : base(connectionSettings, synchronousInvoker, voteRegex)
+        public ThreadReader_4_2_0(ConnectionSettings connectionSettings, Action<Action> synchronousInvoker, String voteRegex, Language language)
+            : base(connectionSettings, synchronousInvoker, voteRegex, language)
         {
-            ParseItemTime = Misc.ParseItemTimeEstonia;
         }
         protected override void ParseThreadPage(String url, String doc, out Int32 lastPageNumber, out DateTimeOffset serverTime, ref Posts postList)
         {
@@ -49,7 +48,9 @@ namespace POG.Forum
                 if (pageNode != null)
                 {
                     string pages = pageNode.InnerText;
-                    Match m = Regex.Match(pages, @"Lehek�lg (\d+), kokku (\d+)");
+                    String pagexofy = @"Page (\d+) of (\d+)";
+                    if(_language == Language.Estonian) pagexofy = @"Lehek�lg (\d+), kokku (\d+)";
+                    Match m = Regex.Match(pages, pagexofy);
                     if (m.Success)
                     {
                         //Trace.TraceInformation("{0}/{1}", m.Groups[1].Value, m.Groups[2].Value);
@@ -160,7 +161,7 @@ namespace POG.Forum
             String local = url;
             if (pageNumber > 1)
             {
-                local += "page" + pageNumber;
+                local += "/page" + pageNumber;
             }
             string doc = null;
             for (int i = 0; i < 10; i++)
@@ -198,13 +199,29 @@ namespace POG.Forum
         Action<Action> _synchronousInvoker;
         protected Misc.ParseItemTimeDelegate ParseItemTime = Misc.ParseItemTimeEnglish;
         protected String _voteRegex;
+        protected Language _language;
         #endregion
         #region constructors
-        public ThreadReader(ConnectionSettings connectionSettings, Action<Action> synchronousInvoker, String voteRegex)
+        public ThreadReader(ConnectionSettings connectionSettings, Action<Action> synchronousInvoker, String voteRegex, Language language)
         {
             _connectionSettings = connectionSettings;
             _synchronousInvoker = synchronousInvoker;
             _voteRegex = voteRegex;
+            _language = language;
+            switch (language)
+            {
+                case Language.English:
+                    {
+                        ParseItemTime = Misc.ParseItemTimeEnglish;
+                    }
+                    break;
+
+                case Language.Estonian:
+                    {
+                        ParseItemTime = Misc.ParseItemTimeEstonia;
+                    }
+                    break;
+            }
         }
         private ThreadReader()
         {

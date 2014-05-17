@@ -18,13 +18,13 @@ namespace POG.Forum
 {
 	internal class VBulletin_4_2_0 : VBulletinSM
 	{
-		internal VBulletin_4_2_0(VBulletinForum outer, StateMachineHost host, String forum, String lobby, String forumRoot, String voteRegex, Action<Action> synchronousInvoker) :
-			base(outer, host, forum, lobby, forumRoot, voteRegex, synchronousInvoker)
+		internal VBulletin_4_2_0(VBulletinForum outer, StateMachineHost host, String forum, Language language, String lobby, String forumRoot, String voteRegex, Action<Action> synchronousInvoker) :
+			base(outer, host, forum, language, lobby, forumRoot, voteRegex, synchronousInvoker)
 		{
 		}
 		internal override ThreadReader Reader()
 		{
-			ThreadReader t = new ThreadReader_4_2_0(_connectionSettings, _synchronousInvoker, VoteRegex);
+			ThreadReader t = new ThreadReader_4_2_0(_connectionSettings, _synchronousInvoker, VoteRegex, _language);
 			return t;
 		}
 		internal override LobbyReader Lobby()
@@ -40,8 +40,8 @@ namespace POG.Forum
 	}
 	internal class VBulletin_3_8_7 : VBulletinSM
 	{
-		internal VBulletin_3_8_7(VBulletinForum outer, StateMachineHost host, String forum, String lobby, String forumRoot, String voteRegex, Action<Action> synchronousInvoker) :
-			base(outer, host, forum, lobby, forumRoot, voteRegex, synchronousInvoker)
+		internal VBulletin_3_8_7(VBulletinForum outer, StateMachineHost host, String forum, Language language, String lobby, String forumRoot, String voteRegex, Action<Action> synchronousInvoker) :
+			base(outer, host, forum, language, lobby, forumRoot, voteRegex, synchronousInvoker)
 		{
 		}
 	}
@@ -54,10 +54,11 @@ namespace POG.Forum
 		private String _username = ""; // if this changes from what user entered previously, need to logout then re-login with new info.
 		int _postsPerPage = 50;
         protected String VoteRegex = "";
+        protected Language _language;
 
 		#endregion
 
-		internal VBulletinSM(VBulletinForum outer, StateMachineHost host, String forum, String lobby, String forumRoot, String voteRegex, Action<Action> synchronousInvoker) :
+		internal VBulletinSM(VBulletinForum outer, StateMachineHost host, String forum, Language language, String lobby, String forumRoot, String voteRegex, Action<Action> synchronousInvoker) :
 			base("VBulletin", host)
 		{
 			_outer = outer;
@@ -66,13 +67,14 @@ namespace POG.Forum
 			ForumHost = forum;
 			ForumLobby = lobby;
             ForumRoot = forumRoot;
+            _language = language;
 			_connectionSettings = new ConnectionSettings(ForumURL);
 			SetInitialState(StateLoggedOut);
 		}
 		#region Properties
 		internal virtual ThreadReader Reader()
 		{
-			ThreadReader t = new ThreadReader(_connectionSettings, _synchronousInvoker, VoteRegex);
+			ThreadReader t = new ThreadReader(_connectionSettings, _synchronousInvoker, VoteRegex, _language);
 			return t;
 		}
 		internal virtual LobbyReader Lobby()
@@ -1118,20 +1120,21 @@ fragment	name
 		Action<Action> _synchronousInvoker;
 		#endregion
 		#region constructors
-		public VBulletinForum(Action<Action> synchronousInvoker, String forum, String vbVersion, String lobby, String forumRoot = "", String voteRegex = "")
+		public VBulletinForum(Action<Action> synchronousInvoker, String forum, String vbVersion, Language language, String lobby, String forumRoot = "", String voteRegex = "")
 		{
 			_synchronousInvoker = synchronousInvoker;
+            VBVersion = vbVersion;
 			switch (vbVersion)
 			{
 				case "4.2.0":
 					{
-                        _inner = new VBulletin_4_2_0(this, new StateMachineHost("ForumHost"), forum, lobby, forumRoot, voteRegex, synchronousInvoker);
+                        _inner = new VBulletin_4_2_0(this, new StateMachineHost("ForumHost"), forum, language, lobby, forumRoot, voteRegex, synchronousInvoker);
 					}
 					break;
 
 				default:
 					{
-                        _inner = new VBulletin_3_8_7(this, new StateMachineHost("ForumHost"), forum, lobby, forumRoot, voteRegex, synchronousInvoker);
+                        _inner = new VBulletin_3_8_7(this, new StateMachineHost("ForumHost"), forum, language, lobby, forumRoot, voteRegex, synchronousInvoker);
 					}
 					break;
 			}
@@ -1164,6 +1167,11 @@ fragment	name
 		}
 		
 		#endregion
+        public String VBVersion
+        {
+            get;
+            private set;
+        }
 		public Int32 PostsPerPage
 		{
 			get
@@ -1271,7 +1279,20 @@ fragment	name
                 {
                     String qry = url.Substring(ixShowThread + showthread.Length);
                     tid = HttpUtility.ParseQueryString(qry).Get("t");
-                    if(tid.Length > 0) Int32.TryParse(tid, out threadId);
+                    if (tid != null)
+                    {
+                        if (tid.Length > 0) Int32.TryParse(tid, out threadId);
+                    }
+                    else
+                    {
+                        // http://www.millenniumforums.com/showthread.php?12931-Mafia-Convo-Thread
+                        int ixTidEnd = qry.IndexOf('-');
+                        if (ixTidEnd >= 0)
+                        {
+                            tid = qry.Substring(0, ixTidEnd);
+                            Int32.TryParse(tid, out threadId);
+                        }
+                    }
                 }
                 else
                 {

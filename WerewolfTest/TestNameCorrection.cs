@@ -29,9 +29,9 @@ namespace WerewolfTest
 			PogSqlite _db = new PogSqlite();
 			_db.Connect(dbName);
 			
-			var _forum = new VBulletinForum(invoker, url, vbVersion, lobby, "", "");
+			var _forum = new VBulletinForum(invoker, url, vbVersion, Language.English, lobby, "", "");
             var reader = _forum.Reader();
-            _count = new ElectionInfo(invoker, reader, _db, _forum.ForumURL, url, _forum.PostsPerPage, _language);
+            _count = new ElectionInfo(invoker, reader, _db, _forum.ForumURL, url, _forum.PostsPerPage, _language, "3.8.7");
         }
         [TestFixtureTearDown]
         public void Teardown()

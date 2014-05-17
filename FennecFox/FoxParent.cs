@@ -62,6 +62,15 @@ namespace POG.FennecFox
                     }
                     break;
 
+                case "www.millenniumforums.com":
+                    {
+                        vbVersion = "4.2.0";
+                        lobby = "forumdisplay.php?59-The-Mafia-Forum";
+                        _language = Language.English;
+                        voteRegex = "##(.*)";
+                    }
+                    break;
+
                 default:
                     {
                         vbVersion = "3.8.7";
@@ -76,7 +85,7 @@ namespace POG.FennecFox
 			_db = new PogSqlite();
 			_db.Connect(dbName);
 			
-			_forum = new VBulletinForum(_synchronousInvoker, host, vbVersion, lobby, forumRoot, voteRegex);
+			_forum = new VBulletinForum(_synchronousInvoker, host, vbVersion, _language, lobby, forumRoot, voteRegex);
 			_forum.LoginEvent += new EventHandler<LoginEventArgs>(_forum_LoginEvent);
 
 			String username = PogSettings.Read("username", String.Empty);

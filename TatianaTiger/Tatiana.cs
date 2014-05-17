@@ -29,7 +29,7 @@ namespace TatianaTiger
             txtVersion.Text = String.Format("Version {0}", AssemblyVersion);
             String host = "forumserver.twoplustwo.com";
             _synchronousInvoker = a => Invoke(a);
-            _forum = new VBulletinForum(_synchronousInvoker, host, "3.8.7", "59/puzzles-other-games/");
+            _forum = new VBulletinForum(_synchronousInvoker, host, "3.8.7", Language.English, "59/puzzles-other-games/");
             _forum.LoginEvent += new EventHandler<LoginEventArgs>(_forum_LoginEvent);
 
             txtUsername.Text = PogSettings.Read("TatianaModName");

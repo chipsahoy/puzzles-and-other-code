@@ -154,7 +154,7 @@ namespace POG.Utils
                 }
                 else
                 {
-                    rc = new DateTimeOffset(DateTime.ParseExact(time, "MM-dd-yyyy hh:mm tt", null), pageTime.Offset);
+                    rc = new DateTimeOffset(DateTime.ParseExact(time, "MM-dd-yyyy hh:mm tt", null, DateTimeStyles.AllowWhiteSpaces), pageTime.Offset);
                 }
             }
             finally
@@ -215,7 +215,7 @@ namespace POG.Utils
 			}
 			else // Bestonia
 			{
-				m = Regex.Match(profileUrl, @".*member.php/(\d*)-");
+				m = Regex.Match(profileUrl, @".*member.php[/\?](\d*)-");
 				if (m.Success)
 				{
 					String sId = m.Groups[1].Value;

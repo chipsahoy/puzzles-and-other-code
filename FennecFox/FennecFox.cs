@@ -351,7 +351,7 @@ namespace POG.FennecFox
 		{
 			url = Utils.Misc.NormalizeUrl(url);
 			ThreadReader t = _forum.Reader();
-			_voteCount = new ElectionInfo(_synchronousInvoker, t, _db, _forum.ForumURL, url, _forum.PostsPerPage, _language);
+			_voteCount = new ElectionInfo(_synchronousInvoker, t, _db, _forum.ForumURL, url, _forum.PostsPerPage, _language, _forum.VBVersion);
 			_voteCount.PropertyChanged += new PropertyChangedEventHandler(_voteCount_PropertyChanged);
 			_voteCount.Turbo = _turbo;
 			_moderator = new Moderator(_synchronousInvoker, _voteCount, _forum);

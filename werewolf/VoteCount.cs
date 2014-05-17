@@ -39,6 +39,7 @@ namespace POG.Werewolf
 
 		String _url = String.Empty;
 		String _forumURL = String.Empty;
+        String _vbVersion = "3.8.7";
 		POG.Forum.Language _language = Language.English;
 		POG.Forum.ThreadReader _thread;
 		Int32 _postsPerPage = 100;
@@ -62,13 +63,15 @@ namespace POG.Werewolf
 		#endregion
 
 		#region constructors
-		public ElectionInfo(Action<Action> synchronousInvoker, ThreadReader t, IPogDb db, String forum, String url, Int32 postsPerPage, Language language) 
+		public ElectionInfo(Action<Action> synchronousInvoker, ThreadReader t, IPogDb db, String forum, String url, Int32 postsPerPage, Language language,
+            String vbVersion) 
 		{
 			_synchronousInvoker = synchronousInvoker;
 			_forumURL = forum;
 			_url = url;
 			_postsPerPage = postsPerPage;
 			_language = language;
+            _vbVersion = vbVersion;
 			_threadId = VBulletinForum.ThreadIdFromUrl(url);
 			_day = 1;
 			DateTime now = DateTime.Now;
@@ -486,7 +489,9 @@ namespace POG.Werewolf
 			String sOneDay = "1 day ";
 			String sDays = "{0} days ";
 			String sLockedVotes = "[highlight][color=red]Caution! Votes today are locked in. No vote changing or unvoting today.[/color][/highlight]";
-
+            String sVotes = "Votes";
+            String sLynch = "Lynch";
+            String sVoters = "Voters";
 			switch (_language)
 			{
 				case Language.Estonian:
@@ -494,18 +499,29 @@ namespace POG.Werewolf
 						sStart = "[color=black][b]Hääled seisuga post {0} kuni {1}";
 						sTimeToNight = "Öö saabub {0} pärast";
 						sNight = "On öö";
-						startTable = "[table= class: grid][tr][td][b]Hääli[/b][/td][td][b]Lynch[/b][/td][td][b]Hääletajad[/b][/td][/tr]";
-						sWagonLine = "[tr][td]{0} [/td][td] [b]{1}[/b] [/td][td] {2}[/td][/tr]";
-						sNoVoteLine = "[tr][td]{0} [/td][td] {1} [/td][td] {2}[/td][/tr]";
-						sErrorLine = "[tr][td]{0} [/td][td] [color=red][b]{1}[/b][/color] [/td][td] {2}[/td][/tr]";
 						showNotVoting = "ei ole hääletanud";
 						redError = "Viga";
 						sGoodBad = "[highlight][color=green]:{0}  loeb[/color] [color=red]:{1} ei loe[/color][/highlight]";
 						sOneDay = "1 päeva ja ";
 						sDays = "{0} päeva ja ";
+                        sVotes = "Hääli";
+                        sLynch = "Lynch";
+                        sVoters = "Hääletajad";
 					}
 					break;
 			}
+            switch (_vbVersion)
+            {
+                case "4.2.0":
+                    {
+                        startTable = String.Format("[table= class: grid][tr][td][b]{0}[/b][/td][td][b]{1}[/b][/td][td][b]{2}[/b][/td][/tr]",
+                            sVotes, sLynch, sVoters);
+                        sWagonLine = "[tr][td]{0} [/td][td] [b]{1}[/b] [/td][td] {2}[/td][/tr]";
+                        sNoVoteLine = "[tr][td]{0} [/td][td] {1} [/td][td] {2}[/td][/tr]";
+                        sErrorLine = "[tr][td]{0} [/td][td] [color=red][b]{1}[/b][/color] [/td][td] {2}[/td][/tr]";
+                    }
+                    break;
+            }
 			var sb = new StringBuilder();
 			sb.AppendFormat(sStart, StartPost, end);
 			sb.AppendLine();

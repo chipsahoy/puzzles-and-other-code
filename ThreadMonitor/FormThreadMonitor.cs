@@ -23,7 +23,7 @@ namespace ThreadMonitor
         {
             InitializeComponent();
             Action<Action> synchronousInvoker = a => Invoke(a);
-            _forum = new VBulletinForum(synchronousInvoker, "forumserver.twoplustwo.com", "3.8.7", "59/puzzles-other-games/");
+            _forum = new VBulletinForum(synchronousInvoker, "forumserver.twoplustwo.com", "3.8.7", Language.English, "59/puzzles-other-games/");
             _forum.StatusUpdate += new EventHandler<NewStatusEventArgs>(_forum_StatusUpdate);
             _forum.LoginEvent += new EventHandler<LoginEventArgs>(_forum_LoginEvent);
         }
