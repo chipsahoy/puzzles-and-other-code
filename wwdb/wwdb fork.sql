@@ -32,7 +32,7 @@ create table moderator (gameid int, modid int, isprimary int not null, primary k
 create table actions (gameid int not null, slot int not null, ability varchar(20), night int not null, target int not null, 
 index (gameid, slot, night), index (gameid, target)) engine=innodb;
 
-create table player (playerid int, playername varchar(50) not null, mainplayerid int not null, 
+create table player (playerid int, playername varchar(50) not null, mainplayerid int, 
 primary key (playerid), unique (playername), index (mainplayerid)) engine=innodb;
 
 create table roleset (gameid int, slot int, faction int, roletype int, deathtype char(17), deathday int, players int, roleid int,
@@ -334,6 +334,10 @@ alter table playerlist add foreign key (gameid) references game(gameid) on delet
 alter table actions add foreign key (gameid) references game(gameid) on delete cascade;
 alter table moderator add foreign key (gameid) references game(gameid) on delete cascade;
 alter table team add foreign key (gameid) references game(gameid) on delete cascade;
+
+alter table playerlist add index (playerid);
+
+alter table player modify column playerid int auto_increment;
 
 -- finish conversion
 --############################################
