@@ -9,7 +9,7 @@
 	</tr>
 </thead>
 <tbody>
-	
+
 <?php
 	$qry = "SELECT t.title, t.threadid, t.replies, p.playername, p.playerid, t.url FROM fennecfox.Thread t, player p 
 		WHERE p.playerid = t.op AND t.lastposttime > DATE_SUB(NOW(), INTERVAL 1 DAY) AND t.icontext = 'Spade'";
@@ -20,7 +20,7 @@
 		echo "<tr>
 			<td></td>
 			<td><a href='".$g['url']."'>".$g['title']."</a></td>
-			<td><a href='index.php?report=Player&playerid=".htmlentities($g['playerid'], ENT_QUOTES, 'UTF-8')."'>".$g['playername']."</a></td>
+			<td><a href='index.php?report=Player&playerid=".$g['playerid']."'>".$g['playername']."</a></td>
 			<td>".$g['replies']."</td>
 			</tr>";
 	}

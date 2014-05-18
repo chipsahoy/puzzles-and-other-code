@@ -163,3 +163,7 @@ for j, i in enumerate(tatianagames):
 
 
 
+# http://checkmywwstats.com/dev/index.php?report=Game&gameid=1437996
+# tatiana missed a sub
+
+		
