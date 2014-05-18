@@ -3,7 +3,6 @@ iversonian
 4/16/14
 wwdb update
 
-Player/role: not a series of players, but rather of ordinal values, with a player associated with it
 Gimmicks: aggregate by main account from the start
 
 Each forum has its own db, own webpage, to contain the ebolaids
@@ -351,4 +350,10 @@ update playerlist pl join player p on pl.playerid=p.playerid set pl.playerid = p
 
 --####################################
 -- pending changes to production:
+
+alter table roleset add foreign key (gameid) references game(gameid) on delete cascade;
+alter table playerlist add foreign key (gameid) references game(gameid) on delete cascade;
+alter table actions add foreign key (gameid) references game(gameid) on delete cascade;
+alter table moderator add foreign key (gameid) references game(gameid) on delete cascade;
+alter table team add foreign key (gameid) references game(gameid) on delete cascade;
 
