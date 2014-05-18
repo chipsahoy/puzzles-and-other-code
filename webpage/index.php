@@ -135,8 +135,7 @@ error_reporting(E_ALL);
 				<option>Turbos</option>
 				<option>Moderators</option>
 				<option>Player Records</option>
-				<option>Miscellaneous</option>
-<!--				<option>Death Stats</option>
+<!--			<option>Death Stats</option>
 				<option>Lynch Stats</option>
 				<option>Post Stats</option>
 				<option>Power Rankings</option>
@@ -172,7 +171,7 @@ error_reporting(E_ALL);
 		<a href="downloads.html">Latest Fennec Fox and Ricky Raccoon</a><br>
 		<a href="uploads.php">Recently uploaded games</a>
 		<?php
-			if(!array_key_exists('report', $_GET) || $_GET['report'] == 'Miscellaneous') include "./modules/Miscellaneous.php";
+			if(!array_key_exists('report', $_GET) || $_GET['report'] == 'Aggregate Stats') include "./modules/Aggregate.php";
 		?>
 	</body>
 
