@@ -325,6 +325,16 @@ alter table game modify column gametype enum('Vanilla','Vanilla+','Mish-Mash','S
 
 alter table playerlist add unique (gameid, slot, playerid);
 
+-- for the new role entry form
+alter table roleset add index (roletype);
+alter table roles modify column roleid int auto_increment;
+
+alter table roleset add foreign key (gameid) references game(gameid) on delete cascade;
+alter table playerlist add foreign key (gameid) references game(gameid) on delete cascade;
+alter table actions add foreign key (gameid) references game(gameid) on delete cascade;
+alter table moderator add foreign key (gameid) references game(gameid) on delete cascade;
+alter table team add foreign key (gameid) references game(gameid) on delete cascade;
+
 -- finish conversion
 --############################################
 -- error fixes
@@ -351,9 +361,4 @@ update playerlist pl join player p on pl.playerid=p.playerid set pl.playerid = p
 --####################################
 -- pending changes to production:
 
-alter table roleset add foreign key (gameid) references game(gameid) on delete cascade;
-alter table playerlist add foreign key (gameid) references game(gameid) on delete cascade;
-alter table actions add foreign key (gameid) references game(gameid) on delete cascade;
-alter table moderator add foreign key (gameid) references game(gameid) on delete cascade;
-alter table team add foreign key (gameid) references game(gameid) on delete cascade;
 

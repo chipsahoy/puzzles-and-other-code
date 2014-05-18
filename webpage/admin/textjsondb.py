@@ -169,12 +169,12 @@ def RemoveGameFromDB(url, cur, commit=False):
 	if cur.rowcount > 0:
 		#SaveJSONToLog(url, cur, 'deleted', None)
 		gameid = cur.fetchone()['gameid']
-		cur.execute("delete from actions where gameid=%s", gameid)
-		cur.execute("delete from playerlist where gameid=%s", gameid)
-		cur.execute("delete from roleset where gameid=%s", gameid)
-		cur.execute("delete from moderator where gameid=%s", gameid)
-		cur.execute("delete from team where gameid=%s", gameid)
-		cur.execute("delete from game where gameid=%s", gameid)
+		#cur.execute("delete from actions where gameid=%s", gameid)
+		#cur.execute("delete from playerlist where gameid=%s", gameid)
+		#cur.execute("delete from roleset where gameid=%s", gameid)
+		#cur.execute("delete from moderator where gameid=%s", gameid)
+		#cur.execute("delete from team where gameid=%s", gameid)
+		cur.execute("delete from game where gameid=%s", gameid) # this should cascade deletes in other tables
 	if commit:
 		cur.execute("commit")
 
