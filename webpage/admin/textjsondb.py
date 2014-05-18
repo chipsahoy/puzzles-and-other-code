@@ -156,7 +156,7 @@ def GetThreadIDFromURL(url, cur):
 		return int(url[:url.find('&')])
 	else: # grab the highest gameid +1
 		cur.execute("select ifnull(max(gameid)+1,1) gameid from game")
-		return cur.fetchrone()['gameid']
+		return cur.fetchone()['gameid']
 
 def SaveJSONToLog(url, cur, msg='', jsontxt=None):
 	if jsontxt is None:

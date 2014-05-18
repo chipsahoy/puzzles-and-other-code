@@ -339,6 +339,9 @@ alter table playerlist add index (playerid);
 
 alter table player modify column playerid int auto_increment;
 
+-- for pokernetdk, maybe for the others too
+alter table game modify column gameid int auto_increment;
+
 -- finish conversion
 --############################################
 -- error fixes
@@ -359,6 +362,14 @@ update playerlist pl join player p on pl.playerid=p.playerid set pl.playerid = p
 
 -- update the mod table to include accountid field
 -- change json->db to reflect mainaccountid stuff
+
+
+--####################################
+-- maintenance
+insert into player
+select posterid, postername, posterid
+from fennecfox.Poster
+where posterid not in (select playerid from player);
 
 
 

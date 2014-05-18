@@ -1,4 +1,4 @@
-<h3><ul>Werewolf Database Control Panel - POG</ul></h3><br><br>
+<h3><ul>Werewolf Database Control Panel</ul></h3><br><br>
 
 <?php
 	include('../login.php');
@@ -25,4 +25,4 @@
 
 <br><br>
 <a href="roles.php">Return to Roles</a><br>
-<a href="controlpanel.html">Return to Control Panel</a>
+<a href=".">Return to Control Panel</a>
