@@ -206,3 +206,6 @@
 	endif;
 	include "./modules/PlayedWith.php";
 ?>
+<!--<iframe allowtransparency=true frameborder=0 id=rf sandbox="allow-same-origin allow-forms allow-scripts" scrolling=auto 
+	src="index.php?report=PlayedWith&playerid=<?php echo $playerid;?>" style="width:100%;height:100%"></iframe>
+-->

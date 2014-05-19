@@ -1,4 +1,37 @@
-<h3>Most Played With</h3>
+<?php
+	$playerid = $_GET['playerid'];
+	if(!array_key_exists('gametype', $_GET) || $_GET['gametype'] == "") $gametype = "Long Games"; else $gametype = $_GET['gametype'];
+	if($gametype == "Long Games")
+		$qry = "select pm.playerid, pm.playername, count(*) games
+		from playerlist pl1
+		join playerlist pl2 using (gameid)
+		join player p on p.playerid=pl2.playerid
+		join player pm on p.mainplayerid=pm.playerid
+		join game g on g.gameid=pl1.gameid
+		where pl1.playerid=".$playerid." and p.mainplayerid <> pl1.playerid and g.gametype not in ('Turbo','Turbo Mishmash')
+		group by p.mainplayerid order by 3 desc";
+	elseif($gametype == "Turbos")
+		$qry = "select pm.playerid, pm.playername, count(*) games
+		from playerlist pl1
+		join playerlist pl2 using (gameid)
+		join player p on p.playerid=pl2.playerid
+		join player pm on p.mainplayerid=pm.playerid
+		join game g on g.gameid=pl1.gameid
+		where pl1.playerid=".$playerid." and p.mainplayerid <> pl1.playerid and g.gametype in ('Turbo','Turbo Mishmash')
+		group by p.mainplayerid order by 3 desc";
+	$result = $db->query($qry);
+?>
+
+<h3>Most Played With - <?= $gametype?></h3>
+<form action="index.php" method="get">
+	<input type="hidden" name="report" value="Player"/>
+	<input type="hidden" name="playerid" value="<?php echo $playerid;?>" />
+	Gametype: <select name="gametype" onchange="this.form.submit();">
+		<option></option>
+		<option>Long Games</option>
+		<option>Turbos</option>
+	</select>
+</form>
 
 <table class="data" border=1>
 	<thead>
@@ -28,14 +61,7 @@
 	</thead>
 	<tbody>
 <?php
-	$playerid = $_GET['playerid'];
-	$result = $db->query("select pm.playerid, pm.playername, count(*) games
-		from playerlist pl1
-		join playerlist pl2 using (gameid)
-		join player p on p.playerid=pl2.playerid
-		join player pm on p.mainplayerid=pm.playerid
-		where pl1.playerid=".$playerid." and p.mainplayerid <> pl1.playerid
-		group by p.mainplayerid order by 3 desc");
+	$result = $db->query($qry);
 	while($otherplayer = $result->fetch_assoc()) {
 		$qry = "select teammate, villager, count(victory) games, sum(victory=1) wins, sum(victory=0) losses
 			from (select r1.faction=r2.faction teammate, r1.faction=1 villager, t.victory
