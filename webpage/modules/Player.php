@@ -12,7 +12,7 @@
 	$qry = ("select p.playername, g.gameid, url, gamename, gametype, startdate, numplayers, gamelength, 
 		if(tiegame, 'Tie', v.victor) victor, if(m.isprimary, 'Yes', '') isprimary
 		from game g join moderator m using (gameid) join player p on p.playerid=m.modid join victor v using (gameid)
-		where p.mainplayerid=".$playerid." group by g.gameid order by startdate desc");
+		where p.mainplayerid=".$playerid." and g.gametype <> 'Turbo' group by g.gameid order by startdate desc");
 	$result = $db->query($qry);
 	
 	if ($result->num_rows > 0):
@@ -187,7 +187,7 @@
 			echo "<tr>
 			<td></td>
 			<td>".$game['startdate']."</td>
-			<td><a href=\"index.php?report=Game&gameid=".str_replace('#', '%23', htmlentities($game['gameid'], ENT_QUOTES, 'UTF-8'))."\">".
+			<td><a href=\"index.php?report=Game&gameid=".$game['gameid']."\">".
 				$game['gamename']."</a> <a href=".htmlentities($game['url'], ENT_QUOTES, 'UTF-8').">(link)</a></td>
 			<td>".$game['playername']."</td>
 			<td>".$game['factionname']."</td>
@@ -204,15 +204,5 @@
 </table>
 <?php
 	endif;
+	include "./modules/PlayedWith.php";
 ?>
-<!-- <iframe allowtransparency=true frameborder=0 id=rf sandbox="allow-same-origin allow-forms allow-scripts" scrolling=auto src="index.php?report=PlayedWith&Player=<?php echo $_GET['Player'];?>" style="width:100%;height:100%"></iframe>
--->
-<input type="hidden" id="max" name="max"/>
-<input type="hidden" id="min" name="min"/>
-<input type="hidden" id="colgame" name="colgame" value=2 />
-<input type="hidden" id="colvillage" name="colvillage" value=5 />
-<input type="hidden" id="colwolf" name="colwolf" value=12 />
-<input type="hidden" id="villagermin" name="villagermin"/>
-<input type="hidden" id="villagermax" name="villagermax"/>
-<input type="hidden" id="wolfmin" name="wolfmin"/>
-<input type="hidden" id="wolfmax" name="wolfmax"/>

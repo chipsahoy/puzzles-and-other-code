@@ -11,6 +11,9 @@
 	$stats = $db->query($qry)->fetch_assoc();
 	$qry = "select sum(victory<>2) games, sum(victory=1) wins, sum(victory=0) losses from team t join game g using (gameid) where gametype in ('Slow Game') and faction=1;";
 	$stats2 = $db->query($qry)->fetch_assoc();
+	if ($stats2['games']==0) {
+		$stats2['games'] = 1;
+	}
 	
 	echo "Games Played: ".$games['n']."<br/>
 		Vanillas Played: ".$games['vanillas']."<br/>

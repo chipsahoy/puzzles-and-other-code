@@ -1,59 +1,68 @@
-<?php
-	$query = "SELECT posterid FROM Poster WHERE postername = '".mysql_real_escape_string($_GET['Player'])."'";
-	$result = mysql_query($query);
-	$result_arrayid = mysql_fetch_assoc($result);
-?>
 <h3>Most Played With</h3>
-<?php
-$result = mysql_query("SELECT p22.posterid, p22.postername, count(*) as total FROM Poster p22, Player p2, Player p1, GameRole pt1, GameRole pt2, Team t1, Team t2 WHERE p22.posterid = p2.posterid AND t1.threadid = t2.threadid AND t1.teamid = pt1.teamid AND t2.teamid = pt2.teamid AND p2.roleid = pt2.roleid AND pt1.roleid = p1.roleid AND p1.posterid = ".$result_arrayid['posterid']." AND p1.posterid != p2.posterid GROUP BY p22.postername");
-$bros = array();
-while($result_array = mysql_fetch_assoc($result)) {
-	$query = "SELECT count(*) FROM GameRole pt1, GameRole pt2, Team t, Player p1, Player p2, Affiliation a WHERE pt2.teamid = t.teamid AND t.teamid = pt1.teamid AND t.affiliationid = a.affiliationid AND UPPER(LEFT(a.affiliationname,3)) = 'VIL' AND p1.roleid = pt1.roleid AND p2.roleid = pt2.roleid AND p2.posterid = ".$result_array['posterid']." AND p1.posterid != p2.posterid AND p1.posterid = ".$result_arrayid['posterid'];
-	$result_array['villabros'] = mysql_result(mysql_query($query),0);
-	$query = "SELECT count(*) FROM GameRole pt1, GameRole pt2, Team t, Player p1, Player p2, Affiliation a WHERE pt2.teamid = t.teamid AND t.teamid = pt1.teamid AND t.affiliationid = a.affiliationid AND (UPPER(LEFT(a.affiliationname,3)) = 'WOL' OR UPPER(LEFT(a.affiliationname,3)) = 'NEU') AND p1.roleid = pt1.roleid AND p2.roleid = pt2.roleid AND p2.posterid = ".$result_array['posterid']." AND p1.posterid != p2.posterid AND p1.posterid = ".$result_arrayid['posterid'];
-	$result_array['wolfbros'] = mysql_result(mysql_query($query),0);
-	$query = "SELECT count(*) FROM GameRole pt1, GameRole pt2, Team t, Player p1, Player p2, Affiliation a WHERE t.victory = 1 AND pt2.teamid = t.teamid AND t.teamid = pt1.teamid AND t.affiliationid = a.affiliationid AND UPPER(LEFT(a.affiliationname,3)) = 'VIL' AND p1.roleid = pt1.roleid AND p2.roleid = pt2.roleid AND p2.posterid = ".$result_array['posterid']." AND p1.posterid != p2.posterid AND p1.posterid = ".$result_arrayid['posterid'];
-	$result_array['villawins'] = mysql_result(mysql_query($query),0);
-	$query = "SELECT count(*) FROM GameRole pt1, GameRole pt2, Team t, Player p1, Player p2, Affiliation a WHERE t.victory = 0 AND pt2.teamid = t.teamid AND t.teamid = pt1.teamid AND t.affiliationid = a.affiliationid AND UPPER(LEFT(a.affiliationname,3)) = 'VIL' AND p1.roleid = pt1.roleid AND p2.roleid = pt2.roleid AND p2.posterid = ".$result_array['posterid']." AND p1.posterid != p2.posterid AND p1.posterid = ".$result_arrayid['posterid'];
-	$result_array['villalosses'] = mysql_result(mysql_query($query),0);
-	$query = "SELECT count(*) FROM GameRole pt1, GameRole pt2, Team t, Player p1, Player p2, Affiliation a WHERE t.victory = 2 AND pt2.teamid = t.teamid AND t.teamid = pt1.teamid AND t.affiliationid = a.affiliationid AND UPPER(LEFT(a.affiliationname,3)) = 'VIL' AND p1.roleid = pt1.roleid AND p2.roleid = pt2.roleid AND p2.posterid = ".$result_array['posterid']." AND p1.posterid != p2.posterid AND p1.posterid = ".$result_arrayid['posterid'];
-	$result_array['villaties'] = mysql_result(mysql_query($query),0);
-	$query = "SELECT count(*) FROM GameRole pt1, GameRole pt2, Team t, Player p1, Player p2, Affiliation a WHERE t.victory = 1 AND pt2.teamid = t.teamid AND t.teamid = pt1.teamid AND t.affiliationid = a.affiliationid AND (UPPER(LEFT(a.affiliationname,3)) = 'WOL' OR UPPER(LEFT(a.affiliationname,3)) = 'NEU')AND p1.roleid = pt1.roleid AND p2.roleid = pt2.roleid AND p2.posterid = ".$result_array['posterid']." AND p1.posterid != p2.posterid AND p1.posterid = ".$result_arrayid['posterid'];
-	$result_array['wolfwins'] = mysql_result(mysql_query($query),0);
-	$query = "SELECT count(*) FROM GameRole pt1, GameRole pt2, Team t, Player p1, Player p2, Affiliation a WHERE t.victory = 0 AND pt2.teamid = t.teamid AND t.teamid = pt1.teamid AND t.affiliationid = a.affiliationid AND (UPPER(LEFT(a.affiliationname,3)) = 'WOL' OR UPPER(LEFT(a.affiliationname,3)) = 'NEU')AND p1.roleid = pt1.roleid AND p2.roleid = pt2.roleid AND p2.posterid = ".$result_array['posterid']." AND p1.posterid != p2.posterid AND p1.posterid = ".$result_arrayid['posterid'];
-	$result_array['wolflosses'] = mysql_result(mysql_query($query),0);
-	$query = "SELECT count(*) FROM GameRole pt1, GameRole pt2, Team t, Player p1, Player p2, Affiliation a WHERE t.victory = 2 AND pt2.teamid = t.teamid AND t.teamid = pt1.teamid AND t.affiliationid = a.affiliationid AND (UPPER(LEFT(a.affiliationname,3)) = 'WOL' OR UPPER(LEFT(a.affiliationname,3)) = 'NEU')AND p1.roleid = pt1.roleid AND p2.roleid = pt2.roleid AND p2.posterid = ".$result_array['posterid']." AND p1.posterid != p2.posterid AND p1.posterid = ".$result_arrayid['posterid'];
-	$result_array['wolfties'] = mysql_result(mysql_query($query),0);
-	$query = "SELECT count(*) FROM GameRole pt1, GameRole pt2, Player p2, Team t1, Team t2, Player p1 WHERE pt1.teamid = t1.teamid AND pt2.teamid = t2.teamid AND t1.threadid = t2.threadid AND t2.teamid != t1.teamid AND p1.roleid = pt1.roleid AND p2.roleid = pt2.roleid AND p2.posterid = ".$result_array['posterid']." AND p1.posterid != p2.posterid AND p1.posterid = ".$result_arrayid['posterid'];
-	$result_array['versusgames'] = mysql_result(mysql_query($query),0);
-	$query = "SELECT count(*) FROM GameRole pt1, GameRole pt2, Player p2, Team t1, Team t2, Player p1 WHERE t1.victory = 1 AND t2.victory = 0 AND pt1.teamid = t1.teamid AND pt2.teamid = t2.teamid AND t1.threadid = t2.threadid AND t2.teamid != t1.teamid AND p1.roleid = pt1.roleid AND p2.roleid = pt2.roleid AND p2.posterid = ".$result_array['posterid']." AND p1.posterid != p2.posterid AND p1.posterid = ".$result_arrayid['posterid'];
-	$result_array['versuswins'] = mysql_result(mysql_query($query),0);
-	$query = "SELECT count(*) FROM GameRole pt1, GameRole pt2, Player p2, Team t1, Team t2, Player p1 WHERE t1.victory = 0 AND t2.victory = 1 AND pt1.teamid = t1.teamid AND pt2.teamid = t2.teamid AND t1.threadid = t2.threadid AND t2.teamid != t1.teamid AND p1.roleid = pt1.roleid AND p2.roleid = pt2.roleid AND p2.posterid = ".$result_array['posterid']." AND p1.posterid != p2.posterid AND p1.posterid = ".$result_arrayid['posterid'];
-	$result_array['versuslosses'] = mysql_result(mysql_query($query),0);
-	$query = "SELECT count(*) FROM GameRole pt1, GameRole pt2, Player p2, Team t1, Team t2, Player p1 WHERE ((t1.victory = 0 AND t2.victory = 0) OR (t1.victory = 1 AND t2.victory = 1) OR t2.victory = 2 OR t1.victory = 2) AND pt1.teamid = t1.teamid AND pt2.teamid = t2.teamid AND t1.threadid = t2.threadid AND t2.teamid != t1.teamid AND p1.roleid = pt1.roleid AND p2.roleid = pt2.roleid AND p2.posterid = ".$result_array['posterid']." AND p1.posterid != p2.posterid AND p1.posterid = ".$result_arrayid['posterid'];
-	$result_array['versusties'] = mysql_result(mysql_query($query),0);
 
-	$bros[] = $result_array;
-}
-?>
 <table class="data" border=1>
 	<thead>
-		<tr><th rowspan=2></th><th rowspan=2>Name</th><th rowspan=2>Total Games</th><th rowspan=2>Link to Games</th><th colspan=5>Villa Bros</th><th colspan=5>Wolf/Neutral Bros</th><th colspan=5>Versus</th></tr>
-		<tr><th>Games</th><th>Wins</th><th>Losses</th><th>Ties</th><th>%</th><th>Games</th><th>Wins</th><th>Losses</th><th>Ties</th><th>%</th><th>Games</th><th>Wins</th><th>Losses</th><th>Ties</th><th>%</th></tr>
+		<tr>
+		<th rowspan=2></th>
+		<th rowspan=2>Name</th>
+		<th rowspan=2>Total Games</th>
+		<th rowspan=2>Link to Games</th>
+		<th colspan=3>Villa Bros</th>
+		<th colspan=3>Wolf/Neutral Bros</th>
+		<th colspan=3>V vs W/N</th>
+		<th colspan=3>W/N vs V//W/N</th>
+		</tr><tr>
+		<th>Games</th>
+		<th>Wins</th>
+		<th>Losses</th>
+		<th>Games</th>
+		<th>Wins</th>
+		<th>Losses</th>
+		<th>Games</th>
+		<th>Wins</th>
+		<th>Losses</th>
+		<th>Games</th>
+		<th>Wins</th>
+		<th>Losses</th>
+		</tr>
 	</thead>
 	<tbody>
-		<?php
-		foreach($bros as $bro)
-		{
-			echo "<tr><td></td><td><a href=\"index.php?report=Player&Player=".htmlentities($bro['postername'], ENT_QUOTES, 'UTF-8')."\">".$bro['postername']."</a></td><td>".$bro['total']."</td><td><a href=\"index.php?report=Common+Games&Player1=".htmlentities(mysql_real_escape_string($_GET['Player']), ENT_QUOTES, 'UTF-8')."&Player2=".htmlentities($bro['postername'], ENT_QUOTES, 'UTF-8')."\">(details)</a></td><td>".$bro['villabros']."</td><td>".$bro['villawins']."</td><td>".$bro['villalosses']."</td><td>".$bro['villaties']."</td><td>";
-			if($bro['villawins']+$bro['villalosses'] > 0) echo number_format(round($bro['villawins']/($bro['villawins']+$bro['villalosses']),3),3); else echo 0;
-			echo "</td><td>".$bro['wolfbros']."</td><td>".$bro['wolfwins']."</td><td>".$bro['wolflosses']."</td><td>".$bro['wolfties']."</td><td>";
-			if($bro['wolfwins']+$bro['wolflosses'] > 0) echo number_format(round($bro['wolfwins']/($bro['wolfwins']+$bro['wolflosses']),3),3); else echo 0;
-			echo "</td><td>".$bro['versusgames']."</td><td>".$bro['versuswins']."</td><td>".$bro['versuslosses']."</td><td>".$bro['versusties']."</td><td>";
-			if($bro['versuswins']+$bro['versuslosses'] > 0) echo number_format(round($bro['versuswins']/($bro['versuswins']+$bro['versuslosses']),3),3); else echo 0;
-			echo "</td></tr>";
-		}	
-	 ?>
+<?php
+	$playerid = $_GET['playerid'];
+	$result = $db->query("select pm.playerid, pm.playername, count(*) games
+		from playerlist pl1
+		join playerlist pl2 using (gameid)
+		join player p on p.playerid=pl2.playerid
+		join player pm on p.mainplayerid=pm.playerid
+		where pl1.playerid=".$playerid." and p.mainplayerid <> pl1.playerid
+		group by p.mainplayerid order by 3 desc");
+	while($otherplayer = $result->fetch_assoc()) {
+		$qry = "select teammate, villager, count(victory) games, sum(victory=1) wins, sum(victory=0) losses
+			from (select r1.faction=r2.faction teammate, r1.faction=1 villager, t.victory
+			from player p1, player p2, playerlist pl1, playerlist pl2, roleset r1, roleset r2, team t
+			where p1.mainplayerid=".$playerid." and p2.mainplayerid=".$otherplayer['playerid']." and pl1.gameid=pl2.gameid
+			and pl1.playerid=p1.playerid and pl2.playerid=p2.playerid and t.gameid=pl1.gameid and t.faction=r1.faction
+			and r1.gameid=pl1.gameid and r1.slot=pl1.slot and r2.gameid=pl2.gameid and r2.slot=pl2.slot
+			union all select 0, 0, NULL
+			union all select 0, 1, NULL
+			union all select 1, 0, NULL
+			union all select 1, 1, NULL) x
+			group by teammate, villager
+			order by teammate desc, villager desc";
+		$result2 = $db->query($qry);
+		
+		echo "<tr><td></td><td><a href='index.php?report=Player&playerid=".$otherplayer['playerid']."'>".$otherplayer['playername']."</a></td><td>".$otherplayer['games'].
+			"</td><td><a href='index.php?report=Common+Games&Player1=".$playerid."&Player2=".$otherplayer['playerid']."'>(details)</a></td>";
+		$other = $result2->fetch_assoc();
+		echo "<td>".$other['games']."</td><td>".$other['wins']."</td><td>".$other['losses']."</td>";
+		$other = $result2->fetch_assoc();
+		echo "<td>".$other['games']."</td><td>".$other['wins']."</td><td>".$other['losses']."</td>";
+		$other = $result2->fetch_assoc();
+		echo "<td>".$other['games']."</td><td>".$other['wins']."</td><td>".$other['losses']."</td>";
+		$other = $result2->fetch_assoc();
+		echo "<td>".$other['games']."</td><td>".$other['wins']."</td><td>".$other['losses']."</td>";
+	}
+?>
 	</tbody>
 </table>
 
