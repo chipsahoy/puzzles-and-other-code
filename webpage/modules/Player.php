@@ -111,7 +111,7 @@
 			echo "<tr>
 			<td></td>
 			<td>".$game['startdate']."</td>
-			<td><a href=\"index.php?report=Game&gameid=".str_replace('#', '%23', htmlentities($game['gameid'], ENT_QUOTES, 'UTF-8'))."\">".
+			<td><a href=\"index.php?report=Game&gameid=".$game['gameid']."\">".
 				$game['gamename']."</a> <a href=".htmlentities($game['url'], ENT_QUOTES, 'UTF-8').">(link)</a></td>
 			<td>".$game['playername']."</td>
 			<td>".$game['gametype']."</td>

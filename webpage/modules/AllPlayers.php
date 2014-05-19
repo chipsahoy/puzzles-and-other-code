@@ -14,7 +14,7 @@ Maximum: <input type="text" id="max" name="max"/><br/>
 	<tr>
 	<th></th>
 	<th>Name</th>
-	<th>Games Played</th>
+	<th>Long Games</th>
 	<th>Vanillas</th>
 	<th>Turbos</th>
 	<th>First Game</th>
@@ -26,13 +26,14 @@ Maximum: <input type="text" id="max" name="max"/><br/>
 	
 <?php 
 	$qry = "select p.mainplayerid playerid, (select playername from player p2 where p2.playerid=p.mainplayerid) playername, 
-		count(distinct g.gameid) games, sum(g.gametype in ('Vanilla','Slow Game')) vanillas, sum(g.gametype = 'Turbo') turbos, 
+		count(distinct if(g.gametype in ('Turbo','Turbo Mishmash'),NULL,g.gameid)) games, sum(g.gametype in ('Vanilla','Slow Game')) vanillas, sum(g.gametype in ('Turbo','Turbo Mishmash')) turbos, 
 		min(g.startdate) firstgame, max(g.startdate) lastgame, '-' as mainacct
 		from player p join playerlist pl using (playerid) join game g using (gameid)
 		group by p.mainplayerid
 		union
-		select p.mainplayerid playerid, p.playername, count(distinct g.gameid) games, sum(g.gametype in ('Vanilla','Slow Game')) vanillas, 
-		sum(g.gametype = 'Turbo') turbos, min(g.startdate) firstgame, max(g.startdate) lastgame, m.playername mainacct
+		select p.mainplayerid playerid, p.playername, count(distinct if(g.gametype in ('Turbo','Turbo Mishmash'),NULL,g.gameid)) games, 
+		sum(g.gametype in ('Vanilla','Slow Game')) vanillas, 
+		sum(g.gametype in ('Turbo','Turbo Mishmash')) turbos, min(g.startdate) firstgame, max(g.startdate) lastgame, m.playername mainacct
 		from player p
 		join playerlist pl on p.playerid=pl.playerid
 		join game g using (gameid)

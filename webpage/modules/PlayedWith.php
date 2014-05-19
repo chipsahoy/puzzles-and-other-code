@@ -5,20 +5,22 @@
 		$qry = "select pm.playerid, pm.playername, count(*) games
 		from playerlist pl1
 		join playerlist pl2 using (gameid)
-		join player p on p.playerid=pl2.playerid
-		join player pm on p.mainplayerid=pm.playerid
+		join player p1 on p1.playerid=pl1.playerid
+		join player p2 on p2.playerid=pl2.playerid
+		join player pm on p2.mainplayerid=pm.playerid
 		join game g on g.gameid=pl1.gameid
-		where pl1.playerid=".$playerid." and p.mainplayerid <> pl1.playerid and g.gametype not in ('Turbo','Turbo Mishmash')
-		group by p.mainplayerid order by 3 desc";
+		where p1.mainplayerid=".$playerid." and p2.mainplayerid <> p1.mainplayerid and g.gametype not in ('Turbo','Turbo Mishmash')
+		group by p2.mainplayerid order by 3 desc";
 	elseif($gametype == "Turbos")
 		$qry = "select pm.playerid, pm.playername, count(*) games
 		from playerlist pl1
 		join playerlist pl2 using (gameid)
-		join player p on p.playerid=pl2.playerid
-		join player pm on p.mainplayerid=pm.playerid
+		join player p1 on p1.playerid=pl1.playerid
+		join player p2 on p2.playerid=pl2.playerid
+		join player pm on p2.mainplayerid=pm.playerid
 		join game g on g.gameid=pl1.gameid
-		where pl1.playerid=".$playerid." and p.mainplayerid <> pl1.playerid and g.gametype in ('Turbo','Turbo Mishmash')
-		group by p.mainplayerid order by 3 desc";
+		where p1.mainplayerid=".$playerid." and p2.mainplayerid <> p1.mainplayerid and g.gametype in ('Turbo','Turbo Mishmash')
+		group by p2.mainplayerid order by 3 desc";
 	$result = $db->query($qry);
 ?>
 
@@ -61,7 +63,6 @@
 	</thead>
 	<tbody>
 <?php
-	$result = $db->query($qry);
 	while($otherplayer = $result->fetch_assoc()) {
 		if($gametype == "Long Games")
 			$qry = "select teammate, villager, count(victory) games, sum(victory=1) wins, sum(victory=0) losses
@@ -94,7 +95,7 @@
 		$result2 = $db->query($qry);
 		
 		echo "<tr><td></td><td><a href='index.php?report=Player&playerid=".$otherplayer['playerid']."'>".$otherplayer['playername']."</a></td><td>".$otherplayer['games'].
-			"</td><td><a href='index.php?report=Common+Games&Player1=".$playerid."&Player2=".$otherplayer['playerid']."'>(details)</a></td>";
+			"</td><td><a href='index.php?report=Common+Games&player1=".$playerid."&player2=".$otherplayer['playerid']."&gametype=".$gametype."'>(details)</a></td>";
 		$other = $result2->fetch_assoc();
 		echo "<td>".$other['games']."</td><td>".$other['wins']."</td><td>".$other['losses']."</td>";
 		$other = $result2->fetch_assoc();
