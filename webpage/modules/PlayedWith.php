@@ -63,18 +63,34 @@
 <?php
 	$result = $db->query($qry);
 	while($otherplayer = $result->fetch_assoc()) {
-		$qry = "select teammate, villager, count(victory) games, sum(victory=1) wins, sum(victory=0) losses
+		if($gametype == "Long Games")
+			$qry = "select teammate, villager, count(victory) games, sum(victory=1) wins, sum(victory=0) losses
 			from (select r1.faction=r2.faction teammate, r1.faction=1 villager, t.victory
-			from player p1, player p2, playerlist pl1, playerlist pl2, roleset r1, roleset r2, team t
+			from player p1, player p2, playerlist pl1, playerlist pl2, roleset r1, roleset r2, team t, game g
 			where p1.mainplayerid=".$playerid." and p2.mainplayerid=".$otherplayer['playerid']." and pl1.gameid=pl2.gameid
 			and pl1.playerid=p1.playerid and pl2.playerid=p2.playerid and t.gameid=pl1.gameid and t.faction=r1.faction
 			and r1.gameid=pl1.gameid and r1.slot=pl1.slot and r2.gameid=pl2.gameid and r2.slot=pl2.slot
+			and g.gameid=t.gameid and g.gametype not in ('Turbo','Turbo Mishmash')
 			union all select 0, 0, NULL
 			union all select 0, 1, NULL
 			union all select 1, 0, NULL
 			union all select 1, 1, NULL) x
 			group by teammate, villager
 			order by teammate desc, villager desc";
+		elseif($gametype == "Turbos")
+			$qry = "select teammate, villager, count(victory) games, sum(victory=1) wins, sum(victory=0) losses
+			from (select r1.faction=r2.faction teammate, r1.faction=1 villager, t.victory
+			from player p1, player p2, playerlist pl1, playerlist pl2, roleset r1, roleset r2, team t, game g
+			where p1.mainplayerid=".$playerid." and p2.mainplayerid=".$otherplayer['playerid']." and pl1.gameid=pl2.gameid
+			and pl1.playerid=p1.playerid and pl2.playerid=p2.playerid and t.gameid=pl1.gameid and t.faction=r1.faction
+			and r1.gameid=pl1.gameid and r1.slot=pl1.slot and r2.gameid=pl2.gameid and r2.slot=pl2.slot
+			and g.gameid=t.gameid and g.gametype in ('Turbo','Turbo Mishmash')
+			union all select 0, 0, NULL
+			union all select 0, 1, NULL
+			union all select 1, 0, NULL
+			union all select 1, 1, NULL) x
+			group by teammate, villager
+			order by teammate desc, villager desc";		
 		$result2 = $db->query($qry);
 		
 		echo "<tr><td></td><td><a href='index.php?report=Player&playerid=".$otherplayer['playerid']."'>".$otherplayer['playername']."</a></td><td>".$otherplayer['games'].
