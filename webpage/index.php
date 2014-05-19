@@ -135,9 +135,9 @@ error_reporting(E_ALL);
 				<option>Turbos</option>
 				<option>Moderators</option>
 				<option>Player Records</option>
-<!--			<option>Death Stats</option>
 				<option>Lynch Stats</option>
-				<option>Post Stats</option>
+				<option>Death Stats</option>
+				<!--<option>Post Stats</option>
 				<option>Power Rankings</option>
 				<option>Rand Stats</option>	
 				<option>Sub Stats</option>
@@ -155,7 +155,6 @@ error_reporting(E_ALL);
 				else if($_GET['report'] == 'Long Games') include "./modules/Games.php";
 				else if($_GET['report'] == 'Turbos') include "./modules/Turbos.php";
 				else if($_GET['report'] == 'Player Records') include "./modules/PlayerRecords.php";
-#				else if($_GET['report'] == 'Gimmicks') include "./modules/Gimmicks.php";
 				else if($_GET['report'] == 'Rand Stats') include "./modules/RandStats.php";
 				else if($_GET['report'] == 'Lynch Stats') include "./modules/LynchStats.php";
 				else if($_GET['report'] == 'Sub Stats') include "./modules/SubStats.php";

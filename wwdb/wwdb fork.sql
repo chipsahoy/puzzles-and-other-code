@@ -350,6 +350,9 @@ update roleset set deathday=8, deathtype=3 where gameid=1297750 and slot=17;
 update roleset rs join game g using (gameid) set rs.deathday = g.gamelength where deathday is null;
 # game:1349915 is foxtrot uniform
 
+
+-- roleset.players is not updating
+
 --####################################
 -- todo:
 
@@ -369,7 +372,7 @@ update playerlist pl join player p on pl.playerid=p.playerid set pl.playerid = p
 insert into player
 select posterid, postername, posterid
 from fennecfox.Poster
-where posterid not in (select playerid from player);
+where forumid=1 and posterid not in (select playerid from player);
 
 
 

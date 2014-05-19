@@ -25,6 +25,7 @@
 		join team t on t.gameid=g.gameid and t.faction=r1.faction
 		join faction f on f.factionid=r1.faction
 		where p1.mainplayerid=".$player1." and p2.mainplayerid=".$player2." and r1.faction=r2.faction
+		and pl1.dayout is null and pl2.dayout is null
 		and g.gametype not in ('Turbo','Turbo Mishmash') order by g.startdate desc";
 	elseif($gametype == "Turbos")
 		$qry = "select g.gameid, g.gamename, g.startdate, g.gametype, g.url, f.factionname, if(t.victory=1,'Win',if(t.victory=0,'Loss','Tie')) result,
@@ -44,6 +45,7 @@
 		join team t on t.gameid=g.gameid and t.faction=r1.faction
 		join faction f on f.factionid=r1.faction
 		where p1.mainplayerid=".$player1." and p2.mainplayerid=".$player2." and r1.faction=r2.faction
+		and pl1.dayout is null and pl2.dayout is null
 		and g.gametype in ('Turbo','Turbo Mishmash') order by g.startdate desc";
 	$result = $db->query($qry);
 ?>
@@ -141,6 +143,7 @@
 		join faction f1 on f1.factionid=r1.faction
 		join faction f2 on f2.factionid=r2.faction
 		where p1.mainplayerid=".$player1." and p2.mainplayerid=".$player2." and r1.faction<>r2.faction
+		and pl1.dayout is null and pl2.dayout is null
 		and g.gametype not in ('Turbo','Turbo Mishmash') order by g.startdate desc";
 	elseif($gametype == "Turbos")
 		$qry = "select g.gameid, g.gamename, g.startdate, g.gametype, g.url, f1.factionname faction1, f2.factionname faction2, 
@@ -163,6 +166,7 @@
 		join faction f1 on f1.factionid=r1.faction
 		join faction f2 on f2.factionid=r2.faction
 		where p1.mainplayerid=".$player1." and p2.mainplayerid=".$player2." and r1.faction<>r2.faction
+		and pl1.dayout is null and pl2.dayout is null
 		and g.gametype in ('Turbo','Turbo Mishmash') order by g.startdate desc";
 	$result = $db->query($qry);
 ?>

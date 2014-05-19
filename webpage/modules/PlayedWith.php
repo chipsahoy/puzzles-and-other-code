@@ -10,6 +10,7 @@
 		join player pm on p2.mainplayerid=pm.playerid
 		join game g on g.gameid=pl1.gameid
 		where p1.mainplayerid=".$playerid." and p2.mainplayerid <> p1.mainplayerid and g.gametype not in ('Turbo','Turbo Mishmash')
+		and pl1.dayout is null and pl2.dayout is null
 		group by p2.mainplayerid order by 3 desc";
 	elseif($gametype == "Turbos")
 		$qry = "select pm.playerid, pm.playername, count(*) games
@@ -20,6 +21,7 @@
 		join player pm on p2.mainplayerid=pm.playerid
 		join game g on g.gameid=pl1.gameid
 		where p1.mainplayerid=".$playerid." and p2.mainplayerid <> p1.mainplayerid and g.gametype in ('Turbo','Turbo Mishmash')
+		and pl1.dayout is null and pl2.dayout is null
 		group by p2.mainplayerid order by 3 desc";
 	$result = $db->query($qry);
 ?>
@@ -72,6 +74,7 @@
 			and pl1.playerid=p1.playerid and pl2.playerid=p2.playerid and t.gameid=pl1.gameid and t.faction=r1.faction
 			and r1.gameid=pl1.gameid and r1.slot=pl1.slot and r2.gameid=pl2.gameid and r2.slot=pl2.slot
 			and g.gameid=t.gameid and g.gametype not in ('Turbo','Turbo Mishmash')
+			and pl1.dayout is null and pl2.dayout is null
 			union all select 0, 0, NULL
 			union all select 0, 1, NULL
 			union all select 1, 0, NULL
@@ -86,6 +89,7 @@
 			and pl1.playerid=p1.playerid and pl2.playerid=p2.playerid and t.gameid=pl1.gameid and t.faction=r1.faction
 			and r1.gameid=pl1.gameid and r1.slot=pl1.slot and r2.gameid=pl2.gameid and r2.slot=pl2.slot
 			and g.gameid=t.gameid and g.gametype in ('Turbo','Turbo Mishmash')
+			and pl1.dayout is null and pl2.dayout is null
 			union all select 0, 0, NULL
 			union all select 0, 1, NULL
 			union all select 1, 0, NULL
