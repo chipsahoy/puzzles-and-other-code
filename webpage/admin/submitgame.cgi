@@ -386,6 +386,8 @@ def RetrieveGame(cur, url):
 			gameobj.gamename = thread['title']
 			gameobj.mods = [thread['moderator']]
 			gameobj.startdate = thread['startdate']
+			if 'TURBO' in thread['title'].upper():
+				gameobj.gametype = 'Turbo'
 		return gameobj
 	else:
 		return JSONtoGame(j)

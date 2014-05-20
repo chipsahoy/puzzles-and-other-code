@@ -7,7 +7,7 @@
 	$playername = $_POST['playername'];
 	
 	if ($_POST['addplayer']) {
-/* 		$qry = "select * from player where playername = '" . $playername . "'";
+ 		$qry = "select * from player where playername = '" . $playername . "'";
 		$result = $db->query($qry);
 		if ($result->num_rows > 0) {
 			echo "Player '".$playername."' already exists.";
@@ -18,8 +18,8 @@
 			$db->query("update player set mainplayerid=playerid where playername = '".$playername."'");
 			echo "Role '".$playername."' added.";
 		}
-*/	
-		echo "This function is disabled for POG.";
+	
+#		echo "This function is disabled for POG.";
 	}
 	if ($_POST['setgimmick']) {
 		$player1 = $_POST['player1'];
