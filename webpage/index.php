@@ -96,8 +96,8 @@ error_reporting(E_ALL);
 				var oTable = $('.data').dataTable({
 					"bJQueryUI": true,
 					"sPaginationType": "full_numbers",
-					"aLengthMenu": [[25, 50, 100, -1], [25, 50, 100, "All"]],
-					"iDisplayLength" : 25,
+					"aLengthMenu": [[20, 50, 100, -1], [20, 50, 100, "All"]],
+					"iDisplayLength" : 20,
 					"fnDrawCallback": function ( oSettings ) {
 						if (oSettings.bSorted)
 						{
@@ -167,7 +167,7 @@ error_reporting(E_ALL);
 			}
 		?>
 		<p></p>
-		<a href="downloads.html">Latest Fennec Fox and Ricky Raccoon</a><br>
+		<a href="../downloads.html">Latest Fennec Fox and Ricky Raccoon</a><br>
 		<a href="uploads.php">Recently uploaded games</a>
 		<?php
 			if(!array_key_exists('report', $_GET) || $_GET['report'] == 'Aggregate Stats') include "./modules/Aggregate.php";

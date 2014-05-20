@@ -47,7 +47,7 @@
 		<th colspan=3>Villa Bros</th>
 		<th colspan=3>Wolf/Neutral Bros</th>
 		<th colspan=3>V vs W/N</th>
-		<th colspan=3>W/N vs V//W/N</th>
+		<th colspan=3>W/N vs V/W/N</th>
 		</tr><tr>
 		<th>Games</th>
 		<th>Wins</th>

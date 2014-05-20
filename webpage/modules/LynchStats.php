@@ -99,7 +99,7 @@ Wolf Maximum: <input type="text" id="wolfmax" name="wolfmax"/><br/>
 	</tr>
 	</thead>
 	<tbody>
-<?php 
+<?php
 	while($player = $result->fetch_assoc()) { 
 		$vrate = NULL;
 		$wrate = NULL;
