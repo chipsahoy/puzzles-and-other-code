@@ -737,7 +737,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:FennecUI, Version=2.0.5249.34826, Culture=neutral, processorArchitecture=x86"
+            "AssemblyAsmDisplayName" = "8:FennecUI, Version=2.0.5255.38758, Culture=neutral, processorArchitecture=x86"
                 "ScatterAssemblies"
                 {
                     "_4226371C108B224B0059E9753F7DCE8C"
@@ -830,7 +830,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:WerewolfTypes, Version=2.0.5249.33661, Culture=neutral, processorArchitecture=x86"
+            "AssemblyAsmDisplayName" = "8:WerewolfTypes, Version=2.0.5254.37912, Culture=neutral, processorArchitecture=x86"
                 "ScatterAssemblies"
                 {
                     "_67273026BFF14CEE91ED567EC7945111"
@@ -861,7 +861,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:PogDbSqlite, Version=2.0.5249.33662, Culture=neutral, processorArchitecture=x86"
+            "AssemblyAsmDisplayName" = "8:PogDbSqlite, Version=2.0.5254.37914, Culture=neutral, processorArchitecture=x86"
                 "ScatterAssemblies"
                 {
                     "_722C5C7486787BBFC5791E22DCA5759A"
@@ -892,7 +892,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:pogutils, Version=2.0.5249.33371, Culture=neutral, processorArchitecture=x86"
+            "AssemblyAsmDisplayName" = "8:pogutils, Version=2.0.5254.37912, Culture=neutral, processorArchitecture=x86"
                 "ScatterAssemblies"
                 {
                     "_7714F0C0AA16CCC99DAEB9F3A6AEABA6"
@@ -954,7 +954,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:werewolf, Version=2.0.5249.34826, Culture=neutral, processorArchitecture=x86"
+            "AssemblyAsmDisplayName" = "8:werewolf, Version=2.0.5255.38757, Culture=neutral, processorArchitecture=x86"
                 "ScatterAssemblies"
                 {
                     "_87EEC49A5AD658E98287136CA499C1AD"
@@ -1078,7 +1078,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:checkmywwstats, Version=2.0.5249.33662, Culture=neutral, processorArchitecture=x86"
+            "AssemblyAsmDisplayName" = "8:checkmywwstats, Version=2.0.5254.37914, Culture=neutral, processorArchitecture=x86"
                 "ScatterAssemblies"
                 {
                     "_A9DCE5E98FD8140461993A0CEC79842C"
@@ -1109,7 +1109,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:pogutils, Version=2.0.5249.33371, Culture=neutral, processorArchitecture=x86"
+            "AssemblyAsmDisplayName" = "8:pogutils, Version=2.0.5254.37912, Culture=neutral, processorArchitecture=x86"
                 "ScatterAssemblies"
                 {
                     "_AF3532AE4BADE07780BD40A2118EA972"
@@ -1140,7 +1140,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:WerewolfTypes, Version=2.0.5249.33661, Culture=neutral, processorArchitecture=x86"
+            "AssemblyAsmDisplayName" = "8:WerewolfTypes, Version=2.0.5254.37912, Culture=neutral, processorArchitecture=x86"
                 "ScatterAssemblies"
                 {
                     "_B5BFCB235D8AD32C9C1F28FB57799172"
@@ -1222,7 +1222,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:vbulletin, Version=2.0.5249.34825, Culture=neutral, processorArchitecture=x86"
+            "AssemblyAsmDisplayName" = "8:vbulletin, Version=2.0.5255.38757, Culture=neutral, processorArchitecture=x86"
                 "ScatterAssemblies"
                 {
                     "_E2291F9E6DD6C0296AB481B1E6FD5A32"
@@ -1369,15 +1369,15 @@
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:FennecFox"
-        "ProductCode" = "8:{E3F701A3-F0BA-4D55-8629-426A8DD84566}"
-        "PackageCode" = "8:{99377ECE-76B5-4A23-9E67-59E2EC93BB26}"
+        "ProductCode" = "8:{621F2139-DE9D-43A4-8F8F-9CCE682266DC}"
+        "PackageCode" = "8:{C4E6060F-C2BE-4650-8E7B-F2B46ABCF2C2}"
         "UpgradeCode" = "8:{6FA378AC-1D8C-4F10-AD8C-831DCAE5C6BF}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:FALSE"
-        "ProductVersion" = "8:1.1.75"
+        "ProductVersion" = "8:1.1.76"
         "Manufacturer" = "8:POG"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:"
