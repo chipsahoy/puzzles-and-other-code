@@ -715,8 +715,8 @@ namespace POG.Forum
 			String securityToken = GetSecurityToken(cs);
 			StringBuilder msg = new StringBuilder();
 
-			msg.AppendFormat("{0}={1}&", "subject", title);
-			msg.AppendFormat("{0}={1}&", "message", body);
+			msg.AppendFormat("{0}={1}&", "subject", MyUrlEncode(title));
+			msg.AppendFormat("{0}={1}&", "message", HttpUtility.UrlEncode(body));
 			msg.AppendFormat("{0}={1}&", "wysiwyg", "0");
 			msg.AppendFormat("{0}={1}&", "iconid", icon.ToString());
 			msg.AppendFormat("{0}={1}&", "s", "");
@@ -755,6 +755,23 @@ namespace POG.Forum
             rc = new Tuple<string, string>(url, resp);
 			return rc;
 		}
+        String MyUrlEncode(string raw)
+        {
+            StringBuilder sb = new StringBuilder();
+            foreach (char ch in raw)
+            {
+                if (ch >= 128)
+                {
+                    sb.AppendFormat("%26%23{0}", (int)ch);
+                }
+                else
+                {
+                    String piece = HttpUtility.UrlEncode(ch.ToString());
+                    sb.Append(piece);
+                }
+            }
+            return sb.ToString();
+        }
 		Tuple<Boolean, String> DoMakePost(Int32 threadId, String title, String content, Boolean lockit, Int32 icon)
 		{
 			/* headers
@@ -818,7 +835,8 @@ loggedinuser 81788
 			content = content.Replace("\r\n", "\n");
 			if (title != String.Empty)
 			{
-				msg.AppendFormat("{0}={1}&", "title", HttpUtility.UrlEncodeUnicode(title));
+                string encTitle = MyUrlEncode(title);
+                msg.AppendFormat("{0}={1}&", "title", encTitle);
 			}
 			msg.AppendFormat("{0}={1}&", "ajax", "1");
 			//msg.AppendFormat("{0}={1}&", "ajax_lastpost", "1"); // Need real last post number or else all posts are returned.
@@ -1036,7 +1054,7 @@ fragment	name
 			StringBuilder msg = new StringBuilder();
 			msg.AppendFormat("{0}={1}&", "securitytoken", securityToken);
 			msg.AppendFormat("{0}={1}&", "do", "usersearch");
-			msg.AppendFormat("{0}={1}&", "fragment", HttpUtility.UrlEncode(name, Encoding.GetEncoding(1252)));
+			msg.AppendFormat("{0}={1}&", "fragment", HttpUtility.UrlEncode(name));
 			cs.Url = String.Format("{0}/ajax.php?do=usersearch", ForumURL);
 			cs.Data = msg.ToString();
 			//Trace.TraceInformation("Posting: " + cs.Data);

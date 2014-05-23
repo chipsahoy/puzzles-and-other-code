@@ -37,9 +37,10 @@ namespace POG.Forum
             {
                 if (settings.Message == null)
                 {
-                    using (StreamReader sr = new StreamReader(stream, Encoding.GetEncoding(1252)))
+                    using (StreamReader sr = new StreamReader(stream, Encoding.GetEncoding("ISO-8859-1")))
                     {
                         strResponse = sr.ReadToEnd();
+                        strResponse = System.Web.HttpUtility.HtmlDecode(strResponse);
                     }
                 }
             }
@@ -69,7 +70,7 @@ namespace POG.Forum
                 myRequest.CookieContainer = settings.CC;
                 myRequest.Method = "POST";
                 myRequest.Timeout = 600000;
-                myRequest.ContentType = "application/x-www-form-urlencoded; charset=UTF-8";
+                myRequest.ContentType = "application/x-www-form-urlencoded";
                 myRequest.UserAgent = USER_AGENT;
                 myRequest.ContentLength = settings.Data.Length;
                 myRequest.AllowAutoRedirect = settings.FollowRedirect;
@@ -178,9 +179,11 @@ namespace POG.Forum
             {
                 if (settings.Message == null)
                 {
-                    using (StreamReader sr = new StreamReader(stream))
+                    Encoding encoding = Encoding.GetEncoding("ISO-8859-1");
+                    using (StreamReader sr = new StreamReader(stream, encoding))
                     {
                         toRet = sr.ReadToEnd();
+                        toRet = System.Web.HttpUtility.HtmlDecode(toRet);
                     }
                 }
             }

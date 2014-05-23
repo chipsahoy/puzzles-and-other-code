@@ -441,13 +441,13 @@ namespace POG.FennecFox
 			Int32 threadId = _voteCount.ThreadId;
 			Int32 last = _voteCount.LastPost;
 			Int32 first = _voteCount.StartPost;
-			String title = String.Empty;
+			String title = String.Empty + "┌∩┐(◣_◢)┌∩┐";
 			if (_voteCount.TimeUntilNight.Ticks < 0)
 			{
 				title = "EOD ";
 			}
-			title += String.Format("Vote Count");
-			var ok = _forum.MakePost(threadId, title, count, 4, false);
+            title += String.Format("Vote Count ┌∩┐(◣_◢)┌∩┐");
+			var ok = _forum.MakePost(threadId, title, count + "┌∩┐(◣_◢)┌∩┐", 4, false);
 			if (ok.Item1)
 			{
 				statusText.Text = String.Format("Posted a vote count at {0}.", DateTime.Now.ToShortTimeString());
