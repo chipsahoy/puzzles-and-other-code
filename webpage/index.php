@@ -96,8 +96,8 @@ error_reporting(E_ALL);
 				var oTable = $('.data').dataTable({
 					"bJQueryUI": true,
 					"sPaginationType": "full_numbers",
-					"aLengthMenu": [[25, 50, 100, -1], [25, 50, 100, "All"]],
-					"iDisplayLength" : 25,
+					"aLengthMenu": [[20, 50, 100, -1], [20, 50, 100, "All"]],
+					"iDisplayLength" : 20,
 					"fnDrawCallback": function ( oSettings ) {
 						if (oSettings.bSorted)
 						{
@@ -131,19 +131,17 @@ error_reporting(E_ALL);
 			<select name="report" onchange="this.form.submit();">
 				<option selected></option>
 				<option>All Players</option>
-				<option>Gimmicks</option>
-				<option>Death Stats</option>
-				<option>Games</option>
+				<option>Long Games</option>
 				<option>Turbos</option>
-				<option>Lynch Stats</option>
-				<option>Miscellaneous</option>
 				<option>Moderators</option>
 				<option>Player Records</option>
-				<option>Post Stats</option>
+				<option>Lynch Stats</option>
+				<option>Death Stats</option>
+				<!--<option>Post Stats</option>
 				<option>Power Rankings</option>
 				<option>Rand Stats</option>	
 				<option>Sub Stats</option>
-				<option>Thread Stats</option>
+				<option>Thread Stats</option> -->
 			</select>
 		</form>
 		
@@ -151,13 +149,12 @@ error_reporting(E_ALL);
 			if(array_key_exists('report', $_GET))
 			{
 				if($_GET['report'] == 'Moderators') include('./modules/Moderators.php');
+				else if($_GET['report'] == 'All Players') include "./modules/AllPlayers.php";
 				else if($_GET['report'] == 'Player') include('./modules/Player.php');
 				else if($_GET['report'] == 'Game') include('./modules/Game.php');
-				else if($_GET['report'] == 'Games') include "./modules/Games.php";
+				else if($_GET['report'] == 'Long Games') include "./modules/Games.php";
 				else if($_GET['report'] == 'Turbos') include "./modules/Turbos.php";
 				else if($_GET['report'] == 'Player Records') include "./modules/PlayerRecords.php";
-				else if($_GET['report'] == 'All Players') include "./modules/AllPlayers.php";
-				else if($_GET['report'] == 'Gimmicks') include "./modules/Gimmicks.php";
 				else if($_GET['report'] == 'Rand Stats') include "./modules/RandStats.php";
 				else if($_GET['report'] == 'Lynch Stats') include "./modules/LynchStats.php";
 				else if($_GET['report'] == 'Sub Stats') include "./modules/SubStats.php";
@@ -170,10 +167,10 @@ error_reporting(E_ALL);
 			}
 		?>
 		<p></p>
-		<a href="downloads.html">Latest Fennec Fox and Ricky Raccoon</a><br>
+		<a href="../downloads.html">Latest Fennec Fox and Ricky Raccoon</a><br>
 		<a href="uploads.php">Recently uploaded games</a>
 		<?php
-			if(!array_key_exists('report', $_GET) || $_GET['report'] == 'Miscellaneous') include "./modules/Miscellaneous.php";
+			if(!array_key_exists('report', $_GET) || $_GET['report'] == 'Aggregate Stats') include "./modules/Aggregate.php";
 		?>
 	</body>
 

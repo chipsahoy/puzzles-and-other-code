@@ -75,13 +75,13 @@ def FindThread(op, title, replies1, replies2):
 	
 	if len(op) > 0:
 		cursor.execute("select threadid from Thread t where op in (select posterid from Poster where instr(postername,  %s)) \
-			and instr(title, %s) and url not in (select url from pog.game) and replies between %s and %s and op not in (0) \
+			and instr(title, %s) and url not in (select url from pog.game) and replies between %s and %s and op not in (388864) \
 			order by t.threadid desc", (op, title, replies1, replies2))
 	else:
 		if title == '':
 			print "No search terms entered"
 			return None
-		cursor.execute("select threadid from Thread where instr(title, %s) and op not in (0) and replies between %s and %s \
+		cursor.execute("select threadid from Thread where instr(title, %s) and op not in (388864) and replies between %s and %s \
 			and url not in (select url from pog.game) order by threadid desc", (title, replies1, replies2))
 	threadid = []
 	for i in range(cursor.rowcount):

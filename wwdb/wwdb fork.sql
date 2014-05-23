@@ -3,7 +3,6 @@ iversonian
 4/16/14
 wwdb update
 
-Player/role: not a series of players, but rather of ordinal values, with a player associated with it
 Gimmicks: aggregate by main account from the start
 
 Each forum has its own db, own webpage, to contain the ebolaids
@@ -33,7 +32,7 @@ create table moderator (gameid int, modid int, isprimary int not null, primary k
 create table actions (gameid int not null, slot int not null, ability varchar(20), night int not null, target int not null, 
 index (gameid, slot, night), index (gameid, target)) engine=innodb;
 
-create table player (playerid int, playername varchar(50) not null, mainplayerid int not null, 
+create table player (playerid int, playername varchar(50) not null, mainplayerid int, 
 primary key (playerid), unique (playername), index (mainplayerid)) engine=innodb;
 
 create table roleset (gameid int, slot int, faction int, roletype int, deathtype char(17), deathday int, players int, roleid int,
@@ -326,6 +325,23 @@ alter table game modify column gametype enum('Vanilla','Vanilla+','Mish-Mash','S
 
 alter table playerlist add unique (gameid, slot, playerid);
 
+-- for the new role entry form
+alter table roleset add index (roletype);
+alter table roles modify column roleid int auto_increment;
+
+alter table roleset add foreign key (gameid) references game(gameid) on delete cascade;
+alter table playerlist add foreign key (gameid) references game(gameid) on delete cascade;
+alter table actions add foreign key (gameid) references game(gameid) on delete cascade;
+alter table moderator add foreign key (gameid) references game(gameid) on delete cascade;
+alter table team add foreign key (gameid) references game(gameid) on delete cascade;
+
+alter table playerlist add index (playerid);
+
+alter table player modify column playerid int auto_increment;
+
+-- for pokernetdk, maybe for the others too
+alter table game modify column gameid int auto_increment;
+
 -- finish conversion
 --############################################
 -- error fixes
@@ -333,6 +349,9 @@ alter table playerlist add unique (gameid, slot, playerid);
 update roleset set deathday=8, deathtype=3 where gameid=1297750 and slot=17;
 update roleset rs join game g using (gameid) set rs.deathday = g.gamelength where deathday is null;
 # game:1349915 is foxtrot uniform
+
+
+-- roleset.players is not updating
 
 --####################################
 -- todo:
@@ -348,7 +367,16 @@ update playerlist pl join player p on pl.playerid=p.playerid set pl.playerid = p
 -- change json->db to reflect mainaccountid stuff
 
 
+--####################################
+-- maintenance
+insert into player
+select posterid, postername, posterid
+from fennecfox.Poster
+where forumid=1 and posterid not in (select playerid from player);
+
+
 
 --####################################
 -- pending changes to production:
+
 

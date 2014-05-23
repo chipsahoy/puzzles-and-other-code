@@ -1,7 +1,7 @@
 <?php
 	# if you sub out, you don't get credit
-	if(!array_key_exists('gametype', $_GET) || $_GET['gametype'] == "") $gametype = "All"; else $gametype = $_GET['gametype'];
-	if($gametype == "All")
+	if(!array_key_exists('gametype', $_GET) || $_GET['gametype'] == "") $gametype = "Long Games"; else $gametype = $_GET['gametype'];
+	if($gametype == "Long Games")
 		$qry = "select m.playerid, m.playername, 'Total' as gametype, count(*) games,
 				sum(t.victory=1) wins, sum(t.victory=0) losses, sum(t.victory=2) ties,
 				sum(t.faction = 1) vgames, sum(t.victory=1 && t.faction = 1) vwin, sum(t.victory=0 && t.faction = 1) vloss,
@@ -13,7 +13,7 @@
 				join game g using (gameid)
 				join player p on p.playerid=pl.playerid
 				join player m on m.playerid=p.mainplayerid
-				where g.gametype <> 'Turbo' and pl.dayout is null
+				where g.gametype not in ('Turbo','Turbo Mishmash') and pl.dayout is null
 				group by p.mainplayerid 
 				order by count(*) desc";
 	elseif($gametype == "Vanilla/Slow Games")
@@ -66,7 +66,7 @@
 			<input type="hidden" name="report" value="Player Records"/>
 			Gametype: <select name="gametype" onchange="this.form.submit();">
 				<option></option>
-				<option>All</option>
+				<option>Long Games</option>
 				<option>Vanilla/Slow Games</option>
 				<option>Vanilla+/Mish-Mashes</option>
 				<option>Turbos</option>

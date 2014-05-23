@@ -16,7 +16,7 @@ error_reporting(E_ALL);
 <tbody>
 
 <?php	
-	$qry = "select date(uploadtime) dt, message, gamename, gameid, url from editslog e join game g using (url) order by uploadtime desc limit 50";
+	$qry = "select date(uploadtime) dt, message, gamename, gameid, url from editslog e join game g using (url) where left(message,6) <> 'script' order by uploadtime desc limit 50";
 	
 	$result = $db->query($qry);
 	

@@ -1,21 +1,21 @@
 <?php
-$q = mysql_query("SELECT 
-                        p.posterid, 
-                        p.postername, 
-                        (select count(*) from GameRole gc, Player p2 where gc.roleid=p2.roleid AND p2.posterid=p.posterid) as game_count,
-                        (select count(*) FROM Game g, Team t, GameRole pt, Player p2 WHERE (g.gametype = 'Vanilla' or g.gametype= 'Slow Game') AND g.threadid = t.threadid AND pt.teamid = t.teamid AND p2.posterid = p.posterid AND pt.roleid = p2.roleid) as vanilla_games,
-                        (select count(*) FROM Game g, Team t, GameRole pt, Player p2 WHERE g.gametype = 'Vanilla+' AND g.threadid = t.threadid AND pt.teamid = t.teamid AND p2.posterid = p.posterid AND pt.roleid = p2.roleid) as vanilla_plus_games,
-                        (select count(*) FROM Game g, Team t, GameRole pt, Player p2 WHERE g.gametype = 'Mish-Mash' AND g.threadid = t.threadid AND pt.teamid = t.teamid AND p2.posterid = p.posterid AND pt.roleid = p2.roleid) as mishmash_games,
-						(select count(*) FROM Game g, Team t, GameRole pt, Player p2, Affiliation a WHERE a.affiliationid = a.affiliationid AND g.gametype = 'Mish-Mash' AND g.threadid = t.threadid AND pt.teamid = t.teamid AND UPPER(LEFT(a.affiliationname,3)) = 'VIL' AND p2.posterid = p.posterid AND pt.roleid = p2.roleid) as mishmash_villager_games,
-                        (select count(*) From GameRole pt, Player p2, Team t, Affiliation a WHERE a.affiliationid = a.affiliationid AND pt.teamid = t.teamid AND UPPER(LEFT(a.affiliationname,3)) = 'VIL' AND p2.posterid = p.posterid AND pt.roleid = p2.roleid) as village_games,
-                        (select count(*) From GameRole pt, Player p2, Team t, Affiliation a WHERE a.affiliationid = a.affiliationid AND pt.teamid = t.teamid AND UPPER(LEFT(a.affiliationname,3)) = 'WOL' AND p2.posterid = p.posterid AND pt.roleid = p2.roleid) as wolf_games,
-                        (select count(*) FROM GameRole pt, Player p2, Team t, Game g, Affiliation a, Role r WHERE a.affiliationid = a.affiliationid AND pt.roletypeid = r.roleid AND pt.teamid = t.teamid AND t.threadid = g.threadid AND (g.gametype = 'Vanilla' OR g.gametype = 'Slow Game') AND UPPER(LEFT(a.affiliationname,3)) = 'VIL' AND r.rolename LIKE '%Seer%' AND p2.posterid = p.posterid AND pt.roleid = p2.roleid) as vanilla_seer_games,
-                        (select count(*) FROM GameRole pt, Player p2, Team t, Role r, Affiliation a WHERE pt.teamid = t.teamid AND pt.roletypeid = r.roleid AND UPPER(LEFT(a.affiliationname,3)) = 'VIL' AND r.rolename LIKE '%Seer%' AND p2.posterid = p.posterid AND pt.roleid = p2.roleid) as seer_games,
-                        (select count(*) FROM GameRole pt, Player p2, Team t, Game g, Role r, Affiliation a WHERE a.affiliationid = a.affiliationid AND pt.roletypeid = r.roleid AND pt.teamid = t.teamid AND UPPER(LEFT(a.affiliationname,3)) = 'VIL' AND (r.rolename LIKE '%Seer%' OR r.rolename LIKE '%Angel%' OR r.rolename LIKE '%Vig%') AND g.threadid = t.threadid AND g.gametype = 'Mish-Mash' AND p2.posterid = p.posterid AND pt.roleid = p2.roleid) as pr_in_mishmashes
-                   FROM
-                        Poster p
-                   HAVING 
-                        game_count > 0;");
+	$q = mysql_query("SELECT 
+			p.posterid, 
+			p.postername, 
+			(select count(*) from GameRole gc, Player p2 where gc.roleid=p2.roleid AND p2.posterid=p.posterid) as game_count,
+			(select count(*) FROM Game g, Team t, GameRole pt, Player p2 WHERE (g.gametype = 'Vanilla' or g.gametype= 'Slow Game') AND g.threadid = t.threadid AND pt.teamid = t.teamid AND p2.posterid = p.posterid AND pt.roleid = p2.roleid) as vanilla_games,
+			(select count(*) FROM Game g, Team t, GameRole pt, Player p2 WHERE g.gametype = 'Vanilla+' AND g.threadid = t.threadid AND pt.teamid = t.teamid AND p2.posterid = p.posterid AND pt.roleid = p2.roleid) as vanilla_plus_games,
+			(select count(*) FROM Game g, Team t, GameRole pt, Player p2 WHERE g.gametype = 'Mish-Mash' AND g.threadid = t.threadid AND pt.teamid = t.teamid AND p2.posterid = p.posterid AND pt.roleid = p2.roleid) as mishmash_games,
+			(select count(*) FROM Game g, Team t, GameRole pt, Player p2, Affiliation a WHERE a.affiliationid = a.affiliationid AND g.gametype = 'Mish-Mash' AND g.threadid = t.threadid AND pt.teamid = t.teamid AND UPPER(LEFT(a.affiliationname,3)) = 'VIL' AND p2.posterid = p.posterid AND pt.roleid = p2.roleid) as mishmash_villager_games,
+			(select count(*) From GameRole pt, Player p2, Team t, Affiliation a WHERE a.affiliationid = a.affiliationid AND pt.teamid = t.teamid AND UPPER(LEFT(a.affiliationname,3)) = 'VIL' AND p2.posterid = p.posterid AND pt.roleid = p2.roleid) as village_games,
+			(select count(*) From GameRole pt, Player p2, Team t, Affiliation a WHERE a.affiliationid = a.affiliationid AND pt.teamid = t.teamid AND UPPER(LEFT(a.affiliationname,3)) = 'WOL' AND p2.posterid = p.posterid AND pt.roleid = p2.roleid) as wolf_games,
+			(select count(*) FROM GameRole pt, Player p2, Team t, Game g, Affiliation a, Role r WHERE a.affiliationid = a.affiliationid AND pt.roletypeid = r.roleid AND pt.teamid = t.teamid AND t.threadid = g.threadid AND (g.gametype = 'Vanilla' OR g.gametype = 'Slow Game') AND UPPER(LEFT(a.affiliationname,3)) = 'VIL' AND r.rolename LIKE '%Seer%' AND p2.posterid = p.posterid AND pt.roleid = p2.roleid) as vanilla_seer_games,
+			(select count(*) FROM GameRole pt, Player p2, Team t, Role r, Affiliation a WHERE pt.teamid = t.teamid AND pt.roletypeid = r.roleid AND UPPER(LEFT(a.affiliationname,3)) = 'VIL' AND r.rolename LIKE '%Seer%' AND p2.posterid = p.posterid AND pt.roleid = p2.roleid) as seer_games,
+			(select count(*) FROM GameRole pt, Player p2, Team t, Game g, Role r, Affiliation a WHERE a.affiliationid = a.affiliationid AND pt.roletypeid = r.roleid AND pt.teamid = t.teamid AND UPPER(LEFT(a.affiliationname,3)) = 'VIL' AND (r.rolename LIKE '%Seer%' OR r.rolename LIKE '%Angel%' OR r.rolename LIKE '%Vig%') AND g.threadid = t.threadid AND g.gametype = 'Mish-Mash' AND p2.posterid = p.posterid AND pt.roleid = p2.roleid) as pr_in_mishmashes
+			FROM
+			Poster p
+			HAVING 
+			game_count > 0;");
 ?>
 <h2>Rand Stats</h2>
 <b>Game Number Filtering</b><br/>

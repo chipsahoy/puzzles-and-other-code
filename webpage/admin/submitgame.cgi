@@ -21,6 +21,12 @@ import textjsondb
 
 ##########################################################
 
+def to_unicode(obj, encoding='utf-8'):
+	if isinstance(obj, basestring):
+		if not isinstance(obj, unicode):
+			obj = unicode(obj, encoding)
+	return obj
+
 def ValidDate(date_text):
 	try:
 		datetime.datetime.strptime(date_text, '%Y-%m-%d')
@@ -40,9 +46,9 @@ def makeRadio(name, values, selectedValue=None):
 	return ''.join(OPT.format(name, v, " checked" if v==selectedValue else "") for v in values)
 
 def makeSelect(name, values, selectedValue=None):
-	SEL = '<select name="{0}">\n{1}</select>\n'
-	OPT = '<option value="{0}"{1}>{2}</option>\n'
-	return SEL.format(name, ''.join(OPT.format(values[i], " SELECTED" if values[i]==selectedValue else "", values[i]) for i in range(len(values))))
+	SEL = u'<select name="{0}">\n{1}</select>\n'
+	OPT = u'<option value="{0}"{1}>{2}</option>\n'
+	return SEL.format(name, ''.join(OPT.format(values[i], " SELECTED" if values[i]==to_unicode(selectedValue) else "", values[i]) for i in range(len(values))))
 
 def ListSubs(subs, playerlist):
 	# subs is list of dicts: {'op', 'subname', 'subday'}
@@ -52,8 +58,9 @@ def ListSubs(subs, playerlist):
 		for s in subs:
 			formsub += """<tr><td>%s</td><td><input type="text" name="subname" size="15" value="%s"></td>
 				<td>%s</td></tr>""" % (
-				makeSelect('subop', ['']+playerlist, s['op']), s['subname'], makeSelect('subday', range(1,12), s['subday']))
+				makeSelect('subop', ['']+playerlist, s['op']), s['subname'], makeSelect('subday', [str(x) for x in range(1,12)], s['subday']))
 		formsub += '</table></tr>'
+	
 	formsub += '<tr><td></td><td>'
 	if len(subs) > 0:
 		formsub += 'To remove entry, set the Original Player field to blank. Hit "Check for validity" to refresh.<br>'
@@ -169,7 +176,9 @@ def GenerateForm(game):
 		8. If there are no error messages, enter a commit message (e.g. your name) and hit Submit. The message is to avoid duplicate submissions and to help with debugging.<br>
 		9. Follow the link to the url of the game page in the database. Check to ensure it is correct. You can simply overwrite the game with a new submission to correct errors.<br>
 		<br><br>"""
-	print form1 + players + form2 + subs + actions + form3 + instructions
+	
+	formtext = form1 + players + form2 + subs + actions + form3 + instructions
+	print formtext.encode('utf-8')
 
 #####################################################################
 
@@ -198,9 +207,8 @@ class Game:
 			setattr(self, fieldname, f[fieldname].value)
 		self.gametype = f.getvalue('gametype')
 		self.SetVictor(f.getvalue('victordrop'), f.getvalue('victortxt'))
-		self.mods = [a.strip() for a in f.getvalue('mods').split(';')] if f.getvalue('mods') != '' else []
-		self.playerlist = [a.strip() for a in f.getvalue('playerlisttext').strip().split('\n')] if f.getvalue('playerlist') != '' else []
-		self.playerlist = f.getlist("playerlist")
+		self.mods = [to_unicode(a.strip()) for a in f.getvalue('mods').split(';')] if f.getvalue('mods') != '' else []
+		self.playerlist = [to_unicode(x) for x in f.getlist("playerlist")]
 		self.affiliation = f.getlist("affiliation")
 		self.role = f.getlist("role")
 		self.deathday = f.getlist("deathday")
@@ -208,7 +216,7 @@ class Game:
 		if 'subop' in f:
 			subop = f.getlist("subop")
 			subname = f.getlist("subname")
-			subday = f.getlist("subday")
+			subday = [str(x) for x in f.getlist("subday")]
 			self.subs = []
 			for i, s in enumerate(subop):
 				self.subs.append({'op':subop[i], 'subname':subname[i], 'subday':subday[i]})
@@ -378,6 +386,8 @@ def RetrieveGame(cur, url):
 			gameobj.gamename = thread['title']
 			gameobj.mods = [thread['moderator']]
 			gameobj.startdate = thread['startdate']
+			if 'TURBO' in thread['title'].upper():
+				gameobj.gametype = 'Turbo'
 		return gameobj
 	else:
 		return JSONtoGame(j)
@@ -428,11 +438,11 @@ def JSONtoGame(j):
 print "Content-Type: text/html;charset=utf-8"
 print
 print "<head><title>WWDB Game Entry</title></head>"
-print """<script type="text/javascript"> 
+print """<script type="text/javascript">
 	function stopRKey(evt) { 
 	var evt = (evt) ? evt : ((event) ? event : null); 
 	var node = (evt.target) ? evt.target : ((evt.srcElement) ? evt.srcElement : null); 
-	if ((evt.keyCode == 13) && (node.type=="text"))  {return false;} }
+	if ((evt.keyCode == 13) && (node.type=='text'))  {return false;} }
 	document.onkeypress = stopRKey;
 	</script>"""
 print "<h3><ul>Werewolf Database Game Submission/Edit Form (beta)</ul></h3>"

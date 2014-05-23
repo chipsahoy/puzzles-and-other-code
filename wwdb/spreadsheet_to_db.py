@@ -6,7 +6,6 @@
 
 import MySQLdb
 db = MySQLdb.connect(host="localhost", user="poguser", passwd="werewolf", db='pog', charset="utf8", use_unicode=True)
-
 cursor = db.cursor(MySQLdb.cursors.DictCursor)
 
 def TrimQuotes(x):
@@ -198,4 +197,5 @@ insert into player values(1000004, 'xorbie', 1000004);
 insert into player values(1000005, 'Manimal', 1000005);
 insert into player values(1000006, 'krupa-', 1000006);
 insert into player values(1000007, 'Double Ice', 1000007);
+
 
