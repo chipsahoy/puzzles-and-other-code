@@ -2,7 +2,6 @@
 
 import MySQLdb
 db = MySQLdb.connect(host="localhost", user="poguser", passwd="werewolf", db='pog', charset="utf8", use_unicode=True)
-
 cursor = db.cursor(MySQLdb.cursors.DictCursor)
 
 def ReplaceWithOP(player, playerlist, subs):
@@ -11,6 +10,14 @@ def ReplaceWithOP(player, playerlist, subs):
 	return player
 
 def MakeGameSummary(threadid, posterid=388864):
+	if posterid==388864:
+		modname = 'Tatiana Tiger'
+	elif posterid==256337:
+		modname = 'Oswald Jacoby'
+	else:
+		print "unexpected mod"
+		return None
+	
 	cursor.execute("select url from fennecfox.Thread where threadid=%s", threadid)
 	if cursor.rowcount == 0:
 		return None
@@ -129,7 +136,7 @@ def MakeGameSummary(threadid, posterid=388864):
 		peeks.append(player)
 		
 	summary = {'gamename':gamename, 'startdate':startdate, 'factions': ['Wolves', 'Village'], 'url':url, 'gametype':'Turbo', 
-		'victor': victor, 'mod':['Tatiana Tiger']}
+		'victor': victor, 'mod':[modname]}
 	if len(subs) > 0:
 		summary['subs'] = subs
 	
@@ -138,10 +145,8 @@ def MakeGameSummary(threadid, posterid=388864):
 	return summary
 
 
-#tatiana: 388864
-#oswald: 256337
 
-cursor.execute("select threadid, t.title from fennecfox.Thread t join fennecfox.post2 p using (threadid) \
+cursor.execute("select threadid, t.title, t.url from fennecfox.Thread t join fennecfox.post2 p using (threadid) \
 	where op=388864 and threadid not in (1426309,1411072,1432617) and t.op=p.posterid and p.postnumber=1")
 tatianagames = cursor.fetchall()
 len(tatianagames)
