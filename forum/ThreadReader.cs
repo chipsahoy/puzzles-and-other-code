@@ -12,6 +12,7 @@ using System.Windows.Forms;
 using Newtonsoft;
 using System.Threading.Tasks;
 using System.Diagnostics;
+using System.Web;
 
 namespace POG.Forum
 {
@@ -85,6 +86,7 @@ namespace POG.Forum
             string posterName = "";
             Int32 postNumber = 0;
             String postLink = null;
+			Int32 postId = -1;
             DateTimeOffset postTime = DateTime.Now;
             HtmlAgilityPack.HtmlNode postNumberNode = html.SelectSingleNode("div[@class='posthead']/span[@class='nodecontrols']/a[2]");
 
@@ -98,7 +100,15 @@ namespace POG.Forum
             if (postLinkNode != null)
             {
                 postLink = HtmlAgilityPack.HtmlEntity.DeEntitize(postLinkNode.Attributes["href"].Value);
-            }
+				if (postLink.Length > 3)
+				{
+					// showthread.php?12931-Mafia-Convo-Thread&p=316289&viewfull=1#post316289
+					int startQuery = postLink.IndexOf('?');
+					if (startQuery > -1) postLink = postLink.Substring(startQuery);
+					string sPost = HttpUtility.ParseQueryString(postLink).Get("p");
+					Int32.TryParse(sPost, out postId);
+				}
+			}
 
             RemoveComments(html);
             HtmlAgilityPack.HtmlNode postTimeNode = html.SelectSingleNode("div[@class='posthead']/span[1]/span[@class='date']");
@@ -151,7 +161,7 @@ namespace POG.Forum
             }
             HtmlAgilityPack.HtmlNode postContent = html.SelectSingleNode("div[@class='postdetails']/div[@class='postbody']/div[1]/div[@class='content']/div/blockquote");
             List<Bold> bolded = ParseBolded(postContent);
-            Post p = new Post(threadId, posterName, posterId, postNumber, postTime, postLink, postTitle,
+            Post p = new Post(threadId, postId, posterName, posterId, postNumber, postTime, postLink, postTitle,
                     postContent.OuterHtml, bolded, edit);
             return p;
         }
@@ -434,6 +444,7 @@ namespace POG.Forum
             string posterName = "";
             Int32 postNumber = 0;
             String postLink = null;
+			Int32 postId = -1;
             DateTimeOffset postTime = DateTime.Now;
             HtmlAgilityPack.HtmlNode postNumberNode = html.SelectSingleNode("../../../tr[1]/td[2]/a[last()]");
 
@@ -441,7 +452,15 @@ namespace POG.Forum
             {
                 postNumber = Int32.Parse(postNumberNode.InnerText);
                 postLink = HtmlAgilityPack.HtmlEntity.DeEntitize(postNumberNode.Attributes["href"].Value);
-            }
+				if (postLink.Length > 3)
+				{
+					// showthread.php?12931-Mafia-Convo-Thread&p=316289&viewfull=1#post316289
+					int startQuery = postLink.IndexOf('?');
+					if (startQuery > -1) postLink = postLink.Substring(startQuery);
+					string sPost = HttpUtility.ParseQueryString(postLink).Get("p");
+					Int32.TryParse(sPost, out postId);
+				}
+			}
             RemoveComments(html);
             HtmlAgilityPack.HtmlNode postTimeNode = html.SelectSingleNode("../../../tr[1]/td[1]");
             if (postTimeNode != null)
@@ -490,7 +509,7 @@ namespace POG.Forum
                 posterId = Misc.ParseMemberId(profile);
             }
             List<Bold> bolded = ParseBolded(html);
-            Post p = new Post(threadId, posterName, posterId, postNumber, postTime, postLink, postTitle,
+            Post p = new Post(threadId, postId, posterName, posterId, postNumber, postTime, postLink, postTitle,
                     html.OuterHtml, bolded, edit);
             return p;
         }

@@ -43,31 +43,24 @@ namespace POG.Forum
 
         public Post(Int32 threadId, String poster, Int32 posterId, Int32 postNumber, DateTimeOffset ts,
             Int32 postId, String postTitle, String content, List<Bold> bolded, PostEdit edit) : 
-            this(threadId, poster, posterId,
+            this(threadId, postId, poster, posterId,
                 postNumber, ts, "", postTitle, content, bolded, edit)
         {
             PostId = postId;
         }
-        public Post(Int32 threadId, String poster, Int32 posterId, Int32 postNumber, DateTimeOffset ts, 
+        public Post(Int32 threadId, Int32 postId, String poster, Int32 posterId, Int32 postNumber, DateTimeOffset ts, 
             String postLink, String postTitle, String content, List<Bold> bolded, PostEdit edit)
         {
             Poster = new Poster(poster, posterId);
             PostNumber = postNumber;
             Time = ts.ToUniversalTime();
             PostLink = postLink;
-            Title = postTitle;
+			PostId = postId;
+			Title = postTitle;
             Edit = edit;
             _content = content;
             ThreadId = threadId;
             _bolded = bolded;
-            if (postLink.Length > 3)
-            {
-                // showthread.php?12931-Mafia-Convo-Thread&p=316289&viewfull=1#post316289
-                string sPost = HttpUtility.ParseQueryString(postLink).Get("p");
-                Int32 postId = -1;
-                Int32.TryParse(sPost, out postId);
-                PostId = postId;
-            }
         }
         [DataMember]
         public Poster Poster
