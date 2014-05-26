@@ -762,7 +762,9 @@ namespace POG.Forum
             {
                 if (ch >= 128)
                 {
-                    sb.AppendFormat("%26%23{0}", (int)ch);
+					String u = String.Format("&#{0};", (int)ch);
+					String piece = HttpUtility.UrlEncode(u);
+                    sb.Append(piece);
                 }
                 else
                 {
