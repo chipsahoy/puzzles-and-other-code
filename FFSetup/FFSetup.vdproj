@@ -779,7 +779,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:vbulletin, Version=2.0.5258.37784, Culture=neutral, processorArchitecture=x86"
+            "AssemblyAsmDisplayName" = "8:vbulletin, Version=2.0.5258.38134, Culture=neutral, processorArchitecture=x86"
                 "ScatterAssemblies"
                 {
                     "_2F03C5D94A6D767EAE499D265C0EE789"
@@ -810,7 +810,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:werewolf, Version=2.0.5258.37785, Culture=neutral, processorArchitecture=x86"
+            "AssemblyAsmDisplayName" = "8:werewolf, Version=2.0.5258.38136, Culture=neutral, processorArchitecture=x86"
                 "ScatterAssemblies"
                 {
                     "_30D34AD75862AA35E14D1432EDCD96F7"
@@ -954,7 +954,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:FennecUI, Version=2.0.5258.37786, Culture=neutral, processorArchitecture=x86"
+            "AssemblyAsmDisplayName" = "8:FennecUI, Version=2.0.5258.38136, Culture=neutral, processorArchitecture=x86"
                 "ScatterAssemblies"
                 {
                     "_4BB9EA33BE06A465D9F1942039CB5207"
@@ -1369,15 +1369,15 @@
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:FennecFox"
-        "ProductCode" = "8:{36A0FA06-F827-4363-9CDF-573FEE6C973F}"
-        "PackageCode" = "8:{53D5F73F-3587-40D3-9A1E-3A42D9D738FA}"
+        "ProductCode" = "8:{B55C6CDE-93D8-4664-B349-B09F00CA48C1}"
+        "PackageCode" = "8:{7CFE600E-A8A7-4681-BEB0-3CE394278BC3}"
         "UpgradeCode" = "8:{6FA378AC-1D8C-4F10-AD8C-831DCAE5C6BF}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:TRUE"
-        "ProductVersion" = "8:1.1.78"
+        "ProductVersion" = "8:1.1.79"
         "Manufacturer" = "8:POG"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:"
