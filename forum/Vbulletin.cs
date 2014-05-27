@@ -837,13 +837,13 @@ loggedinuser 81788
 			content = content.Replace("\r\n", "\n");
 			if (title != String.Empty)
 			{
-				string encTitle = title; // MyUrlEncode(title);
+				string encTitle = MyUrlEncode(title);
                 msg.AppendFormat("{0}={1}&", "title", encTitle);
 			}
 			msg.AppendFormat("{0}={1}&", "ajax", "1");
 			//msg.AppendFormat("{0}={1}&", "ajax_lastpost", "1"); // Need real last post number or else all posts are returned.
-			msg.AppendFormat("{0}={1}&", "message_backup", content); //HttpUtility.UrlEncodeUnicode(content));
-			msg.AppendFormat("{0}={1}&", "message", content); //HttpUtility.UrlEncodeUnicode(content));
+			msg.AppendFormat("{0}={1}&", "message_backup", HttpUtility.UrlEncodeUnicode(content));
+			msg.AppendFormat("{0}={1}&", "message", HttpUtility.UrlEncodeUnicode(content));
 			msg.AppendFormat("{0}={1}&", "wysiwyg", "0");
 			if (icon != 0)
 			{

@@ -455,10 +455,13 @@ namespace POG.Forum
 				if (postLink.Length > 3)
 				{
 					// showthread.php?12931-Mafia-Convo-Thread&p=316289&viewfull=1#post316289
-					int startQuery = postLink.IndexOf('?');
-					if (startQuery > -1) postLink = postLink.Substring(startQuery);
-					string sPost = HttpUtility.ParseQueryString(postLink).Get("p");
+					String sPost = postLink;
+					int startQuery = sPost.IndexOf('?');
+					if (startQuery > -1) sPost = sPost.Substring(startQuery);
+					sPost = HttpUtility.ParseQueryString(sPost).Get("p");
 					Int32.TryParse(sPost, out postId);
+					int startPage = postLink.LastIndexOf('/');
+					if (startPage > -1) postLink = postLink.Substring(startPage + 1);
 				}
 			}
             RemoveComments(html);
