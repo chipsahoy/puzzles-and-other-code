@@ -7,6 +7,8 @@ import random
 import MySQLdb
 import json
 
+# Find cases where the count of posts doesn't match the lobby record.
+
 #connect to database and set up the cursor to accept commands
 connection = MySQLdb.connect("mysql.checkmywwstats.com", "pogwwdb", "werewolf", "fennecfox")
 cursor = connection.cursor(MySQLdb.cursors.DictCursor)
@@ -17,6 +19,7 @@ connection.set_character_set('utf8')
 cursor.execute('SET NAMES utf8;')
 cursor.execute('SET CHARACTER SET utf8;')
 cursor.execute('SET character_set_connection=utf8;')
+
 
 #Queue
 lobby='fennecfox.lobby'
@@ -31,20 +34,29 @@ print('started connection')
 
 conn.connect(wait=True)
 print('connected')
+print('looking for threads with bad counts')
 
-pageNumber = 30
-endPage = 50
+cursor.execute("""SELECT DISTINCT t.threadid as tid,
+url, t.replies 
+FROM Thread t
+LEFT OUTER JOIN post2 p ON t.threadid = p.threadid
+WHERE p.threadid IS NULL and t.subforumid=59 and t.op=388864
+ORDER BY t.replies DESC
+LIMIT 2500
+""")
+print cursor.rowcount
+rows = cursor.fetchall()
+for row in rows:
+	url = row['url']
+	threadid = row['tid']
+	cursor.execute("SELECT DATE_FORMAT(NOW(), '%a, %d %b %Y %H:%i:%s') as curtime")
+	timerow = cursor.fetchone()
+	milliseconds = (int)(time.time()*1000 + 50000)
+	print('fetching ' + url)
+	conn.send(message="read thread!", destination=readthreads, headers={'expires': milliseconds, 'URL':url,'threadid':int(threadid),'startPost':1, 'CurrentUTC':timerow['curtime'] + " GMT"}, ack='auto')
 
-cursor.execute("SELECT DATE_FORMAT(NOW(), '%a, %d %b %Y %H:%i:%s') as curtime")
-timerow = cursor.fetchone()
-milliseconds = (int)(time.time()*1000 + 50000)
-
-for i in range(1):
-#	pageNumber = i
-	conn.send(message="read lobby!", destination=readlobby, headers={'expires': milliseconds, 'BaseURL':'http://forumserver.twoplustwo.com/59/puzzles-other-games/','startPage':pageNumber,'endPage':endPage, 'recentFirst':'True', 'CurrentUTC':timerow['curtime'] + " GMT"}, ack='auto')
-	print("read page" + repr(pageNumber));
-	pageNumber += 1
 	
 print('slept')
 conn.stop()
 print('disconnected')
+

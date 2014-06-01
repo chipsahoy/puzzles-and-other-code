@@ -32,18 +32,17 @@ print('started connection')
 conn.connect(wait=True)
 print('connected')
 
-pageNumber = 30
+pageNumber = 1
 endPage = 50
 
 cursor.execute("SELECT DATE_FORMAT(NOW(), '%a, %d %b %Y %H:%i:%s') as curtime")
 timerow = cursor.fetchone()
 milliseconds = (int)(time.time()*1000 + 50000)
-
-for i in range(1):
-#	pageNumber = i
-	conn.send(message="read lobby!", destination=readlobby, headers={'expires': milliseconds, 'BaseURL':'http://forumserver.twoplustwo.com/59/puzzles-other-games/','startPage':pageNumber,'endPage':endPage, 'recentFirst':'True', 'CurrentUTC':timerow['curtime'] + " GMT"}, ack='auto')
-	print("read page" + repr(pageNumber));
-	pageNumber += 1
+conn.send(message="read lobby!", destination=readlobby, headers={'expires': milliseconds, 
+	'BaseURL':'http://forumserver.twoplustwo.com/46/sporting-events/','startPage':pageNumber,'endPage':endPage, 
+	'recentFirst':'False', 'CurrentUTC':timerow['curtime'] + " GMT"}, ack='auto')
+print("read page" + repr(pageNumber));
+pageNumber += 1
 	
 print('slept')
 conn.stop()

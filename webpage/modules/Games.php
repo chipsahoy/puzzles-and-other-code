@@ -22,7 +22,7 @@
 	(select replies+1 posts from fennecfox.Thread t where t.threadid=g.gameid) posts
 	from game g	
 	join victor v using (gameid)
-	where g.gametype <> 'Turbo'
+	where g.gametype not in ('Turbo','Turbo Mishmash')
 	order by g.startdate desc";
 	
 	$result = $db->query($qry);

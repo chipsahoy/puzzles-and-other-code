@@ -10,8 +10,7 @@ Each forum has its own db, own webpage, to contain the ebolaids
 
 --#############################################################
 
-create database pog;
-alter database pog default character set 'utf8';
+create database pog default character set 'utf8';
 
 create user 'dev'@'localhost' identified by 'dev';
 

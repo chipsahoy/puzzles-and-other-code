@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: UTF-8 -*-
 
+# user friendly for inputting turbos
+
 # enable debugging
 import cgitb
 import cgi, os, sys, string, time, datetime
@@ -78,19 +80,15 @@ def GetActorOrSeer(playerlist, role, actor):
 def ListActions(actions, playerlist, role):
 	# actions is list of dicts: {'actor','target','night','ability'}
 	formaction = ''
-	if len(actions) > 0:
-		formaction = '<tr><td align="right">Actions:</td><td><table bgcolor=efe1f1><tr><th>Actor</th><th>Target</th><th>Night</th><th>Ability</th></tr>'
-		for a in actions:
-			formaction += """<tr><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>""" % (
-				makeSelect('actor', ['']+playerlist, GetActorOrSeer(playerlist, role, a['actor'])),
-				makeSelect('target', ['']+playerlist, a['target']),
-				makeSelect('night', [str(x) for x in range(10)], a['night']),
-				makeSelect('ability', ['Peek','Angel','Vig','Roleblock'], a['ability']))
+	for i in range((len(playerlist)-1)/2):
+		if i > len(actions)-1:
+			target = ''
+		else:
+			target = actions[i]['target']
+		formaction = '<tr><td align="right">Peeks:</td><td><table bgcolor=efe1f1>'
+		formaction += """<tr><td>%s</td><td>%s</td></tr>""" % (
+			'n'+str(i), makeSelect('target', ['']+playerlist, target))
 		formaction += '</table></tr>'
-	formaction += '<tr><td></td><td>'
-	if len(actions) > 0:
-		formaction += 'To remove entry, set the Actor field to blank. Hit "Check for validity" to refresh.<br>'
-	formaction += '<input type="submit" name="addaction" value="Add Action"><br><br></td></tr>'
 	return formaction
 
 # '<td></td>' % deathday[i] + \
@@ -110,21 +108,13 @@ def ListPlayers(playerlist, affiliation, role, deathday, deathtype):
 		formpl += "</table></td></tr>"
 		return formpl
 
-def VictorType(victor):
-	if len(victor) == 0:
-		return ''
-	elif len(victor) == 1 and victor[0] in ('Village','Wolves','Tie',''):
-		return victor[0]
-	else:
-		return 'Other/Multiple:'
-
 def GenerateForm(game):
 	print "<font color='red'>"
 	for m in game.errmsg:
 		print str(m) + "<br>"
 	print "</font>"
 	form1 = """<br>
-		<form method="post" action="submitgame.cgi">
+		<form method="post" action="submitturbo.cgi">
 		<table width="100%%">
 		<tr><td><input type="submit" name="clear" value="Clear Form"></td></tr>
 		<tr><td align="right" width="10%%">URL:</td>
@@ -137,16 +127,14 @@ def GenerateForm(game):
 			<td><input type="text" name="startdate" size="25" placeholder="YYYY-MM-DD" value="%s"></td></tr>
 		<tr><td align="right">Game Type:</td><td>
 		%s</td></tr>
-		<tr><td align='right'>Victor:</td><td>%s<input type="text" name="victortxt" size="15" value="%s"></td>
-		</tr>
+		<tr><td align='right'>Victor:</td><td>%s</td></tr>
 		<tr><td align="right">Player list:</td>
 			<td><table><tr><td><textarea name="playerlisttext" rows="9" cols="20">%s</textarea></td>
 			<td>The player list should include only the <u>original</u> players<br> that occupied each player slot. Subs are noted separately.<br><br>
 			<input type="submit" name="deathtable" value="Build death table with this player list"></td></tr></table></tr>
 		""" % (game.url, game.gamename, '; '.join(game.mods), game.startdate, 
-			makeRadio('gametype', ['Vanilla','Slow Game','Vanilla+','Mish-Mash','Turbo Mishmash','Turbo'], game.gametype), 
-			makeSelect('victordrop', ['','Village','Wolves','Tie','Other/Multiple:'], VictorType(game.victor)), 
-			'' if len(game.victor)==1 and game.victor[0] in ('Village','Wolves','Tie','') else '; '.join(game.victor),
+			makeRadio('gametype', ['Turbo'], 'Turbo'), 
+			makeRadio('victor', ['Village','Wolves'], game.victor),
 			'\n'.join(game.playerlisttext))
 	
 	players = ListPlayers(game.playerlist, game.affiliation, game.role, game.deathday, game.deathtype) if (len(game.playerlist) > 0) else ''
@@ -198,15 +186,15 @@ class Game:
 		self.deathday=[]
 		self.deathtype=[]
 		self.mods=[]
-		self.victor=[]
+		self.victor=''
 		self.subs = []
 		self.actions = []
 	
 	def ImportFromForm(self, f):
 		for fieldname in ('url','gamename','startdate'):
 			setattr(self, fieldname, f[fieldname].value)
+		self.victor = f.getvalue('victor')
 		self.gametype = f.getvalue('gametype')
-		self.SetVictor(f.getvalue('victordrop'), f.getvalue('victortxt'))
 		self.mods = [to_unicode(a.strip()) for a in f.getvalue('mods').split(';')] if f.getvalue('mods') != '' else []
 		self.playerlist = [to_unicode(x) for x in f.getlist("playerlist")]
 		self.affiliation = f.getlist("affiliation")
@@ -228,14 +216,6 @@ class Game:
 			self.actions = []
 			for i, a in enumerate(actor):
 				self.actions.append({'actor':actor[i], 'target':target[i], 'night':night[i], 'ability':ability[i]})
-	
-	def SetVictor(self, vd, vt):
-		if len(vd) == 0:
-			self.victor = []
-		elif vd in ('Village','Wolves','Tie'):
-			self.victor = [vd]
-		else:
-			self.victor = [a.strip() for a in vt.split(';')] if vt != '' else []
 	
 	def CheckPlayerlistAgainstDB(self):
 		for i, p in enumerate(self.playerlist):
@@ -267,14 +247,14 @@ class Game:
 		
 	def FillInDeathTable(self):
 	# infer missing deathtype/deathday values
-		if self.victor == []:
+		if self.victor == '':
 			self.errmsg.append("<font color='red'>Victor is a required field.</font>")
 		else:
 			for i in range(len(self.deathday)):
 				if self.deathday[i] == '':
 					self.deathday[i] = max([0 if a=='' else a for a in self.deathday])
 				if self.deathtype[i] == '': # fill in s/e/c deathtypes
-					if self.affiliation[i].upper() in [a.upper() for a in self.victor]:
+					if self.affiliation[i] == self.victor:
 						self.deathtype[i] = 'Survived'
 					else:
 						if self.affiliation[i] == 'Village':
@@ -292,14 +272,11 @@ class Game:
 			self.errmsg.append("<font color='red'>Start Date is not a valid date.</font>")
 		if self.gametype == None:
 			self.errmsg.append("<font color='red'>Game Type not set.</font>")
-		if self.victor == []:
+		if self.victor == '':
 			self.errmsg.append("<font color='red'>Victor(s) is a required field.</font>")
 		
-		if len(self.victor) > 0:
-			factions = [a.upper() for a in set(self.affiliation)]
-			for v in self.victor:
-				if v.upper() not in factions:
-					self.errmsg.append("<font color='red'>The winning team '%s' is not in the role set.</font>" %v)
+		if sum([x=='Wolves' for x in self.affiliation]) != (len(playerlist)-1)/4:
+			self.errmsg.append("<font color='red'>Not enough wolves in the roleset.</font>")
 		
 		# within the playerlist
 		if len(self.playerlist) < 3:
@@ -345,7 +322,7 @@ class Game:
 		return len(self.errmsg) == 0
 	
 	def ExportToJSON(self):
-		j = {'url':self.url, 'gamename':self.gamename, 'gametype':self.gametype, 'startdate':self.startdate, 'mod':self.mods, 'victor':self.victor, 'factions':list(set(self.affiliation))}
+		j = {'url':self.url, 'gamename':self.gamename, 'gametype':self.gametype, 'startdate':self.startdate, 'mod':self.mods, 'victor':[self.victor], 'factions':list(set(self.affiliation))}
 		players = []
 		for i, op in enumerate(self.playerlist):
 			p = {'op':op, 'faction':self.affiliation[i], 'role': 'Vanilla' if self.role[i] == '' else self.role[i], 'deathday':self.deathday[i], 'deathtype':self.deathtype[i]}
@@ -398,9 +375,15 @@ def JSONtoGame(j):
 	g.url = j['url']
 	g.startdate = j['startdate']
 	g.gamename = j['gamename']
+	if j['gametype'] not in ('Vanilla','Turbo'):
+		print "<font color='red'>This game type cannot be edited using this form.</font>"
+		return g
 	g.gametype = j['gametype']
 	g.mods = j['mod']
-	g.victor = j['victor']
+	if len(j['victor']) > 1:
+		print "Too many victors."
+		return g
+	g.victor = j['victor'][0]
 	playerlist = []
 	subs = []
 	actions = []
@@ -445,7 +428,8 @@ print """<script type="text/javascript">
 	if ((evt.keyCode == 13) && (node.type=='text'))  {return false;} }
 	document.onkeypress = stopRKey;
 	</script>"""
-print "<h3><ul>Werewolf Database Game Submission/Edit Form (beta)</ul></h3>"
+print "<h3><ul>Werewolf Database Game Submission/Edit Form for <font color='blue'>TURBOS</font></ul></h3>"
+print "To use this form, game must be a vanilla turbo with one seer and one winning team.<br>"
 #print '<font face="courier new">'
 
 form = cgi.FieldStorage(keep_blank_values=True)

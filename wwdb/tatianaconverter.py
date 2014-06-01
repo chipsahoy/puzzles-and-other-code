@@ -2,6 +2,7 @@
 
 import MySQLdb
 db = MySQLdb.connect(host="localhost", user="poguser", passwd="werewolf", db='pog', charset="utf8", use_unicode=True)
+#db = MySQLdb.connect(host="localhost", user="dev", passwd="dev", db='dev', charset="utf8", use_unicode=True)
 cursor = db.cursor(MySQLdb.cursors.DictCursor)
 
 def ReplaceWithOP(player, playerlist, subs):
@@ -18,12 +19,12 @@ def MakeGameSummary(threadid, posterid=388864):
 		print "unexpected mod"
 		return None
 	
-	cursor.execute("select url from fennecfox.Thread where threadid=%s", threadid)
+	cursor.execute("select url from fennecfox.thread2 where threadid=%s", threadid)
 	if cursor.rowcount == 0:
 		return None
 	url = cursor.fetchall()[0]['url']
-	cursor.execute("select postid, postnumber, cast(date(posttime) as char) posttime, title, content from fennecfox.post2 \
-		where threadid=%s and posterid=%s order by postnumber", (threadid, posterid))
+	cursor.execute("select postid, postnumber, cast(date(posttime) as char) posttime, title, content \
+		from fennecfox.post2 where threadid=%s and posterid=%s order by postnumber", (threadid, posterid))
 	if cursor.rowcount < 3:
 		return None
 	posts = cursor.fetchall()
@@ -37,6 +38,12 @@ def MakeGameSummary(threadid, posterid=388864):
 	x = x[:x.find('<br>\r\n<br>')]
 	playerlist = x.split('<br>')
 	playerlist = [a.strip() for a in playerlist]
+	# check player names against db. if mismatch, skip game
+	for p in playerlist:
+		cursor.execute("select playerid from player where playername = %s", p)
+		if cursor.rowcount == 0:
+			return None
+	
 	players = []
 	
 	lynchposts = [i for i, a in enumerate(posts) if 'Lynch result' in a['title']]
@@ -44,6 +51,7 @@ def MakeGameSummary(threadid, posterid=388864):
 	subposts = [i for i, a in enumerate(posts) if 'is subbing in for' in a['content']]
 	subs = []
 	
+	# get subs
 	for j, i in enumerate(subposts):
 		x = posts[i]['content']
 		while x.find('is subbing in for') > 0:
@@ -51,11 +59,12 @@ def MakeGameSummary(threadid, posterid=388864):
 			subin = x[:x.find('</b>')].strip()
 			x = x[x.find('<b>')+3:]
 			subout = x[:x.find('</b>')].strip()
-			if j <= lynchposts[0]:
-				subday = 1
-			else:
-				subday = 2
+			subday = 1
+			for postnumber in lynchposts:
+				if j > postnumber:
+					subday += 1
 			if subout not in playerlist:
+				print "subout not in playerlist"
 				return None
 			subs.append({'op':subout, 'subname':subin, 'subday':subday})
 	
@@ -126,43 +135,47 @@ def MakeGameSummary(threadid, posterid=388864):
 		players.append({'deathday': len(lynchposts)+1, 'deathtype': deathtype, 'faction': faction, 'role': role, 'op': player})
 	
 	x = x[x.find('Peeks:</u>')+20:]
-	
+	# find das seer
+	for p in players:
+		if p['role'].upper() == 'SEER':
+			seername = p['op']
 	peeks = []
+	night = 0
 	while x.find(' : ') > 0:
 		player = x[:x.find(' : ')].strip()
 		player = ReplaceWithOP(player, playerlist, subs)
 		x = x[x.find(' : ')+3:]
 		x = x[x.find('\n')+1:]
-		peeks.append(player)
+		peeks.append({'ability': 'Peek', 'target': player, 'night': night, 'actor': seername})
+		night += 1
 		
 	summary = {'gamename':gamename, 'startdate':startdate, 'factions': ['Wolves', 'Village'], 'url':url, 'gametype':'Turbo', 
 		'victor': victor, 'mod':[modname]}
 	if len(subs) > 0:
 		summary['subs'] = subs
-	
 	summary['players'] = players
+	summary['actions'] = peeks
 	
 	return summary
 
 
-
-cursor.execute("select threadid, t.title, t.url from fennecfox.Thread t join fennecfox.post2 p using (threadid) \
-	where op=388864 and threadid not in (1426309,1411072,1432617) and t.op=p.posterid and p.postnumber=1")
+cursor.execute("select threadid, t.title, t.url from fennecfox.thread2 t join fennecfox.post2 p using (threadid) \
+	where op=388864 and threadid not in (1426309,1411072,1432617) and t.op=p.posterid and p.postnumber=1 \
+	and threadid not in (select gameid from game) order by threadid")
 tatianagames = cursor.fetchall()
 len(tatianagames)
 
+import textjsondb
 
+MakeGameSummary(tatianagames[0]['threadid'])
 
-
-JSONtoDB(MakeGameSummary(tatianagames[0]['threadid']), cursor, 'tatiana parser test')
+textjsondb.JSONtoDB(MakeGameSummary(tatianagames[0]['threadid']), cursor, 'tatiana batch 2 try 1')
 
 for j, i in enumerate(tatianagames):
-	#print i['threadid']
 	summary = MakeGameSummary(i['threadid'])
 	if summary is not None:
 		print j
-		JSONtoDB(summary, cursor, 'tatiana parser 4')
-#		cursor.execute("insert into pog.editslog values(now(), 'tatiana parser1', %s, %s)", (summary['url'], str(summary)))
+		textjsondb.JSONtoDB(summary, cursor, 'script tatiana batch 3 try 1')
 		cursor.execute("commit")
 
 

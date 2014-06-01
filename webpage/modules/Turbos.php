@@ -21,7 +21,7 @@
 	(select replies from fennecfox.Thread t where t.threadid=g.gameid) replies
 	from game g	
 	join victor v using (gameid)
-	where g.gametype = 'Turbo'
+	where g.gametype in ('Turbo','Turbo Mishmash')
 	order by g.startdate desc";
 	
 	$result = $db->query($qry);

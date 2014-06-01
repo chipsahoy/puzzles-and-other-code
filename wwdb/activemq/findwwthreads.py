@@ -10,7 +10,7 @@ import json
 # Find cases where the count of posts doesn't match the lobby record.
 
 #connect to database and set up the cursor to accept commands
-connection = MySQLdb.connect("mysql.checkmywwstats.com", "pogwwdb", "werewolf", "fennecfox")
+connection = MySQLdb.connect("mysql.checkmywwstats.com", "poguser", "werewolf", "fennecfox")
 cursor = connection.cursor(MySQLdb.cursors.DictCursor)
 cursor.execute("SET time_zone = '+00:00'")
 logging.basicConfig()
@@ -37,12 +37,13 @@ print('connected')
 print('looking for threads with bad counts')
 
 cursor.execute("""SELECT DISTINCT t.threadid as tid,
-url, t.replies 
-FROM thread2 t
+t.url, t.replies 
+FROM Thread t
+join pog.game g on g.gameid=t.threadid
 LEFT OUTER JOIN post2 p ON t.threadid = p.threadid
 WHERE p.threadid IS NULL and t.subforumid=59
-ORDER BY t.threadid desc
-LIMIT 50
+ORDER BY t.replies DESC
+LIMIT 500
 """)
 print cursor.rowcount
 rows = cursor.fetchall()
