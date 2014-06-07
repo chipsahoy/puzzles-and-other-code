@@ -414,6 +414,7 @@ namespace TatianaTiger
                                     reject = false;
                                 }
                             }
+                            if(pm.From.Equals("Guild", StringComparison.InvariantCultureIgnoreCase)) reject = true;
                             if (reject)
                             {
                                 QueuePM(new string[] { pm.From }, pm.Title,
