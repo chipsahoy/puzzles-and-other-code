@@ -22,7 +22,7 @@
 	from game g	
 	join victor v using (gameid)
 	where g.gametype in ('Turbo','Turbo Mishmash')
-	order by g.startdate desc";
+	order by g.startdate desc, g.gameid desc";
 	
 	$result = $db->query($qry);
 	

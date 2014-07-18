@@ -1,8 +1,8 @@
 # tatiana game -> db converter
 
 import MySQLdb
-db = MySQLdb.connect(host="localhost", user="poguser", passwd="werewolf", db='pog', charset="utf8", use_unicode=True)
-#db = MySQLdb.connect(host="localhost", user="dev", passwd="dev", db='dev', charset="utf8", use_unicode=True)
+#db = MySQLdb.connect(host="localhost", user="poguser", passwd="werewolf", db='pog', charset="utf8", use_unicode=True)
+db = MySQLdb.connect(host="localhost", user="dev", passwd="dev", db='dev', charset="utf8", use_unicode=True)
 cursor = db.cursor(MySQLdb.cursors.DictCursor)
 
 def ReplaceWithOP(player, playerlist, subs):
@@ -21,14 +21,17 @@ def MakeGameSummary(threadid, posterid=388864):
 	
 	cursor.execute("select url from fennecfox.thread2 where threadid=%s", threadid)
 	if cursor.rowcount == 0:
+		print "Does not exist in the thread2 table"
 		return None
 	url = cursor.fetchall()[0]['url']
 	cursor.execute("select postid, postnumber, cast(date(posttime) as char) posttime, title, content \
 		from fennecfox.post2 where threadid=%s and posterid=%s order by postnumber", (threadid, posterid))
 	if cursor.rowcount < 3:
+		print "Not enough posts"
 		return None
 	posts = cursor.fetchall()
 	if posts[-1]['title'] != 'Mod: Game Over':
+		print "Game over post missing"
 		return None
 	
 	gamename = posts[0]['title']
@@ -42,6 +45,7 @@ def MakeGameSummary(threadid, posterid=388864):
 	for p in playerlist:
 		cursor.execute("select playerid from player where playername = %s", p)
 		if cursor.rowcount == 0:
+			print "Player in playerlist not in db"
 			return None
 	
 	players = []
@@ -160,28 +164,29 @@ def MakeGameSummary(threadid, posterid=388864):
 
 
 cursor.execute("select threadid, t.title, t.url from fennecfox.thread2 t join fennecfox.post2 p using (threadid) \
-	where op=388864 and threadid not in (1426309,1411072,1432617) and t.op=p.posterid and p.postnumber=1 \
-	and threadid not in (select gameid from game) order by threadid")
+	where op=388864 and threadid > (select max(gameid) from moderator where modid=388864) and t.op=p.posterid and p.postnumber=1 \
+	order by threadid")
 tatianagames = cursor.fetchall()
 len(tatianagames)
 
 import textjsondb
 
-MakeGameSummary(tatianagames[0]['threadid'])
+#MakeGameSummary(tatianagames[0]['threadid'], 388864)
 
-textjsondb.JSONtoDB(MakeGameSummary(tatianagames[0]['threadid']), cursor, 'tatiana batch 2 try 1')
+#textjsondb.JSONtoDB(MakeGameSummary(tatianagames[0]['threadid']), cursor, 'tatiana batch 2 try 1')
 
 for j, i in enumerate(tatianagames):
-	summary = MakeGameSummary(i['threadid'])
+	summary = MakeGameSummary(i['threadid'], 388864)
 	if summary is not None:
 		print j
-		textjsondb.JSONtoDB(summary, cursor, 'script tatiana batch 3 try 1')
+		textjsondb.JSONtoDB(summary, cursor, 'tatiana batch 3')
 		cursor.execute("commit")
 
 
+#cursor.execute("select threadid, t.title, t.url from fennecfox.thread2 t join fennecfox.post2 p using (threadid) \
+#	where op=256337 and threadid not in (1426309,1411072,1432617) and t.op=p.posterid and p.postnumber=1")
 
 
 # http://checkmywwstats.com/dev/index.php?report=Game&gameid=1437996
 # tatiana missed a sub
 
-		
