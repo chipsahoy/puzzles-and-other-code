@@ -1,5 +1,5 @@
 # Model wolves playing like villagers
-# iversonian
+# pbae
 # 9/2/12
 
 ## PARAMETERS
