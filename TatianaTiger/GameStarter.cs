@@ -173,7 +173,7 @@ namespace TatianaTiger
 							}
 							if (title.Length > 0)
 							{
-								_threadTitle = title;
+								_threadTitle = title.Substring(0, 80);
 							}
 							else
 							{
@@ -519,7 +519,7 @@ namespace TatianaTiger
 						else
 						{
 							_hyper = false;
-							_d1Duration = 22;
+							_d1Duration = 20;
 							_dDuration = 17;
 							_n1Duration = 7;
 							_nDuration = 4;
@@ -702,7 +702,13 @@ namespace TatianaTiger
 				case "EventEnter":
 					{
 						_kill = "";
-					}
+                        if (_count != null)
+                        {
+                            _count.CheckThread(() => // keep reading the thread so we have the right start post.
+                            {
+                            });
+                        }
+                    }
 					break;
 
 				case "EventExit":
