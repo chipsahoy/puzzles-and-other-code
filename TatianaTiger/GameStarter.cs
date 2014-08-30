@@ -173,7 +173,8 @@ namespace TatianaTiger
 							}
 							if (title.Length > 0)
 							{
-								_threadTitle = title.Substring(0, 80);
+                                if(title.Length > 80) title = title.Substring(0, 80);
+                                _threadTitle = title;
 							}
 							else
 							{
@@ -511,8 +512,8 @@ namespace TatianaTiger
 						if (_forum.Username.Equals("Oreos", StringComparison.InvariantCultureIgnoreCase))
 						{
 							_hyper = true;
-							_d1Duration = 1;
-							_dDuration = 1;
+							_d1Duration = 4;
+							_dDuration = 3;
 							_n1Duration = 3;
 							_nDuration = 3;
 						}
@@ -583,6 +584,13 @@ namespace TatianaTiger
 						if (_count != null)
 						{
 							Trace.TraceInformation("another minute, need a vote count.");
+                            DateTime now = DateTime.Now;
+                            now = TruncateSeconds(now);
+                            if (now > _nextNight)
+                            {
+                                _forum.LockThread(_threadId, true);
+                            }
+
 							_count.CheckThread(() =>
 							{
 								PostEvent(new Event("CountUpdated"));
@@ -641,7 +649,7 @@ namespace TatianaTiger
                                 SetNightDuration();
 								post += "PM your night action or it will be randed.\r\nDeadline: " + MakeGoodBad(_nextDay);
 								post += "\r\n\r\n[b]It is night![/b]";
-								MakePost("Mod: Lynch result", post, true);
+								MakePost("Mod: Lynch result", post);
 								ChangeState(StateNightNeedAction);
 							}
 							else
@@ -884,9 +892,11 @@ namespace TatianaTiger
 		}
 		private double GetTimerInterval()
 		{
+            int timerPeriod = 30; // seconds
+            int graceMS = 50; // amount local clock can be fast and still not fail.
 			DateTime now = DateTime.Now;
-			double rc = 50 + ((60 - now.Second) * 1000) - now.Millisecond;
-			if (rc < 1000) rc += (60 * 1000);
+			double rc = graceMS + ((timerPeriod - now.Second) * 1000) - now.Millisecond;
+			if (rc < 1000) rc += (timerPeriod * 1000);
 			return rc;
 		}
 		void ReplyFailure(PrivateMessage pm, IEnumerable<String> failed, IEnumerable<String> players, String msg)
@@ -1336,7 +1346,7 @@ namespace TatianaTiger
 		{
 			if (!_timerPM.Enabled)
 			{
-				DateTime ok = _lastPMTime.AddSeconds(31);
+				DateTime ok = _lastPMTime.AddSeconds(1);
 				TimeSpan ts = ok - DateTime.Now;
 				if (ts.Ticks < 0)
 				{

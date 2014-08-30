@@ -165,6 +165,13 @@ namespace POG.Forum
 						DoGetPostersLike(evt.Param1, evt.Param2);
 					}
 					return null;
+
+                case "DoLockThread":
+                    {
+                        Event<Int32, Boolean> evt = e as Event<Int32, Boolean>;
+                        DoLockThread(evt.Param1, evt.Param2);
+                    }
+                    return null;
 			}
 			return StateTop;
 		}
@@ -388,6 +395,12 @@ namespace POG.Forum
 		}
 		internal Boolean LockThread(Int32 thread, Boolean lockIt)
 		{
+            Event evt = new Event<Int32, Boolean>("DoLockThread", thread, lockIt);
+            PostEvent(evt);
+            return true;
+        }
+        void DoLockThread(Int32 thread, Boolean lockIt)
+        {
 			ConnectionSettings cs = _connectionSettings.Clone();
 			String securityToken = GetSecurityToken(cs);
 			cs.Headers.Add("X-Requested-With", "XMLHttpRequest");
@@ -409,10 +422,8 @@ namespace POG.Forum
 			if (resp == null)
 			{
 				// failure
-				return false;
 			}
 
-			return true;
 		}
 		internal Boolean LockThreadOld(Int32 thread, Boolean lockIt)
 		{
