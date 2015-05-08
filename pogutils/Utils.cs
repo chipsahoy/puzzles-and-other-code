@@ -140,6 +140,7 @@ namespace POG.Utils
             time = time.Replace("Yesterday", yesterday);
             time = time.Replace(",", String.Empty);
             time = time.Replace("at ", String.Empty);
+            time = time.Replace(".", String.Empty);
 
 			var culture = Thread.CurrentThread.CurrentCulture;
             try
@@ -154,7 +155,7 @@ namespace POG.Utils
                 }
                 else
                 {
-                    rc = new DateTimeOffset(DateTime.ParseExact(time, "MM-dd-yyyy hh:mm tt", null, DateTimeStyles.AllowWhiteSpaces), pageTime.Offset);
+                    rc = new DateTimeOffset(DateTime.ParseExact(time, "MM-d-yyyy hh:mm tt", null, DateTimeStyles.AllowWhiteSpaces), pageTime.Offset);
                 }
             }
             finally

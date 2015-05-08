@@ -480,6 +480,7 @@ namespace POG.Werewolf
 			String sTimeToNight = "Night in {0}";
 			String sNight = "It is night";
 			String startTable = "[table=head][b]Votes[/b]\t[b]Lynch[/b]\t[b]Voters[/b]";
+            String sEndTable = "[/table]";
 			String sWagonLine = "{0} \t [b]{1}[/b] \t {2}";
 			String sNoVoteLine = "{0} \t {1} \t {2}";
 			String showNotVoting = sNotVoting;
@@ -519,6 +520,17 @@ namespace POG.Werewolf
                         sWagonLine = "[tr][td]{0} [/td][td] [b]{1}[/b] [/td][td] {2}[/td][/tr]";
                         sNoVoteLine = "[tr][td]{0} [/td][td] {1} [/td][td] {2}[/td][/tr]";
                         sErrorLine = "[tr][td]{0} [/td][td] [color=red][b]{1}[/b][/color] [/td][td] {2}[/td][/tr]";
+                    }
+                    break;
+
+                case "3.8.1":
+                    {
+                        startTable = String.Format("[list][b]{0}[/b] -- [b]{1}[/b] -- [b]{2}[/b]",
+                            sVotes, sLynch, sVoters);
+                        sWagonLine = "[*][b]{0} [/b] -- [b]{1}[/b] -- {2}";
+                        sNoVoteLine = "[*]{0} -- {1} -- {2}";
+                        sErrorLine = "[*]{0} -- [color=#fe0000][b]{1}[/b][/color] -- {2}";
+                        sEndTable = "[/list]";
                     }
                     break;
             }
@@ -674,7 +686,7 @@ namespace POG.Werewolf
 									VoteLinks(listError, true))
 					.AppendLine();
 			}
-			sb.AppendLine("[/table]");
+			sb.AppendLine(sEndTable);
 			if (_lockedVotes)
 			{
 				sb.AppendLine();

@@ -18,13 +18,14 @@ namespace POG.Forum
 {
 	internal class VBulletin_4_2_0 : VBulletinSM
 	{
-		internal VBulletin_4_2_0(VBulletinForum outer, StateMachineHost host, String forum, Language language, String lobby, String forumRoot, String voteRegex, Action<Action> synchronousInvoker) :
-			base(outer, host, forum, language, lobby, forumRoot, voteRegex, synchronousInvoker)
+		internal VBulletin_4_2_0(VBulletinForum outer, StateMachineHost host, String forum, Language language, String lobby, String forumRoot, 
+            String voteRegex, String voteColor, Action<Action> synchronousInvoker) :
+			base(outer, host, forum, language, lobby, forumRoot, voteRegex, voteColor, synchronousInvoker)
 		{
 		}
 		internal override ThreadReader Reader()
 		{
-			ThreadReader t = new ThreadReader_4_2_0(_connectionSettings, _synchronousInvoker, VoteRegex, _language);
+			ThreadReader t = new ThreadReader_4_2_0(_connectionSettings, _synchronousInvoker, VoteRegex, VoteColor, _language);
 			return t;
 		}
 		internal override LobbyReader Lobby()
@@ -40,8 +41,9 @@ namespace POG.Forum
 	}
 	internal class VBulletin_3_8_7 : VBulletinSM
 	{
-		internal VBulletin_3_8_7(VBulletinForum outer, StateMachineHost host, String forum, Language language, String lobby, String forumRoot, String voteRegex, Action<Action> synchronousInvoker) :
-			base(outer, host, forum, language, lobby, forumRoot, voteRegex, synchronousInvoker)
+		internal VBulletin_3_8_7(VBulletinForum outer, StateMachineHost host, String forum, Language language, String lobby, 
+            String forumRoot, String voteRegex, String voteColor, Action<Action> synchronousInvoker) :
+			base(outer, host, forum, language, lobby, forumRoot, voteRegex, voteColor, synchronousInvoker)
 		{
 		}
 	}
@@ -54,16 +56,19 @@ namespace POG.Forum
 		private String _username = ""; // if this changes from what user entered previously, need to logout then re-login with new info.
 		int _postsPerPage = 50;
         protected String VoteRegex = "";
+        protected String VoteColor = "";
         protected Language _language;
 
 		#endregion
 
-		internal VBulletinSM(VBulletinForum outer, StateMachineHost host, String forum, Language language, String lobby, String forumRoot, String voteRegex, Action<Action> synchronousInvoker) :
+		internal VBulletinSM(VBulletinForum outer, StateMachineHost host, String forum, Language language, String lobby, 
+            String forumRoot, String voteRegex, String voteColor, Action<Action> synchronousInvoker) :
 			base("VBulletin", host)
 		{
 			_outer = outer;
 			_synchronousInvoker = synchronousInvoker;
             VoteRegex = voteRegex;
+            VoteColor = voteColor;
 			ForumHost = forum;
 			ForumLobby = lobby;
             ForumRoot = forumRoot;
@@ -74,7 +79,7 @@ namespace POG.Forum
 		#region Properties
 		internal virtual ThreadReader Reader()
 		{
-			ThreadReader t = new ThreadReader(_connectionSettings, _synchronousInvoker, VoteRegex, _language);
+			ThreadReader t = new ThreadReader(_connectionSettings, _synchronousInvoker, VoteRegex, VoteColor, _language);
 			return t;
 		}
 		internal virtual LobbyReader Lobby()
@@ -1151,7 +1156,8 @@ fragment	name
 		Action<Action> _synchronousInvoker;
 		#endregion
 		#region constructors
-		public VBulletinForum(Action<Action> synchronousInvoker, String forum, String vbVersion, Language language, String lobby, String forumRoot = "", String voteRegex = "")
+		public VBulletinForum(Action<Action> synchronousInvoker, String forum, String vbVersion, Language language, String lobby, 
+            String forumRoot = "", String voteRegex = "", String voteColor = "")
 		{
 			_synchronousInvoker = synchronousInvoker;
             VBVersion = vbVersion;
@@ -1159,13 +1165,13 @@ fragment	name
 			{
 				case "4.2.0":
 					{
-                        _inner = new VBulletin_4_2_0(this, new StateMachineHost("ForumHost"), forum, language, lobby, forumRoot, voteRegex, synchronousInvoker);
+                        _inner = new VBulletin_4_2_0(this, new StateMachineHost("ForumHost"), forum, language, lobby, forumRoot, voteRegex, voteColor, synchronousInvoker);
 					}
 					break;
 
 				default:
 					{
-                        _inner = new VBulletin_3_8_7(this, new StateMachineHost("ForumHost"), forum, language, lobby, forumRoot, voteRegex, synchronousInvoker);
+                        _inner = new VBulletin_3_8_7(this, new StateMachineHost("ForumHost"), forum, language, lobby, forumRoot, voteRegex, voteColor, synchronousInvoker);
 					}
 					break;
 			}

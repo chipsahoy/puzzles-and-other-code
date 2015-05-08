@@ -41,9 +41,20 @@ namespace POG.FennecFox
             String lobby;
             String vbVersion;
             String voteRegex = "";
+            String voteColor = "";
 
             switch (host)
             {
+                case "www.flashflashrevolution.com":
+                    {
+                        vbVersion = "3.8.1";
+                        lobby = "forumdisplay.php?f=47";
+                        _language = Language.English;
+                        forumRoot = "/vbz";
+                        voteColor = "red";
+                    }
+                    break;
+
                 case "foorum.pokkeriprod.com":
                     {
                         vbVersion = "4.2.0";
@@ -85,7 +96,7 @@ namespace POG.FennecFox
 			_db = new PogSqlite();
 			_db.Connect(dbName);
 			
-			_forum = new VBulletinForum(_synchronousInvoker, host, vbVersion, _language, lobby, forumRoot, voteRegex);
+			_forum = new VBulletinForum(_synchronousInvoker, host, vbVersion, _language, lobby, forumRoot, voteRegex, voteColor);
 			_forum.LoginEvent += new EventHandler<LoginEventArgs>(_forum_LoginEvent);
 
 			String username = PogSettings.Read("username", String.Empty);

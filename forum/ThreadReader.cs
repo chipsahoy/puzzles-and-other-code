@@ -18,8 +18,8 @@ namespace POG.Forum
 {
     public class ThreadReader_4_2_0 : ThreadReader
     {
-        public ThreadReader_4_2_0(ConnectionSettings connectionSettings, Action<Action> synchronousInvoker, String voteRegex, Language language)
-            : base(connectionSettings, synchronousInvoker, voteRegex, language)
+        public ThreadReader_4_2_0(ConnectionSettings connectionSettings, Action<Action> synchronousInvoker, String voteRegex, String voteColor, Language language)
+            : base(connectionSettings, synchronousInvoker, voteRegex, voteColor, language)
         {
         }
         protected override void ParseThreadPage(String url, String doc, out Int32 lastPageNumber, out DateTimeOffset serverTime, ref Posts postList)
@@ -209,14 +209,16 @@ namespace POG.Forum
         Action<Action> _synchronousInvoker;
         protected Misc.ParseItemTimeDelegate ParseItemTime = Misc.ParseItemTimeEnglish;
         protected String _voteRegex;
+        protected String _voteColor;
         protected Language _language;
         #endregion
         #region constructors
-        public ThreadReader(ConnectionSettings connectionSettings, Action<Action> synchronousInvoker, String voteRegex, Language language)
+        public ThreadReader(ConnectionSettings connectionSettings, Action<Action> synchronousInvoker, String voteRegex, String voteColor, Language language)
         {
             _connectionSettings = connectionSettings;
             _synchronousInvoker = synchronousInvoker;
             _voteRegex = voteRegex;
+            _voteColor = voteColor;
             _language = language;
             switch (language)
             {
@@ -504,7 +506,7 @@ namespace POG.Forum
             }
 
             Int32 posterId = -1;
-            HtmlAgilityPack.HtmlNode userNode = html.SelectSingleNode("../../td[1]/div/a[@class='bigusername']");
+            HtmlAgilityPack.HtmlNode userNode = html.SelectSingleNode("../../td[1]/div/a[starts-with(@class,'bigusername')]");
             if (userNode != null)
             {
                 posterName = HtmlAgilityPack.HtmlEntity.DeEntitize(userNode.InnerText);
@@ -559,40 +561,51 @@ namespace POG.Forum
             List<Bold> bolded = new List<Bold>();
             HtmlAgilityPack.HtmlNode content = original.CloneNode("Votes", true);
             RemoveQuotes(content); // strip out quotes
-            List<String> goodColors = new List<string>() {
+            List<String> goodColors = new List<string>() { _voteColor};
                 //"darkolivegreen", "darkgreen", "yellowgreen", "seagreen", 
                 //"lime", "palegreen", "olive", "green" 
-            };
             RemoveColors(content, goodColors); // strip out colors
             RemoveNewlines(content); // strip out newlines
 
-            //// look for color,bold.
-            //foreach (var n in content.SelectNodes("descendant::font") ?? new HtmlAgilityPack.HtmlNodeCollection(content))
-            //{
-            //    HtmlAgilityPack.HtmlNodeCollection colorbolds = n.SelectNodes("child::b");
-            //    if (colorbolds != null)
-            //    {
-            //        BoldsFromSet(colorbolds, bolded);
-            //    }
-            //}
-
-            // look for plain bold
-            HtmlAgilityPack.HtmlNodeCollection bolds = content.SelectNodes("child::b");
-            if (bolds != null)
+            if (_voteColor == "")
             {
-                BoldsFromSet(bolds, bolded);
+                // look for plain bold
+                HtmlAgilityPack.HtmlNodeCollection bolds = content.SelectNodes("child::b");
+                if (bolds != null)
+                {
+                    BoldsFromSet(bolds, bolded);
+                }
+
+            }
+            else
+            {
+                // look for color,bold.
+                foreach (var n in content.SelectNodes("descendant::font") ?? new HtmlAgilityPack.HtmlNodeCollection(content))
+                {
+                    HtmlAgilityPack.HtmlNodeCollection colorbolds = n.SelectNodes("child::b");
+                    if (colorbolds != null)
+                    {
+                        BoldsFromSet(colorbolds, bolded);
+                    }
+                }
+                // look for bold,color.
+                HtmlAgilityPack.HtmlNodeCollection bolds = content.SelectNodes("descendant::b");
+                foreach (var n in bolds ?? new HtmlAgilityPack.HtmlNodeCollection(content))
+                {
+                    HtmlAgilityPack.HtmlNodeCollection boldcolors = n.SelectNodes("child::font");
+                    if (boldcolors != null)
+                    {
+                        BoldsFromSet(boldcolors, bolded);
+                    }
+                }
+                // look for span w/color
+                HtmlAgilityPack.HtmlNodeCollection boldspan = content.SelectNodes("descendant::span[starts-with(@style,\"color:red;font-weight:bold;\")]");
+                if (boldspan != null)
+                {
+                    BoldsFromSet(boldspan, bolded);
+                }
             }
 
-            //// look for bold,color.
-            //HtmlAgilityPack.HtmlNodeCollection bolds = content.SelectNodes("descendant::b");
-            //foreach (var n in bolds ?? new HtmlAgilityPack.HtmlNodeCollection(content))
-            //{
-            //    HtmlAgilityPack.HtmlNodeCollection boldcolors = n.SelectNodes("child::font");
-            //    if (boldcolors != null)
-            //    {
-            //        BoldsFromSet(boldcolors, bolded);
-            //    }
-            //}
             return bolded;
         }
         public static void RemoveQuotes(HtmlAgilityPack.HtmlNode node)

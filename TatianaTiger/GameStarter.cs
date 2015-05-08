@@ -412,10 +412,19 @@ namespace TatianaTiger
                                            select s).FirstOrDefault();
                                 if (repeat == null)
                                 {
-                                    reject = false;
+                                    // If the sub has been in for too long, reject
+                                    var originalSub = (from s in _subs
+                                                       where s.Out.Equals(pm.From, StringComparison.InvariantCultureIgnoreCase)
+                                                       select s).FirstOrDefault();
+                                    if (originalSub.Time.AddMinutes(15) > DateTime.Now)
+                                    {
+                                        // has been less than 15 minutes, ok.
+                                        reject = false;
+                                    }
                                 }
                             }
                             if(pm.From.Equals("Guild", StringComparison.InvariantCultureIgnoreCase)) reject = true;
+                            if (pm.From.Equals("ReddBoiler", StringComparison.InvariantCultureIgnoreCase)) reject = true;
                             if (reject)
                             {
                                 QueuePM(new string[] { pm.From }, pm.Title,
@@ -427,6 +436,7 @@ namespace TatianaTiger
 						StringBuilder sb = new StringBuilder();
 						String subMsg = String.Format("[b]{0}[/b] is subbing in for [b]{1}[/b]\n\n", pm.From, role.Name);
                         var sub = new SubInfo(role.Name, pm.From, DateTime.Now, _count.LastPost);
+                        _subs.Add(sub);
                         _count.SubPlayer(role.Name, pm.From);
 						_playerByName[pm.From] = role;
 						role.Name = pm.From;
@@ -520,7 +530,7 @@ namespace TatianaTiger
 						else
 						{
 							_hyper = false;
-							_d1Duration = 20;
+							_d1Duration = 18;
 							_dDuration = 17;
 							_n1Duration = 7;
 							_nDuration = 4;
@@ -584,13 +594,6 @@ namespace TatianaTiger
 						if (_count != null)
 						{
 							Trace.TraceInformation("another minute, need a vote count.");
-                            DateTime now = DateTime.Now;
-                            now = TruncateSeconds(now);
-                            if (now > _nextNight)
-                            {
-                                _forum.LockThread(_threadId, true);
-                            }
-
 							_count.CheckThread(() =>
 							{
 								PostEvent(new Event("CountUpdated"));
@@ -649,7 +652,7 @@ namespace TatianaTiger
                                 SetNightDuration();
 								post += "PM your night action or it will be randed.\r\nDeadline: " + MakeGoodBad(_nextDay);
 								post += "\r\n\r\n[b]It is night![/b]";
-								MakePost("Mod: Lynch result", post);
+								MakePost("Mod: Lynch result", post, true);
 								ChangeState(StateNightNeedAction);
 							}
 							else
@@ -1411,7 +1414,7 @@ namespace TatianaTiger
 		}
 		private Player ParseSubPM(PrivateMessage pm)
 		{
-            var players = from p in _playerRoles where (p.Dead == false) orderby p.Name.ToUpperInvariant() select p.Name;
+            var players = from p in _playerByName orderby p.Key.ToUpperInvariant() select p.Key;
             List<String> rawList = pm.Content.Split(
 				new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries)
 				.Select(p => p.Trim())
@@ -1423,9 +1426,10 @@ namespace TatianaTiger
 				{
 					l = l.Substring(4).Trim();
 				}
-				var player = LookupLivePlayer(l);
+				var player = LookupPlayer(l);
 				if (player != null)
 				{
+                    if (player.Dead) return null;
 					return player;
 				}
                 String match = InexactLookup(l, players);
