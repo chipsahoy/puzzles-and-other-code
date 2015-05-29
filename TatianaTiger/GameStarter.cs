@@ -108,7 +108,14 @@ namespace TatianaTiger
 						UnqueuePM();
 					}
 					break;
-			}
+
+                case "DelayedPost":
+                    {
+                        Event<String, String, Boolean> evtPost = e as Event<String, String, Boolean>;
+                        MakePost(evtPost.Param1, evtPost.Param2, evtPost.Param3);
+                    }
+                    return null;
+            }
 			return null;
 		}
 		State StateIdle(Event e)
@@ -266,28 +273,37 @@ namespace TatianaTiger
 			}
 			return StateTop;
 		}
+        String MakePMIntro()
+        {
+            String welcome = "Hello, I am Tatiana Tiger, your automated moderator." +
+                "You are playing a game of werewolf, this is your role PM.\r\n\r\n";
+            string rc = String.Format("{0} The game thread has the title '{1}'.\r\n\r\n", welcome, _threadTitle);
+            return rc;
+        }
 		String MakeSeerPmMessage()
 		{
 			String peek = _peeks[0].Name;
-			String seerMsg = String.Format("You are the seer. Your random n0 villager peek is {0}\r\n", peek);
+			String seerMsg = MakePMIntro() + String.Format("You are the seer. Your random n0 villager peek is {0}\r\n", peek);
 			seerMsg += "\r\nEach night send a PM with the exact name of the player you want to peek.\r\n";
 			return seerMsg;
 		}
 		String MakeWolfPmMessage()
 		{
 			List<string> wolves = (from p in _playerRoles where p.Team == WOLF select p.Name).ToList();
-			String wolfMsg = "You are the wolves:\r\n";
+            String wolfMsg = MakePMIntro() + "You are the wolves:\r\n";
 			foreach (var w in wolves)
 			{
 				wolfMsg += w + "\r\n";
 			}
+            wolfMsg += "\r\nYou can communicate with each other outside the thread [b]at night only[/b].";
+            wolfMsg += " During the day the game is played only by posting inside the thread.";
 			wolfMsg += "\r\nEach night send a PM with the exact name of the player you want to kill.\r\n";
 			wolfMsg += "If the game is hopeless send a PM that only says 'resign'.";
 			return wolfMsg;
 		}
 		String MakeVanillaPmMessage()
 		{
-			String rc = "You are a vanilla villager.";
+            String rc = MakePMIntro() + "You are a vanilla villager.";
 			return rc;
 		}
 
@@ -321,14 +337,6 @@ namespace TatianaTiger
 						_EarliestPMTime = TruncateSeconds(DateTime.Now);
 					}
 					break;
-
-
-                case "DelayedPost":
-                    {
-                        Event<String, String, Boolean> evtPost = e as Event<String, String, Boolean>;
-                        MakePost(evtPost.Param1, evtPost.Param2, evtPost.Param3);
-                    }
-                    return null;
 
 				case "CorrectionPM":
 					{
@@ -393,7 +401,7 @@ namespace TatianaTiger
 				case "SubPM":
 					{
 						PrivateMessage pm = (e as Event<PrivateMessage>).Param;
-						Player role = ParseSubPM(pm);
+						var role = ParseSubPM(pm);
 						if (role == null)
 						{
 							QueuePM(new string[] { pm.From }, pm.Title,
@@ -404,25 +412,6 @@ namespace TatianaTiger
                         if (oldRole != null)
                         {
                             bool reject = true;
-                            if (oldRole == role)
-                            {
-                                // allow original player to sub back in. Do not allow sub to sub back in.
-                                var repeat = (from s in _subs where 
-                                               s.In.Equals(pm.From, StringComparison.InvariantCultureIgnoreCase) 
-                                           select s).FirstOrDefault();
-                                if (repeat == null)
-                                {
-                                    // If the sub has been in for too long, reject
-                                    var originalSub = (from s in _subs
-                                                       where s.Out.Equals(pm.From, StringComparison.InvariantCultureIgnoreCase)
-                                                       select s).FirstOrDefault();
-                                    if (originalSub.Time.AddMinutes(15) > DateTime.Now)
-                                    {
-                                        // has been less than 15 minutes, ok.
-                                        reject = false;
-                                    }
-                                }
-                            }
                             if(pm.From.Equals("Guild", StringComparison.InvariantCultureIgnoreCase)) reject = true;
                             if (pm.From.Equals("ReddBoiler", StringComparison.InvariantCultureIgnoreCase)) reject = true;
                             if (reject)
@@ -432,6 +421,7 @@ namespace TatianaTiger
                                 break;
                             }
                         }
+                        
                         List<String> notify = new List<string>() { role.Name, pm.From };
 						StringBuilder sb = new StringBuilder();
 						String subMsg = String.Format("[b]{0}[/b] is subbing in for [b]{1}[/b]\n\n", pm.From, role.Name);
@@ -698,6 +688,37 @@ namespace TatianaTiger
 								_lastCountPostNumber = lastPost + 1;
 								MakePost("Vote Count", postableCount);
 							}
+                            if(_day == 4)
+                            {
+                                var remaining = _nextNight - now;
+                                if ((remaining.TotalSeconds < 125) && (remaining.TotalSeconds > 100))
+                                {
+                                    List<String> lateVoters = new List<string>();
+                                    var voters = _count.LivePlayers;
+                                    foreach (var voter in voters)
+                                    {
+                                        switch(voter.Votee.ToLowerInvariant())
+                                        {
+                                            case "":
+                                            case "unvote":
+                                            case "error":
+                                            case "no lynch":
+                                            case "not voting":
+                                                {
+                                                    lateVoters.Add(voter.Name);
+                                                }
+                                                break;
+                                        
+                                        }
+                                    }
+                                    if (lateVoters.Count > 0)
+                                    {
+                                        PrivateMessage pm = new PrivateMessage(null, lateVoters, "Two Minute Warning", 
+                                            "You have 2 minutes remaining to cast a vote.");
+                                        SendPM(pm);
+                                    }
+                                }
+                            }
 						}
 					}
 					break;
@@ -1060,10 +1081,11 @@ namespace TatianaTiger
             TimeSpan delay = now - _lastPostTime;
             if (delay < new TimeSpan(0, 0, 26))
             {
-                Trace.TraceInformation("Delaying post '{0}' due to 25 second rule.", title);
-                var evt = new Event<String, String, bool>("DelayedPost", title, post, lockIt);
-                PostEvent(evt);
-                return true;
+                Trace.TraceInformation("Not Delaying post '{0}' due to 25 second rule. Testing mod powers.", title);
+                //Trace.TraceInformation("Delaying post '{0}' due to 25 second rule.", title);
+                //var evt = new Event<String, String, bool>("DelayedPost", title, post, lockIt);
+                //PostEvent(evt);
+                //return true;
             }
             var rc = _forum.MakePost(_threadId, title, post, 0, lockIt);
             _lastPostTime = DateTime.Now;
@@ -1426,18 +1448,12 @@ namespace TatianaTiger
 				{
 					l = l.Substring(4).Trim();
 				}
-				var player = LookupPlayer(l);
+				var player = LookupLivePlayer(l);
 				if (player != null)
 				{
                     if (player.Dead) return null;
 					return player;
 				}
-                String match = InexactLookup(l, players);
-                player = LookupLivePlayer(match);
-                if (player != null)
-                {
-                    return player;
-                }
             }
 			return null;
 		}

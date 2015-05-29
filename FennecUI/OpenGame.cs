@@ -41,7 +41,7 @@ namespace POG.FennecFox
         {
             foreach (ForumThread t in e.Threads)
             {
-                if (_gameIcons.Contains(t.ThreadIconText))
+                if ((_gameIcons.Count == 0) || _gameIcons.Contains(t.ThreadIconText))
                 {
                     _threads.Add(t);
                 }

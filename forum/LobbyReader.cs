@@ -32,7 +32,7 @@ namespace POG.Forum
                 serverTime = Utils.Misc.ParsePageTime(timeText, DateTime.UtcNow);
             }
 
-            HtmlAgilityPack.HtmlNodeCollection threads = root.SelectNodes("//tbody[contains(@id, 'threadbits_forum_')]/tr[contains(@id, 'vbpostrow_')]");
+            HtmlAgilityPack.HtmlNodeCollection threads = root.SelectNodes("//tbody[contains(@id, 'threadbits_forum_')]/tr");
             if (threads == null)
             {
                 return;
@@ -160,16 +160,19 @@ namespace POG.Forum
                 serverTime = Utils.Misc.ParsePageTime(timeText, DateTime.UtcNow);
             }
 
-            HtmlAgilityPack.HtmlNodeCollection threads = root.SelectNodes("//tbody[contains(@id, 'threadbits_forum_')]/tr[contains(@id, 'vbpostrow_')]");
+            HtmlAgilityPack.HtmlNodeCollection threads = root.SelectNodes("//tbody[contains(@id, 'threadbits_forum_')]/tr");
             if (threads == null)
             {
                 return;
             }
+            String urlBase = url.Substring(0, url.LastIndexOf('/') + 1);
+
             foreach (HtmlAgilityPack.HtmlNode thread in threads)
             {
                 ForumThread t = HtmlToThread(threadId, thread, serverTime);
                 if (t != null)
                 {
+                    if (!t.URL.StartsWith("http")) t.URL = urlBase + t.URL;
                     threadList.Add(t);
                 }
             }

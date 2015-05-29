@@ -39,8 +39,18 @@ namespace POG.Utils
 		public delegate DateTimeOffset ParseItemTimeDelegate(DateTimeOffset pageTime, String date);
 		public static Int32 TidFromURL(String url)
 		{
-			int ixTidStart = url.LastIndexOf('-') + 1;
-			int length = url.Length - (ixTidStart + 1);
+            int ixTidStart;
+            int length;
+            if (url.Contains('-'))
+            {
+                ixTidStart = url.LastIndexOf('-') + 1;
+                length = url.Length - (ixTidStart + 1);
+            }
+            else
+            {
+                ixTidStart = url.LastIndexOf('=') + 1;
+                length = url.Length - ixTidStart;
+            }
 			if (length < 0) return -1;
 			string tid = url.Substring(ixTidStart, length);
 			Int32 rc = 0;
@@ -202,6 +212,7 @@ namespace POG.Utils
             if (ixU >= 0)
             {
                 String uid = profileUrl.Substring(ixU + "?u=".Length);
+                if (uid.Contains('\'')) uid =  uid.Substring(0, uid.IndexOf('\''));
                 Int32.TryParse(uid, out posterId);
                 return posterId;
             }

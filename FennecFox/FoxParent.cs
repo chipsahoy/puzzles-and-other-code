@@ -26,6 +26,7 @@ namespace POG.FennecFox
 		private Action<Action> _synchronousInvoker;
 		IPogDb _db;
         String _forumName;
+        List<String> _lobbyIcons = new List<string>();
 
 		public FoxParent(String forumName)
 		{
@@ -87,6 +88,7 @@ namespace POG.FennecFox
                         vbVersion = "3.8.7";
                         lobby = "59/puzzles-other-games/";
                         _language = Language.English;
+                        _lobbyIcons = new List<String> { "Spade", "Club" };
                     }
                     break;
             }
@@ -125,7 +127,7 @@ namespace POG.FennecFox
 		#region generated
 		private void OpenFile(object sender, EventArgs e)
 		{
-            OpenGame frm = new OpenGame(_forum, _forum.ForumURL + _forum.ForumLobby, new List<String> { "Spade", "Club" });
+            OpenGame frm = new OpenGame(_forum, _forum.ForumURL + _forum.ForumLobby, _lobbyIcons);
 			DialogResult dr = frm.ShowDialog();
 			if (dr == System.Windows.Forms.DialogResult.OK)
 			{
