@@ -53,6 +53,7 @@ namespace POG.Werewolf
 		Int32? _endPost;
 		Int32 _day = 1;
 		String _postableCount;
+        Boolean _noLynchAllowed = true;
         Boolean _final = false; // lock votes with " final" at end.
 		List<String> _leaders =  new List<string>();
 		Int32 _leaderVotes = 0;
@@ -63,13 +64,14 @@ namespace POG.Werewolf
 		#endregion
 
 		#region constructors
-		public ElectionInfo(Action<Action> synchronousInvoker, ThreadReader t, IPogDb db, String forum, String url, Int32 postsPerPage, Language language,
-            String vbVersion) 
+		public ElectionInfo(Action<Action> synchronousInvoker, ThreadReader t, IPogDb db, String forum, String url, Int32 postsPerPage, 
+            Boolean noLynchAllowed, Language language, String vbVersion) 
 		{
 			_synchronousInvoker = synchronousInvoker;
 			_forumURL = forum;
 			_url = url;
 			_postsPerPage = postsPerPage;
+            _noLynchAllowed = noLynchAllowed;
 			_language = language;
             _vbVersion = vbVersion;
 			_threadId = VBulletinForum.ThreadIdFromUrl(url);
@@ -591,7 +593,7 @@ namespace POG.Werewolf
 			List<Voter> listUnvote = new List<Voter>();
 			List<Voter> listNotVoting = new List<Voter>();
 			wagons.Add(sError, listError);
-			wagons.Add(NoLynch, listNoLynch);
+			if (_noLynchAllowed) wagons.Add(NoLynch, listNoLynch);
 			wagons.Add(Unvote, listUnvote);
 			wagons.Add(sNotVoting, listNotVoting);
 			// for each live player
@@ -638,7 +640,7 @@ namespace POG.Werewolf
 			{
 				_leaders = (from p in LivePlayers select p.Name).ToList();
 			}
-			wagons.Remove(NoLynch);
+			if (_noLynchAllowed) wagons.Remove(NoLynch);
 
 
 			foreach (var wagon in wagons)
@@ -788,8 +790,11 @@ namespace POG.Werewolf
                 }
             }
             _aliases.Add(new Alias("unvote", "unvote"));
-            _aliases.Add(new Alias("no lynch", "no lynch"));
-            if (!lockedVotes)
+            if (_noLynchAllowed)
+            {
+                _aliases.Add(new Alias("no lynch", "no lynch"));
+            }
+            if (!lockedVotes && _noLynchAllowed)
             {
                 wagons.Add(NoLynch, new HashSet<string>());
             }
@@ -844,7 +849,10 @@ namespace POG.Werewolf
 			}
 			validVotes.Sort();
 			validVotes.Add(Unvote);
-			validVotes.Add(NoLynch);
+            if (_noLynchAllowed)
+            {
+                validVotes.Add(NoLynch);
+            }
 			return validVotes;
 		}
 		private String VoteLinks(List<Voter> wagon, Boolean linkToVote)
@@ -1081,7 +1089,8 @@ namespace POG.Werewolf
             String noAids = collapseInput.Replace("GOAT", "", StringComparison.InvariantCultureIgnoreCase).
                 Replace("WOAT", "", StringComparison.InvariantCultureIgnoreCase).
                 Replace("WOLF", "", StringComparison.InvariantCultureIgnoreCase).
-                Replace("AIDS", "", StringComparison.InvariantCultureIgnoreCase);
+                Replace("AIDS", "", StringComparison.InvariantCultureIgnoreCase).
+                Replace("THE", "", StringComparison.InvariantCultureIgnoreCase);
             if (noAids.Length <= 2)
             {
                 noAids = "";

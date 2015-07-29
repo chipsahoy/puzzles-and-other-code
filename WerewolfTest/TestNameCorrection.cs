@@ -31,7 +31,7 @@ namespace WerewolfTest
 			
 			var _forum = new VBulletinForum(invoker, url, vbVersion, Language.English, lobby, "", "");
             var reader = _forum.Reader();
-            _count = new ElectionInfo(invoker, reader, _db, _forum.ForumURL, url, _forum.PostsPerPage, _language, "3.8.7");
+            _count = new ElectionInfo(invoker, reader, _db, _forum.ForumURL, url, _forum.PostsPerPage, true, _language, "3.8.7");
         }
         [TestFixtureTearDown]
         public void Teardown()

@@ -1137,7 +1137,7 @@ namespace Titan
 				Action<Action> invoker = a => a();
 				_count = new ElectionInfo(invoker, t, _db, _forum.ForumURL,
 					_url,
-                    _forum.PostsPerPage, Language.English, "3.8.7");
+                    _forum.PostsPerPage, false, Language.English, "3.8.7");
 				_count.Census.Clear();
                 _count.CheckMajority = false;
 

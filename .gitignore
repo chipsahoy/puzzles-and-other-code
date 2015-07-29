@@ -2,6 +2,7 @@
 */obj/
 */Debug/
 packages/
+*/__pycache__/
 *.suo
 
 *.user

@@ -103,7 +103,7 @@ namespace ResultsReporter
             Action<Action> invoker = a => a();
             _count = new ElectionInfo(invoker, t, _db, _forum.ForumURL,
                 url,
-                _forum.PostsPerPage, Language.English, "3.8.7");
+                _forum.PostsPerPage, false, Language.English, "3.8.7");
             _count.CheckThread(() =>
             {
                 Console.WriteLine("{0} posts", _count.LastPost);

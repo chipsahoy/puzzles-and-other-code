@@ -178,16 +178,19 @@ namespace TatianaTiger
 								}
 
 							}
-							if (title.Length > 0)
+							if (title.Length == 0)
 							{
-                                if(title.Length > 80) title = title.Substring(0, 80);
-                                _threadTitle = title;
+                                title = String.Format("{0:yy.MM.dd HH:mm}", DateTime.Now.ToUniversalTime());
+                                QueueAnnouncement("Next time give your turbo a title by including 'title MY CUSTOM TITLE' as the first line of your PM.");
 							}
-							else
-							{
-								_threadTitle = String.Format("Turbo Game {0:yy.MM.dd HH:mm}", DateTime.Now.ToUniversalTime());
-								QueueAnnouncement("Next time give your turbo a title by including 'title MY CUSTOM TITLE' as the first line of your PM.");
-							}
+                            title = title.Trim();
+                            if (!title.ToLowerInvariant().StartsWith("turbo: "))
+                            {
+                                title = "Turbo: " + title;
+                            }
+                            if (title.Length > 80) title = title.Substring(0, 80);
+                            _threadTitle = title;
+
 							if (CheckCanReceivePM())
 							{
 								PostEvent(new Event("Rand"));
@@ -409,17 +412,11 @@ namespace TatianaTiger
 							break;
 						}
                         Player oldRole = LookupPlayer(pm.From);
-                        if (oldRole != null)
+                        if (oldRole != role)
                         {
-                            bool reject = true;
-                            if(pm.From.Equals("Guild", StringComparison.InvariantCultureIgnoreCase)) reject = true;
-                            if (pm.From.Equals("ReddBoiler", StringComparison.InvariantCultureIgnoreCase)) reject = true;
-                            if (reject)
-                            {
-                                QueuePM(new string[] { pm.From }, pm.Title,
-                                    String.Format("Sorry, I can't sub you back in."));
-                                break;
-                            }
+                            QueuePM(new string[] { pm.From }, pm.Title,
+                                String.Format("Sorry, I can't sub you back in."));
+                            break;
                         }
                         
                         List<String> notify = new List<string>() { role.Name, pm.From };
@@ -1217,7 +1214,7 @@ namespace TatianaTiger
 				Action<Action> invoker = a => a();
 				_count = new ElectionInfo(invoker, t, _db, _forum.ForumURL,
 					_url,
-					_forum.PostsPerPage, Language.English, "3.8.7");
+					_forum.PostsPerPage, false, Language.English, "3.8.7");
 				_count.Census.Clear();
                 _count.CheckMajority = false;
 
