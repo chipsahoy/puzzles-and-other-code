@@ -593,7 +593,7 @@ namespace POG.Werewolf
 			List<Voter> listUnvote = new List<Voter>();
 			List<Voter> listNotVoting = new List<Voter>();
 			wagons.Add(sError, listError);
-			if (_noLynchAllowed) wagons.Add(NoLynch, listNoLynch);
+			wagons.Add(NoLynch, listNoLynch);
 			wagons.Add(Unvote, listUnvote);
 			wagons.Add(sNotVoting, listNotVoting);
 			// for each live player
@@ -640,7 +640,7 @@ namespace POG.Werewolf
 			{
 				_leaders = (from p in LivePlayers select p.Name).ToList();
 			}
-			if (_noLynchAllowed) wagons.Remove(NoLynch);
+			wagons.Remove(NoLynch);
 
 
 			foreach (var wagon in wagons)

@@ -412,13 +412,15 @@ namespace TatianaTiger
 							break;
 						}
                         Player oldRole = LookupPlayer(pm.From);
-                        if (oldRole != role)
+                        if (oldRole != null)
                         {
-                            QueuePM(new string[] { pm.From }, pm.Title,
-                                String.Format("Sorry, I can't sub you back in."));
-                            break;
+                            if (oldRole != role)
+                            {
+                                QueuePM(new string[] { pm.From }, pm.Title,
+                                    String.Format("Sorry, I can't sub you back in."));
+                                break;
+                            }
                         }
-                        
                         List<String> notify = new List<string>() { role.Name, pm.From };
 						StringBuilder sb = new StringBuilder();
 						String subMsg = String.Format("[b]{0}[/b] is subbing in for [b]{1}[/b]\n\n", pm.From, role.Name);
