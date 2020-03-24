@@ -43,6 +43,7 @@ namespace POG.FennecFox
             String vbVersion;
             String voteRegex = "";
             String voteColor = "";
+			Boolean encrypted = false;
 
             switch (host)
             {
@@ -89,6 +90,7 @@ namespace POG.FennecFox
                         lobby = "59/puzzles-other-games/";
                         _language = Language.English;
                         _lobbyIcons = new List<String> { "Spade", "Club" };
+						encrypted = true;
                     }
                     break;
             }
@@ -98,7 +100,7 @@ namespace POG.FennecFox
 			_db = new PogSqlite();
 			_db.Connect(dbName);
 			
-			_forum = new VBulletinForum(_synchronousInvoker, host, vbVersion, _language, lobby, forumRoot, voteRegex, voteColor);
+			_forum = new VBulletinForum(_synchronousInvoker, host, vbVersion, _language, lobby, forumRoot, voteRegex, voteColor, encrypted);
 			_forum.LoginEvent += new EventHandler<LoginEventArgs>(_forum_LoginEvent);
 
 			String username = PogSettings.Read("username", String.Empty);

@@ -9,15 +9,15 @@ namespace POG.Forum
     {
          private Uri _forum;
          private CookieContainer _cc;
-         public ConnectionSettings(String forum)
-             : this(new Uri(forum))
+         public ConnectionSettings(String forum, Boolean encrypted)
+             : this(new Uri(forum), encrypted)
         {
         }
-        public ConnectionSettings(Uri baseUri)
+        public ConnectionSettings(Uri baseUri, Boolean encrypted)
         {
             _forum = baseUri;
             FollowRedirect = true;
-            UseAuthentication = false;
+            UseAuthentication = encrypted;
             IgnoreErrors = false;
             Headers = new Dictionary<string, string>();
             PostData = new Dictionary<string, string>();
@@ -25,7 +25,7 @@ namespace POG.Forum
         }
         public ConnectionSettings Clone()
         {
-            ConnectionSettings rc = new ConnectionSettings(_forum);
+            ConnectionSettings rc = new ConnectionSettings(_forum, UseAuthentication);
             CookieCollection cookies = CC.GetCookies(_forum);
             rc.CC.Add(cookies);
             return rc;

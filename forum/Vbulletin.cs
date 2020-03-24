@@ -19,8 +19,8 @@ namespace POG.Forum
 	internal class VBulletin_4_2_0 : VBulletinSM
 	{
 		internal VBulletin_4_2_0(VBulletinForum outer, StateMachineHost host, String forum, Language language, String lobby, String forumRoot, 
-            String voteRegex, String voteColor, Action<Action> synchronousInvoker) :
-			base(outer, host, forum, language, lobby, forumRoot, voteRegex, voteColor, synchronousInvoker)
+            String voteRegex, String voteColor, Action<Action> synchronousInvoker, Boolean encrypted) :
+			base(outer, host, forum, language, lobby, forumRoot, voteRegex, voteColor, synchronousInvoker, encrypted)
 		{
 		}
 		internal override ThreadReader Reader()
@@ -42,8 +42,8 @@ namespace POG.Forum
 	internal class VBulletin_3_8_7 : VBulletinSM
 	{
 		internal VBulletin_3_8_7(VBulletinForum outer, StateMachineHost host, String forum, Language language, String lobby, 
-            String forumRoot, String voteRegex, String voteColor, Action<Action> synchronousInvoker) :
-			base(outer, host, forum, language, lobby, forumRoot, voteRegex, voteColor, synchronousInvoker)
+            String forumRoot, String voteRegex, String voteColor, Action<Action> synchronousInvoker, Boolean encypted) :
+			base(outer, host, forum, language, lobby, forumRoot, voteRegex, voteColor, synchronousInvoker, encypted)
 		{
 		}
 	}
@@ -58,11 +58,12 @@ namespace POG.Forum
         protected String VoteRegex = "";
         protected String VoteColor = "";
         protected Language _language;
+		protected Boolean _encrypted = false;
 
 		#endregion
 
 		internal VBulletinSM(VBulletinForum outer, StateMachineHost host, String forum, Language language, String lobby, 
-            String forumRoot, String voteRegex, String voteColor, Action<Action> synchronousInvoker) :
+            String forumRoot, String voteRegex, String voteColor, Action<Action> synchronousInvoker, Boolean encrypted) :
 			base("VBulletin", host)
 		{
 			_outer = outer;
@@ -73,7 +74,8 @@ namespace POG.Forum
 			ForumLobby = lobby;
             ForumRoot = forumRoot;
             _language = language;
-			_connectionSettings = new ConnectionSettings(ForumURL);
+			_encrypted = encrypted;
+			_connectionSettings = new ConnectionSettings(ForumURL, encrypted);
 			SetInitialState(StateLoggedOut);
 		}
 		#region Properties
@@ -858,8 +860,8 @@ loggedinuser 81788
 			}
 			msg.AppendFormat("{0}={1}&", "ajax", "1");
 			//msg.AppendFormat("{0}={1}&", "ajax_lastpost", "1"); // Need real last post number or else all posts are returned.
-			msg.AppendFormat("{0}={1}&", "message_backup", HttpUtility.UrlEncodeUnicode(content));
-			msg.AppendFormat("{0}={1}&", "message", HttpUtility.UrlEncodeUnicode(content));
+			msg.AppendFormat("{0}={1}&", "message_backup", HttpUtility.UrlEncode(content));
+			msg.AppendFormat("{0}={1}&", "message", HttpUtility.UrlEncode(content));
 			msg.AppendFormat("{0}={1}&", "wysiwyg", "0");
 			if (icon != 0)
 			{
@@ -1141,7 +1143,11 @@ fragment	name
 		public string ForumURL { 
 			get
 			{
-				String rc = String.Format("http://{0}/", ForumHost);
+				string protocol = "http";
+				if(_encrypted) {
+					protocol = "https";
+				}
+				String rc = String.Format("{0}://{1}/", protocol, ForumHost);
                 if (ForumRoot.Length > 0) rc += String.Format("{0}/", ForumRoot);
 				return rc;
 			}
@@ -1157,7 +1163,7 @@ fragment	name
 		#endregion
 		#region constructors
 		public VBulletinForum(Action<Action> synchronousInvoker, String forum, String vbVersion, Language language, String lobby, 
-            String forumRoot = "", String voteRegex = "", String voteColor = "")
+            String forumRoot = "", String voteRegex = "", String voteColor = "", Boolean encrypted = false)
 		{
 			_synchronousInvoker = synchronousInvoker;
             VBVersion = vbVersion;
@@ -1165,13 +1171,13 @@ fragment	name
 			{
 				case "4.2.0":
 					{
-                        _inner = new VBulletin_4_2_0(this, new StateMachineHost("ForumHost"), forum, language, lobby, forumRoot, voteRegex, voteColor, synchronousInvoker);
+                        _inner = new VBulletin_4_2_0(this, new StateMachineHost("ForumHost"), forum, language, lobby, forumRoot, voteRegex, voteColor, synchronousInvoker, encrypted);
 					}
 					break;
 
 				default:
 					{
-                        _inner = new VBulletin_3_8_7(this, new StateMachineHost("ForumHost"), forum, language, lobby, forumRoot, voteRegex, voteColor, synchronousInvoker);
+                        _inner = new VBulletin_3_8_7(this, new StateMachineHost("ForumHost"), forum, language, lobby, forumRoot, voteRegex, voteColor, synchronousInvoker, encrypted);
 					}
 					break;
 			}

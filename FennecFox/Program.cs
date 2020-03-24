@@ -7,7 +7,7 @@ namespace POG.FennecFox
 {
     class Options
     {
-        [Option('h', "host", DefaultValue="forumserver.twoplustwo.com", HelpText = "base url of forum")]
+        [Option('h', "host",  Default="forumserver.twoplustwo.com", HelpText = "base url of forum")]
         public String Host { get; set; }
     }
     static class Program
@@ -20,12 +20,12 @@ namespace POG.FennecFox
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            var options = new Options();
             String forum = "forumserver.twoplustwo.com";
-            if (CommandLine.Parser.Default.ParseArguments(args, options))
-            {
-                forum = options.Host.ToLowerInvariant();
-            }
+            var parserResult = CommandLine.Parser.Default.ParseArguments<Options>(args);
+            parserResult.WithParsed((options) =>
+             {
+                 forum = options.Host.ToLowerInvariant();
+             });
             Form f = new FoxParent(forum);
             if (f != null)
             {

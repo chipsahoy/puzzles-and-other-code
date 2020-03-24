@@ -89,7 +89,7 @@ namespace POG.Forum
 
                 if (FIDDLER)
                 {
-                    ServicePointManager.SecurityProtocol = SecurityProtocolType.Ssl3;
+                    ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
                     ServicePointManager.ServerCertificateValidationCallback +=
                         delegate(object sender, X509Certificate certificate, X509Chain chain,
                         SslPolicyErrors sslPolicyErrors)
@@ -139,7 +139,7 @@ namespace POG.Forum
                 {
                     ServicePointManager.ServerCertificateValidationCallback =
                         new RemoteCertificateValidationCallback(MyCertValidationCb);
-                    ServicePointManager.SecurityProtocol = SecurityProtocolType.Ssl3;
+                    ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
                 }
 
                 using (Stream newStream = myRequest.GetRequestStream())
@@ -198,6 +198,25 @@ namespace POG.Forum
 
             try
             {
+                /* DEBUG ONLY, to handle HTTPS through fiddler.  also uncomment "proxy" above. */
+
+#if DEBUG
+                ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
+                ServicePointManager.ServerCertificateValidationCallback +=
+                    delegate (object sender, X509Certificate certificate, X509Chain chain,
+                    SslPolicyErrors sslPolicyErrors)
+                    {
+                        return true;
+                    };
+#endif
+
+                if (settings.UseAuthentication)
+                {
+                    ServicePointManager.ServerCertificateValidationCallback =
+                        new RemoteCertificateValidationCallback(MyCertValidationCb);
+                    ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
+                }
+
                 HttpWebRequest objRequest = (HttpWebRequest)WebRequest.Create(settings.Url);
 
                 objRequest.Proxy = null;
@@ -250,25 +269,6 @@ namespace POG.Forum
 
                         objRequest.Headers.Add(header.Key, header.Value);
                     }
-                }
-
-                /* DEBUG ONLY, to handle HTTPS through fiddler.  also uncomment "proxy" above. */
-
-#if DEBUG
-                ServicePointManager.SecurityProtocol = SecurityProtocolType.Ssl3;
-                ServicePointManager.ServerCertificateValidationCallback +=
-                    delegate(object sender, X509Certificate certificate, X509Chain chain,
-                    SslPolicyErrors sslPolicyErrors)
-                    {
-                        return true;
-                    };
-#endif
-
-                if (settings.UseAuthentication)
-                {
-                    ServicePointManager.ServerCertificateValidationCallback =
-                        new RemoteCertificateValidationCallback(MyCertValidationCb);
-                    ServicePointManager.SecurityProtocol = SecurityProtocolType.Ssl3;
                 }
 
                 using (var objResponse = (HttpWebResponse)objRequest.GetResponse())
